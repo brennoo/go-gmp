@@ -3,8 +3,8 @@ package connections
 import (
 	"net"
 
-	"github.com/brennoo/go-gmp/pkg/9/gmp"
-	"github.com/brennoo/go-gmp/pkg/9/gmp/connections/internal/implementation"
+	"github.com/brennoo/go-gmp/pkg/22/gmp"
+	"github.com/brennoo/go-gmp/pkg/22/gmp/connections/internal/implementation"
 )
 
 // NewUnixConnection returns an instance of `gmp.Connection`. The `socket` parameter refers to the file path of the Unix Socket

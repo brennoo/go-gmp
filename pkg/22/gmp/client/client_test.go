@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"github.com/brennoo/go-gmp/pkg/9/gmp"
+	"github.com/brennoo/go-gmp/pkg/22/gmp"
 )
 
 type mockConn struct{}

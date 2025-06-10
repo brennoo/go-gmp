@@ -3,8 +3,8 @@ package connections
 import (
 	"crypto/tls"
 
-	"github.com/brennoo/go-gmp/pkg/9/gmp"
-	"github.com/brennoo/go-gmp/pkg/9/gmp/connections/internal/implementation"
+	"github.com/brennoo/go-gmp/pkg/22/gmp"
+	"github.com/brennoo/go-gmp/pkg/22/gmp/connections/internal/implementation"
 )
 
 // NewTLSConnection returns an instance of `gmp.Connection` that uses a TLS connection as underlying trasport to communicate with Openvas GVMD.
