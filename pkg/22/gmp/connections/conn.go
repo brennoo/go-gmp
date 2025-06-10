@@ -3,8 +3,8 @@ package connections
 import (
 	"net"
 
-	"github.com/brennoo/go-gmp/pkg/9/gmp"
-	"github.com/brennoo/go-gmp/pkg/9/gmp/connections/internal/implementation"
+	"github.com/brennoo/go-gmp/pkg/22/gmp"
+	"github.com/brennoo/go-gmp/pkg/22/gmp/connections/internal/implementation"
 )
 
 // New returns an instance of `gmp.Connection` that uses `conn` as underlying transport to communicate with Openvas GVMD.

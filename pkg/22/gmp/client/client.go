@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/brennoo/go-gmp/pkg/9/gmp"
+	"github.com/brennoo/go-gmp/pkg/22/gmp"
 )
 
 type client struct {

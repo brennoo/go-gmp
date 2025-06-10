@@ -1,6 +1,6 @@
 # GO-GMP
 
-[![Build Status](https://travis-ci.org/filewalkwithme/go-gmp.svg?branch=master)](https://travis-ci.org/filewalkwithme/go-gmp)
+[![Build Status](https://travis-ci.org/brennoo/go-gmp.svg?branch=master)](https://travis-ci.org/brennoo/go-gmp)
 
 Library to interact with the Greenbone Vulnerability Manager using the [gmp protocol](https://docs.greenbone.net/API/GMP/gmp-9.0.html) (Greenbone Management Protocol, `version 9.0`)
 
@@ -13,17 +13,17 @@ Here you willl find methods to create tasks, targets, scanners and retrieve resu
 https://docs.greenbone.net/API/GMP/gmp-9.0.html
 
 # Documentation
-- https://godoc.org/github.com/filewalkwithme/go-gmp/pkg/9/gmp
-- https://godoc.org/github.com/filewalkwithme/go-gmp/pkg/9/gmp/client
-- https://godoc.org/github.com/filewalkwithme/go-gmp/pkg/9/gmp/connections
+- https://godoc.org/github.com/brennoo/go-gmp/pkg/9/gmp
+- https://godoc.org/github.com/brennoo/go-gmp/pkg/9/gmp/client
+- https://godoc.org/github.com/brennoo/go-gmp/pkg/9/gmp/connections
 
 # Sample Usage
 
 ```
 import (
-	"github.com/filewalkwithme/go-gmp/pkg/9/gmp"
-	"github.com/filewalkwithme/go-gmp/pkg/9/gmp/client"
-	"github.com/filewalkwithme/go-gmp/pkg/9/gmp/connections"
+	"github.com/brennoo/go-gmp/pkg/9/gmp"
+	"github.com/brennoo/go-gmp/pkg/9/gmp/client"
+	"github.com/brennoo/go-gmp/pkg/9/gmp/connections"
 )
 ```
 
@@ -76,10 +76,10 @@ if err != nil {
 
 # Sample Application
 
-First, you will need to start an Greenbone Security Assistant instance. For this example we will use [gvm-openvas-docker](https://github.com/filewalkwithme/gvm-openvas-docker.git), a ready to use GSA Docker image. We are going to expose the GVMD Unix Socket under `/tmp/openvas-socks/gvmd.sock`
+First, you will need to start an Greenbone Security Assistant instance. For this example we will use [gvm-openvas-docker](https://github.com/brennoo/gvm-openvas-docker.git), a ready to use GSA Docker image. We are going to expose the GVMD Unix Socket under `/tmp/openvas-socks/gvmd.sock`
 
 ```
-git clone https://github.com/filewalkwithme/openvas-in-the-box.git
+git clone https://github.com/brennoo/openvas-in-the-box.git
 sudo docker build openvas-in-the-box -t openvas
 sudo docker run -d --rm -ti -p 80:80 -p 443:443 -v /tmp/openvas-socks:/var/run --name openvas openvas
 ```
@@ -148,11 +148,11 @@ Result[40]: Unknown OS and Service Banner Reporting (score: 0.0)
 ```
 go test ./... -coverprofile=coverage.out
 
-?       github.com/filewalkwithme/go-gmp/examples       [no test files]
-ok      github.com/filewalkwithme/go-gmp/pkg/9/gmp      0.004s  coverage: [no statements]
-ok      github.com/filewalkwithme/go-gmp/pkg/9/gmp/client       0.017s  coverage: 100.0% of statements
-ok      github.com/filewalkwithme/go-gmp/pkg/9/gmp/connections  0.009s  coverage: 100.0% of statements
-ok      github.com/filewalkwithme/go-gmp/pkg/9/gmp/connections/internal/implementation  0.003s  coverage: 100.0% of statements
+?       github.com/brennoo/go-gmp/examples       [no test files]
+ok      github.com/brennoo/go-gmp/pkg/9/gmp      0.004s  coverage: [no statements]
+ok      github.com/brennoo/go-gmp/pkg/9/gmp/client       0.017s  coverage: 100.0% of statements
+ok      github.com/brennoo/go-gmp/pkg/9/gmp/connections  0.009s  coverage: 100.0% of statements
+ok      github.com/brennoo/go-gmp/pkg/9/gmp/connections/internal/implementation  0.003s  coverage: 100.0% of statements
 ```
 
 HTML Report:
