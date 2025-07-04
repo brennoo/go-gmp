@@ -7,7 +7,6 @@ type CreateConfigCommand struct {
 	Comment            string              `xml:"comment,omitempty"`
 	Copy               string              `xml:"copy,omitempty"`
 	GetConfigsResponse *GetConfigsResponse `xml:"get_configs_response,omitempty"`
-	Scanner            string              `xml:"scanner,omitempty"`
 	Name               string              `xml:"name,omitempty"`
 	UsageType          string              `xml:"usage_type,omitempty"`
 }

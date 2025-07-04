@@ -7,7 +7,7 @@ import (
 
 type GetResultsCommand struct {
 	XMLName          xml.Name `xml:"get_results"`
-	ResultID         string   `xml:"id,attr,omitempty"`
+	ResultID         string   `xml:"result_id,attr,omitempty"`
 	Filter           string   `xml:"filter,attr,omitempty"`
 	FiltID           string   `xml:"filt_id,attr,omitempty"`
 	TaskID           string   `xml:"task_id,attr,omitempty"`
@@ -48,9 +48,8 @@ type Result struct {
 	QOD              ResultQOD        `xml:"qod"`
 	OriginalThreat   *string          `xml:"original_threat,omitempty"`
 	OriginalSeverity *float32         `xml:"original_severity,omitempty"`
+	Compliance       string           `xml:"compliance"`
 	Description      string           `xml:"description"`
-	Compliant        *string          `xml:"compliant,omitempty"`
-	SolutionType     *string          `xml:"solution_type,omitempty"`
 	Delta            *ResultDelta     `xml:"delta,omitempty"`
 	Detection        *ResultDetection `xml:"detection,omitempty"`
 	Notes            *ResultNotes     `xml:"notes,omitempty"`
@@ -68,15 +67,14 @@ type ResultUserTags struct {
 }
 
 type ResultUserTagsTag struct {
-	ID      string      `xml:"id,attr"`
-	Name    string      `xml:"name"`
-	Value   ResultOwner `xml:"value"`
-	Comment string      `xml:"comment"`
+	ID      string `xml:"id,attr"`
+	Name    string `xml:"name"`
+	Value   string `xml:"value"`
+	Comment string `xml:"comment"`
 }
 
 type ResultReport struct {
-	ID         string `xml:"id,attr"`
-	InternalID *int   `xml:"report,omitempty"`
+	ID string `xml:"id,attr"`
 }
 
 type ResultTask struct {
@@ -107,7 +105,24 @@ type ResultNVT struct {
 	Severities ResultNVTSeverities `xml:"severities"`
 	CPE        string              `xml:"cpe"`
 	Tags       string              `xml:"tags"`
+	EPSS       *ResultNVTEPSS      `xml:"epss,omitempty"`
 	Refs       ResultNVTRefs       `xml:"refs"`
+}
+
+type ResultNVTEPSS struct {
+	MaxSeverity ResultNVTEPSSInfo `xml:"max_severity"`
+	MaxEPSS     ResultNVTEPSSInfo `xml:"max_epss"`
+}
+
+type ResultNVTEPSSInfo struct {
+	Score      float32          `xml:"score"`
+	Percentile float32          `xml:"percentile"`
+	CVE        ResultNVTEPSSCVE `xml:"cve"`
+}
+
+type ResultNVTEPSSCVE struct {
+	ID       string   `xml:"id,attr"`
+	Severity *float32 `xml:"severity,omitempty"`
 }
 
 type ResultNVTRefs struct {
@@ -152,7 +167,6 @@ type Note struct {
 	Hosts            string          `xml:"hosts"`
 	Port             string          `xml:"port"`
 	Severity         string          `xml:"severity"`
-	Threat           string          `xml:"threat"`
 	Task             NoteTask        `xml:"task"`
 	EndTime          string          `xml:"end_time"`
 	Result           NoteResult      `xml:"result"`
@@ -187,20 +201,22 @@ type NoteUserTags struct {
 }
 
 type NoteUserTagsTag struct {
-	ID      int    `xml:"id,attr"`
+	ID      string `xml:"id,attr"`
 	Name    string `xml:"name"`
 	Value   string `xml:"value"`
 	Comment string `xml:"comment"`
 }
 
 type NoteTask struct {
-	ID int `xml:"id,attr"`
+	ID    string `xml:"id,attr"`
+	Name  string `xml:"name"`
+	Trash bool   `xml:"trash"`
 }
 
 type NoteResult struct {
-	ID          int            `xml:"id,attr"`
+	ID          string         `xml:"id,attr"`
 	Host        NoteResultHost `xml:"host"`
-	Port        int            `xml:"port"`
+	Port        string         `xml:"port"`
 	NVT         NoteResultNVT  `xml:"nvt"`
 	Severity    string         `xml:"severity"`
 	Threat      string         `xml:"threat"`
@@ -214,7 +230,7 @@ type NoteResultHost struct {
 }
 
 type NoteResultHostAsset struct {
-	AssetID int `xml:"asset_id,attr"`
+	AssetID string `xml:"asset_id,attr"`
 }
 
 type NoteResultNVT struct {
@@ -227,8 +243,8 @@ type NoteResultNVT struct {
 }
 
 type NoteResultQOD struct {
-	Value int `xml:"value"`
-	Type  int `xml:"type"`
+	Value int    `xml:"value"`
+	Type  string `xml:"type"`
 }
 
 type ResultDeltaOverrides struct {
@@ -256,7 +272,7 @@ type Override struct {
 	Port             string              `xml:"port"`
 	Task             OverrideTask        `xml:"task"`
 	EndTime          string              `xml:"end_time"`
-	Result           OverrideResult      `xml:"Result"`
+	Result           OverrideResult      `xml:"result"`
 }
 
 type OverridePermissions struct {
@@ -295,7 +311,9 @@ type OverrideUserTagsTag struct {
 }
 
 type OverrideTask struct {
-	ID string `xml:"id,attr"`
+	ID    string `xml:"id,attr"`
+	Name  string `xml:"name"`
+	Trash bool   `xml:"trash"`
 }
 
 type OverrideResult struct {

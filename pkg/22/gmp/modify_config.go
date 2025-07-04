@@ -7,10 +7,9 @@ type ModifyConfigCommand struct {
 	ConfigID        string                       `xml:"config_id,attr,omitempty"`
 	Name            string                       `xml:"name,omitempty"`
 	Comment         string                       `xml:"comment,omitempty"`
-	Scanner         string                       `xml:"scanner,omitempty"`
-	Preference      *ModifyConfigPreference      `xml:"preference,omitempty"`
+	Preference      []ModifyConfigPreference     `xml:"preference,omitempty"`
 	FamilySelection *ModifyConfigFamilySelection `xml:"family_selection,omitempty"`
-	NVTSelection    *ModifyConfigNVTSelection    `xml:"nvt_selection,omitempty"`
+	NVTSelection    []ModifyConfigNVTSelection   `xml:"nvt_selection,omitempty"`
 }
 
 type ModifyConfigPreference struct {
@@ -35,8 +34,12 @@ type ModifyConfigFamilySelectionFamily struct {
 }
 
 type ModifyConfigNVTSelection struct {
-	Family string `xml:"family,omitempty"`
-	NVT    string `xml:"nvt,omitempty"`
+	Family string                        `xml:"family,omitempty"`
+	NVT    []ModifyConfigNVTSelectionNVT `xml:"nvt,omitempty"`
+}
+
+type ModifyConfigNVTSelectionNVT struct {
+	OID string `xml:"oid,attr,omitempty"`
 }
 
 type ModifyConfigResponse struct {

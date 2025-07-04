@@ -64,6 +64,24 @@ func (cli *client) CreateTarget(cmd *gmp.CreateTargetCommand) (resp *gmp.CreateT
 	return resp, err
 }
 
+func (cli *client) GetTargets(cmd *gmp.GetTargetsCommand) (resp *gmp.GetTargetsResponse, err error) {
+	resp = new(gmp.GetTargetsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) DeleteTarget(cmd *gmp.DeleteTargetCommand) (resp *gmp.DeleteTargetResponse, err error) {
+	resp = new(gmp.DeleteTargetResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetPortLists(cmd *gmp.GetPortListsCommand) (resp *gmp.GetPortListsResponse, err error) {
+	resp = new(gmp.GetPortListsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
 func (cli *client) StartTask(cmd *gmp.StartTaskCommand) (resp *gmp.StartTaskResponse, err error) {
 	resp = new(gmp.StartTaskResponse)
 	err = cli.conn.Execute(cmd, resp)
