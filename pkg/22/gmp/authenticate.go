@@ -16,6 +16,6 @@ type AuthenticateResponse struct {
 	XMLName    xml.Name `xml:"authenticate_response"`
 	Status     string   `xml:"status,attr"`
 	StatusText string   `xml:"status_text,attr"`
-	Role       string   `xml:"role"`
-	Timezone   string   `xml:"timezone"`
+	Role       string   `xml:"role,omitempty"`
+	Timezone   string   `xml:"timezone,omitempty"`
 }

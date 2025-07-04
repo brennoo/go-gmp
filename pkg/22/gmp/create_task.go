@@ -8,6 +8,7 @@ type CreateTaskCommand struct {
 	Comment         string                 `xml:"comment,omitempty"`
 	Copy            string                 `xml:"copy,omitempty"`
 	Alterable       bool                   `xml:"alterable,omitempty"`
+	UsageType       string                 `xml:"usage_type,omitempty"`
 	Config          *CreateTaskConfig      `xml:"config,omitempty"`
 	Target          *CreateTaskTarget      `xml:"target,omitempty"`
 	HostsOrdering   string                 `xml:"hosts_ordering,omitempty"`
@@ -15,7 +16,7 @@ type CreateTaskCommand struct {
 	Alert           []*CreateTaskAlert     `xml:"alert,omitempty"`
 	Schedule        *CreateTaskSchedule    `xml:"schedule,omitempty"`
 	SchedulePeriods int                    `xml:"schedule_periods,omitempty"`
-	Observers       string                 `xml:"observers,omitempty"`
+	Observers       *CreateTaskObservers   `xml:"observers,omitempty"`
 	Preferences     *CreateTaskPreferences `xml:"preferences,omitempty"`
 }
 
@@ -36,6 +37,15 @@ type CreateTaskAlert struct {
 }
 
 type CreateTaskSchedule struct {
+	ID string `xml:"id,attr,omitempty"`
+}
+
+type CreateTaskObservers struct {
+	Users  string                      `xml:",chardata,omitempty"`
+	Groups []*CreateTaskObserversGroup `xml:"group,omitempty"`
+}
+
+type CreateTaskObserversGroup struct {
 	ID string `xml:"id,attr,omitempty"`
 }
 

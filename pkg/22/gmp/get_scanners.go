@@ -44,8 +44,11 @@ type GetScannersResponseScanner struct {
 	Type             string                                `xml:"type"`
 	CAPub            string                                `xml:"ca_pub"`
 	Credential       GetScannersResponseScannerCredential  `xml:"credential"`
+	RelayHost        string                                `xml:"relay_host"`
+	RelayPort        string                                `xml:"relay_port"`
 	Configs          GetScannersResponseScannerConfigs     `xml:"configs"`
 	Tasks            GetScannersResponseScannerTasks       `xml:"tasks"`
+	Info             GetScannersResponseScannerInfo        `xml:"info"`
 }
 
 type GetScannersResponseScannerOwner struct {
@@ -66,6 +69,7 @@ type GetScannersResponseScannerUserTags struct {
 }
 
 type GetScannersResponseScannerUserTagsTag struct {
+	ID      string `xml:"id,attr"`
 	Name    string `xml:"name"`
 	Value   string `xml:"value"`
 	Comment string `xml:"comment"`
@@ -74,7 +78,7 @@ type GetScannersResponseScannerUserTagsTag struct {
 type GetScannersResponseScannerCredential struct {
 	ID    string `xml:"id,attr"`
 	Name  string `xml:"name"`
-	Type  string `xml:"type"`
+	Login string `xml:"login"`
 	Trash bool   `xml:"trash"`
 }
 
@@ -96,6 +100,33 @@ type GetScannersResponseScannerTasksTask struct {
 	ID          string `xml:"id,attr"`
 	Name        string `xml:"name"`
 	Permissions string `xml:"permissions"`
+}
+
+type GetScannersResponseScannerInfo struct {
+	Scanner     GetScannersResponseScannerInfoScanner  `xml:"scanner"`
+	Daemon      GetScannersResponseScannerInfoDaemon   `xml:"daemon"`
+	Protocol    GetScannersResponseScannerInfoProtocol `xml:"protocol"`
+	Description string                                 `xml:"description"`
+	Params      GetScannersResponseScannerInfoParams   `xml:"params"`
+}
+
+type GetScannersResponseScannerInfoScanner struct {
+	Name    string `xml:"name"`
+	Version string `xml:"version"`
+}
+
+type GetScannersResponseScannerInfoDaemon struct {
+	Name    string `xml:"name"`
+	Version string `xml:"version"`
+}
+
+type GetScannersResponseScannerInfoProtocol struct {
+	Name    string `xml:"name"`
+	Version string `xml:"version"`
+}
+
+type GetScannersResponseScannerInfoParams struct {
+	Param []string `xml:"param"`
 }
 
 type GetScannersResponseFilters struct {
@@ -131,7 +162,6 @@ type GetScannersResponseScanners struct {
 }
 
 type GetScannersResponseScannerCount struct {
-	Value    int `xml:",chardata"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }
