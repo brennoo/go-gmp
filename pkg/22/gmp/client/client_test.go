@@ -153,6 +153,14 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.GetVulnsCommand); ok {
+		if cmd.VulnID == "1.3.6.1.4.1.25623.1.0.808160" {
+			(*response.(*gmp.GetVulnsResponse)).Status = "200"
+		} else {
+			(*response.(*gmp.GetVulnsResponse)).Status = "400"
+		}
+	}
+
 	return nil
 }
 
@@ -418,6 +426,24 @@ func TestGetResults(t *testing.T) {
 	resp, err := cli.GetResults(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetResults: %s", err)
+	}
+
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. \nExpected: 200 \nGot: %s", resp.Status)
+	}
+}
+
+func TestGetVulns(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetVulnsCommand{}
+	cmd.VulnID = "1.3.6.1.4.1.25623.1.0.808160"
+	resp, err := cli.GetVulns(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetVulns: %s", err)
 	}
 
 	if resp.Status != "200" {
