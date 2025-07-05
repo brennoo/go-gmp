@@ -129,3 +129,9 @@ func (cli *client) GetVulns(cmd *gmp.GetVulnsCommand) (resp *gmp.GetVulnsRespons
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) CreateAlert(cmd *gmp.CreateAlertRequest) (resp *gmp.CreateAlertResponse, err error) {
+	resp = new(gmp.CreateAlertResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
