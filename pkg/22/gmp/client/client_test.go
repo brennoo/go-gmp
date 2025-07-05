@@ -65,11 +65,51 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.ModifyTaskCommand); ok {
+		if cmd.Comment == "Modified Task Comment" {
+			(*response.(*gmp.ModifyTaskResponse)).Status = "200"
+		} else {
+			(*response.(*gmp.ModifyTaskResponse)).Status = "400"
+		}
+	}
+
 	if cmd, ok := command.(*gmp.CreateTargetCommand); ok {
 		if cmd.Name == "New Target" {
 			(*response.(*gmp.CreateTargetResponse)).Status = "200"
 		} else {
 			(*response.(*gmp.CreateTargetResponse)).Status = "400"
+		}
+	}
+
+	if cmd, ok := command.(*gmp.ModifyTargetCommand); ok {
+		if cmd.Name == "Modified Target" {
+			(*response.(*gmp.ModifyTargetResponse)).Status = "200"
+		} else {
+			(*response.(*gmp.ModifyTargetResponse)).Status = "400"
+		}
+	}
+
+	if cmd, ok := command.(*gmp.GetTargetsCommand); ok {
+		if cmd.TargetID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+			(*response.(*gmp.GetTargetsResponse)).Status = "200"
+		} else {
+			(*response.(*gmp.GetTargetsResponse)).Status = "400"
+		}
+	}
+
+	if cmd, ok := command.(*gmp.DeleteTargetCommand); ok {
+		if cmd.TargetID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+			(*response.(*gmp.DeleteTargetResponse)).Status = "200"
+		} else {
+			(*response.(*gmp.DeleteTargetResponse)).Status = "400"
+		}
+	}
+
+	if cmd, ok := command.(*gmp.GetPortListsCommand); ok {
+		if cmd.PortListID == "33d0cd82-57c6-11e1-8ed1-406186ea4fc5" {
+			(*response.(*gmp.GetPortListsResponse)).Status = "200"
+		} else {
+			(*response.(*gmp.GetPortListsResponse)).Status = "400"
 		}
 	}
 
@@ -258,6 +298,25 @@ func TestCreateTask(t *testing.T) {
 	}
 }
 
+func TestModifyTask(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.ModifyTaskCommand{}
+	cmd.TaskID = "e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31"
+	cmd.Comment = "Modified Task Comment"
+	resp, err := cli.ModifyTask(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyTask: %s", err)
+	}
+
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. \nExpected: 200 \nGot: %s", resp.Status)
+	}
+}
+
 func TestCreateTarget(t *testing.T) {
 	cli := New(mockedConnection())
 	if cli == nil {
@@ -359,6 +418,79 @@ func TestGetResults(t *testing.T) {
 	resp, err := cli.GetResults(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetResults: %s", err)
+	}
+
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. \nExpected: 200 \nGot: %s", resp.Status)
+	}
+}
+
+func TestModifyTarget(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.ModifyTargetCommand{}
+	cmd.TargetID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+	cmd.Name = "Modified Target"
+	resp, err := cli.ModifyTarget(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyTarget: %s", err)
+	}
+
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. \nExpected: 200 \nGot: %s", resp.Status)
+	}
+}
+
+func TestGetTargets(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetTargetsCommand{}
+	cmd.TargetID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+	resp, err := cli.GetTargets(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetTargets: %s", err)
+	}
+
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. \nExpected: 200 \nGot: %s", resp.Status)
+	}
+}
+
+func TestDeleteTarget(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.DeleteTargetCommand{}
+	cmd.TargetID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+	resp, err := cli.DeleteTarget(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeleteTarget: %s", err)
+	}
+
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. \nExpected: 200 \nGot: %s", resp.Status)
+	}
+}
+
+func TestGetPortLists(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetPortListsCommand{}
+	cmd.PortListID = "33d0cd82-57c6-11e1-8ed1-406186ea4fc5"
+	resp, err := cli.GetPortLists(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetPortLists: %s", err)
 	}
 
 	if resp.Status != "200" {

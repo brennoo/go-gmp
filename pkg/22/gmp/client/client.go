@@ -58,8 +58,20 @@ func (cli *client) CreateTask(cmd *gmp.CreateTaskCommand) (resp *gmp.CreateTaskR
 	return resp, err
 }
 
+func (cli *client) ModifyTask(cmd *gmp.ModifyTaskCommand) (resp *gmp.ModifyTaskResponse, err error) {
+	resp = new(gmp.ModifyTaskResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
 func (cli *client) CreateTarget(cmd *gmp.CreateTargetCommand) (resp *gmp.CreateTargetResponse, err error) {
 	resp = new(gmp.CreateTargetResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) ModifyTarget(cmd *gmp.ModifyTargetCommand) (resp *gmp.ModifyTargetResponse, err error) {
+	resp = new(gmp.ModifyTargetResponse)
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
