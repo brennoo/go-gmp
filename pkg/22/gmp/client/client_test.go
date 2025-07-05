@@ -161,6 +161,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.CreateAlertRequest); ok {
+		if cmd.Name == "Test Alert" {
+			(*response.(*gmp.CreateAlertResponse)).Status = "201"
+			(*response.(*gmp.CreateAlertResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateAlertResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+		} else {
+			(*response.(*gmp.CreateAlertResponse)).Status = "400"
+		}
+	}
+
 	return nil
 }
 
@@ -521,5 +531,50 @@ func TestGetPortLists(t *testing.T) {
 
 	if resp.Status != "200" {
 		t.Fatalf("Unexpected status. \nExpected: 200 \nGot: %s", resp.Status)
+	}
+}
+
+func TestCreateAlert(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.CreateAlertRequest{}
+	cmd.Name = "Test Alert"
+	cmd.Condition = gmp.AlertCondition{
+		Text: "Severity at least",
+		Data: []gmp.AlertData{
+			{Name: "severity", Text: "5.5"},
+		},
+	}
+	cmd.Event = gmp.AlertEvent{
+		Text: "Task run status changed",
+		Data: []gmp.AlertData{
+			{Name: "status", Text: "Done"},
+		},
+	}
+	cmd.Method = gmp.AlertMethod{
+		Text: "Email",
+		Data: []gmp.AlertData{
+			{Name: "to_address", Text: "test@example.org"},
+			{Name: "from_address", Text: "alert@example.org"},
+		},
+	}
+	resp, err := cli.CreateAlert(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during CreateAlert: %s", err)
+	}
+
+	if resp.Status != "201" {
+		t.Fatalf("Unexpected status. \nExpected: 201 \nGot: %s", resp.Status)
+	}
+
+	if resp.StatusText != "OK, resource created" {
+		t.Fatalf("Unexpected status text. \nExpected: OK, resource created \nGot: %s", resp.StatusText)
+	}
+
+	if resp.ID != "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+		t.Fatalf("Unexpected ID. \nExpected: 254cd3ef-bbe1-4d58-859d-21b8d0c046c6 \nGot: %s", resp.ID)
 	}
 }

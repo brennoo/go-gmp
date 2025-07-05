@@ -15,163 +15,163 @@ The following table shows the current implementation status of GMP commands in t
 | Command | Description | Status |
 |---------|-------------|--------|
 | **Authentication & Info** | | |
-| `authenticate` | Authenticate with the GMP server | ✅ |
-| `describe_auth` | Describe authentication methods | ❌ |
-| `get_info` | Get server information | ❌ |
-| `get_version` | Get GMP version | ❌ |
-| `help` | Get command help | ❌ |
+| `authenticate` | Authenticate with the GMP server | :white_check_mark: |
+| `describe_auth` | Describe authentication methods | :x: |
+| `get_info` | Get server information | :x: |
+| `get_version` | Get GMP version | :x: |
+| `help` | Get command help | :x: |
 | **Configuration Management** | | |
-| `create_config` | Create a new scan configuration | ✅ |
-| `modify_config` | Modify an existing scan configuration | ✅ |
-| `get_configs` | Retrieve scan configurations | ✅ |
-| `delete_config` | Delete a scan configuration | ❌ |
-| `sync_config` | Sync configuration with feed | ❌ |
+| `create_config` | Create a new scan configuration | :white_check_mark: |
+| `modify_config` | Modify an existing scan configuration | :white_check_mark: |
+| `get_configs` | Retrieve scan configurations | :white_check_mark: |
+| `delete_config` | Delete a scan configuration | :x: |
+| `sync_config` | Sync configuration with feed | :x: |
 | **Task Management** | | |
-| `create_task` | Create a new scan task | ✅ |
-| `modify_task` | Modify an existing scan task | ✅ |
-| `get_tasks` | Retrieve scan tasks | ✅ |
-| `delete_task` | Delete a scan task | ✅ |
-| `start_task` | Start a scan task | ✅ |
-| `stop_task` | Stop a running scan task | ✅ |
-| `resume_task` | Resume a stopped task | ❌ |
-| `move_task` | Move task to different scanner | ❌ |
+| `create_task` | Create a new scan task | :white_check_mark: |
+| `modify_task` | Modify an existing scan task | :white_check_mark: |
+| `get_tasks` | Retrieve scan tasks | :white_check_mark: |
+| `delete_task` | Delete a scan task | :white_check_mark: |
+| `start_task` | Start a scan task | :white_check_mark: |
+| `stop_task` | Stop a running scan task | :white_check_mark: |
+| `resume_task` | Resume a stopped task | :x: |
+| `move_task` | Move task to different scanner | :x: |
 | **Target Management** | | |
-| `create_target` | Create a new scan target | ✅ |
-| `modify_target` | Modify an existing scan target | ✅ |
-| `get_targets` | Retrieve scan targets | ✅ |
-| `delete_target` | Delete a scan target | ✅ |
+| `create_target` | Create a new scan target | :white_check_mark: |
+| `modify_target` | Modify an existing scan target | :white_check_mark: |
+| `get_targets` | Retrieve scan targets | :white_check_mark: |
+| `delete_target` | Delete a scan target | :white_check_mark: |
 | **Scanner Management** | | |
-| `create_scanner` | Create a new scanner | ❌ |
-| `modify_scanner` | Modify an existing scanner | ❌ |
-| `get_scanners` | Retrieve available scanners | ✅ |
-| `delete_scanner` | Delete a scanner | ❌ |
-| `verify_scanner` | Verify scanner connectivity | ❌ |
+| `create_scanner` | Create a new scanner | :x: |
+| `modify_scanner` | Modify an existing scanner | :x: |
+| `get_scanners` | Retrieve available scanners | :white_check_mark: |
+| `delete_scanner` | Delete a scanner | :x: |
+| `verify_scanner` | Verify scanner connectivity | :x: |
 | **Port List Management** | | |
-| `create_port_list` | Create a new port list | ❌ |
-| `modify_port_list` | Modify an existing port list | ❌ |
-| `get_port_lists` | Retrieve port lists | ✅ |
-| `delete_port_list` | Delete a port list | ❌ |
-| `create_port_range` | Create a port range | ❌ |
-| `delete_port_range` | Delete a port range | ❌ |
+| `create_port_list` | Create a new port list | :x: |
+| `modify_port_list` | Modify an existing port list | :x: |
+| `get_port_lists` | Retrieve port lists | :white_check_mark: |
+| `delete_port_list` | Delete a port list | :x: |
+| `create_port_range` | Create a port range | :x: |
+| `delete_port_range` | Delete a port range | :x: |
 | **Schedule Management** | | |
-| `create_schedule` | Create a new schedule | ❌ |
-| `modify_schedule` | Modify an existing schedule | ❌ |
-| `get_schedules` | Retrieve schedules | ❌ |
-| `delete_schedule` | Delete a schedule | ❌ |
+| `create_schedule` | Create a new schedule | :x: |
+| `modify_schedule` | Modify an existing schedule | :x: |
+| `get_schedules` | Retrieve schedules | :x: |
+| `delete_schedule` | Delete a schedule | :x: |
 | **Alert Management** | | |
-| `create_alert` | Create a new alert | 🚧 |
-| `modify_alert` | Modify an existing alert | 🚧 |
-| `get_alerts` | Retrieve alerts | 🚧 |
-| `delete_alert` | Delete an alert | 🚧 |
-| `test_alert` | Test an alert | 🚧 |
+| `create_alert` | Create a new alert | :white_check_mark: |
+| `modify_alert` | Modify an existing alert | :construction: |
+| `get_alerts` | Retrieve alerts | :construction: |
+| `delete_alert` | Delete an alert | :construction: |
+| `test_alert` | Test an alert | :construction: |
 | **Report Management** | | |
-| `create_report` | Create a new report | ❌ |
-| `get_reports` | Retrieve reports | ❌ |
-| `delete_report` | Delete a report | ❌ |
-| `create_report_format` | Create a new report format | ❌ |
-| `modify_report_format` | Modify an existing report format | ❌ |
-| `get_report_formats` | Retrieve report formats | ❌ |
-| `delete_report_format` | Delete a report format | ❌ |
-| `verify_report_format` | Verify report format | ❌ |
-| `create_report_config` | Create a new report config | ❌ |
-| `modify_report_config` | Modify an existing report config | ❌ |
-| `get_report_configs` | Retrieve report configs | ❌ |
-| `delete_report_config` | Delete a report config | ❌ |
-| `get_system_reports` | Retrieve system reports | ❌ |
+| `create_report` | Create a new report | :x: |
+| `get_reports` | Retrieve reports | :x: |
+| `delete_report` | Delete a report | :x: |
+| `create_report_format` | Create a new report format | :x: |
+| `modify_report_format` | Modify an existing report format | :x: |
+| `get_report_formats` | Retrieve report formats | :x: |
+| `delete_report_format` | Delete a report format | :x: |
+| `verify_report_format` | Verify report format | :x: |
+| `create_report_config` | Create a new report config | :x: |
+| `modify_report_config` | Modify an existing report config | :x: |
+| `get_report_configs` | Retrieve report configs | :x: |
+| `delete_report_config` | Delete a report config | :x: |
+| `get_system_reports` | Retrieve system reports | :x: |
 | **Results & Vulnerabilities** | | |
-| `get_results` | Retrieve scan results | ✅ |
-| `get_vulns` | Retrieve vulnerabilities | ❌ |
+| `get_results` | Retrieve scan results | :white_check_mark: |
+| `get_vulns` | Retrieve vulnerabilities | :white_check_mark: |
 | **Asset Management** | | |
-| `create_asset` | Create a new asset | ❌ |
-| `modify_asset` | Modify an existing asset | ❌ |
-| `get_assets` | Retrieve assets | ❌ |
-| `delete_asset` | Delete an asset | ❌ |
+| `create_asset` | Create a new asset | :x: |
+| `modify_asset` | Modify an existing asset | :x: |
+| `get_assets` | Retrieve assets | :x: |
+| `delete_asset` | Delete an asset | :x: |
 | **Credential Management** | | |
-| `create_credential` | Create a new credential | ❌ |
-| `modify_credential` | Modify an existing credential | ❌ |
-| `get_credentials` | Retrieve credentials | ❌ |
-| `delete_credential` | Delete a credential | ❌ |
+| `create_credential` | Create a new credential | :x: |
+| `modify_credential` | Modify an existing credential | :x: |
+| `get_credentials` | Retrieve credentials | :x: |
+| `delete_credential` | Delete a credential | :x: |
 | **User Management** | | |
-| `create_user` | Create a new user | ❌ |
-| `modify_user` | Modify an existing user | ❌ |
-| `get_users` | Retrieve users | ❌ |
-| `delete_user` | Delete a user | ❌ |
+| `create_user` | Create a new user | :x: |
+| `modify_user` | Modify an existing user | :x: |
+| `get_users` | Retrieve users | :x: |
+| `delete_user` | Delete a user | :x: |
 | **Role Management** | | |
-| `create_role` | Create a new role | ❌ |
-| `modify_role` | Modify an existing role | ❌ |
-| `get_roles` | Retrieve roles | ❌ |
-| `delete_role` | Delete a role | ❌ |
+| `create_role` | Create a new role | :x: |
+| `modify_role` | Modify an existing role | :x: |
+| `get_roles` | Retrieve roles | :x: |
+| `delete_role` | Delete a role | :x: |
 | **Permission Management** | | |
-| `create_permission` | Create a new permission | ❌ |
-| `modify_permission` | Modify an existing permission | ❌ |
-| `get_permissions` | Retrieve permissions | ❌ |
-| `delete_permission` | Delete a permission | ❌ |
+| `create_permission` | Create a new permission | :x: |
+| `modify_permission` | Modify an existing permission | :x: |
+| `get_permissions` | Retrieve permissions | :x: |
+| `delete_permission` | Delete a permission | :x: |
 | **Group Management** | | |
-| `create_group` | Create a new group | ❌ |
-| `modify_group` | Modify an existing group | ❌ |
-| `get_groups` | Retrieve groups | ❌ |
-| `delete_group` | Delete a group | ❌ |
+| `create_group` | Create a new group | :x: |
+| `modify_group` | Modify an existing group | :x: |
+| `get_groups` | Retrieve groups | :x: |
+| `delete_group` | Delete a group | :x: |
 | **Tag Management** | | |
-| `create_tag` | Create a new tag | ❌ |
-| `modify_tag` | Modify an existing tag | ❌ |
-| `get_tags` | Retrieve tags | ❌ |
-| `delete_tag` | Delete a tag | ❌ |
+| `create_tag` | Create a new tag | :x: |
+| `modify_tag` | Modify an existing tag | :x: |
+| `get_tags` | Retrieve tags | :x: |
+| `delete_tag` | Delete a tag | :x: |
 | **Note Management** | | |
-| `create_note` | Create a new note | ❌ |
-| `modify_note` | Modify an existing note | ❌ |
-| `get_notes` | Retrieve notes | ❌ |
-| `delete_note` | Delete a note | ❌ |
+| `create_note` | Create a new note | :x: |
+| `modify_note` | Modify an existing note | :x: |
+| `get_notes` | Retrieve notes | :x: |
+| `delete_note` | Delete a note | :x: |
 | **Override Management** | | |
-| `create_override` | Create a new override | ❌ |
-| `modify_override` | Modify an existing override | ❌ |
-| `get_overrides` | Retrieve overrides | ❌ |
-| `delete_override` | Delete an override | ❌ |
+| `create_override` | Create a new override | :x: |
+| `modify_override` | Modify an existing override | :x: |
+| `get_overrides` | Retrieve overrides | :x: |
+| `delete_override` | Delete an override | :x: |
 | **Filter Management** | | |
-| `create_filter` | Create a new filter | ❌ |
-| `modify_filter` | Modify an existing filter | ❌ |
-| `get_filters` | Retrieve filters | ❌ |
-| `delete_filter` | Delete a filter | ❌ |
+| `create_filter` | Create a new filter | :x: |
+| `modify_filter` | Modify an existing filter | :x: |
+| `get_filters` | Retrieve filters | :x: |
+| `delete_filter` | Delete a filter | :x: |
 | **Ticket Management** | | |
-| `create_ticket` | Create a new ticket | ❌ |
-| `modify_ticket` | Modify an existing ticket | ❌ |
-| `get_tickets` | Retrieve tickets | ❌ |
-| `delete_ticket` | Delete a ticket | ❌ |
+| `create_ticket` | Create a new ticket | :x: |
+| `modify_ticket` | Modify an existing ticket | :x: |
+| `get_tickets` | Retrieve tickets | :x: |
+| `delete_ticket` | Delete a ticket | :x: |
 | **TLS Certificate Management** | | |
-| `create_tls_certificate` | Create a new TLS certificate | ❌ |
-| `modify_tls_certificate` | Modify an existing TLS certificate | ❌ |
-| `get_tls_certificates` | Retrieve TLS certificates | ❌ |
+| `create_tls_certificate` | Create a new TLS certificate | :x: |
+| `modify_tls_certificate` | Modify an existing TLS certificate | :x: |
+| `get_tls_certificates` | Retrieve TLS certificates | :x: |
 | **Agent Management** | | |
-| `modify_agents` | Modify agents | ❌ |
-| `get_agents` | Retrieve agents | ❌ |
-| `delete_agents` | Delete agents | ❌ |
+| `modify_agents` | Modify agents | :x: |
+| `get_agents` | Retrieve agents | :x: |
+| `delete_agents` | Delete agents | :x: |
 | **NVT Management** | | |
-| `get_nvts` | Retrieve NVTs | ❌ |
-| `get_nvt_families` | Retrieve NVT families | ❌ |
+| `get_nvts` | Retrieve NVTs | :x: |
+| `get_nvt_families` | Retrieve NVT families | :x: |
 | **Feed Management** | | |
-| `get_feeds` | Retrieve feeds | ❌ |
+| `get_feeds` | Retrieve feeds | :x: |
 | **License Management** | | |
-| `modify_license` | Modify license | ❌ |
-| `get_license` | Retrieve license | ❌ |
+| `modify_license` | Modify license | :x: |
+| `get_license` | Retrieve license | :x: |
 | **Settings Management** | | |
-| `modify_setting` | Modify setting | ❌ |
-| `get_settings` | Retrieve settings | ❌ |
+| `modify_setting` | Modify setting | :x: |
+| `get_settings` | Retrieve settings | :x: |
 | **Resource Management** | | |
-| `get_resource_names` | Retrieve resource names | ❌ |
+| `get_resource_names` | Retrieve resource names | :x: |
 | **Aggregate Management** | | |
-| `get_aggregates` | Retrieve aggregates | ❌ |
+| `get_aggregates` | Retrieve aggregates | :x: |
 | **Features Management** | | |
-| `get_features` | Retrieve features | ❌ |
+| `get_features` | Retrieve features | :x: |
 | **Preferences Management** | | |
-| `get_preferences` | Retrieve configuration preferences | ✅ |
+| `get_preferences` | Retrieve configuration preferences | :white_check_mark: |
 | **Utility Commands** | | |
-| `empty_trashcan` | Empty trashcan | ❌ |
-| `restore` | Restore from trashcan | ❌ |
-| `run_wizard` | Run wizard | ❌ |
+| `empty_trashcan` | Empty trashcan | :x: |
+| `restore` | Restore from trashcan | :x: |
+| `run_wizard` | Run wizard | :x: |
 
 **Legend:**
-- ✅ Implemented and tested
-- 🚧 In progress
-- ❌ Not implemented
+- :white_check_mark: Implemented and tested
+- :construction: In progress
+- :x: Not implemented (yet!)
 
 # Reference
 
