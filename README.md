@@ -8,6 +8,171 @@ Here you willl find methods to create tasks, targets, scanners and retrieve resu
 
 * This library is compatible with the latest version of GVM: 22.6
 
+# Implementation Status
+
+The following table shows the current implementation status of GMP commands in the library:
+
+| Command | Description | Status |
+|---------|-------------|--------|
+| **Authentication & Info** | | |
+| `authenticate` | Authenticate with the GMP server | ✅ |
+| `describe_auth` | Describe authentication methods | ❌ |
+| `get_info` | Get server information | ❌ |
+| `get_version` | Get GMP version | ❌ |
+| `help` | Get command help | ❌ |
+| **Configuration Management** | | |
+| `create_config` | Create a new scan configuration | ✅ |
+| `modify_config` | Modify an existing scan configuration | ✅ |
+| `get_configs` | Retrieve scan configurations | ✅ |
+| `delete_config` | Delete a scan configuration | ❌ |
+| `sync_config` | Sync configuration with feed | ❌ |
+| **Task Management** | | |
+| `create_task` | Create a new scan task | ✅ |
+| `modify_task` | Modify an existing scan task | ✅ |
+| `get_tasks` | Retrieve scan tasks | ✅ |
+| `delete_task` | Delete a scan task | ✅ |
+| `start_task` | Start a scan task | ✅ |
+| `stop_task` | Stop a running scan task | ✅ |
+| `resume_task` | Resume a stopped task | ❌ |
+| `move_task` | Move task to different scanner | ❌ |
+| **Target Management** | | |
+| `create_target` | Create a new scan target | ✅ |
+| `modify_target` | Modify an existing scan target | ✅ |
+| `get_targets` | Retrieve scan targets | ✅ |
+| `delete_target` | Delete a scan target | ✅ |
+| **Scanner Management** | | |
+| `create_scanner` | Create a new scanner | ❌ |
+| `modify_scanner` | Modify an existing scanner | ❌ |
+| `get_scanners` | Retrieve available scanners | ✅ |
+| `delete_scanner` | Delete a scanner | ❌ |
+| `verify_scanner` | Verify scanner connectivity | ❌ |
+| **Port List Management** | | |
+| `create_port_list` | Create a new port list | ❌ |
+| `modify_port_list` | Modify an existing port list | ❌ |
+| `get_port_lists` | Retrieve port lists | ✅ |
+| `delete_port_list` | Delete a port list | ❌ |
+| `create_port_range` | Create a port range | ❌ |
+| `delete_port_range` | Delete a port range | ❌ |
+| **Schedule Management** | | |
+| `create_schedule` | Create a new schedule | ❌ |
+| `modify_schedule` | Modify an existing schedule | ❌ |
+| `get_schedules` | Retrieve schedules | ❌ |
+| `delete_schedule` | Delete a schedule | ❌ |
+| **Alert Management** | | |
+| `create_alert` | Create a new alert | 🚧 |
+| `modify_alert` | Modify an existing alert | 🚧 |
+| `get_alerts` | Retrieve alerts | 🚧 |
+| `delete_alert` | Delete an alert | 🚧 |
+| `test_alert` | Test an alert | 🚧 |
+| **Report Management** | | |
+| `create_report` | Create a new report | ❌ |
+| `get_reports` | Retrieve reports | ❌ |
+| `delete_report` | Delete a report | ❌ |
+| `create_report_format` | Create a new report format | ❌ |
+| `modify_report_format` | Modify an existing report format | ❌ |
+| `get_report_formats` | Retrieve report formats | ❌ |
+| `delete_report_format` | Delete a report format | ❌ |
+| `verify_report_format` | Verify report format | ❌ |
+| `create_report_config` | Create a new report config | ❌ |
+| `modify_report_config` | Modify an existing report config | ❌ |
+| `get_report_configs` | Retrieve report configs | ❌ |
+| `delete_report_config` | Delete a report config | ❌ |
+| `get_system_reports` | Retrieve system reports | ❌ |
+| **Results & Vulnerabilities** | | |
+| `get_results` | Retrieve scan results | ✅ |
+| `get_vulns` | Retrieve vulnerabilities | ❌ |
+| **Asset Management** | | |
+| `create_asset` | Create a new asset | ❌ |
+| `modify_asset` | Modify an existing asset | ❌ |
+| `get_assets` | Retrieve assets | ❌ |
+| `delete_asset` | Delete an asset | ❌ |
+| **Credential Management** | | |
+| `create_credential` | Create a new credential | ❌ |
+| `modify_credential` | Modify an existing credential | ❌ |
+| `get_credentials` | Retrieve credentials | ❌ |
+| `delete_credential` | Delete a credential | ❌ |
+| **User Management** | | |
+| `create_user` | Create a new user | ❌ |
+| `modify_user` | Modify an existing user | ❌ |
+| `get_users` | Retrieve users | ❌ |
+| `delete_user` | Delete a user | ❌ |
+| **Role Management** | | |
+| `create_role` | Create a new role | ❌ |
+| `modify_role` | Modify an existing role | ❌ |
+| `get_roles` | Retrieve roles | ❌ |
+| `delete_role` | Delete a role | ❌ |
+| **Permission Management** | | |
+| `create_permission` | Create a new permission | ❌ |
+| `modify_permission` | Modify an existing permission | ❌ |
+| `get_permissions` | Retrieve permissions | ❌ |
+| `delete_permission` | Delete a permission | ❌ |
+| **Group Management** | | |
+| `create_group` | Create a new group | ❌ |
+| `modify_group` | Modify an existing group | ❌ |
+| `get_groups` | Retrieve groups | ❌ |
+| `delete_group` | Delete a group | ❌ |
+| **Tag Management** | | |
+| `create_tag` | Create a new tag | ❌ |
+| `modify_tag` | Modify an existing tag | ❌ |
+| `get_tags` | Retrieve tags | ❌ |
+| `delete_tag` | Delete a tag | ❌ |
+| **Note Management** | | |
+| `create_note` | Create a new note | ❌ |
+| `modify_note` | Modify an existing note | ❌ |
+| `get_notes` | Retrieve notes | ❌ |
+| `delete_note` | Delete a note | ❌ |
+| **Override Management** | | |
+| `create_override` | Create a new override | ❌ |
+| `modify_override` | Modify an existing override | ❌ |
+| `get_overrides` | Retrieve overrides | ❌ |
+| `delete_override` | Delete an override | ❌ |
+| **Filter Management** | | |
+| `create_filter` | Create a new filter | ❌ |
+| `modify_filter` | Modify an existing filter | ❌ |
+| `get_filters` | Retrieve filters | ❌ |
+| `delete_filter` | Delete a filter | ❌ |
+| **Ticket Management** | | |
+| `create_ticket` | Create a new ticket | ❌ |
+| `modify_ticket` | Modify an existing ticket | ❌ |
+| `get_tickets` | Retrieve tickets | ❌ |
+| `delete_ticket` | Delete a ticket | ❌ |
+| **TLS Certificate Management** | | |
+| `create_tls_certificate` | Create a new TLS certificate | ❌ |
+| `modify_tls_certificate` | Modify an existing TLS certificate | ❌ |
+| `get_tls_certificates` | Retrieve TLS certificates | ❌ |
+| **Agent Management** | | |
+| `modify_agents` | Modify agents | ❌ |
+| `get_agents` | Retrieve agents | ❌ |
+| `delete_agents` | Delete agents | ❌ |
+| **NVT Management** | | |
+| `get_nvts` | Retrieve NVTs | ❌ |
+| `get_nvt_families` | Retrieve NVT families | ❌ |
+| **Feed Management** | | |
+| `get_feeds` | Retrieve feeds | ❌ |
+| **License Management** | | |
+| `modify_license` | Modify license | ❌ |
+| `get_license` | Retrieve license | ❌ |
+| **Settings Management** | | |
+| `modify_setting` | Modify setting | ❌ |
+| `get_settings` | Retrieve settings | ❌ |
+| **Resource Management** | | |
+| `get_resource_names` | Retrieve resource names | ❌ |
+| **Aggregate Management** | | |
+| `get_aggregates` | Retrieve aggregates | ❌ |
+| **Features Management** | | |
+| `get_features` | Retrieve features | ❌ |
+| **Preferences Management** | | |
+| `get_preferences` | Retrieve configuration preferences | ✅ |
+| **Utility Commands** | | |
+| `empty_trashcan` | Empty trashcan | ❌ |
+| `restore` | Restore from trashcan | ❌ |
+| `run_wizard` | Run wizard | ❌ |
+
+**Legend:**
+- ✅ Implemented and tested
+- 🚧 In progress
+- ❌ Not implemented
+
 # Reference
 
 https://docs.greenbone.net/API/GMP/gmp-22.6.html

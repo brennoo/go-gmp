@@ -123,3 +123,9 @@ func (cli *client) GetResults(cmd *gmp.GetResultsCommand) (resp *gmp.GetResultsR
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) GetVulns(cmd *gmp.GetVulnsCommand) (resp *gmp.GetVulnsResponse, err error) {
+	resp = new(gmp.GetVulnsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

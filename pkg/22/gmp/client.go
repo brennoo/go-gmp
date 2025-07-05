@@ -19,4 +19,5 @@ type Client interface {
 	StopTask(cmd *StopTaskCommand) (resp *StopTaskResponse, err error)
 	DeleteTask(cmd *DeleteTaskCommand) (resp *DeleteTaskResponse, err error)
 	GetResults(cmd *GetResultsCommand) (resp *GetResultsResponse, err error)
+	GetVulns(cmd *GetVulnsCommand) (resp *GetVulnsResponse, err error)
 }
