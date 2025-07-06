@@ -190,3 +190,9 @@ func (cli *client) DeleteAsset(cmd *gmp.DeleteAssetCommand) (resp *gmp.DeleteAss
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) CreateSchedule(cmd *gmp.CreateScheduleCommand) (resp *gmp.CreateScheduleResponse, err error) {
+	resp = new(gmp.CreateScheduleResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

@@ -54,7 +54,7 @@ The following table shows the current implementation status of GMP commands in t
 | `create_port_range` | Create a port range | :x: |
 | `delete_port_range` | Delete a port range | :x: |
 | **Schedule Management** | | |
-| `create_schedule` | Create a new schedule | :x: |
+| `create_schedule` | Create a new schedule | :white_check_mark: |
 | `modify_schedule` | Modify an existing schedule | :x: |
 | `get_schedules` | Retrieve schedules | :x: |
 | `delete_schedule` | Delete a schedule | :x: |

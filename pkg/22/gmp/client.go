@@ -30,4 +30,5 @@ type Client interface {
 	ModifyAsset(cmd *ModifyAssetCommand) (resp *ModifyAssetResponse, err error)
 	GetAssets(cmd *GetAssetsCommand) (resp *GetAssetsResponse, err error)
 	DeleteAsset(cmd *DeleteAssetCommand) (resp *DeleteAssetResponse, err error)
+	CreateSchedule(cmd *CreateScheduleCommand) (resp *CreateScheduleResponse, err error)
 }

@@ -249,6 +249,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.CreateScheduleCommand); ok {
+		if cmd.Name == "Monthly Scan" && cmd.Timezone == "America/New_York" && cmd.ICalendar != "" {
+			(*response.(*gmp.CreateScheduleResponse)).Status = "201"
+			(*response.(*gmp.CreateScheduleResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateScheduleResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+		} else {
+			(*response.(*gmp.CreateScheduleResponse)).Status = "400"
+		}
+	}
+
 	return nil
 }
 
@@ -888,5 +898,31 @@ func TestDeleteAsset(t *testing.T) {
 	}
 	if resp.StatusText != "OK" {
 		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+}
+
+func TestCreateSchedule(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.CreateScheduleCommand{
+		Name:      "Monthly Scan",
+		Timezone:  "America/New_York",
+		ICalendar: "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//XXX//NONSGML//EN\nBEGIN:VEVENT\nDTSTART;TZID=\"America/New_York\":20221214T000100\nRRULE:FREQ=MONTHLY;BYDAY=3WE;\nEND:VEVENT\nEND:VCALENDAR",
+	}
+	resp, err := cli.CreateSchedule(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during CreateSchedule: %s", err)
+	}
+	if resp.Status != "201" {
+		t.Errorf("Expected status 201, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK, resource created" {
+		t.Errorf("Expected status text 'OK, resource created', got '%s'", resp.StatusText)
+	}
+	if resp.ID != "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+		t.Errorf("Expected ID '254cd3ef-bbe1-4d58-859d-21b8d0c046c6', got '%s'", resp.ID)
 	}
 }
