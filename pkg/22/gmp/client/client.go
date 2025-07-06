@@ -4,6 +4,7 @@ import (
 	"github.com/brennoo/go-gmp/pkg/22/gmp"
 )
 
+// client implements the gmp.Client interface and provides methods to interact with the GMP server.
 type client struct {
 	conn gmp.Connection
 }

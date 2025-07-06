@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// GetScannersCommand represents a get_scanners command request.
 type GetScannersCommand struct {
 	XMLName   xml.Name `xml:"get_scanners"`
 	ScannerID string   `xml:"scanner_id,attr,omitempty"`
@@ -14,6 +15,7 @@ type GetScannersCommand struct {
 	Details   bool     `xml:"details,attr,omitempty"`
 }
 
+// GetScannersResponse represents a get_scanners command response.
 type GetScannersResponse struct {
 	XMLName    xml.Name                        `xml:"get_scanners_response"`
 	Status     string                          `xml:"status,attr"`
@@ -25,6 +27,7 @@ type GetScannersResponse struct {
 	Count      GetScannersResponseScannerCount `xml:"scanner_count"`
 }
 
+// GetScannersResponseScanner represents a scanner element in the get_scanners response.
 type GetScannersResponseScanner struct {
 	ID               string                                `xml:"id,attr"`
 	Owner            GetScannersResponseScannerOwner       `xml:"owner"`

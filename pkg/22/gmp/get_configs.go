@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// GetConfigsCommand represents a get_configs command request.
 type GetConfigsCommand struct {
 	XMLName     xml.Name `xml:"get_configs"`
 	ConfigID    string   `xml:"config_id,attr,omitempty"`
@@ -18,6 +19,7 @@ type GetConfigsCommand struct {
 	UsageType   string   `xml:"usage_type,attr,omitempty"`
 }
 
+// GetConfigsResponse represents a get_configs command response.
 type GetConfigsResponse struct {
 	XMLName     xml.Name                      `xml:"get_configs_response"`
 	Status      string                        `xml:"status,attr"`
@@ -29,6 +31,7 @@ type GetConfigsResponse struct {
 	ConfigCount getConfigsResponseConfigCount `xml:"config_count"`
 }
 
+// getConfigsResponseConfig represents a config element in the get_configs response.
 type getConfigsResponseConfig struct {
 	ID               string                                `xml:"id,attr"`
 	Owner            getConfigsResponseConfigOwner         `xml:"owner"`

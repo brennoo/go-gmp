@@ -2,6 +2,7 @@ package gmp
 
 import "encoding/xml"
 
+// ModifyTaskCommand represents a modify_task command request.
 type ModifyTaskCommand struct {
 	XMLName         xml.Name               `xml:"modify_task"`
 	TaskID          string                 `xml:"task_id,attr"`
@@ -53,6 +54,7 @@ type ModifyTaskFile struct {
 	Data   string `xml:",chardata,omitempty"`
 }
 
+// ModifyTaskResponse represents a modify_task command response.
 type ModifyTaskResponse struct {
 	XMLName    xml.Name `xml:"modify_task_response"`
 	Status     string   `xml:"status,attr"`
