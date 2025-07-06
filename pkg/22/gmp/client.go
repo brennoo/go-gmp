@@ -25,4 +25,5 @@ type Client interface {
 	ModifyAlert(cmd *ModifyAlertCommand) (resp *ModifyAlertResponse, err error)
 	DeleteAlert(cmd *DeleteAlertCommand) (resp *DeleteAlertResponse, err error)
 	TestAlert(cmd *TestAlertCommand) (resp *TestAlertResponse, err error)
+	ResumeTask(cmd *ResumeTaskCommand) (resp *ResumeTaskResponse, err error)
 }

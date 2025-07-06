@@ -160,3 +160,9 @@ func (cli *client) TestAlert(cmd *gmp.TestAlertCommand) (resp *gmp.TestAlertResp
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) ResumeTask(cmd *gmp.ResumeTaskCommand) (resp *gmp.ResumeTaskResponse, err error) {
+	resp = new(gmp.ResumeTaskResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
