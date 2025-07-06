@@ -85,7 +85,7 @@ The following table shows the current implementation status of GMP commands in t
 | `create_asset` | Create a new asset | :white_check_mark: |
 | `modify_asset` | Modify an existing asset | :white_check_mark: |
 | `get_assets` | Retrieve assets | :white_check_mark: |
-| `delete_asset` | Delete an asset | :x: |
+| `delete_asset` | Delete an asset | :white_check_mark: |
 | **Credential Management** | | |
 | `create_credential` | Create a new credential | :x: |
 | `modify_credential` | Modify an existing credential | :x: |

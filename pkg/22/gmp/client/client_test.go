@@ -240,6 +240,15 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.DeleteAssetCommand); ok {
+		if cmd.AssetID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" {
+			(*response.(*gmp.DeleteAssetResponse)).Status = "200"
+			(*response.(*gmp.DeleteAssetResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeleteAssetResponse)).Status = "400"
+		}
+	}
+
 	return nil
 }
 
@@ -858,5 +867,26 @@ func TestGetAssets(t *testing.T) {
 	}
 	if asset.Name != "Localhost" {
 		t.Fatalf("Unexpected asset name. Expected: Localhost Got: %s", asset.Name)
+	}
+}
+
+func TestDeleteAsset(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.DeleteAssetCommand{
+		AssetID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
+	}
+	resp, err := cli.DeleteAsset(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeleteAsset: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
 	}
 }

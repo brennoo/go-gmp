@@ -184,3 +184,9 @@ func (cli *client) GetAssets(cmd *gmp.GetAssetsCommand) (resp *gmp.GetAssetsResp
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) DeleteAsset(cmd *gmp.DeleteAssetCommand) (resp *gmp.DeleteAssetResponse, err error) {
+	resp = new(gmp.DeleteAssetResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
