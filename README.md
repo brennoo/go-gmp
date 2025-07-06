@@ -125,7 +125,7 @@ The following table shows the current implementation status of GMP commands in t
 | `create_override` | Create a new override | :white_check_mark: |
 | `modify_override` | Modify an existing override | :x: |
 | `get_overrides` | Retrieve overrides | :x: |
-| `delete_override` | Delete an override | :x: |
+| `delete_override` | Delete an override | :white_check_mark: |
 | **Filter Management** | | |
 | `create_filter` | Create a new filter | :x: |
 | `modify_filter` | Modify an existing filter | :x: |

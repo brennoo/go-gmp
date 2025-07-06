@@ -220,3 +220,9 @@ func (cli *client) CreateOverride(cmd *gmp.CreateOverrideCommand) (resp *gmp.Cre
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) DeleteOverride(cmd *gmp.DeleteOverrideCommand) (resp *gmp.DeleteOverrideResponse, err error) {
+	resp = new(gmp.DeleteOverrideResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

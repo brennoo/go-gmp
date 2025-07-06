@@ -309,6 +309,15 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.DeleteOverrideCommand); ok {
+		if cmd.OverrideID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" {
+			(*response.(*gmp.DeleteOverrideResponse)).Status = "200"
+			(*response.(*gmp.DeleteOverrideResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeleteOverrideResponse)).Status = "400"
+		}
+	}
+
 	return nil
 }
 
@@ -1075,5 +1084,27 @@ func TestCreateOverride(t *testing.T) {
 	}
 	if resp.ID != "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
 		t.Errorf("Expected ID '254cd3ef-bbe1-4d58-859d-21b8d0c046c6', got '%s'", resp.ID)
+	}
+}
+
+func TestDeleteOverride(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.DeleteOverrideCommand{
+		OverrideID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
+		Ultimate:   "0",
+	}
+	resp, err := cli.DeleteOverride(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeleteOverride: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status text OK, got %s", resp.StatusText)
 	}
 }
