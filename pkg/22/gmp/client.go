@@ -28,4 +28,5 @@ type Client interface {
 	ResumeTask(cmd *ResumeTaskCommand) (resp *ResumeTaskResponse, err error)
 	CreateAsset(cmd *CreateAssetCommand) (resp *CreateAssetResponse, err error)
 	ModifyAsset(cmd *ModifyAssetCommand) (resp *ModifyAssetResponse, err error)
+	GetAssets(cmd *GetAssetsCommand) (resp *GetAssetsResponse, err error)
 }

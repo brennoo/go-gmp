@@ -221,6 +221,25 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.GetAssetsCommand); ok {
+		if cmd.AssetID == "b493b7a8-7489-11df-a3ec-002264764cea" {
+			(*response.(*gmp.GetAssetsResponse)).Status = "200"
+			(*response.(*gmp.GetAssetsResponse)).StatusText = "OK"
+			(*response.(*gmp.GetAssetsResponse)).Assets = []gmp.Asset{
+				{
+					ID:               "b493b7a8-7489-11df-a3ec-002264764cea",
+					Name:             "Localhost",
+					Comment:          "",
+					CreationTime:     "2018-08-29T20:21:33Z",
+					ModificationTime: "2018-08-29T20:21:33Z",
+					Type:             "host",
+				},
+			}
+		} else {
+			(*response.(*gmp.GetAssetsResponse)).Status = "400"
+		}
+	}
+
 	return nil
 }
 
@@ -808,5 +827,36 @@ func TestModifyAsset(t *testing.T) {
 	}
 	if resp.StatusText != "OK" {
 		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+}
+
+func TestGetAssets(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetAssetsCommand{
+		AssetID: "b493b7a8-7489-11df-a3ec-002264764cea",
+	}
+	resp, err := cli.GetAssets(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetAssets: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+	if len(resp.Assets) != 1 {
+		t.Fatalf("Expected 1 asset, got %d", len(resp.Assets))
+	}
+	asset := resp.Assets[0]
+	if asset.ID != "b493b7a8-7489-11df-a3ec-002264764cea" {
+		t.Fatalf("Unexpected asset ID. Expected: b493b7a8-7489-11df-a3ec-002264764cea Got: %s", asset.ID)
+	}
+	if asset.Name != "Localhost" {
+		t.Fatalf("Unexpected asset name. Expected: Localhost Got: %s", asset.Name)
 	}
 }
