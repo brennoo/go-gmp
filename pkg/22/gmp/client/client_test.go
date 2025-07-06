@@ -259,6 +259,15 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.ModifyScheduleCommand); ok {
+		if cmd.ScheduleID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" && cmd.Name == "Weekly Scan" {
+			(*response.(*gmp.ModifyScheduleResponse)).Status = "200"
+			(*response.(*gmp.ModifyScheduleResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyScheduleResponse)).Status = "400"
+		}
+	}
+
 	return nil
 }
 
@@ -924,5 +933,27 @@ func TestCreateSchedule(t *testing.T) {
 	}
 	if resp.ID != "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
 		t.Errorf("Expected ID '254cd3ef-bbe1-4d58-859d-21b8d0c046c6', got '%s'", resp.ID)
+	}
+}
+
+func TestModifySchedule(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.ModifyScheduleCommand{
+		ScheduleID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
+		Name:       "Weekly Scan",
+	}
+	resp, err := cli.ModifySchedule(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifySchedule: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status text 'OK', got '%s'", resp.StatusText)
 	}
 }

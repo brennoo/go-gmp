@@ -196,3 +196,9 @@ func (cli *client) CreateSchedule(cmd *gmp.CreateScheduleCommand) (resp *gmp.Cre
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) ModifySchedule(cmd *gmp.ModifyScheduleCommand) (resp *gmp.ModifyScheduleResponse, err error) {
+	resp = new(gmp.ModifyScheduleResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
