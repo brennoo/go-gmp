@@ -8,6 +8,7 @@ import (
 
 type mockConn struct{}
 
+// nolint:gocyclo // This mock handles all GMP commands
 func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	if cmd, ok := command.(*gmp.AuthenticateCommand); ok {
 		if cmd.Credentials.Username == "openvas" && cmd.Credentials.Password == "123" {

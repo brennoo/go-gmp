@@ -99,11 +99,13 @@ func newLocalListenerProtocolNotSupported(t testing.TB) net.Listener {
 
 func TestNewTLSConnection(t *testing.T) {
 	ln := newLocalListener(t)
+	errCh := make(chan error, 1)
 	go func() {
 		for {
 			conn, err := ln.Accept()
 			if err != nil {
-				t.Fatalf("Unexpected error during Accept: %s", err)
+				errCh <- err
+				return
 			}
 			buf2 := make([]byte, 150000)
 			nRead, _ := conn.Read(buf2)
@@ -135,15 +137,23 @@ func TestNewTLSConnection(t *testing.T) {
 	if response.Foo != expectedValue {
 		t.Fatalf("Unexpected response value: %s\nExpected: %s", response.Foo, expectedValue)
 	}
+
+	select {
+	case err := <-errCh:
+		t.Fatalf("Unexpected error during Accept: %s", err)
+	default:
+	}
 }
 
 func TestNewTLSConnectionFail(t *testing.T) {
 	ln := newLocalListenerProtocolNotSupported(t)
+	errCh := make(chan error, 1)
 	go func() {
 		for {
 			conn, err := ln.Accept()
 			if err != nil {
-				t.Fatalf("Unexpected error during Accept: %s", err)
+				errCh <- err
+				return
 			}
 			buf2 := make([]byte, 150000)
 			nRead, _ := conn.Read(buf2)
@@ -156,5 +166,11 @@ func TestNewTLSConnectionFail(t *testing.T) {
 	expectedError := "remote error: tls: protocol version not supported"
 	if err == nil || err.Error() != expectedError {
 		t.Fatalf("Unexpected error during Execute.\nExpected: %s\n     Got: %s", expectedError, err)
+	}
+
+	select {
+	case err := <-errCh:
+		t.Fatalf("Unexpected error during Accept: %s", err)
+	default:
 	}
 }
