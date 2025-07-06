@@ -154,3 +154,9 @@ func (cli *client) DeleteAlert(cmd *gmp.DeleteAlertCommand) (resp *gmp.DeleteAle
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) TestAlert(cmd *gmp.TestAlertCommand) (resp *gmp.TestAlertResponse, err error) {
+	resp = new(gmp.TestAlertResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

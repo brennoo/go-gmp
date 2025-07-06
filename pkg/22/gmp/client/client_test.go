@@ -187,6 +187,11 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		(*response.(*gmp.DeleteAlertResponse)).StatusText = "OK"
 	}
 
+	if _, ok := command.(*gmp.TestAlertCommand); ok {
+		(*response.(*gmp.TestAlertResponse)).Status = "200"
+		(*response.(*gmp.TestAlertResponse)).StatusText = "OK"
+	}
+
 	return nil
 }
 
@@ -649,6 +654,25 @@ func TestDeleteAlert(t *testing.T) {
 		Ultimate: true,
 	}
 	resp, err := cli.DeleteAlert(cmd)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("expected status '200', got %s", resp.Status)
+	}
+}
+
+func TestTestAlert(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	alertID := "97390ade-e075-11df-9973-002264764cea"
+	cmd := &gmp.TestAlertCommand{
+		AlertID: alertID,
+	}
+	resp, err := cli.TestAlert(cmd)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
