@@ -24,11 +24,13 @@ func TestNewUnixConnection(t *testing.T) {
 		log.Fatal("Listen error: ", err)
 	}
 
+	errCh := make(chan error, 1)
 	go func() {
 		for {
-			conn, err := ln.Accept()
-			if err != nil {
-				t.Fatalf("Unexpected error during Accept: %s", err)
+			conn, acceptErr := ln.Accept()
+			if acceptErr != nil {
+				errCh <- acceptErr
+				return
 			}
 			buf2 := make([]byte, 150000)
 			nRead, _ := conn.Read(buf2)
@@ -60,6 +62,12 @@ func TestNewUnixConnection(t *testing.T) {
 	if response.Foo != expectedValue {
 		t.Fatalf("Unexpected response value: %s\nExpected: %s", response.Foo, expectedValue)
 	}
+
+	select {
+	case err := <-errCh:
+		t.Fatalf("Unexpected error during Accept: %s", err)
+	default:
+	}
 }
 
 func TestNewUnixConnectionUnixSocketIsNotThere(t *testing.T) {
@@ -75,11 +83,13 @@ func TestNewUnixConnectionUnixSocketIsNotThere(t *testing.T) {
 		log.Fatal("Listen error: ", err)
 	}
 
+	errCh := make(chan error, 1)
 	go func() {
 		for {
-			conn, err := ln.Accept()
-			if err != nil {
-				t.Fatalf("Unexpected error during Accept: %s", err)
+			conn, acceptErr := ln.Accept()
+			if acceptErr != nil {
+				errCh <- acceptErr
+				return
 			}
 			buf2 := make([]byte, 150000)
 			nRead, _ := conn.Read(buf2)
@@ -93,5 +103,11 @@ func TestNewUnixConnectionUnixSocketIsNotThere(t *testing.T) {
 	expectedError = strings.ReplaceAll(expectedError, "FILEPATH", unixSocketFilename)
 	if err == nil || err.Error() != expectedError {
 		t.Fatalf("Unexpected error during Execute.\nExpected: %s\n     Got: %s", expectedError, err)
+	}
+
+	select {
+	case err := <-errCh:
+		t.Fatalf("Unexpected error during Accept: %s", err)
+	default:
 	}
 }

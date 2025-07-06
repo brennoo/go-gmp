@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// GetResultsCommand represents a get_results command request.
 type GetResultsCommand struct {
 	XMLName          xml.Name `xml:"get_results"`
 	ResultID         string   `xml:"result_id,attr,omitempty"`
@@ -17,6 +18,7 @@ type GetResultsCommand struct {
 	GetCounts        bool     `xml:"get_counts,attr,omitempty"`
 }
 
+// GetResultsResponse represents a get_results command response.
 type GetResultsResponse struct {
 	XMLName     xml.Name          `xml:"get_results_response"`
 	Status      string            `xml:"status,attr"`

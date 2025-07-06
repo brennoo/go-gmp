@@ -8,6 +8,7 @@ import (
 
 type mockConn struct{}
 
+// nolint:gocyclo // This mock handles all GMP commands
 func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	if cmd, ok := command.(*gmp.AuthenticateCommand); ok {
 		if cmd.Credentials.Username == "openvas" && cmd.Credentials.Password == "123" {
@@ -168,6 +169,181 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 			(*response.(*gmp.CreateAlertResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
 		} else {
 			(*response.(*gmp.CreateAlertResponse)).Status = "400"
+		}
+	}
+
+	if _, ok := command.(*gmp.GetAlertsCommand); ok {
+		(*response.(*gmp.GetAlertsResponse)).Status = "200"
+		(*response.(*gmp.GetAlertsResponse)).StatusText = "OK"
+	}
+
+	if _, ok := command.(*gmp.ModifyAlertCommand); ok {
+		(*response.(*gmp.ModifyAlertResponse)).Status = "200"
+		(*response.(*gmp.ModifyAlertResponse)).StatusText = "OK"
+	}
+
+	if _, ok := command.(*gmp.DeleteAlertCommand); ok {
+		(*response.(*gmp.DeleteAlertResponse)).Status = "200"
+		(*response.(*gmp.DeleteAlertResponse)).StatusText = "OK"
+	}
+
+	if _, ok := command.(*gmp.TestAlertCommand); ok {
+		(*response.(*gmp.TestAlertResponse)).Status = "200"
+		(*response.(*gmp.TestAlertResponse)).StatusText = "OK"
+	}
+
+	if _, ok := command.(*gmp.ResumeTaskCommand); ok {
+		(*response.(*gmp.ResumeTaskResponse)).Status = "200"
+		(*response.(*gmp.ResumeTaskResponse)).StatusText = "OK"
+		(*response.(*gmp.ResumeTaskResponse)).ReportID = "330ee785-c2c0-4d4c-ab96-725142c9b789"
+	}
+
+	if cmd, ok := command.(*gmp.CreateAssetCommand); ok {
+		if cmd.Asset != nil && cmd.Asset.Name == "Localhost" && cmd.Asset.Type == "host" {
+			(*response.(*gmp.CreateAssetResponse)).Status = "201"
+			(*response.(*gmp.CreateAssetResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateAssetResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+		} else if cmd.Report != nil && cmd.Report.ID == "report-uuid" && cmd.Report.Filter != nil && cmd.Report.Filter.Term == "min_qod=70" {
+			(*response.(*gmp.CreateAssetResponse)).Status = "201"
+			(*response.(*gmp.CreateAssetResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateAssetResponse)).ID = "report-asset-uuid"
+		} else {
+			(*response.(*gmp.CreateAssetResponse)).Status = "400"
+		}
+	}
+
+	if cmd, ok := command.(*gmp.ModifyAssetCommand); ok {
+		if cmd.AssetID == "914b59f8-25f5-4c8f-832c-2379cd625236" && cmd.Comment == "New comment" {
+			(*response.(*gmp.ModifyAssetResponse)).Status = "200"
+			(*response.(*gmp.ModifyAssetResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyAssetResponse)).Status = "400"
+		}
+	}
+
+	if cmd, ok := command.(*gmp.GetAssetsCommand); ok {
+		if cmd.AssetID == "b493b7a8-7489-11df-a3ec-002264764cea" {
+			(*response.(*gmp.GetAssetsResponse)).Status = "200"
+			(*response.(*gmp.GetAssetsResponse)).StatusText = "OK"
+			(*response.(*gmp.GetAssetsResponse)).Assets = []gmp.Asset{
+				{
+					ID:               "b493b7a8-7489-11df-a3ec-002264764cea",
+					Name:             "Localhost",
+					Comment:          "",
+					CreationTime:     "2018-08-29T20:21:33Z",
+					ModificationTime: "2018-08-29T20:21:33Z",
+					Type:             "host",
+				},
+			}
+		} else {
+			(*response.(*gmp.GetAssetsResponse)).Status = "400"
+		}
+	}
+
+	if cmd, ok := command.(*gmp.DeleteAssetCommand); ok {
+		if cmd.AssetID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" {
+			(*response.(*gmp.DeleteAssetResponse)).Status = "200"
+			(*response.(*gmp.DeleteAssetResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeleteAssetResponse)).Status = "400"
+		}
+	}
+
+	if cmd, ok := command.(*gmp.CreateScheduleCommand); ok {
+		if cmd.Name == "Monthly Scan" && cmd.Timezone == "America/New_York" && cmd.ICalendar != "" {
+			(*response.(*gmp.CreateScheduleResponse)).Status = "201"
+			(*response.(*gmp.CreateScheduleResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateScheduleResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+		} else {
+			(*response.(*gmp.CreateScheduleResponse)).Status = "400"
+		}
+	}
+
+	if cmd, ok := command.(*gmp.ModifyScheduleCommand); ok {
+		if cmd.ScheduleID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" && cmd.Name == "Weekly Scan" {
+			(*response.(*gmp.ModifyScheduleResponse)).Status = "200"
+			(*response.(*gmp.ModifyScheduleResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyScheduleResponse)).Status = "400"
+		}
+	}
+
+	if cmd, ok := command.(*gmp.GetSchedulesCommand); ok {
+		if cmd.ScheduleID == "ddda859a-45be-4c58-85b3-517c66230232" {
+			(*response.(*gmp.GetSchedulesResponse)).Status = "200"
+			(*response.(*gmp.GetSchedulesResponse)).StatusText = "OK"
+			(*response.(*gmp.GetSchedulesResponse)).Schedules = []gmp.Schedule{
+				{
+					ID:               "ddda859a-45be-4c58-85b3-517c66230232",
+					Name:             "Every day",
+					Comment:          "",
+					CreationTime:     "2020-06-03T16:27:05Z",
+					ModificationTime: "2020-06-03T16:27:05Z",
+					Writable:         "1",
+					InUse:            "0",
+					ICalendar:        "DTSTART:20200603T162600Z DURATION:PT0S RRULE:FREQ=DAILY",
+					Timezone:         "UTC",
+				},
+			}
+		} else {
+			(*response.(*gmp.GetSchedulesResponse)).Status = "400"
+		}
+	}
+
+	if cmd, ok := command.(*gmp.DeleteScheduleCommand); ok {
+		if cmd.ScheduleID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" {
+			(*response.(*gmp.DeleteScheduleResponse)).Status = "200"
+			(*response.(*gmp.DeleteScheduleResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeleteScheduleResponse)).Status = "400"
+		}
+	}
+
+	if cmd, ok := command.(*gmp.CreateOverrideCommand); ok {
+		if cmd.Text == "This is actually of little concern." && cmd.NVT.OID == "1.3.6.1.4.1.25623.1.0.10330" && cmd.NewThreat == "Low" && cmd.Result == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+			(*response.(*gmp.CreateOverrideResponse)).Status = "201"
+			(*response.(*gmp.CreateOverrideResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateOverrideResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+		} else {
+			(*response.(*gmp.CreateOverrideResponse)).Status = "400"
+		}
+	}
+
+	if cmd, ok := command.(*gmp.DeleteOverrideCommand); ok {
+		if cmd.OverrideID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" {
+			(*response.(*gmp.DeleteOverrideResponse)).Status = "200"
+			(*response.(*gmp.DeleteOverrideResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeleteOverrideResponse)).Status = "400"
+		}
+	}
+
+	if cmd, ok := command.(*gmp.GetOverridesCommand); ok {
+		if cmd.OverrideID == "b76b81a7-9df8-42df-afff-baa9d4620128" {
+			(*response.(*gmp.GetOverridesResponse)).Status = "200"
+			(*response.(*gmp.GetOverridesResponse)).StatusText = "OK"
+			(*response.(*gmp.GetOverridesResponse)).Overrides = []gmp.Override{
+				{
+					ID:          "b76b81a7-9df8-42df-afff-baa9d4620128",
+					Text:        gmp.OverrideText{Text: "This is the full text of the override."},
+					NewThreat:   "Log",
+					NewSeverity: "0.0",
+					Orphan:      true,
+					Active:      true,
+					NVT:         gmp.OverrideNVT{OID: "1.3.6.1.4.1.25623.1.0.75", Name: "Test NVT: long lines"},
+				},
+			}
+		} else {
+			(*response.(*gmp.GetOverridesResponse)).Status = "400"
+		}
+	}
+
+	if cmd, ok := command.(*gmp.ModifyOverrideCommand); ok {
+		if cmd.OverrideID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" && cmd.Text == "This issue is less important in our setup." && cmd.NewThreat == "Low" {
+			(*response.(*gmp.ModifyOverrideResponse)).Status = "200"
+			(*response.(*gmp.ModifyOverrideResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyOverrideResponse)).Status = "400"
 		}
 	}
 
@@ -576,5 +752,438 @@ func TestCreateAlert(t *testing.T) {
 
 	if resp.ID != "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
 		t.Fatalf("Unexpected ID. \nExpected: 254cd3ef-bbe1-4d58-859d-21b8d0c046c6 \nGot: %s", resp.ID)
+	}
+}
+
+func TestGetAlerts(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetAlertsCommand{}
+	resp, err := cli.GetAlerts(cmd)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if resp.Status != "200" {
+		t.Errorf("expected status '200', got %s", resp.Status)
+	}
+}
+
+func TestModifyAlert(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	alertID := "914b59f8-25f5-4c8f-832c-2379cd625236"
+	name := "Updated Alert Name"
+	comment := "Updated comment"
+	filter := &gmp.ModifyAlertFilter{ID: "7a06bd00-7e4a-4669-b7d7-8fe65ec64a41"}
+	cmd := &gmp.ModifyAlertCommand{
+		AlertID: alertID,
+		Name:    &name,
+		Comment: &comment,
+		Filter:  filter,
+	}
+	resp, err := cli.ModifyAlert(cmd)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("expected status '200', got %s", resp.Status)
+	}
+}
+
+func TestDeleteAlert(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	alertID := "267a3405-e84a-47da-97b2-5fa0d2e8995e"
+	cmd := &gmp.DeleteAlertCommand{
+		AlertID:  alertID,
+		Ultimate: true,
+	}
+	resp, err := cli.DeleteAlert(cmd)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("expected status '200', got %s", resp.Status)
+	}
+}
+
+func TestTestAlert(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	alertID := "97390ade-e075-11df-9973-002264764cea"
+	cmd := &gmp.TestAlertCommand{
+		AlertID: alertID,
+	}
+	resp, err := cli.TestAlert(cmd)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("expected status '200', got %s", resp.Status)
+	}
+}
+
+func TestResumeTask(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	taskID := "267a3405-e84a-47da-97b2-5fa0d2e8995e"
+	cmd := &gmp.ResumeTaskCommand{
+		TaskID: taskID,
+	}
+	resp, err := cli.ResumeTask(cmd)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("expected status '200', got %s", resp.Status)
+	}
+	if resp.ReportID != "330ee785-c2c0-4d4c-ab96-725142c9b789" {
+		t.Errorf("expected report_id '330ee785-c2c0-4d4c-ab96-725142c9b789', got %s", resp.ReportID)
+	}
+}
+
+func TestCreateAsset(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.CreateAssetCommand{
+		Asset: &gmp.CreateAssetAsset{
+			Name:    "Localhost",
+			Type:    "host",
+			Comment: "Test asset",
+		},
+	}
+	resp, err := cli.CreateAsset(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during CreateAsset: %s", err)
+	}
+	if resp.Status != "201" {
+		t.Fatalf("Unexpected status. Expected: 201 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK, resource created" {
+		t.Fatalf("Unexpected status text. Expected: OK, resource created Got: %s", resp.StatusText)
+	}
+	if resp.ID != "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+		t.Fatalf("Unexpected ID. Expected: 254cd3ef-bbe1-4d58-859d-21b8d0c046c6 Got: %s", resp.ID)
+	}
+}
+
+func TestCreateAssetWithReport(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.CreateAssetCommand{
+		Report: &gmp.CreateAssetReport{
+			ID: "report-uuid",
+			Filter: &gmp.CreateAssetReportFilter{
+				Term: "min_qod=70",
+			},
+		},
+	}
+	resp, err := cli.CreateAsset(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during CreateAsset (report): %s", err)
+	}
+	if resp.Status != "201" {
+		t.Fatalf("Unexpected status. Expected: 201 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK, resource created" {
+		t.Fatalf("Unexpected status text. Expected: OK, resource created Got: %s", resp.StatusText)
+	}
+	if resp.ID != "report-asset-uuid" {
+		t.Fatalf("Unexpected ID. Expected: report-asset-uuid Got: %s", resp.ID)
+	}
+}
+
+func TestModifyAsset(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.ModifyAssetCommand{
+		AssetID: "914b59f8-25f5-4c8f-832c-2379cd625236",
+		Comment: "New comment",
+	}
+	resp, err := cli.ModifyAsset(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyAsset: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+}
+
+func TestGetAssets(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetAssetsCommand{
+		AssetID: "b493b7a8-7489-11df-a3ec-002264764cea",
+	}
+	resp, err := cli.GetAssets(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetAssets: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+	if len(resp.Assets) != 1 {
+		t.Fatalf("Expected 1 asset, got %d", len(resp.Assets))
+	}
+	asset := resp.Assets[0]
+	if asset.ID != "b493b7a8-7489-11df-a3ec-002264764cea" {
+		t.Fatalf("Unexpected asset ID. Expected: b493b7a8-7489-11df-a3ec-002264764cea Got: %s", asset.ID)
+	}
+	if asset.Name != "Localhost" {
+		t.Fatalf("Unexpected asset name. Expected: Localhost Got: %s", asset.Name)
+	}
+}
+
+func TestDeleteAsset(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.DeleteAssetCommand{
+		AssetID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
+	}
+	resp, err := cli.DeleteAsset(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeleteAsset: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+}
+
+func TestCreateSchedule(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.CreateScheduleCommand{
+		Name:      "Monthly Scan",
+		Timezone:  "America/New_York",
+		ICalendar: "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//XXX//NONSGML//EN\nBEGIN:VEVENT\nDTSTART;TZID=\"America/New_York\":20221214T000100\nRRULE:FREQ=MONTHLY;BYDAY=3WE;\nEND:VEVENT\nEND:VCALENDAR",
+	}
+	resp, err := cli.CreateSchedule(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during CreateSchedule: %s", err)
+	}
+	if resp.Status != "201" {
+		t.Errorf("Expected status 201, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK, resource created" {
+		t.Errorf("Expected status text 'OK, resource created', got '%s'", resp.StatusText)
+	}
+	if resp.ID != "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+		t.Errorf("Expected ID '254cd3ef-bbe1-4d58-859d-21b8d0c046c6', got '%s'", resp.ID)
+	}
+}
+
+func TestModifySchedule(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.ModifyScheduleCommand{
+		ScheduleID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
+		Name:       "Weekly Scan",
+	}
+	resp, err := cli.ModifySchedule(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifySchedule: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status text 'OK', got '%s'", resp.StatusText)
+	}
+}
+
+func TestGetSchedules(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetSchedulesCommand{
+		ScheduleID: "ddda859a-45be-4c58-85b3-517c66230232",
+	}
+	resp, err := cli.GetSchedules(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetSchedules: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status text 'OK', got '%s'", resp.StatusText)
+	}
+	if len(resp.Schedules) != 1 {
+		t.Errorf("Expected 1 schedule, got %d", len(resp.Schedules))
+	}
+	if resp.Schedules[0].Name != "Every day" {
+		t.Errorf("Expected schedule name 'Every day', got '%s'", resp.Schedules[0].Name)
+	}
+	if resp.Schedules[0].Timezone != "UTC" {
+		t.Errorf("Expected timezone 'UTC', got '%s'", resp.Schedules[0].Timezone)
+	}
+}
+
+func TestDeleteSchedule(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.DeleteScheduleCommand{
+		ScheduleID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
+		Ultimate:   "0",
+	}
+	resp, err := cli.DeleteSchedule(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeleteSchedule: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status text 'OK', got '%s'", resp.StatusText)
+	}
+}
+
+func TestCreateOverride(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.CreateOverrideCommand{
+		Text:      "This is actually of little concern.",
+		NVT:       gmp.CreateOverrideNVT{OID: "1.3.6.1.4.1.25623.1.0.10330"},
+		NewThreat: "Low",
+		Result:    "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
+	}
+	resp, err := cli.CreateOverride(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during CreateOverride: %s", err)
+	}
+	if resp.Status != "201" {
+		t.Errorf("Expected status 201, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK, resource created" {
+		t.Errorf("Expected status text 'OK, resource created', got '%s'", resp.StatusText)
+	}
+	if resp.ID != "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+		t.Errorf("Expected ID '254cd3ef-bbe1-4d58-859d-21b8d0c046c6', got '%s'", resp.ID)
+	}
+}
+
+func TestDeleteOverride(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.DeleteOverrideCommand{
+		OverrideID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
+		Ultimate:   "0",
+	}
+	resp, err := cli.DeleteOverride(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeleteOverride: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status text OK, got %s", resp.StatusText)
+	}
+}
+
+func TestGetOverrides(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetOverridesCommand{
+		OverrideID: "b76b81a7-9df8-42df-afff-baa9d4620128",
+	}
+	resp, err := cli.GetOverrides(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetOverrides: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status text OK, got %s", resp.StatusText)
+	}
+	if len(resp.Overrides) != 1 {
+		t.Errorf("Expected 1 override, got %d", len(resp.Overrides))
+	}
+	if resp.Overrides[0].ID != "b76b81a7-9df8-42df-afff-baa9d4620128" {
+		t.Errorf("Expected override ID b76b81a7-9df8-42df-afff-baa9d4620128, got %s", resp.Overrides[0].ID)
+	}
+}
+
+func TestModifyOverride(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.ModifyOverrideCommand{
+		OverrideID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
+		Text:       "This issue is less important in our setup.",
+		NewThreat:  "Low",
+	}
+	resp, err := cli.ModifyOverride(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyOverride: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status text OK, got %s", resp.StatusText)
 	}
 }

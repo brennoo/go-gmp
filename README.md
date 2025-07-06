@@ -33,7 +33,7 @@ The following table shows the current implementation status of GMP commands in t
 | `delete_task` | Delete a scan task | :white_check_mark: |
 | `start_task` | Start a scan task | :white_check_mark: |
 | `stop_task` | Stop a running scan task | :white_check_mark: |
-| `resume_task` | Resume a stopped task | :x: |
+| `resume_task` | Resume a stopped task | :white_check_mark: |
 | `move_task` | Move task to different scanner | :x: |
 | **Target Management** | | |
 | `create_target` | Create a new scan target | :white_check_mark: |
@@ -54,16 +54,16 @@ The following table shows the current implementation status of GMP commands in t
 | `create_port_range` | Create a port range | :x: |
 | `delete_port_range` | Delete a port range | :x: |
 | **Schedule Management** | | |
-| `create_schedule` | Create a new schedule | :x: |
-| `modify_schedule` | Modify an existing schedule | :x: |
-| `get_schedules` | Retrieve schedules | :x: |
-| `delete_schedule` | Delete a schedule | :x: |
+| `create_schedule` | Create a new schedule | :white_check_mark: |
+| `modify_schedule` | Modify an existing schedule | :white_check_mark: |
+| `get_schedules` | Retrieve schedules | :white_check_mark: |
+| `delete_schedule` | Delete a schedule | :white_check_mark: |
 | **Alert Management** | | |
 | `create_alert` | Create a new alert | :white_check_mark: |
-| `modify_alert` | Modify an existing alert | :construction: |
-| `get_alerts` | Retrieve alerts | :construction: |
-| `delete_alert` | Delete an alert | :construction: |
-| `test_alert` | Test an alert | :construction: |
+| `modify_alert` | Modify an existing alert | :white_check_mark: |
+| `get_alerts` | Retrieve alerts | :white_check_mark: |
+| `delete_alert` | Delete an alert | :white_check_mark: |
+| `test_alert` | Test an alert | :white_check_mark: |
 | **Report Management** | | |
 | `create_report` | Create a new report | :x: |
 | `get_reports` | Retrieve reports | :x: |
@@ -82,10 +82,10 @@ The following table shows the current implementation status of GMP commands in t
 | `get_results` | Retrieve scan results | :white_check_mark: |
 | `get_vulns` | Retrieve vulnerabilities | :white_check_mark: |
 | **Asset Management** | | |
-| `create_asset` | Create a new asset | :x: |
-| `modify_asset` | Modify an existing asset | :x: |
-| `get_assets` | Retrieve assets | :x: |
-| `delete_asset` | Delete an asset | :x: |
+| `create_asset` | Create a new asset | :white_check_mark: |
+| `modify_asset` | Modify an existing asset | :white_check_mark: |
+| `get_assets` | Retrieve assets | :white_check_mark: |
+| `delete_asset` | Delete an asset | :white_check_mark: |
 | **Credential Management** | | |
 | `create_credential` | Create a new credential | :x: |
 | `modify_credential` | Modify an existing credential | :x: |
@@ -122,10 +122,10 @@ The following table shows the current implementation status of GMP commands in t
 | `get_notes` | Retrieve notes | :x: |
 | `delete_note` | Delete a note | :x: |
 | **Override Management** | | |
-| `create_override` | Create a new override | :x: |
-| `modify_override` | Modify an existing override | :x: |
-| `get_overrides` | Retrieve overrides | :x: |
-| `delete_override` | Delete an override | :x: |
+| `create_override` | Create a new override | :white_check_mark: |
+| `modify_override` | Modify an existing override | :white_check_mark: |
+| `get_overrides` | Retrieve overrides | :white_check_mark: |
+| `delete_override` | Delete an override | :white_check_mark: |
 | **Filter Management** | | |
 | `create_filter` | Create a new filter | :x: |
 | `modify_filter` | Modify an existing filter | :x: |

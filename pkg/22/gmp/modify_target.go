@@ -2,6 +2,7 @@ package gmp
 
 import "encoding/xml"
 
+// ModifyTargetCommand represents a modify_target command request.
 type ModifyTargetCommand struct {
 	XMLName              xml.Name                          `xml:"modify_target"`
 	TargetID             string                            `xml:"target_id,attr"`
@@ -62,10 +63,12 @@ type ModifyTargetESXILSCCredential struct {
 	ID string `xml:"id,attr,omitempty"`
 }
 
+// ModifyTargetPortList represents the port_list element for modify_target.
 type ModifyTargetPortList struct {
 	ID string `xml:"id,attr,omitempty"`
 }
 
+// ModifyTargetResponse represents a modify_target command response.
 type ModifyTargetResponse struct {
 	XMLName    xml.Name `xml:"modify_target_response"`
 	Status     string   `xml:"status,attr"`

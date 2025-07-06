@@ -2,6 +2,7 @@ package gmp
 
 import "encoding/xml"
 
+// GetPreferencesCommand represents a get_preferences command request.
 type GetPreferencesCommand struct {
 	XMLName    xml.Name `xml:"get_preferences"`
 	NVTOID     string   `xml:"nvt_oid,attr,omitempty"`
@@ -9,6 +10,7 @@ type GetPreferencesCommand struct {
 	Preference string   `xml:"preference,attr,omitempty"`
 }
 
+// GetPreferencesResponse represents a get_preferences command response.
 type GetPreferencesResponse struct {
 	XMLName    xml.Name                           `xml:"get_preferences_response"`
 	Status     string                             `xml:"status,attr"`
@@ -16,6 +18,7 @@ type GetPreferencesResponse struct {
 	Preference []GetPreferencesResponsePreference `xml:"preference"`
 }
 
+// GetPreferencesResponsePreference represents a preference element in the get_preferences response.
 type GetPreferencesResponsePreference struct {
 	NVT     GetPreferencesResponsePreferenceNVT `xml:"nvt"`
 	Name    string                              `xml:"name"`
@@ -26,6 +29,7 @@ type GetPreferencesResponsePreference struct {
 	Default string                              `xml:"default"`
 }
 
+// GetPreferencesResponsePreferenceNVT represents the NVT element for a preference in the get_preferences response.
 type GetPreferencesResponsePreferenceNVT struct {
 	OID  string `xml:"oid,attr"`
 	Name string `xml:"name"`

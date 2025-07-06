@@ -4,6 +4,7 @@ import (
 	"github.com/brennoo/go-gmp/pkg/22/gmp"
 )
 
+// client implements the gmp.Client interface and provides methods to interact with the GMP server.
 type client struct {
 	conn gmp.Connection
 }
@@ -132,6 +133,108 @@ func (cli *client) GetVulns(cmd *gmp.GetVulnsCommand) (resp *gmp.GetVulnsRespons
 
 func (cli *client) CreateAlert(cmd *gmp.CreateAlertRequest) (resp *gmp.CreateAlertResponse, err error) {
 	resp = new(gmp.CreateAlertResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetAlerts(cmd *gmp.GetAlertsCommand) (resp *gmp.GetAlertsResponse, err error) {
+	resp = new(gmp.GetAlertsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) ModifyAlert(cmd *gmp.ModifyAlertCommand) (resp *gmp.ModifyAlertResponse, err error) {
+	resp = new(gmp.ModifyAlertResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) DeleteAlert(cmd *gmp.DeleteAlertCommand) (resp *gmp.DeleteAlertResponse, err error) {
+	resp = new(gmp.DeleteAlertResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) TestAlert(cmd *gmp.TestAlertCommand) (resp *gmp.TestAlertResponse, err error) {
+	resp = new(gmp.TestAlertResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) ResumeTask(cmd *gmp.ResumeTaskCommand) (resp *gmp.ResumeTaskResponse, err error) {
+	resp = new(gmp.ResumeTaskResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) CreateAsset(cmd *gmp.CreateAssetCommand) (resp *gmp.CreateAssetResponse, err error) {
+	resp = new(gmp.CreateAssetResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) ModifyAsset(cmd *gmp.ModifyAssetCommand) (resp *gmp.ModifyAssetResponse, err error) {
+	resp = new(gmp.ModifyAssetResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetAssets(cmd *gmp.GetAssetsCommand) (resp *gmp.GetAssetsResponse, err error) {
+	resp = new(gmp.GetAssetsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) DeleteAsset(cmd *gmp.DeleteAssetCommand) (resp *gmp.DeleteAssetResponse, err error) {
+	resp = new(gmp.DeleteAssetResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) CreateSchedule(cmd *gmp.CreateScheduleCommand) (resp *gmp.CreateScheduleResponse, err error) {
+	resp = new(gmp.CreateScheduleResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) ModifySchedule(cmd *gmp.ModifyScheduleCommand) (resp *gmp.ModifyScheduleResponse, err error) {
+	resp = new(gmp.ModifyScheduleResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetSchedules(cmd *gmp.GetSchedulesCommand) (resp *gmp.GetSchedulesResponse, err error) {
+	resp = new(gmp.GetSchedulesResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) DeleteSchedule(cmd *gmp.DeleteScheduleCommand) (resp *gmp.DeleteScheduleResponse, err error) {
+	resp = new(gmp.DeleteScheduleResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) CreateOverride(cmd *gmp.CreateOverrideCommand) (resp *gmp.CreateOverrideResponse, err error) {
+	resp = new(gmp.CreateOverrideResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) DeleteOverride(cmd *gmp.DeleteOverrideCommand) (resp *gmp.DeleteOverrideResponse, err error) {
+	resp = new(gmp.DeleteOverrideResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetOverrides(cmd *gmp.GetOverridesCommand) (resp *gmp.GetOverridesResponse, err error) {
+	resp = new(gmp.GetOverridesResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) ModifyOverride(cmd *gmp.ModifyOverrideCommand) (resp *gmp.ModifyOverrideResponse, err error) {
+	resp = new(gmp.ModifyOverrideResponse)
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }

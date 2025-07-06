@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// GetTargetsCommand represents a get_targets command request.
 type GetTargetsCommand struct {
 	XMLName  xml.Name `xml:"get_targets"`
 	TargetID string   `xml:"target_id,attr,omitempty"`
@@ -15,6 +16,7 @@ type GetTargetsCommand struct {
 	Details  bool     `xml:"details,attr,omitempty"`
 }
 
+// GetTargetsResponse represents a get_targets command response.
 type GetTargetsResponse struct {
 	XMLName     xml.Name                   `xml:"get_targets_response"`
 	Status      string                     `xml:"status,attr"`
@@ -26,6 +28,7 @@ type GetTargetsResponse struct {
 	TargetCount *GetTargetsResponseCount   `xml:"target_count,omitempty"`
 }
 
+// GetTargetsResponseTarget represents a target element in the get_targets response.
 type GetTargetsResponseTarget struct {
 	ID                   string                         `xml:"id,attr"`
 	Owner                *GetTargetsResponseTargetOwner `xml:"owner,omitempty"`

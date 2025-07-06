@@ -2,6 +2,7 @@ package gmp
 
 import "encoding/xml"
 
+// ModifyConfigCommand represents a modify_config command request.
 type ModifyConfigCommand struct {
 	XMLName         xml.Name                     `xml:"modify_config"`
 	ConfigID        string                       `xml:"config_id,attr,omitempty"`
@@ -42,6 +43,7 @@ type ModifyConfigNVTSelectionNVT struct {
 	OID string `xml:"oid,attr,omitempty"`
 }
 
+// ModifyConfigResponse represents a modify_config command response.
 type ModifyConfigResponse struct {
 	XMLName    xml.Name `xml:"modify_config_response"`
 	Status     string   `xml:"status,attr"`

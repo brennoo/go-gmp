@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// GetTasksCommand represents a get_tasks command request.
 type GetTasksCommand struct {
 	XMLName          xml.Name `xml:"get_tasks"`
 	TaskID           string   `xml:"task_id,attr,omitempty"`
@@ -17,6 +18,7 @@ type GetTasksCommand struct {
 	UsageType        string   `xml:"usage_type,attr,omitempty"`
 }
 
+// GetTasksResponse represents a get_tasks command response.
 type GetTasksResponse struct {
 	XMLName        xml.Name                  `xml:"get_tasks_response"`
 	Status         string                    `xml:"status,attr"`
@@ -29,6 +31,7 @@ type GetTasksResponse struct {
 	TaskCount      GetTasksResponseTaskCount `xml:"task_count"`
 }
 
+// GetTasksResponseTask represents a task element in the get_tasks response.
 type GetTasksResponseTask struct {
 	ID               string                               `xml:"id,attr"`
 	Owner            GetTasksResponseTaskOwner            `xml:"owner"`
