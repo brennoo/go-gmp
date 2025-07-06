@@ -318,6 +318,26 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.GetOverridesCommand); ok {
+		if cmd.OverrideID == "b76b81a7-9df8-42df-afff-baa9d4620128" {
+			(*response.(*gmp.GetOverridesResponse)).Status = "200"
+			(*response.(*gmp.GetOverridesResponse)).StatusText = "OK"
+			(*response.(*gmp.GetOverridesResponse)).Overrides = []gmp.Override{
+				{
+					ID:          "b76b81a7-9df8-42df-afff-baa9d4620128",
+					Text:        gmp.OverrideText{Text: "This is the full text of the override."},
+					NewThreat:   "Log",
+					NewSeverity: "0.0",
+					Orphan:      true,
+					Active:      true,
+					NVT:         gmp.OverrideNVT{OID: "1.3.6.1.4.1.25623.1.0.75", Name: "Test NVT: long lines"},
+				},
+			}
+		} else {
+			(*response.(*gmp.GetOverridesResponse)).Status = "400"
+		}
+	}
+
 	return nil
 }
 
@@ -1106,5 +1126,32 @@ func TestDeleteOverride(t *testing.T) {
 	}
 	if resp.StatusText != "OK" {
 		t.Errorf("Expected status text OK, got %s", resp.StatusText)
+	}
+}
+
+func TestGetOverrides(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetOverridesCommand{
+		OverrideID: "b76b81a7-9df8-42df-afff-baa9d4620128",
+	}
+	resp, err := cli.GetOverrides(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetOverrides: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status text OK, got %s", resp.StatusText)
+	}
+	if len(resp.Overrides) != 1 {
+		t.Errorf("Expected 1 override, got %d", len(resp.Overrides))
+	}
+	if resp.Overrides[0].ID != "b76b81a7-9df8-42df-afff-baa9d4620128" {
+		t.Errorf("Expected override ID b76b81a7-9df8-42df-afff-baa9d4620128, got %s", resp.Overrides[0].ID)
 	}
 }
