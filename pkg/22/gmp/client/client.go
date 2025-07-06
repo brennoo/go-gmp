@@ -232,3 +232,9 @@ func (cli *client) GetOverrides(cmd *gmp.GetOverridesCommand) (resp *gmp.GetOver
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) ModifyOverride(cmd *gmp.ModifyOverrideCommand) (resp *gmp.ModifyOverrideResponse, err error) {
+	resp = new(gmp.ModifyOverrideResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

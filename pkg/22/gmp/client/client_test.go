@@ -338,6 +338,15 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.ModifyOverrideCommand); ok {
+		if cmd.OverrideID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" && cmd.Text == "This issue is less important in our setup." && cmd.NewThreat == "Low" {
+			(*response.(*gmp.ModifyOverrideResponse)).Status = "200"
+			(*response.(*gmp.ModifyOverrideResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyOverrideResponse)).Status = "400"
+		}
+	}
+
 	return nil
 }
 
@@ -1153,5 +1162,28 @@ func TestGetOverrides(t *testing.T) {
 	}
 	if resp.Overrides[0].ID != "b76b81a7-9df8-42df-afff-baa9d4620128" {
 		t.Errorf("Expected override ID b76b81a7-9df8-42df-afff-baa9d4620128, got %s", resp.Overrides[0].ID)
+	}
+}
+
+func TestModifyOverride(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.ModifyOverrideCommand{
+		OverrideID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
+		Text:       "This issue is less important in our setup.",
+		NewThreat:  "Low",
+	}
+	resp, err := cli.ModifyOverride(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyOverride: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status text OK, got %s", resp.StatusText)
 	}
 }

@@ -37,4 +37,5 @@ type Client interface {
 	CreateOverride(cmd *CreateOverrideCommand) (resp *CreateOverrideResponse, err error)
 	DeleteOverride(cmd *DeleteOverrideCommand) (resp *DeleteOverrideResponse, err error)
 	GetOverrides(cmd *GetOverridesCommand) (resp *GetOverridesResponse, err error)
+	ModifyOverride(cmd *ModifyOverrideCommand) (resp *ModifyOverrideResponse, err error)
 }
