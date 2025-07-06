@@ -141,3 +141,9 @@ func (cli *client) GetAlerts(cmd *gmp.GetAlertsCommand) (resp *gmp.GetAlertsResp
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) ModifyAlert(cmd *gmp.ModifyAlertCommand) (resp *gmp.ModifyAlertResponse, err error) {
+	resp = new(gmp.ModifyAlertResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

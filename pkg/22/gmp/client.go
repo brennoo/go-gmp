@@ -22,4 +22,5 @@ type Client interface {
 	GetVulns(cmd *GetVulnsCommand) (resp *GetVulnsResponse, err error)
 	CreateAlert(cmd *CreateAlertRequest) (resp *CreateAlertResponse, err error)
 	GetAlerts(cmd *GetAlertsCommand) (resp *GetAlertsResponse, err error)
+	ModifyAlert(cmd *ModifyAlertCommand) (resp *ModifyAlertResponse, err error)
 }
