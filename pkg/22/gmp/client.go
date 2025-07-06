@@ -23,4 +23,5 @@ type Client interface {
 	CreateAlert(cmd *CreateAlertRequest) (resp *CreateAlertResponse, err error)
 	GetAlerts(cmd *GetAlertsCommand) (resp *GetAlertsResponse, err error)
 	ModifyAlert(cmd *ModifyAlertCommand) (resp *ModifyAlertResponse, err error)
+	DeleteAlert(cmd *DeleteAlertCommand) (resp *DeleteAlertResponse, err error)
 }
