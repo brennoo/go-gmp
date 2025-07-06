@@ -208,3 +208,9 @@ func (cli *client) GetSchedules(cmd *gmp.GetSchedulesCommand) (resp *gmp.GetSche
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) DeleteSchedule(cmd *gmp.DeleteScheduleCommand) (resp *gmp.DeleteScheduleResponse, err error) {
+	resp = new(gmp.DeleteScheduleResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

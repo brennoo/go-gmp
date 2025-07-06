@@ -290,6 +290,15 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.DeleteScheduleCommand); ok {
+		if cmd.ScheduleID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" {
+			(*response.(*gmp.DeleteScheduleResponse)).Status = "200"
+			(*response.(*gmp.DeleteScheduleResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeleteScheduleResponse)).Status = "400"
+		}
+	}
+
 	return nil
 }
 
@@ -1007,5 +1016,27 @@ func TestGetSchedules(t *testing.T) {
 	}
 	if resp.Schedules[0].Timezone != "UTC" {
 		t.Errorf("Expected timezone 'UTC', got '%s'", resp.Schedules[0].Timezone)
+	}
+}
+
+func TestDeleteSchedule(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.DeleteScheduleCommand{
+		ScheduleID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
+		Ultimate:   "0",
+	}
+	resp, err := cli.DeleteSchedule(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeleteSchedule: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status text 'OK', got '%s'", resp.StatusText)
 	}
 }

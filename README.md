@@ -57,7 +57,7 @@ The following table shows the current implementation status of GMP commands in t
 | `create_schedule` | Create a new schedule | :white_check_mark: |
 | `modify_schedule` | Modify an existing schedule | :white_check_mark: |
 | `get_schedules` | Retrieve schedules | :white_check_mark: |
-| `delete_schedule` | Delete a schedule | :x: |
+| `delete_schedule` | Delete a schedule | :white_check_mark: |
 | **Alert Management** | | |
 | `create_alert` | Create a new alert | :white_check_mark: |
 | `modify_alert` | Modify an existing alert | :white_check_mark: |

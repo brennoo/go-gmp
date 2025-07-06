@@ -33,4 +33,5 @@ type Client interface {
 	CreateSchedule(cmd *CreateScheduleCommand) (resp *CreateScheduleResponse, err error)
 	ModifySchedule(cmd *ModifyScheduleCommand) (resp *ModifyScheduleResponse, err error)
 	GetSchedules(cmd *GetSchedulesCommand) (resp *GetSchedulesResponse, err error)
+	DeleteSchedule(cmd *DeleteScheduleCommand) (resp *DeleteScheduleResponse, err error)
 }
