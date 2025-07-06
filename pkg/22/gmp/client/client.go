@@ -172,3 +172,9 @@ func (cli *client) CreateAsset(cmd *gmp.CreateAssetCommand) (resp *gmp.CreateAss
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) ModifyAsset(cmd *gmp.ModifyAssetCommand) (resp *gmp.ModifyAssetResponse, err error) {
+	resp = new(gmp.ModifyAssetResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

@@ -83,7 +83,7 @@ The following table shows the current implementation status of GMP commands in t
 | `get_vulns` | Retrieve vulnerabilities | :white_check_mark: |
 | **Asset Management** | | |
 | `create_asset` | Create a new asset | :white_check_mark: |
-| `modify_asset` | Modify an existing asset | :x: |
+| `modify_asset` | Modify an existing asset | :white_check_mark: |
 | `get_assets` | Retrieve assets | :x: |
 | `delete_asset` | Delete an asset | :x: |
 | **Credential Management** | | |

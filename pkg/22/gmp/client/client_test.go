@@ -212,6 +212,15 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.ModifyAssetCommand); ok {
+		if cmd.AssetID == "914b59f8-25f5-4c8f-832c-2379cd625236" && cmd.Comment == "New comment" {
+			(*response.(*gmp.ModifyAssetResponse)).Status = "200"
+			(*response.(*gmp.ModifyAssetResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyAssetResponse)).Status = "400"
+		}
+	}
+
 	return nil
 }
 
@@ -777,5 +786,27 @@ func TestCreateAssetWithReport(t *testing.T) {
 	}
 	if resp.ID != "report-asset-uuid" {
 		t.Fatalf("Unexpected ID. Expected: report-asset-uuid Got: %s", resp.ID)
+	}
+}
+
+func TestModifyAsset(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.ModifyAssetCommand{
+		AssetID: "914b59f8-25f5-4c8f-832c-2379cd625236",
+		Comment: "New comment",
+	}
+	resp, err := cli.ModifyAsset(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyAsset: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
 	}
 }
