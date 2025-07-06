@@ -299,6 +299,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.CreateOverrideCommand); ok {
+		if cmd.Text == "This is actually of little concern." && cmd.NVT.OID == "1.3.6.1.4.1.25623.1.0.10330" && cmd.NewThreat == "Low" && cmd.Result == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+			(*response.(*gmp.CreateOverrideResponse)).Status = "201"
+			(*response.(*gmp.CreateOverrideResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateOverrideResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+		} else {
+			(*response.(*gmp.CreateOverrideResponse)).Status = "400"
+		}
+	}
+
 	return nil
 }
 
@@ -1038,5 +1048,32 @@ func TestDeleteSchedule(t *testing.T) {
 	}
 	if resp.StatusText != "OK" {
 		t.Errorf("Expected status text 'OK', got '%s'", resp.StatusText)
+	}
+}
+
+func TestCreateOverride(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.CreateOverrideCommand{
+		Text:      "This is actually of little concern.",
+		NVT:       gmp.CreateOverrideNVT{OID: "1.3.6.1.4.1.25623.1.0.10330"},
+		NewThreat: "Low",
+		Result:    "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
+	}
+	resp, err := cli.CreateOverride(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during CreateOverride: %s", err)
+	}
+	if resp.Status != "201" {
+		t.Errorf("Expected status 201, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK, resource created" {
+		t.Errorf("Expected status text 'OK, resource created', got '%s'", resp.StatusText)
+	}
+	if resp.ID != "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+		t.Errorf("Expected ID '254cd3ef-bbe1-4d58-859d-21b8d0c046c6', got '%s'", resp.ID)
 	}
 }

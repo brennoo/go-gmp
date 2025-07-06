@@ -214,3 +214,9 @@ func (cli *client) DeleteSchedule(cmd *gmp.DeleteScheduleCommand) (resp *gmp.Del
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) CreateOverride(cmd *gmp.CreateOverrideCommand) (resp *gmp.CreateOverrideResponse, err error) {
+	resp = new(gmp.CreateOverrideResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

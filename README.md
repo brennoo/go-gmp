@@ -122,7 +122,7 @@ The following table shows the current implementation status of GMP commands in t
 | `get_notes` | Retrieve notes | :x: |
 | `delete_note` | Delete a note | :x: |
 | **Override Management** | | |
-| `create_override` | Create a new override | :x: |
+| `create_override` | Create a new override | :white_check_mark: |
 | `modify_override` | Modify an existing override | :x: |
 | `get_overrides` | Retrieve overrides | :x: |
 | `delete_override` | Delete an override | :x: |

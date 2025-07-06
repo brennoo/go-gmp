@@ -34,4 +34,5 @@ type Client interface {
 	ModifySchedule(cmd *ModifyScheduleCommand) (resp *ModifyScheduleResponse, err error)
 	GetSchedules(cmd *GetSchedulesCommand) (resp *GetSchedulesResponse, err error)
 	DeleteSchedule(cmd *DeleteScheduleCommand) (resp *DeleteScheduleResponse, err error)
+	CreateOverride(cmd *CreateOverrideCommand) (resp *CreateOverrideResponse, err error)
 }
