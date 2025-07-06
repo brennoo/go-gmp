@@ -61,7 +61,7 @@ The following table shows the current implementation status of GMP commands in t
 | **Alert Management** | | |
 | `create_alert` | Create a new alert | :white_check_mark: |
 | `modify_alert` | Modify an existing alert | :construction: |
-| `get_alerts` | Retrieve alerts | :construction: |
+| `get_alerts` | Retrieve alerts | :white_check_mark: |
 | `delete_alert` | Delete an alert | :construction: |
 | `test_alert` | Test an alert | :construction: |
 | **Report Management** | | |

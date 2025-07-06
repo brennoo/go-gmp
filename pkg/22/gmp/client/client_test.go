@@ -172,6 +172,11 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if _, ok := command.(*gmp.GetAlertsCommand); ok {
+		(*response.(*gmp.GetAlertsResponse)).Status = "200"
+		(*response.(*gmp.GetAlertsResponse)).StatusText = "OK"
+	}
+
 	return nil
 }
 
@@ -577,5 +582,22 @@ func TestCreateAlert(t *testing.T) {
 
 	if resp.ID != "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
 		t.Fatalf("Unexpected ID. \nExpected: 254cd3ef-bbe1-4d58-859d-21b8d0c046c6 \nGot: %s", resp.ID)
+	}
+}
+
+func TestGetAlerts(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetAlertsCommand{}
+	resp, err := cli.GetAlerts(cmd)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if resp.Status != "200" {
+		t.Errorf("expected status '200', got %s", resp.Status)
 	}
 }
