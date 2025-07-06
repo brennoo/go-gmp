@@ -166,3 +166,9 @@ func (cli *client) ResumeTask(cmd *gmp.ResumeTaskCommand) (resp *gmp.ResumeTaskR
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) CreateAsset(cmd *gmp.CreateAssetCommand) (resp *gmp.CreateAssetResponse, err error) {
+	resp = new(gmp.CreateAssetResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

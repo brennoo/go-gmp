@@ -26,4 +26,5 @@ type Client interface {
 	DeleteAlert(cmd *DeleteAlertCommand) (resp *DeleteAlertResponse, err error)
 	TestAlert(cmd *TestAlertCommand) (resp *TestAlertResponse, err error)
 	ResumeTask(cmd *ResumeTaskCommand) (resp *ResumeTaskResponse, err error)
+	CreateAsset(cmd *CreateAssetCommand) (resp *CreateAssetResponse, err error)
 }

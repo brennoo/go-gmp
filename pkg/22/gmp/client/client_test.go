@@ -198,6 +198,20 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		(*response.(*gmp.ResumeTaskResponse)).ReportID = "330ee785-c2c0-4d4c-ab96-725142c9b789"
 	}
 
+	if cmd, ok := command.(*gmp.CreateAssetCommand); ok {
+		if cmd.Asset != nil && cmd.Asset.Name == "Localhost" && cmd.Asset.Type == "host" {
+			(*response.(*gmp.CreateAssetResponse)).Status = "201"
+			(*response.(*gmp.CreateAssetResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateAssetResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+		} else if cmd.Report != nil && cmd.Report.ID == "report-uuid" && cmd.Report.Filter != nil && cmd.Report.Filter.Term == "min_qod=70" {
+			(*response.(*gmp.CreateAssetResponse)).Status = "201"
+			(*response.(*gmp.CreateAssetResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateAssetResponse)).ID = "report-asset-uuid"
+		} else {
+			(*response.(*gmp.CreateAssetResponse)).Status = "400"
+		}
+	}
+
 	return nil
 }
 
@@ -706,5 +720,62 @@ func TestResumeTask(t *testing.T) {
 	}
 	if resp.ReportID != "330ee785-c2c0-4d4c-ab96-725142c9b789" {
 		t.Errorf("expected report_id '330ee785-c2c0-4d4c-ab96-725142c9b789', got %s", resp.ReportID)
+	}
+}
+
+func TestCreateAsset(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.CreateAssetCommand{
+		Asset: &gmp.CreateAssetAsset{
+			Name:    "Localhost",
+			Type:    "host",
+			Comment: "Test asset",
+		},
+	}
+	resp, err := cli.CreateAsset(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during CreateAsset: %s", err)
+	}
+	if resp.Status != "201" {
+		t.Fatalf("Unexpected status. Expected: 201 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK, resource created" {
+		t.Fatalf("Unexpected status text. Expected: OK, resource created Got: %s", resp.StatusText)
+	}
+	if resp.ID != "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+		t.Fatalf("Unexpected ID. Expected: 254cd3ef-bbe1-4d58-859d-21b8d0c046c6 Got: %s", resp.ID)
+	}
+}
+
+func TestCreateAssetWithReport(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.CreateAssetCommand{
+		Report: &gmp.CreateAssetReport{
+			ID: "report-uuid",
+			Filter: &gmp.CreateAssetReportFilter{
+				Term: "min_qod=70",
+			},
+		},
+	}
+	resp, err := cli.CreateAsset(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during CreateAsset (report): %s", err)
+	}
+	if resp.Status != "201" {
+		t.Fatalf("Unexpected status. Expected: 201 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK, resource created" {
+		t.Fatalf("Unexpected status text. Expected: OK, resource created Got: %s", resp.StatusText)
+	}
+	if resp.ID != "report-asset-uuid" {
+		t.Fatalf("Unexpected ID. Expected: report-asset-uuid Got: %s", resp.ID)
 	}
 }
