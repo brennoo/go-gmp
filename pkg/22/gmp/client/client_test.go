@@ -268,6 +268,28 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.GetSchedulesCommand); ok {
+		if cmd.ScheduleID == "ddda859a-45be-4c58-85b3-517c66230232" {
+			(*response.(*gmp.GetSchedulesResponse)).Status = "200"
+			(*response.(*gmp.GetSchedulesResponse)).StatusText = "OK"
+			(*response.(*gmp.GetSchedulesResponse)).Schedules = []gmp.Schedule{
+				{
+					ID:               "ddda859a-45be-4c58-85b3-517c66230232",
+					Name:             "Every day",
+					Comment:          "",
+					CreationTime:     "2020-06-03T16:27:05Z",
+					ModificationTime: "2020-06-03T16:27:05Z",
+					Writable:         "1",
+					InUse:            "0",
+					ICalendar:        "DTSTART:20200603T162600Z DURATION:PT0S RRULE:FREQ=DAILY",
+					Timezone:         "UTC",
+				},
+			}
+		} else {
+			(*response.(*gmp.GetSchedulesResponse)).Status = "400"
+		}
+	}
+
 	return nil
 }
 
@@ -955,5 +977,35 @@ func TestModifySchedule(t *testing.T) {
 	}
 	if resp.StatusText != "OK" {
 		t.Errorf("Expected status text 'OK', got '%s'", resp.StatusText)
+	}
+}
+
+func TestGetSchedules(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetSchedulesCommand{
+		ScheduleID: "ddda859a-45be-4c58-85b3-517c66230232",
+	}
+	resp, err := cli.GetSchedules(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetSchedules: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status text 'OK', got '%s'", resp.StatusText)
+	}
+	if len(resp.Schedules) != 1 {
+		t.Errorf("Expected 1 schedule, got %d", len(resp.Schedules))
+	}
+	if resp.Schedules[0].Name != "Every day" {
+		t.Errorf("Expected schedule name 'Every day', got '%s'", resp.Schedules[0].Name)
+	}
+	if resp.Schedules[0].Timezone != "UTC" {
+		t.Errorf("Expected timezone 'UTC', got '%s'", resp.Schedules[0].Timezone)
 	}
 }
