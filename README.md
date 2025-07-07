@@ -16,7 +16,7 @@ The following table shows the current implementation status of GMP commands in t
 |---------|-------------|--------|
 | **Authentication & Info** | | |
 | `authenticate` | Authenticate with the GMP server | :white_check_mark: |
-| `describe_auth` | Describe authentication methods | :x: |
+| `describe_auth` | Describe authentication methods | :white_check_mark: |
 | `get_info` | Get server information | :x: |
 | `get_version` | Get GMP version | :x: |
 | `help` | Get command help | :x: |

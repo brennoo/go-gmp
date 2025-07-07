@@ -394,3 +394,9 @@ func (cli *client) DeletePortRange(cmd *gmp.DeletePortRangeCommand) (resp *gmp.D
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) DescribeAuth(cmd *gmp.DescribeAuthCommand) (resp *gmp.DescribeAuthResponse, err error) {
+	resp = new(gmp.DescribeAuthResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

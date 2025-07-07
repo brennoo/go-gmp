@@ -64,4 +64,5 @@ type Client interface {
 	DeletePortList(cmd *DeletePortListCommand) (resp *DeletePortListResponse, err error)
 	CreatePortRange(cmd *CreatePortRangeCommand) (resp *CreatePortRangeResponse, err error)
 	DeletePortRange(cmd *DeletePortRangeCommand) (resp *DeletePortRangeResponse, err error)
+	DescribeAuth(cmd *DescribeAuthCommand) (resp *DescribeAuthResponse, err error)
 }
