@@ -256,3 +256,9 @@ func (cli *client) DeleteReport(cmd *gmp.DeleteReportCommand) (resp *gmp.DeleteR
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) CreateReportFormat(cmd *gmp.CreateReportFormatCommand) (resp *gmp.CreateReportFormatResponse, err error) {
+	resp = new(gmp.CreateReportFormatResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

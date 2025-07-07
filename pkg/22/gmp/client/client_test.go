@@ -388,6 +388,17 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.CreateReportFormatCommand); ok {
+		if cmd.Name == "Test Format" && cmd.Copy == "copy-uuid" {
+			(*response.(*gmp.CreateReportFormatResponse)).Status = "201"
+			(*response.(*gmp.CreateReportFormatResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateReportFormatResponse)).ID = "created-format-id"
+		} else {
+			(*response.(*gmp.CreateReportFormatResponse)).Status = "400"
+			(*response.(*gmp.CreateReportFormatResponse)).StatusText = "Bad request"
+		}
+	}
+
 	return nil
 }
 
@@ -1375,5 +1386,47 @@ func TestDeleteReport(t *testing.T) {
 	}
 	if respFail.StatusText != "Not found" {
 		t.Errorf("Expected status text 'Not found', got '%s'", respFail.StatusText)
+	}
+}
+
+func TestCreateReportFormat(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case
+	cmd := &gmp.CreateReportFormatCommand{
+		Name: "Test Format",
+		Copy: "copy-uuid",
+	}
+	resp, err := cli.CreateReportFormat(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during CreateReportFormat: %s", err)
+	}
+	if resp.Status != "201" {
+		t.Errorf("Expected status 201, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK, resource created" {
+		t.Errorf("Expected status text 'OK, resource created', got '%s'", resp.StatusText)
+	}
+	if resp.ID != "created-format-id" {
+		t.Errorf("Expected ID 'created-format-id', got '%s'", resp.ID)
+	}
+
+	// Failure case
+	cmdFail := &gmp.CreateReportFormatCommand{
+		Name: "Wrong Format",
+		Copy: "wrong-copy",
+	}
+	respFail, err := cli.CreateReportFormat(cmdFail)
+	if err != nil {
+		t.Fatalf("Unexpected error during CreateReportFormat (fail): %s", err)
+	}
+	if respFail.Status != "400" {
+		t.Errorf("Expected status 400, got %s", respFail.Status)
+	}
+	if respFail.StatusText != "Bad request" {
+		t.Errorf("Expected status text 'Bad request', got '%s'", respFail.StatusText)
 	}
 }
