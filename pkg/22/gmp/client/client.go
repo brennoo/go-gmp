@@ -406,3 +406,9 @@ func (cli *client) GetInfo(cmd *gmp.GetInfoCommand) (resp *gmp.GetInfoResponse, 
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) GetVersion(cmd *gmp.GetVersionCommand) (resp *gmp.GetVersionResponse, err error) {
+	resp = new(gmp.GetVersionResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

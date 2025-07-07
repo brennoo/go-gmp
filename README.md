@@ -18,7 +18,7 @@ The following table shows the current implementation status of GMP commands in t
 | `authenticate` | Authenticate with the GMP server | :white_check_mark: |
 | `describe_auth` | Describe authentication methods | :white_check_mark: |
 | `get_info` | Get server information | :white_check_mark: |
-| `get_version` | Get GMP version | :x: |
+| `get_version` | Get GMP version | :white_check_mark: |
 | `help` | Get command help | :x: |
 | **Configuration Management** | | |
 | `create_config` | Create a new scan configuration | :white_check_mark: |

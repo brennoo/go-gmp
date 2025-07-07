@@ -753,6 +753,13 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if _, ok := command.(*gmp.GetVersionCommand); ok {
+		resp := response.(*gmp.GetVersionResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		resp.Version = "1.0"
+	}
+
 	return nil
 }
 
@@ -920,5 +927,27 @@ func TestGetInfo(t *testing.T) {
 	info := resp.Infos[0]
 	if info.ID != "CVE-2011-0018" || info.Name != "CVE-2011-0018" {
 		t.Fatalf("Unexpected info: %+v", info)
+	}
+}
+
+func TestGetVersion(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetVersionCommand{}
+	resp, err := cli.GetVersion(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetVersion: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+	if resp.Version != "1.0" {
+		t.Fatalf("Unexpected version. Expected: 1.0 Got: %s", resp.Version)
 	}
 }
