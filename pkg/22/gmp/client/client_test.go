@@ -399,6 +399,19 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.ModifyReportFormatCommand); ok {
+		if cmd.ReportFormatID == "format-uuid" && cmd.Name == "New Name" {
+			(*response.(*gmp.ModifyReportFormatResponse)).Status = "200"
+			(*response.(*gmp.ModifyReportFormatResponse)).StatusText = "OK"
+		} else if cmd.ReportFormatID == "format-uuid" && cmd.Param != nil && cmd.Param.Name == "Background Colour" && cmd.Param.Value == "red" {
+			(*response.(*gmp.ModifyReportFormatResponse)).Status = "200"
+			(*response.(*gmp.ModifyReportFormatResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyReportFormatResponse)).Status = "400"
+			(*response.(*gmp.ModifyReportFormatResponse)).StatusText = "Bad request"
+		}
+	}
+
 	return nil
 }
 
@@ -1422,6 +1435,64 @@ func TestCreateReportFormat(t *testing.T) {
 	respFail, err := cli.CreateReportFormat(cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateReportFormat (fail): %s", err)
+	}
+	if respFail.Status != "400" {
+		t.Errorf("Expected status 400, got %s", respFail.Status)
+	}
+	if respFail.StatusText != "Bad request" {
+		t.Errorf("Expected status text 'Bad request', got '%s'", respFail.StatusText)
+	}
+}
+
+func TestModifyReportFormat(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case: modify name
+	cmd := &gmp.ModifyReportFormatCommand{
+		ReportFormatID: "format-uuid",
+		Name:           "New Name",
+	}
+	resp, err := cli.ModifyReportFormat(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyReportFormat: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status text 'OK', got '%s'", resp.StatusText)
+	}
+
+	// Success case: modify param
+	cmdParam := &gmp.ModifyReportFormatCommand{
+		ReportFormatID: "format-uuid",
+		Param: &gmp.ModifyReportFormatParam{
+			Name:  "Background Colour",
+			Value: "red",
+		},
+	}
+	respParam, err := cli.ModifyReportFormat(cmdParam)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyReportFormat (param): %s", err)
+	}
+	if respParam.Status != "200" {
+		t.Errorf("Expected status 200, got %s", respParam.Status)
+	}
+	if respParam.StatusText != "OK" {
+		t.Errorf("Expected status text 'OK', got '%s'", respParam.StatusText)
+	}
+
+	// Failure case
+	cmdFail := &gmp.ModifyReportFormatCommand{
+		ReportFormatID: "wrong-uuid",
+		Name:           "Invalid",
+	}
+	respFail, err := cli.ModifyReportFormat(cmdFail)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyReportFormat (fail): %s", err)
 	}
 	if respFail.Status != "400" {
 		t.Errorf("Expected status 400, got %s", respFail.Status)
