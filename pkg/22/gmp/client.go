@@ -73,4 +73,5 @@ type Client interface {
 	MoveTask(cmd *MoveTaskCommand) (resp *MoveTaskResponse, err error)
 	CreateTLSCertificate(cmd *CreateTLSCertificateCommand) (resp *CreateTLSCertificateResponse, err error)
 	ModifyTLSCertificate(cmd *ModifyTLSCertificateCommand) (resp *ModifyTLSCertificateResponse, err error)
+	GetTLSCertificates(cmd *GetTLSCertificatesCommand) (resp *GetTLSCertificatesResponse, err error)
 }

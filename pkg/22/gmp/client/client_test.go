@@ -828,6 +828,19 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if _, ok := command.(*gmp.GetTLSCertificatesCommand); ok {
+		resp := response.(*gmp.GetTLSCertificatesResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		resp.TLSCertificates = []gmp.TLSCertificate{
+			{
+				ID:    "ba36ed15-92fa-4ae0-af53-bad8ce472f18",
+				Owner: &gmp.Owner{Name: "admin"},
+				Name:  "Example Certificate",
+			},
+		}
+	}
+
 	return nil
 }
 

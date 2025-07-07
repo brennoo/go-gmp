@@ -139,7 +139,7 @@ The following table shows the current implementation status of GMP commands in t
 | **TLS Certificate Management** | | |
 | `create_tls_certificate` | Create a new TLS certificate | :white_check_mark: |
 | `modify_tls_certificate` | Modify an existing TLS certificate | :white_check_mark: |
-| `get_tls_certificates` | Retrieve TLS certificates | :x: |
+| `get_tls_certificates` | Retrieve TLS certificates | :white_check_mark: |
 | **Agent Management** | | |
 | `modify_agents` | Modify agents | :x: |
 | `get_agents` | Retrieve agents | :x: |
