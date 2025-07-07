@@ -566,6 +566,84 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.CreateCredentialCommand); ok {
+		if cmd.Name == "Test Credential" {
+			(*response.(*gmp.CreateCredentialResponse)).Status = "201"
+			(*response.(*gmp.CreateCredentialResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateCredentialResponse)).ID = "created-credential-id"
+		} else {
+			(*response.(*gmp.CreateCredentialResponse)).Status = "400"
+			(*response.(*gmp.CreateCredentialResponse)).StatusText = "Bad request"
+		}
+	}
+
+	if cmd, ok := command.(*gmp.ModifyCredentialCommand); ok {
+		if cmd.CredentialID == "cred-uuid" {
+			(*response.(*gmp.ModifyCredentialResponse)).Status = "200"
+			(*response.(*gmp.ModifyCredentialResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyCredentialResponse)).Status = "400"
+			(*response.(*gmp.ModifyCredentialResponse)).StatusText = "Bad request"
+		}
+	}
+
+	if cmd, ok := command.(*gmp.GetCredentialsCommand); ok {
+		if cmd.CredentialID == "" {
+			(*response.(*gmp.GetCredentialsResponse)).Status = "200"
+			(*response.(*gmp.GetCredentialsResponse)).StatusText = "OK"
+			(*response.(*gmp.GetCredentialsResponse)).Credentials = []gmp.CredentialWrapper{
+				{
+					ID:       "cred-uuid-1",
+					Name:     "sally",
+					Login:    "sally",
+					Writable: "1",
+					InUse:    "0",
+					Type:     "usk",
+					FullType: "username + SSH key",
+					Formats:  &gmp.CredentialFormats{Formats: []string{"key", "rpm", "deb"}},
+				},
+				{
+					ID:       "cred-uuid-2",
+					Name:     "bob",
+					Login:    "bob",
+					Writable: "1",
+					InUse:    "1",
+					Type:     "up",
+					FullType: "username + password",
+					Formats:  &gmp.CredentialFormats{Formats: []string{"exe"}},
+				},
+			}
+		} else if cmd.CredentialID == "cred-uuid-1" {
+			(*response.(*gmp.GetCredentialsResponse)).Status = "200"
+			(*response.(*gmp.GetCredentialsResponse)).StatusText = "OK"
+			(*response.(*gmp.GetCredentialsResponse)).Credentials = []gmp.CredentialWrapper{
+				{
+					ID:       "cred-uuid-1",
+					Name:     "sally",
+					Login:    "sally",
+					Writable: "1",
+					InUse:    "0",
+					Type:     "usk",
+					FullType: "username + SSH key",
+					Formats:  &gmp.CredentialFormats{Formats: []string{"key", "rpm", "deb"}},
+				},
+			}
+		} else {
+			(*response.(*gmp.GetCredentialsResponse)).Status = "404"
+			(*response.(*gmp.GetCredentialsResponse)).StatusText = "Not found"
+		}
+	}
+
+	if cmd, ok := command.(*gmp.DeleteCredentialCommand); ok {
+		if cmd.CredentialID == "cred-uuid-1" && cmd.Ultimate == "1" {
+			(*response.(*gmp.DeleteCredentialResponse)).Status = "200"
+			(*response.(*gmp.DeleteCredentialResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeleteCredentialResponse)).Status = "404"
+			(*response.(*gmp.DeleteCredentialResponse)).StatusText = "Not found"
+		}
+	}
+
 	return nil
 }
 
@@ -1770,5 +1848,162 @@ func TestGetSystemReports(t *testing.T) {
 	}
 	if resp.Status != "404" || resp.StatusText != "Not found" {
 		t.Errorf("unexpected response: %+v", resp)
+	}
+}
+
+func TestCreateCredential(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case
+	cmd := &gmp.CreateCredentialCommand{
+		Name: "Test Credential",
+	}
+	resp, err := cli.CreateCredential(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during CreateCredential: %s", err)
+	}
+	if resp.Status != "201" {
+		t.Errorf("Expected status 201, got %s", resp.Status)
+	}
+	if resp.ID != "created-credential-id" {
+		t.Errorf("Expected ID 'created-credential-id', got %s", resp.ID)
+	}
+
+	// Failure case
+	cmdFail := &gmp.CreateCredentialCommand{
+		Name: "",
+	}
+	respFail, err := cli.CreateCredential(cmdFail)
+	if err != nil {
+		t.Fatalf("Unexpected error during CreateCredential (fail): %s", err)
+	}
+	if respFail.Status != "400" {
+		t.Errorf("Expected status 400, got %s", respFail.Status)
+	}
+}
+
+func TestModifyCredential(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case
+	cmd := &gmp.ModifyCredentialCommand{
+		CredentialID: "cred-uuid",
+		Name:         "Updated Credential",
+	}
+	resp, err := cli.ModifyCredential(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyCredential: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status text 'OK', got '%s'", resp.StatusText)
+	}
+
+	// Failure case
+	cmdFail := &gmp.ModifyCredentialCommand{
+		CredentialID: "",
+	}
+	respFail, err := cli.ModifyCredential(cmdFail)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyCredential (fail): %s", err)
+	}
+	if respFail.Status != "400" {
+		t.Errorf("Expected status 400, got %s", respFail.Status)
+	}
+	if respFail.StatusText != "Bad request" {
+		t.Errorf("Expected status text 'Bad request', got '%s'", respFail.StatusText)
+	}
+}
+
+func TestGetCredentials(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// List all credentials
+	cmd := &gmp.GetCredentialsCommand{}
+	resp, err := cli.GetCredentials(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetCredentials: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if len(resp.Credentials) != 2 {
+		t.Errorf("Expected 2 credentials, got %d", len(resp.Credentials))
+	}
+	if resp.Credentials[0].ID != "cred-uuid-1" || resp.Credentials[1].ID != "cred-uuid-2" {
+		t.Errorf("Unexpected credential IDs: %+v", resp.Credentials)
+	}
+
+	// Fetch single credential
+	cmdSingle := &gmp.GetCredentialsCommand{CredentialID: "cred-uuid-1"}
+	respSingle, err := cli.GetCredentials(cmdSingle)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetCredentials (single): %s", err)
+	}
+	if respSingle.Status != "200" {
+		t.Errorf("Expected status 200, got %s", respSingle.Status)
+	}
+	if len(respSingle.Credentials) != 1 || respSingle.Credentials[0].ID != "cred-uuid-1" {
+		t.Errorf("Unexpected credential: %+v", respSingle.Credentials)
+	}
+
+	// Failure case
+	cmdFail := &gmp.GetCredentialsCommand{CredentialID: "notfound"}
+	respFail, err := cli.GetCredentials(cmdFail)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetCredentials (fail): %s", err)
+	}
+	if respFail.Status != "404" {
+		t.Errorf("Expected status 404, got %s", respFail.Status)
+	}
+}
+
+func TestDeleteCredential(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case
+	cmd := &gmp.DeleteCredentialCommand{
+		CredentialID: "cred-uuid-1",
+		Ultimate:     "1",
+	}
+	resp, err := cli.DeleteCredential(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeleteCredential: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status text 'OK', got '%s'", resp.StatusText)
+	}
+
+	// Failure case
+	cmdFail := &gmp.DeleteCredentialCommand{
+		CredentialID: "notfound",
+		Ultimate:     "1",
+	}
+	respFail, err := cli.DeleteCredential(cmdFail)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeleteCredential (fail): %s", err)
+	}
+	if respFail.Status != "404" {
+		t.Errorf("Expected status 404, got %s", respFail.Status)
+	}
+	if respFail.StatusText != "Not found" {
+		t.Errorf("Expected status text 'Not found', got '%s'", respFail.StatusText)
 	}
 }

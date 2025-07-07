@@ -316,3 +316,39 @@ func (cli *client) GetSystemReports(cmd *gmp.GetSystemReportsCommand) (resp *gmp
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) CreateCredential(cmd *gmp.CreateCredentialCommand) (*gmp.CreateCredentialResponse, error) {
+	var resp gmp.CreateCredentialResponse
+	err := cli.conn.Execute(cmd, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+func (cli *client) ModifyCredential(cmd *gmp.ModifyCredentialCommand) (*gmp.ModifyCredentialResponse, error) {
+	var resp gmp.ModifyCredentialResponse
+	err := cli.conn.Execute(cmd, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+func (cli *client) GetCredentials(cmd *gmp.GetCredentialsCommand) (*gmp.GetCredentialsResponse, error) {
+	var resp gmp.GetCredentialsResponse
+	err := cli.conn.Execute(cmd, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+func (cli *client) DeleteCredential(cmd *gmp.DeleteCredentialCommand) (*gmp.DeleteCredentialResponse, error) {
+	var resp gmp.DeleteCredentialResponse
+	err := cli.conn.Execute(cmd, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
