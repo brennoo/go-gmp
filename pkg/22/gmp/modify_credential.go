@@ -3,7 +3,6 @@ package gmp
 import "encoding/xml"
 
 // ModifyCredentialCommand represents a modify_credential command request to GMP.
-// It contains all possible fields for credential modification as defined by the protocol.
 type ModifyCredentialCommand struct {
 	XMLName       xml.Name                 `xml:"modify_credential"`
 	CredentialID  string                   `xml:"credential_id,attr"`
@@ -23,7 +22,6 @@ type ModifyCredentialCommand struct {
 }
 
 // ModifyCredentialResponse represents a modify_credential command response from GMP.
-// It contains the status and status text returned by the protocol.
 type ModifyCredentialResponse struct {
 	XMLName    xml.Name `xml:"modify_credential_response"`
 	Status     string   `xml:"status,attr"`
