@@ -566,6 +566,17 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.CreateCredentialCommand); ok {
+		if cmd.Name == "Test Credential" {
+			(*response.(*gmp.CreateCredentialResponse)).Status = "201"
+			(*response.(*gmp.CreateCredentialResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateCredentialResponse)).ID = "created-credential-id"
+		} else {
+			(*response.(*gmp.CreateCredentialResponse)).Status = "400"
+			(*response.(*gmp.CreateCredentialResponse)).StatusText = "Bad request"
+		}
+	}
+
 	return nil
 }
 
@@ -1770,5 +1781,39 @@ func TestGetSystemReports(t *testing.T) {
 	}
 	if resp.Status != "404" || resp.StatusText != "Not found" {
 		t.Errorf("unexpected response: %+v", resp)
+	}
+}
+
+func TestCreateCredential(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case
+	cmd := &gmp.CreateCredentialCommand{
+		Name: "Test Credential",
+	}
+	resp, err := cli.CreateCredential(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during CreateCredential: %s", err)
+	}
+	if resp.Status != "201" {
+		t.Errorf("Expected status 201, got %s", resp.Status)
+	}
+	if resp.ID != "created-credential-id" {
+		t.Errorf("Expected ID 'created-credential-id', got %s", resp.ID)
+	}
+
+	// Failure case
+	cmdFail := &gmp.CreateCredentialCommand{
+		Name: "",
+	}
+	respFail, err := cli.CreateCredential(cmdFail)
+	if err != nil {
+		t.Fatalf("Unexpected error during CreateCredential (fail): %s", err)
+	}
+	if respFail.Status != "400" {
+		t.Errorf("Expected status 400, got %s", respFail.Status)
 	}
 }

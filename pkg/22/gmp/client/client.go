@@ -316,3 +316,12 @@ func (cli *client) GetSystemReports(cmd *gmp.GetSystemReportsCommand) (resp *gmp
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) CreateCredential(cmd *gmp.CreateCredentialCommand) (*gmp.CreateCredentialResponse, error) {
+	var resp gmp.CreateCredentialResponse
+	err := cli.conn.Execute(cmd, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
