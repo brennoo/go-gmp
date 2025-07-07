@@ -41,18 +41,18 @@ The following table shows the current implementation status of GMP commands in t
 | `get_targets` | Retrieve scan targets | :white_check_mark: |
 | `delete_target` | Delete a scan target | :white_check_mark: |
 | **Scanner Management** | | |
-| `create_scanner` | Create a new scanner | :x: |
-| `modify_scanner` | Modify an existing scanner | :x: |
+| `create_scanner` | Create a new scanner | :white_check_mark: |
+| `modify_scanner` | Modify an existing scanner | :white_check_mark: |
 | `get_scanners` | Retrieve available scanners | :white_check_mark: |
-| `delete_scanner` | Delete a scanner | :x: |
-| `verify_scanner` | Verify scanner connectivity | :x: |
+| `delete_scanner` | Delete a scanner | :white_check_mark: |
+| `verify_scanner` | Verify scanner connectivity | :white_check_mark: |
 | **Port List Management** | | |
-| `create_port_list` | Create a new port list | :x: |
-| `modify_port_list` | Modify an existing port list | :x: |
+| `create_port_list` | Create a new port list | :white_check_mark: |
+| `modify_port_list` | Modify an existing port list | :white_check_mark: |
 | `get_port_lists` | Retrieve port lists | :white_check_mark: |
-| `delete_port_list` | Delete a port list | :x: |
-| `create_port_range` | Create a port range | :x: |
-| `delete_port_range` | Delete a port range | :x: |
+| `delete_port_list` | Delete a port list | :white_check_mark: |
+| `create_port_range` | Create a port range | :white_check_mark: |
+| `delete_port_range` | Delete a port range | :white_check_mark: |
 | **Schedule Management** | | |
 | `create_schedule` | Create a new schedule | :white_check_mark: |
 | `modify_schedule` | Modify an existing schedule | :white_check_mark: |

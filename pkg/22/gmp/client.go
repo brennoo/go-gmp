@@ -55,4 +55,13 @@ type Client interface {
 	ModifyCredential(cmd *ModifyCredentialCommand) (*ModifyCredentialResponse, error)
 	GetCredentials(cmd *GetCredentialsCommand) (*GetCredentialsResponse, error)
 	DeleteCredential(cmd *DeleteCredentialCommand) (*DeleteCredentialResponse, error)
+	CreateScanner(cmd *CreateScannerCommand) (*CreateScannerResponse, error)
+	ModifyScanner(cmd *ModifyScannerCommand) (*ModifyScannerResponse, error)
+	DeleteScanner(cmd *DeleteScannerCommand) (resp *DeleteScannerResponse, err error)
+	VerifyScanner(cmd *VerifyScannerCommand) (resp *VerifyScannerResponse, err error)
+	CreatePortList(cmd *CreatePortListCommand) (resp *CreatePortListResponse, err error)
+	ModifyPortList(cmd *ModifyPortListCommand) (resp *ModifyPortListResponse, err error)
+	DeletePortList(cmd *DeletePortListCommand) (resp *DeletePortListResponse, err error)
+	CreatePortRange(cmd *CreatePortRangeCommand) (resp *CreatePortRangeResponse, err error)
+	DeletePortRange(cmd *DeletePortRangeCommand) (resp *DeletePortRangeResponse, err error)
 }

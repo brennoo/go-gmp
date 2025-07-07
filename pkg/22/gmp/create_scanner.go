@@ -1,0 +1,31 @@
+package gmp
+
+import "encoding/xml"
+
+// CreateScannerCommand is a request to create a scanner.
+type CreateScannerCommand struct {
+	XMLName    xml.Name                 `xml:"create_scanner"`
+	Name       string                   `xml:"name"`
+	Comment    string                   `xml:"comment,omitempty"`
+	Copy       string                   `xml:"copy,omitempty"`
+	Host       string                   `xml:"host"`
+	Port       string                   `xml:"port"`
+	Type       string                   `xml:"type"`
+	CAPub      string                   `xml:"ca_pub"`
+	Credential *CreateScannerCredential `xml:"credential"`
+	RelayHost  string                   `xml:"relay_host,omitempty"`
+	RelayPort  string                   `xml:"relay_port,omitempty"`
+}
+
+// CreateScannerCredential represents the <credential> element with id attribute.
+type CreateScannerCredential struct {
+	ID string `xml:"id,attr"`
+}
+
+// CreateScannerResponse is the response to a create_scanner command.
+type CreateScannerResponse struct {
+	XMLName    xml.Name `xml:"create_scanner_response"`
+	Status     string   `xml:"status,attr"`
+	StatusText string   `xml:"status_text,attr"`
+	ID         string   `xml:"id,attr"`
+}
