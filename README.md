@@ -70,7 +70,7 @@ The following table shows the current implementation status of GMP commands in t
 | `delete_report` | Delete a report | :white_check_mark: |
 | `create_report_format` | Create a new report format | :white_check_mark: |
 | `modify_report_format` | Modify an existing report format | :white_check_mark: |
-| `get_report_formats` | Retrieve report formats | :x: |
+| `get_report_formats` | Retrieve report formats | :white_check_mark: |
 | `delete_report_format` | Delete a report format | :x: |
 | `verify_report_format` | Verify report format | :x: |
 | `create_report_config` | Create a new report config | :x: |

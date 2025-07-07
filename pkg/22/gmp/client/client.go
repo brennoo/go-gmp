@@ -268,3 +268,9 @@ func (cli *client) ModifyReportFormat(cmd *gmp.ModifyReportFormatCommand) (resp 
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) GetReportFormats(cmd *gmp.GetReportFormatsCommand) (resp *gmp.GetReportFormatsResponse, err error) {
+	resp = new(gmp.GetReportFormatsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

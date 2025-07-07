@@ -412,6 +412,31 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.GetReportFormatsCommand); ok {
+		if cmd.ReportFormatID == "format-uuid" {
+			(*response.(*gmp.GetReportFormatsResponse)).Status = "200"
+			(*response.(*gmp.GetReportFormatsResponse)).StatusText = "OK"
+			(*response.(*gmp.GetReportFormatsResponse)).ReportFormats = []gmp.ReportFormatWrapper{
+				{
+					ID:               "format-uuid",
+					Name:             "HTML",
+					Extension:        "html",
+					ContentType:      "text/html",
+					Summary:          "Single page HTML report.",
+					Description:      "A single HTML page listing results of a scan.",
+					CreationTime:     "2013-01-31T16:46:32+01:00",
+					ModificationTime: "2013-01-31T16:46:32+01:00",
+					Writable:         "1",
+					InUse:            "0",
+					Active:           "1",
+				},
+			}
+		} else {
+			(*response.(*gmp.GetReportFormatsResponse)).Status = "404"
+			(*response.(*gmp.GetReportFormatsResponse)).StatusText = "Not found"
+		}
+	}
+
 	return nil
 }
 
@@ -1499,5 +1524,59 @@ func TestModifyReportFormat(t *testing.T) {
 	}
 	if respFail.StatusText != "Bad request" {
 		t.Errorf("Expected status text 'Bad request', got '%s'", respFail.StatusText)
+	}
+}
+
+func TestGetReportFormats(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case
+	cmd := &gmp.GetReportFormatsCommand{
+		ReportFormatID: "format-uuid",
+	}
+	resp, err := cli.GetReportFormats(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetReportFormats: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status text 'OK', got '%s'", resp.StatusText)
+	}
+	if len(resp.ReportFormats) != 1 {
+		t.Errorf("Expected 1 report format, got %d", len(resp.ReportFormats))
+	} else {
+		format := resp.ReportFormats[0]
+		if format.ID != "format-uuid" {
+			t.Errorf("Expected report format ID 'format-uuid', got '%s'", format.ID)
+		}
+		if format.Name != "HTML" {
+			t.Errorf("Expected name 'HTML', got '%s'", format.Name)
+		}
+		if format.Extension != "html" {
+			t.Errorf("Expected extension 'html', got '%s'", format.Extension)
+		}
+		if format.ContentType != "text/html" {
+			t.Errorf("Expected content type 'text/html', got '%s'", format.ContentType)
+		}
+	}
+
+	// Failure case
+	cmdFail := &gmp.GetReportFormatsCommand{
+		ReportFormatID: "wrong-id",
+	}
+	respFail, err := cli.GetReportFormats(cmdFail)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetReportFormats (fail): %s", err)
+	}
+	if respFail.Status != "404" {
+		t.Errorf("Expected status 404, got %s", respFail.Status)
+	}
+	if respFail.StatusText != "Not found" {
+		t.Errorf("Expected status text 'Not found', got '%s'", respFail.StatusText)
 	}
 }

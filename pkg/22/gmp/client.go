@@ -43,4 +43,5 @@ type Client interface {
 	DeleteReport(cmd *DeleteReportCommand) (resp *DeleteReportResponse, err error)
 	CreateReportFormat(cmd *CreateReportFormatCommand) (resp *CreateReportFormatResponse, err error)
 	ModifyReportFormat(cmd *ModifyReportFormatCommand) (resp *ModifyReportFormatResponse, err error)
+	GetReportFormats(cmd *GetReportFormatsCommand) (resp *GetReportFormatsResponse, err error)
 }
