@@ -34,7 +34,7 @@ The following table shows the current implementation status of GMP commands in t
 | `start_task` | Start a scan task | :white_check_mark: |
 | `stop_task` | Stop a running scan task | :white_check_mark: |
 | `resume_task` | Resume a stopped task | :white_check_mark: |
-| `move_task` | Move task to different scanner | :x: |
+| `move_task` | Move task to different scanner | :white_check_mark: |
 | **Target Management** | | |
 | `create_target` | Create a new scan target | :white_check_mark: |
 | `modify_target` | Modify an existing scan target | :white_check_mark: |

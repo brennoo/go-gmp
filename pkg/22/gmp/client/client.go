@@ -430,3 +430,9 @@ func (cli *client) SyncConfig(cmd *gmp.SyncConfigCommand) (resp *gmp.SyncConfigR
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) MoveTask(cmd *gmp.MoveTaskCommand) (resp *gmp.MoveTaskResponse, err error) {
+	resp = new(gmp.MoveTaskResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

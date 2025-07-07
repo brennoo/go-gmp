@@ -130,3 +130,25 @@ func TestResumeTask(t *testing.T) {
 		t.Errorf("expected report_id '330ee785-c2c0-4d4c-ab96-725142c9b789', got %s", resp.ReportID)
 	}
 }
+
+func TestMoveTask(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.MoveTaskCommand{
+		TaskID:  "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
+		SlaveID: "97390ade-e075-11df-9973-002264764cea",
+	}
+	resp, err := cli.MoveTask(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during MoveTask: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+}

@@ -796,6 +796,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		(*response.(*gmp.SyncConfigResponse)).StatusText = "OK, request submitted"
 	}
 
+	if cmd, ok := command.(*gmp.MoveTaskCommand); ok {
+		if cmd.TaskID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" && cmd.SlaveID == "97390ade-e075-11df-9973-002264764cea" {
+			(*response.(*gmp.MoveTaskResponse)).Status = "200"
+			(*response.(*gmp.MoveTaskResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.MoveTaskResponse)).Status = "404"
+			(*response.(*gmp.MoveTaskResponse)).StatusText = "Not found"
+		}
+	}
+
 	return nil
 }
 

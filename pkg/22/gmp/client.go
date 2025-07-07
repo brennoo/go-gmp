@@ -70,4 +70,5 @@ type Client interface {
 	Help(cmd *HelpCommand) (resp *HelpResponse, err error)
 	DeleteConfig(cmd *DeleteConfigCommand) (resp *DeleteConfigResponse, err error)
 	SyncConfig(cmd *SyncConfigCommand) (resp *SyncConfigResponse, err error)
+	MoveTask(cmd *MoveTaskCommand) (resp *MoveTaskResponse, err error)
 }
