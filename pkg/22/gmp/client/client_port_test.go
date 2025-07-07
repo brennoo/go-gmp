@@ -64,3 +64,21 @@ func TestModifyPortList(t *testing.T) {
 		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
 	}
 }
+func TestDeletePortList(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.DeletePortListCommand{
+		PortListID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
+		Ultimate:   "1",
+	}
+	resp, err := cli.DeletePortList(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeletePortList: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+}

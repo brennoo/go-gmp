@@ -707,6 +707,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.DeletePortListCommand); ok {
+		if cmd.PortListID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" && cmd.Ultimate == "1" {
+			(*response.(*gmp.DeletePortListResponse)).Status = "200"
+			(*response.(*gmp.DeletePortListResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeletePortListResponse)).Status = "404"
+			(*response.(*gmp.DeletePortListResponse)).StatusText = "Not found"
+		}
+	}
+
 	return nil
 }
 
