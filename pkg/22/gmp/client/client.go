@@ -325,3 +325,12 @@ func (cli *client) CreateCredential(cmd *gmp.CreateCredentialCommand) (*gmp.Crea
 	}
 	return &resp, nil
 }
+
+func (cli *client) ModifyCredential(cmd *gmp.ModifyCredentialCommand) (*gmp.ModifyCredentialResponse, error) {
+	var resp gmp.ModifyCredentialResponse
+	err := cli.conn.Execute(cmd, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}

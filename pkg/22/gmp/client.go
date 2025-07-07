@@ -52,4 +52,5 @@ type Client interface {
 	DeleteReportConfig(cmd *DeleteReportConfigCommand) (resp *DeleteReportConfigResponse, err error)
 	GetSystemReports(cmd *GetSystemReportsCommand) (resp *GetSystemReportsResponse, err error)
 	CreateCredential(cmd *CreateCredentialCommand) (*CreateCredentialResponse, error)
+	ModifyCredential(cmd *ModifyCredentialCommand) (*ModifyCredentialResponse, error)
 }

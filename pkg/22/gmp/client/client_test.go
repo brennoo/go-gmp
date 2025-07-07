@@ -577,6 +577,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.ModifyCredentialCommand); ok {
+		if cmd.CredentialID == "cred-uuid" {
+			(*response.(*gmp.ModifyCredentialResponse)).Status = "200"
+			(*response.(*gmp.ModifyCredentialResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyCredentialResponse)).Status = "400"
+			(*response.(*gmp.ModifyCredentialResponse)).StatusText = "Bad request"
+		}
+	}
+
 	return nil
 }
 
@@ -1815,5 +1825,43 @@ func TestCreateCredential(t *testing.T) {
 	}
 	if respFail.Status != "400" {
 		t.Errorf("Expected status 400, got %s", respFail.Status)
+	}
+}
+
+func TestModifyCredential(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case
+	cmd := &gmp.ModifyCredentialCommand{
+		CredentialID: "cred-uuid",
+		Name:         "Updated Credential",
+	}
+	resp, err := cli.ModifyCredential(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyCredential: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status text 'OK', got '%s'", resp.StatusText)
+	}
+
+	// Failure case
+	cmdFail := &gmp.ModifyCredentialCommand{
+		CredentialID: "",
+	}
+	respFail, err := cli.ModifyCredential(cmdFail)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyCredential (fail): %s", err)
+	}
+	if respFail.Status != "400" {
+		t.Errorf("Expected status 400, got %s", respFail.Status)
+	}
+	if respFail.StatusText != "Bad request" {
+		t.Errorf("Expected status text 'Bad request', got '%s'", respFail.StatusText)
 	}
 }
