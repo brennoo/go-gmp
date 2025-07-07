@@ -1,6 +1,7 @@
 package client
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/brennoo/go-gmp/pkg/22/gmp"
@@ -760,6 +761,26 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		resp.Version = "1.0"
 	}
 
+	if _, ok := command.(*gmp.HelpCommand); ok {
+		resp := response.(*gmp.HelpResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		resp.Text = "AUTHENTICATE           Authenticate with the manager.\nCREATE_ALERT           Create an alert.\n...\nVERIFY_SCANNER         Verify a scanner."
+	}
+
+	if cmd, ok := command.(*gmp.GetInfoCommand); ok {
+		if cmd.Name == "CVE-2011-0018" && cmd.Type == "cve" {
+			resp := response.(*gmp.GetInfoResponse)
+			resp.Status = "200"
+			resp.StatusText = "OK"
+			resp.Infos = []gmp.GetInfoInfo{{ID: "CVE-2011-0018", Name: "CVE-2011-0018"}}
+		} else {
+			resp := response.(*gmp.GetInfoResponse)
+			resp.Status = "404"
+			resp.StatusText = "Not found"
+		}
+	}
+
 	return nil
 }
 
@@ -950,4 +971,30 @@ func TestGetVersion(t *testing.T) {
 	if resp.Version != "1.0" {
 		t.Fatalf("Unexpected version. Expected: 1.0 Got: %s", resp.Version)
 	}
+}
+
+func TestHelp(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.HelpCommand{}
+	resp, err := cli.Help(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during Help: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+	if resp.Text == "" || !contains(resp.Text, "AUTHENTICATE") {
+		t.Fatalf("Expected help text to contain 'AUTHENTICATE', got: %s", resp.Text)
+	}
+}
+
+func contains(s, substr string) bool {
+	return strings.Contains(s, substr)
 }

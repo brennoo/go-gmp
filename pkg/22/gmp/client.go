@@ -67,4 +67,5 @@ type Client interface {
 	DescribeAuth(cmd *DescribeAuthCommand) (resp *DescribeAuthResponse, err error)
 	GetInfo(cmd *GetInfoCommand) (resp *GetInfoResponse, err error)
 	GetVersion(cmd *GetVersionCommand) (resp *GetVersionResponse, err error)
+	Help(cmd *HelpCommand) (resp *HelpResponse, err error)
 }
