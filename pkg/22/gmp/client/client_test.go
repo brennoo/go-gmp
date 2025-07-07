@@ -369,7 +369,6 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 					FormatID:    "format-uuid",
 					Extension:   "xml",
 					ContentType: "text/xml",
-					RawXML:      []byte("<report>...</report>"),
 				},
 			}
 		} else {
@@ -1421,7 +1420,6 @@ func TestCreateReport(t *testing.T) {
 			FormatID:    "format-uuid",
 			Extension:   "xml",
 			ContentType: "text/xml",
-			RawXML:      []byte("<report>...</report>"),
 		},
 		Task: &gmp.CreateReportTask{
 			ID: "task-uuid",
