@@ -361,3 +361,12 @@ func (cli *client) CreateScanner(cmd *gmp.CreateScannerCommand) (*gmp.CreateScan
 	}
 	return &resp, nil
 }
+
+func (cli *client) ModifyScanner(cmd *gmp.ModifyScannerCommand) (*gmp.ModifyScannerResponse, error) {
+	var resp gmp.ModifyScannerResponse
+	err := cli.conn.Execute(cmd, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}

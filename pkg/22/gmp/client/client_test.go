@@ -655,6 +655,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.ModifyScannerCommand); ok {
+		if cmd.ScannerID == "scanner-uuid" && cmd.Name == "Updated Scanner" {
+			(*response.(*gmp.ModifyScannerResponse)).Status = "200"
+			(*response.(*gmp.ModifyScannerResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyScannerResponse)).Status = "400"
+			(*response.(*gmp.ModifyScannerResponse)).StatusText = "Bad request"
+		}
+	}
+
 	return nil
 }
 
@@ -2019,50 +2029,97 @@ func TestDeleteCredential(t *testing.T) {
 	}
 }
 
+func runScannerTest(t *testing.T, name string, run func(t *testing.T)) {
+	t.Run(name, run)
+}
+
 func TestCreateScanner(t *testing.T) {
 	cli := New(mockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
 
-	// Success case
-	cmd := &gmp.CreateScannerCommand{
-		Name:  "Default Scanner",
-		Host:  "localhost",
-		Port:  "9391",
-		Type:  "2",
-		CAPub: "dummy-ca-pub",
-		Credential: &gmp.CreateScannerCredential{
-			ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
-		},
-	}
-	resp, err := cli.CreateScanner(cmd)
-	if err != nil {
-		t.Fatalf("Unexpected error during CreateScanner: %s", err)
-	}
-	if resp.Status != "201" {
-		t.Errorf("Expected status 201, got %s", resp.Status)
-	}
-	if resp.ID != "814cd30f-dee1-4d58-851d-21b8d0c048e3" {
-		t.Errorf("Expected ID '814cd30f-dee1-4d58-851d-21b8d0c048e3', got %s", resp.ID)
+	runScannerTest(t, "success", func(t *testing.T) {
+		cmd := &gmp.CreateScannerCommand{
+			Name:  "Default Scanner",
+			Host:  "localhost",
+			Port:  "9391",
+			Type:  "2",
+			CAPub: "dummy-ca-pub",
+			Credential: &gmp.CreateScannerCredential{
+				ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
+			},
+		}
+		resp, err := cli.CreateScanner(cmd)
+		if err != nil {
+			t.Fatalf("Unexpected error during CreateScanner: %s", err)
+		}
+		if resp.Status != "201" {
+			t.Errorf("Expected status 201, got %s", resp.Status)
+		}
+		if resp.ID != "814cd30f-dee1-4d58-851d-21b8d0c048e3" {
+			t.Errorf("Expected ID '814cd30f-dee1-4d58-851d-21b8d0c048e3', got %s", resp.ID)
+		}
+	})
+
+	runScannerTest(t, "fail", func(t *testing.T) {
+		cmdFail := &gmp.CreateScannerCommand{
+			Name:  "",
+			Host:  "localhost",
+			Port:  "9391",
+			Type:  "2",
+			CAPub: "dummy-ca-pub",
+			Credential: &gmp.CreateScannerCredential{
+				ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
+			},
+		}
+		respFail, err := cli.CreateScanner(cmdFail)
+		if err != nil {
+			t.Fatalf("Unexpected error during CreateScanner (fail): %s", err)
+		}
+		if respFail.Status != "400" {
+			t.Errorf("Expected status 400, got %s", respFail.Status)
+		}
+	})
+}
+
+func TestModifyScanner(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
 	}
 
-	// Failure case
-	cmdFail := &gmp.CreateScannerCommand{
-		Name:  "",
-		Host:  "localhost",
-		Port:  "9391",
-		Type:  "2",
-		CAPub: "dummy-ca-pub",
-		Credential: &gmp.CreateScannerCredential{
-			ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
-		},
-	}
-	respFail, err := cli.CreateScanner(cmdFail)
-	if err != nil {
-		t.Fatalf("Unexpected error during CreateScanner (fail): %s", err)
-	}
-	if respFail.Status != "400" {
-		t.Errorf("Expected status 400, got %s", respFail.Status)
-	}
+	runScannerTest(t, "success", func(t *testing.T) {
+		cmd := &gmp.ModifyScannerCommand{
+			ScannerID: "scanner-uuid",
+			Name:      "Updated Scanner",
+		}
+		resp, err := cli.ModifyScanner(cmd)
+		if err != nil {
+			t.Fatalf("Unexpected error during ModifyScanner: %s", err)
+		}
+		if resp.Status != "200" {
+			t.Errorf("Expected status 200, got %s", resp.Status)
+		}
+		if resp.StatusText != "OK" {
+			t.Errorf("Expected status text 'OK', got '%s'", resp.StatusText)
+		}
+	})
+
+	runScannerTest(t, "fail", func(t *testing.T) {
+		cmdFail := &gmp.ModifyScannerCommand{
+			ScannerID: "",
+			Name:      "",
+		}
+		respFail, err := cli.ModifyScanner(cmdFail)
+		if err != nil {
+			t.Fatalf("Unexpected error during ModifyScanner (fail): %s", err)
+		}
+		if respFail.Status != "400" {
+			t.Errorf("Expected status 400, got %s", respFail.Status)
+		}
+		if respFail.StatusText != "Bad request" {
+			t.Errorf("Expected status text 'Bad request', got '%s'", respFail.StatusText)
+		}
+	})
 }
