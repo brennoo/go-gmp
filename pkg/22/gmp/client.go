@@ -39,4 +39,5 @@ type Client interface {
 	GetOverrides(cmd *GetOverridesCommand) (resp *GetOverridesResponse, err error)
 	ModifyOverride(cmd *ModifyOverrideCommand) (resp *ModifyOverrideResponse, err error)
 	CreateReport(cmd *CreateReportCommand) (resp *CreateReportResponse, err error)
+	GetReports(cmd *GetReportsCommand) (resp *GetReportsResponse, err error)
 }

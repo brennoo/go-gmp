@@ -359,6 +359,25 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.GetReportsCommand); ok {
+		if cmd.ReportID == "report-uuid" && cmd.FormatID == "format-uuid" {
+			(*response.(*gmp.GetReportsResponse)).Status = "200"
+			(*response.(*gmp.GetReportsResponse)).StatusText = "OK"
+			(*response.(*gmp.GetReportsResponse)).Reports = []gmp.ReportWrapper{
+				{
+					ID:          "report-uuid",
+					FormatID:    "format-uuid",
+					Extension:   "xml",
+					ContentType: "text/xml",
+					RawXML:      []byte("<report>...</report>"),
+				},
+			}
+		} else {
+			(*response.(*gmp.GetReportsResponse)).Status = "404"
+			(*response.(*gmp.GetReportsResponse)).StatusText = "Not found"
+		}
+	}
+
 	return nil
 }
 
@@ -1252,5 +1271,62 @@ func TestCreateReport(t *testing.T) {
 	}
 	if respFail.StatusText != "Bad request" {
 		t.Errorf("Expected status text 'Bad request', got '%s'", respFail.StatusText)
+	}
+}
+
+func TestGetReports(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case
+	cmd := &gmp.GetReportsCommand{
+		ReportID:    "report-uuid",
+		FormatID:    "format-uuid",
+		Extension:   "xml",
+		ContentType: "text/xml",
+	}
+	resp, err := cli.GetReports(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetReports: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status text 'OK', got '%s'", resp.StatusText)
+	}
+	if len(resp.Reports) != 1 {
+		t.Errorf("Expected 1 report, got %d", len(resp.Reports))
+	} else {
+		report := resp.Reports[0]
+		if report.ID != "report-uuid" {
+			t.Errorf("Expected report ID 'report-uuid', got '%s'", report.ID)
+		}
+		if report.FormatID != "format-uuid" {
+			t.Errorf("Expected format ID 'format-uuid', got '%s'", report.FormatID)
+		}
+		if report.Extension != "xml" {
+			t.Errorf("Expected extension 'xml', got '%s'", report.Extension)
+		}
+		if report.ContentType != "text/xml" {
+			t.Errorf("Expected content type 'text/xml', got '%s'", report.ContentType)
+		}
+	}
+
+	// Failure case
+	cmdFail := &gmp.GetReportsCommand{
+		ReportID: "wrong-id",
+	}
+	respFail, err := cli.GetReports(cmdFail)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetReports (fail): %s", err)
+	}
+	if respFail.Status != "404" {
+		t.Errorf("Expected status 404, got %s", respFail.Status)
+	}
+	if respFail.StatusText != "Not found" {
+		t.Errorf("Expected status text 'Not found', got '%s'", respFail.StatusText)
 	}
 }

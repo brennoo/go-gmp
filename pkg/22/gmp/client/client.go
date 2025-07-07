@@ -244,3 +244,9 @@ func (cli *client) CreateReport(cmd *gmp.CreateReportCommand) (resp *gmp.CreateR
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) GetReports(cmd *gmp.GetReportsCommand) (resp *gmp.GetReportsResponse, err error) {
+	resp = new(gmp.GetReportsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
