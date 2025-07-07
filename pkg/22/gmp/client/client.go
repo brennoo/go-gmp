@@ -343,3 +343,12 @@ func (cli *client) GetCredentials(cmd *gmp.GetCredentialsCommand) (*gmp.GetCrede
 	}
 	return &resp, nil
 }
+
+func (cli *client) DeleteCredential(cmd *gmp.DeleteCredentialCommand) (*gmp.DeleteCredentialResponse, error) {
+	var resp gmp.DeleteCredentialResponse
+	err := cli.conn.Execute(cmd, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}

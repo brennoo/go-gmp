@@ -634,6 +634,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.DeleteCredentialCommand); ok {
+		if cmd.CredentialID == "cred-uuid-1" && cmd.Ultimate == "1" {
+			(*response.(*gmp.DeleteCredentialResponse)).Status = "200"
+			(*response.(*gmp.DeleteCredentialResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeleteCredentialResponse)).Status = "404"
+			(*response.(*gmp.DeleteCredentialResponse)).StatusText = "Not found"
+		}
+	}
+
 	return nil
 }
 
@@ -1956,5 +1966,44 @@ func TestGetCredentials(t *testing.T) {
 	}
 	if respFail.Status != "404" {
 		t.Errorf("Expected status 404, got %s", respFail.Status)
+	}
+}
+
+func TestDeleteCredential(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case
+	cmd := &gmp.DeleteCredentialCommand{
+		CredentialID: "cred-uuid-1",
+		Ultimate:     "1",
+	}
+	resp, err := cli.DeleteCredential(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeleteCredential: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status text 'OK', got '%s'", resp.StatusText)
+	}
+
+	// Failure case
+	cmdFail := &gmp.DeleteCredentialCommand{
+		CredentialID: "notfound",
+		Ultimate:     "1",
+	}
+	respFail, err := cli.DeleteCredential(cmdFail)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeleteCredential (fail): %s", err)
+	}
+	if respFail.Status != "404" {
+		t.Errorf("Expected status 404, got %s", respFail.Status)
+	}
+	if respFail.StatusText != "Not found" {
+		t.Errorf("Expected status text 'Not found', got '%s'", respFail.StatusText)
 	}
 }

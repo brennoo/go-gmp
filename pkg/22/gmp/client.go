@@ -54,4 +54,5 @@ type Client interface {
 	CreateCredential(cmd *CreateCredentialCommand) (*CreateCredentialResponse, error)
 	ModifyCredential(cmd *ModifyCredentialCommand) (*ModifyCredentialResponse, error)
 	GetCredentials(cmd *GetCredentialsCommand) (*GetCredentialsResponse, error)
+	DeleteCredential(cmd *DeleteCredentialCommand) (*DeleteCredentialResponse, error)
 }
