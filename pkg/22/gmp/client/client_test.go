@@ -875,6 +875,49 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.GetNvtsCommand); ok {
+		if cmd.Details == "1" {
+			(*response.(*gmp.GetNvtsResponse)).Status = "200"
+			(*response.(*gmp.GetNvtsResponse)).StatusText = "OK"
+			(*response.(*gmp.GetNvtsResponse)).Nvts = []gmp.NVT{
+				{
+					OID:              "1.3.6.1.4.1.25623.1.7.13005",
+					Name:             "Services",
+					CreationTime:     "2011-01-14T10:12:23+01:00",
+					ModificationTime: "2012-09-19T20:56:15+02:00",
+					Category:         "3",
+					Family:           "Service detection",
+					CvssBase:         "",
+					Severities:       "0",
+					Refs:             "",
+					Tags:             "NOTAG",
+					PreferenceCount:  "-1",
+					Timeout:          "",
+				},
+				{
+					OID:              "1.3.6.1.4.1.25623.1.7.13006",
+					Name:             "FooBar 21",
+					CreationTime:     "2011-01-14T10:12:23+01:00",
+					ModificationTime: "2012-09-19T20:56:15+02:00",
+					Category:         "3",
+					Family:           "Service detection",
+				},
+			}
+		} else if cmd.NvtOID == "1.3.6.1.4.1.25623.1.0.10330" {
+			(*response.(*gmp.GetNvtsResponse)).Status = "200"
+			(*response.(*gmp.GetNvtsResponse)).StatusText = "OK"
+			(*response.(*gmp.GetNvtsResponse)).Nvts = []gmp.NVT{
+				{
+					OID:  "1.3.6.1.4.1.25623.1.0.10330",
+					Name: "Services",
+				},
+			}
+		} else {
+			(*response.(*gmp.GetNvtsResponse)).Status = "404"
+			(*response.(*gmp.GetNvtsResponse)).StatusText = "Not found"
+		}
+	}
+
 	return nil
 }
 

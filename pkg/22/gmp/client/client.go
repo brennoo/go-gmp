@@ -472,3 +472,9 @@ func (cli *client) DeleteAgents(cmd *gmp.DeleteAgentsCommand) (resp *gmp.DeleteA
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) GetNvts(cmd *gmp.GetNvtsCommand) (resp *gmp.GetNvtsResponse, err error) {
+	resp = new(gmp.GetNvtsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

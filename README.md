@@ -145,7 +145,7 @@ The following table shows the current implementation status of GMP commands in t
 | `get_agents` | Retrieve agents | :white_check_mark: |
 | `delete_agents` | Delete agents | :white_check_mark: |
 | **NVT Management** | | |
-| `get_nvts` | Retrieve NVTs | :x: |
+| `get_nvts` | Retrieve NVTs | :white_check_mark: |
 | `get_nvt_families` | Retrieve NVT families | :x: |
 | **Feed Management** | | |
 | `get_feeds` | Retrieve feeds | :x: |
