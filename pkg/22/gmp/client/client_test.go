@@ -865,6 +865,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.DeleteAgentsCommand); ok {
+		if len(cmd.Agents) == 1 && cmd.Agents[0].ID == "c6f1cdc3-8c2c-4b2e-9f43-139d23c7cfd4" {
+			(*response.(*gmp.DeleteAgentsResponse)).Status = "200"
+			(*response.(*gmp.DeleteAgentsResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeleteAgentsResponse)).Status = "404"
+			(*response.(*gmp.DeleteAgentsResponse)).StatusText = "Not found"
+		}
+	}
+
 	return nil
 }
 

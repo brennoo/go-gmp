@@ -76,4 +76,5 @@ type Client interface {
 	GetTLSCertificates(cmd *GetTLSCertificatesCommand) (resp *GetTLSCertificatesResponse, err error)
 	ModifyAgents(cmd *ModifyAgentsCommand) (resp *ModifyAgentsResponse, err error)
 	GetAgents(cmd *GetAgentsCommand) (resp *GetAgentsResponse, err error)
+	DeleteAgents(cmd *DeleteAgentsCommand) (resp *DeleteAgentsResponse, err error)
 }

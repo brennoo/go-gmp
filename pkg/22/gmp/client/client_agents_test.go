@@ -62,3 +62,26 @@ func TestGetAgents(t *testing.T) {
 		t.Fatalf("Unexpected agent_id. Expected: GAT-29-p0MPX0FT Got: %s", agent.AgentID)
 	}
 }
+
+func TestDeleteAgents(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.DeleteAgentsCommand{
+		Agents: []gmp.Agent{
+			{ID: "c6f1cdc3-8c2c-4b2e-9f43-139d23c7cfd4"},
+		},
+	}
+	resp, err := cli.DeleteAgents(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeleteAgents: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+}
