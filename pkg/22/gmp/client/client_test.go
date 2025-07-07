@@ -539,6 +539,34 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.GetSystemReportsCommand); ok {
+		if cmd.Name == "proc" {
+			(*response.(*gmp.GetSystemReportsResponse)).Status = "200"
+			(*response.(*gmp.GetSystemReportsResponse)).StatusText = "OK"
+			(*response.(*gmp.GetSystemReportsResponse)).SystemReports = []gmp.SystemReportWrapper{
+				{
+					Name:  "proc",
+					Title: "Processes",
+					Report: &gmp.SystemReportContent{
+						Format:   "png",
+						Duration: "86400",
+						Value:    "iVBORw0KGgoAAAANSUhEUgAAArkAAAE...2bEdAAAAAElFTkSuQmCC",
+					},
+				},
+			}
+		} else if cmd.Brief == "1" {
+			(*response.(*gmp.GetSystemReportsResponse)).Status = "200"
+			(*response.(*gmp.GetSystemReportsResponse)).StatusText = "OK"
+			(*response.(*gmp.GetSystemReportsResponse)).SystemReports = []gmp.SystemReportWrapper{
+				{Name: "proc", Title: "Processes"},
+				{Name: "load", Title: "System Load"},
+			}
+		} else {
+			(*response.(*gmp.GetSystemReportsResponse)).Status = "404"
+			(*response.(*gmp.GetSystemReportsResponse)).StatusText = "Not found"
+		}
+	}
+
 	return nil
 }
 
@@ -1690,6 +1718,57 @@ func TestDeleteReportConfig(t *testing.T) {
 	resp, err = cli.DeleteReportConfig(cmd)
 	if err != nil {
 		t.Fatalf("DeleteReportConfig failed: %v", err)
+	}
+	if resp.Status != "404" || resp.StatusText != "Not found" {
+		t.Errorf("unexpected response: %+v", resp)
+	}
+}
+
+// nolint:gocyclo
+// gocyclo:ignore
+func TestGetSystemReports(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case: get a specific report
+	cmd := &gmp.GetSystemReportsCommand{
+		Name: "proc",
+	}
+	resp, err := cli.GetSystemReports(cmd)
+	if err != nil {
+		t.Fatalf("GetSystemReports failed: %v", err)
+	}
+	if resp.Status != "200" || resp.StatusText != "OK" || len(resp.SystemReports) != 1 {
+		t.Errorf("unexpected response: %+v", resp)
+	}
+	if resp.SystemReports[0].Name != "proc" || resp.SystemReports[0].Title != "Processes" {
+		t.Errorf("unexpected system report: %+v", resp.SystemReports[0])
+	}
+	if resp.SystemReports[0].Report == nil || resp.SystemReports[0].Report.Format != "png" {
+		t.Errorf("unexpected report content: %+v", resp.SystemReports[0].Report)
+	}
+
+	// Success case: get brief listing
+	cmd = &gmp.GetSystemReportsCommand{
+		Brief: "1",
+	}
+	resp, err = cli.GetSystemReports(cmd)
+	if err != nil {
+		t.Fatalf("GetSystemReports failed: %v", err)
+	}
+	if resp.Status != "200" || resp.StatusText != "OK" || len(resp.SystemReports) < 2 {
+		t.Errorf("unexpected response: %+v", resp)
+	}
+
+	// Failure case
+	cmd = &gmp.GetSystemReportsCommand{
+		Name: "notfound",
+	}
+	resp, err = cli.GetSystemReports(cmd)
+	if err != nil {
+		t.Fatalf("GetSystemReports failed: %v", err)
 	}
 	if resp.Status != "404" || resp.StatusText != "Not found" {
 		t.Errorf("unexpected response: %+v", resp)

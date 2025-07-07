@@ -50,4 +50,5 @@ type Client interface {
 	ModifyReportConfig(cmd *ModifyReportConfigCommand) (resp *ModifyReportConfigResponse, err error)
 	GetReportConfigs(cmd *GetReportConfigsCommand) (resp *GetReportConfigsResponse, err error)
 	DeleteReportConfig(cmd *DeleteReportConfigCommand) (resp *DeleteReportConfigResponse, err error)
+	GetSystemReports(cmd *GetSystemReportsCommand) (resp *GetSystemReportsResponse, err error)
 }
