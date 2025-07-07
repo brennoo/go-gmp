@@ -76,7 +76,7 @@ The following table shows the current implementation status of GMP commands in t
 | `create_report_config` | Create a new report config | :white_check_mark: |
 | `modify_report_config` | Modify an existing report config | :white_check_mark: |
 | `get_report_configs` | Retrieve report configs | :white_check_mark: |
-| `delete_report_config` | Delete a report config | :x: |
+| `delete_report_config` | Delete a report config | :white_check_mark: |
 | `get_system_reports` | Retrieve system reports | :x: |
 | **Results & Vulnerabilities** | | |
 | `get_results` | Retrieve scan results | :white_check_mark: |

@@ -529,6 +529,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.DeleteReportConfigCommand); ok {
+		if cmd.ReportConfigID == "config-uuid" && cmd.Ultimate == "1" {
+			(*response.(*gmp.DeleteReportConfigResponse)).Status = "200"
+			(*response.(*gmp.DeleteReportConfigResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeleteReportConfigResponse)).Status = "404"
+			(*response.(*gmp.DeleteReportConfigResponse)).StatusText = "Not found"
+		}
+	}
+
 	return nil
 }
 
@@ -1647,6 +1657,39 @@ func TestGetReportConfigs(t *testing.T) {
 	resp, err = cli.GetReportConfigs(cmd)
 	if err != nil {
 		t.Fatalf("GetReportConfigs failed: %v", err)
+	}
+	if resp.Status != "404" || resp.StatusText != "Not found" {
+		t.Errorf("unexpected response: %+v", resp)
+	}
+}
+
+func TestDeleteReportConfig(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case
+	cmd := &gmp.DeleteReportConfigCommand{
+		ReportConfigID: "config-uuid",
+		Ultimate:       "1",
+	}
+	resp, err := cli.DeleteReportConfig(cmd)
+	if err != nil {
+		t.Fatalf("DeleteReportConfig failed: %v", err)
+	}
+	if resp.Status != "200" || resp.StatusText != "OK" {
+		t.Errorf("unexpected response: %+v", resp)
+	}
+
+	// Failure case
+	cmd = &gmp.DeleteReportConfigCommand{
+		ReportConfigID: "notfound",
+		Ultimate:       "1",
+	}
+	resp, err = cli.DeleteReportConfig(cmd)
+	if err != nil {
+		t.Fatalf("DeleteReportConfig failed: %v", err)
 	}
 	if resp.Status != "404" || resp.StatusText != "Not found" {
 		t.Errorf("unexpected response: %+v", resp)
