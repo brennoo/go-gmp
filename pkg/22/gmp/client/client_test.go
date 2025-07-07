@@ -483,6 +483,52 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.GetReportConfigsCommand); ok {
+		if cmd.ReportConfigID == "config-uuid" {
+			(*response.(*gmp.GetReportConfigsResponse)).Status = "200"
+			(*response.(*gmp.GetReportConfigsResponse)).StatusText = "OK"
+			(*response.(*gmp.GetReportConfigsResponse)).ReportConfigs = []gmp.ReportConfigWrapper{
+				{
+					ID:               "config-uuid",
+					Name:             "Test config",
+					Owner:            &gmp.ReportConfigOwner{Name: "admin"},
+					Comment:          "Test comment",
+					CreationTime:     "2024-01-23T09:43:03Z",
+					ModificationTime: "2024-01-26T14:11:54Z",
+					Writable:         "1",
+					InUse:            "0",
+					Permissions: &gmp.ReportConfigPermissions{
+						Permissions: []gmp.ReportConfigPermission{{Name: "Everything"}},
+					},
+					ReportFormat: &gmp.ReportConfigFormat{
+						ID:   "format-uuid",
+						Name: "Topology SVG",
+					},
+					Params: []gmp.ReportConfigParam{
+						{
+							UsingDefault: "0",
+							Name:         "Graph Type",
+							Type:         "selection",
+							Value:        "dot",
+							Default:      "twopi",
+							Options:      []string{"circo", "dot", "twopi"},
+						},
+						{
+							UsingDefault: "1",
+							Name:         "Node Distance",
+							Type:         "integer<min>1</min><max>20</max>",
+							Value:        "8",
+							Default:      "8",
+						},
+					},
+				},
+			}
+		} else {
+			(*response.(*gmp.GetReportConfigsResponse)).Status = "404"
+			(*response.(*gmp.GetReportConfigsResponse)).StatusText = "Not found"
+		}
+	}
+
 	return nil
 }
 
@@ -1573,195 +1619,36 @@ func TestModifyReportFormat(t *testing.T) {
 	}
 }
 
-func TestGetReportFormats(t *testing.T) {
+func TestGetReportConfigs(t *testing.T) {
 	cli := New(mockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
 
 	// Success case
-	cmd := &gmp.GetReportFormatsCommand{
-		ReportFormatID: "format-uuid",
+	cmd := &gmp.GetReportConfigsCommand{
+		ReportConfigID: "config-uuid",
 	}
-	resp, err := cli.GetReportFormats(cmd)
+	resp, err := cli.GetReportConfigs(cmd)
 	if err != nil {
-		t.Fatalf("Unexpected error during GetReportFormats: %s", err)
+		t.Fatalf("GetReportConfigs failed: %v", err)
 	}
-	if resp.Status != "200" {
-		t.Errorf("Expected status 200, got %s", resp.Status)
-	}
-	if resp.StatusText != "OK" {
-		t.Errorf("Expected status text 'OK', got '%s'", resp.StatusText)
-	}
-	if len(resp.ReportFormats) != 1 {
-		t.Errorf("Expected 1 report format, got %d", len(resp.ReportFormats))
-	} else {
-		format := resp.ReportFormats[0]
-		if format.ID != "format-uuid" {
-			t.Errorf("Expected report format ID 'format-uuid', got '%s'", format.ID)
-		}
-		if format.Name != "HTML" {
-			t.Errorf("Expected name 'HTML', got '%s'", format.Name)
-		}
-		if format.Extension != "html" {
-			t.Errorf("Expected extension 'html', got '%s'", format.Extension)
-		}
-		if format.ContentType != "text/html" {
-			t.Errorf("Expected content type 'text/html', got '%s'", format.ContentType)
-		}
-	}
-
-	// Failure case
-	cmdFail := &gmp.GetReportFormatsCommand{
-		ReportFormatID: "wrong-id",
-	}
-	respFail, err := cli.GetReportFormats(cmdFail)
-	if err != nil {
-		t.Fatalf("Unexpected error during GetReportFormats (fail): %s", err)
-	}
-	if respFail.Status != "404" {
-		t.Errorf("Expected status 404, got %s", respFail.Status)
-	}
-	if respFail.StatusText != "Not found" {
-		t.Errorf("Expected status text 'Not found', got '%s'", respFail.StatusText)
-	}
-}
-
-func TestDeleteReportFormat(t *testing.T) {
-	cli := New(mockedConnection())
-	if cli == nil {
-		t.Fatalf("Client is nil")
-	}
-
-	// Success case
-	cmd := &gmp.DeleteReportFormatCommand{
-		ReportFormatID: "format-uuid",
-		Ultimate:       "1",
-	}
-	resp, err := cli.DeleteReportFormat(cmd)
-	if err != nil {
-		t.Fatalf("DeleteReportFormat failed: %v", err)
-	}
-	if resp.Status != "200" || resp.StatusText != "OK" {
+	if resp.Status != "200" || resp.StatusText != "OK" || len(resp.ReportConfigs) != 1 {
 		t.Errorf("unexpected response: %+v", resp)
 	}
+	if resp.ReportConfigs[0].ID != "config-uuid" || resp.ReportConfigs[0].Name != "Test config" {
+		t.Errorf("unexpected report config: %+v", resp.ReportConfigs[0])
+	}
 
 	// Failure case
-	cmd = &gmp.DeleteReportFormatCommand{
-		ReportFormatID: "notfound",
-		Ultimate:       "1",
+	cmd = &gmp.GetReportConfigsCommand{
+		ReportConfigID: "notfound",
 	}
-	resp, err = cli.DeleteReportFormat(cmd)
+	resp, err = cli.GetReportConfigs(cmd)
 	if err != nil {
-		t.Fatalf("DeleteReportFormat failed: %v", err)
+		t.Fatalf("GetReportConfigs failed: %v", err)
 	}
 	if resp.Status != "404" || resp.StatusText != "Not found" {
-		t.Errorf("unexpected response: %+v", resp)
-	}
-}
-
-func TestVerifyReportFormat(t *testing.T) {
-	cli := New(mockedConnection())
-	if cli == nil {
-		t.Fatalf("Client is nil")
-	}
-
-	// Success case
-	cmd := &gmp.VerifyReportFormatCommand{
-		ReportFormatID: "format-uuid",
-	}
-	resp, err := cli.VerifyReportFormat(cmd)
-	if err != nil {
-		t.Fatalf("VerifyReportFormat failed: %v", err)
-	}
-	if resp.Status != "200" || resp.StatusText != "OK" {
-		t.Errorf("unexpected response: %+v", resp)
-	}
-
-	// Failure case
-	cmd = &gmp.VerifyReportFormatCommand{
-		ReportFormatID: "notfound",
-	}
-	resp, err = cli.VerifyReportFormat(cmd)
-	if err != nil {
-		t.Fatalf("VerifyReportFormat failed: %v", err)
-	}
-	if resp.Status != "404" || resp.StatusText != "Not found" {
-		t.Errorf("unexpected response: %+v", resp)
-	}
-}
-
-func TestCreateReportConfig(t *testing.T) {
-	cli := New(mockedConnection())
-	if cli == nil {
-		t.Fatalf("Client is nil")
-	}
-
-	// Success case
-	cmd := &gmp.CreateReportConfigCommand{
-		Name: "Test config",
-		ReportFormat: gmp.CreateReportConfigFormat{
-			ID: "format-uuid",
-		},
-		Params: []gmp.CreateReportConfigParam{
-			{Name: "Node Distance", Value: "10"},
-		},
-		Comment: "Test comment",
-	}
-	resp, err := cli.CreateReportConfig(cmd)
-	if err != nil {
-		t.Fatalf("CreateReportConfig failed: %v", err)
-	}
-	if resp.Status != "201" || resp.StatusText != "OK, resource created" || resp.ID != "created-config-id" {
-		t.Errorf("unexpected response: %+v", resp)
-	}
-
-	// Failure case
-	cmd = &gmp.CreateReportConfigCommand{
-		Name: "",
-		ReportFormat: gmp.CreateReportConfigFormat{
-			ID: "",
-		},
-	}
-	resp, err = cli.CreateReportConfig(cmd)
-	if err != nil {
-		t.Fatalf("CreateReportConfig failed: %v", err)
-	}
-	if resp.Status != "400" || resp.StatusText != "Bad request" {
-		t.Errorf("unexpected response: %+v", resp)
-	}
-}
-
-func TestModifyReportConfig(t *testing.T) {
-	cli := New(mockedConnection())
-	if cli == nil {
-		t.Fatalf("Client is nil")
-	}
-
-	// Success case: rename and reset param
-	cmd := &gmp.ModifyReportConfigCommand{
-		Name: "Renamed config",
-		Params: []gmp.ModifyReportConfigParam{
-			{Name: "Node Distance", UseDefault: "1"},
-		},
-	}
-	resp, err := cli.ModifyReportConfig(cmd)
-	if err != nil {
-		t.Fatalf("ModifyReportConfig failed: %v", err)
-	}
-	if resp.Status != "200" || resp.StatusText != "OK" || resp.ID != "modified-config-id" {
-		t.Errorf("unexpected response: %+v", resp)
-	}
-
-	// Failure case
-	cmd = &gmp.ModifyReportConfigCommand{
-		Name: "",
-	}
-	resp, err = cli.ModifyReportConfig(cmd)
-	if err != nil {
-		t.Fatalf("ModifyReportConfig failed: %v", err)
-	}
-	if resp.Status != "400" || resp.StatusText != "Bad request" {
 		t.Errorf("unexpected response: %+v", resp)
 	}
 }

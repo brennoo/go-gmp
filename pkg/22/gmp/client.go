@@ -48,4 +48,5 @@ type Client interface {
 	VerifyReportFormat(cmd *VerifyReportFormatCommand) (resp *VerifyReportFormatResponse, err error)
 	CreateReportConfig(cmd *CreateReportConfigCommand) (resp *CreateReportConfigResponse, err error)
 	ModifyReportConfig(cmd *ModifyReportConfigCommand) (resp *ModifyReportConfigResponse, err error)
+	GetReportConfigs(cmd *GetReportConfigsCommand) (resp *GetReportConfigsResponse, err error)
 }

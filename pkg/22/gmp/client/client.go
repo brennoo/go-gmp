@@ -298,3 +298,9 @@ func (cli *client) ModifyReportConfig(cmd *gmp.ModifyReportConfigCommand) (resp 
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) GetReportConfigs(cmd *gmp.GetReportConfigsCommand) (resp *gmp.GetReportConfigsResponse, err error) {
+	resp = new(gmp.GetReportConfigsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
