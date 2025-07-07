@@ -238,3 +238,9 @@ func (cli *client) ModifyOverride(cmd *gmp.ModifyOverrideCommand) (resp *gmp.Mod
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) CreateReport(cmd *gmp.CreateReportCommand) (resp *gmp.CreateReportResponse, err error) {
+	resp = new(gmp.CreateReportResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

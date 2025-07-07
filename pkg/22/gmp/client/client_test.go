@@ -348,6 +348,17 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.CreateReportCommand); ok {
+		if cmd.Report != nil && cmd.Report.ID == "report-uuid" && cmd.Task != nil && cmd.Task.ID == "task-uuid" {
+			(*response.(*gmp.CreateReportResponse)).Status = "201"
+			(*response.(*gmp.CreateReportResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateReportResponse)).ID = "created-report-id"
+		} else {
+			(*response.(*gmp.CreateReportResponse)).Status = "400"
+			(*response.(*gmp.CreateReportResponse)).StatusText = "Bad request"
+		}
+	}
+
 	return nil
 }
 
@@ -1186,5 +1197,60 @@ func TestModifyOverride(t *testing.T) {
 	}
 	if resp.StatusText != "OK" {
 		t.Errorf("Expected status text OK, got %s", resp.StatusText)
+	}
+}
+
+func TestCreateReport(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case
+	cmd := &gmp.CreateReportCommand{
+		Report: &gmp.ReportWrapper{
+			ID:          "report-uuid",
+			FormatID:    "format-uuid",
+			Extension:   "xml",
+			ContentType: "text/xml",
+			RawXML:      []byte("<report>...</report>"),
+		},
+		Task: &gmp.CreateReportTask{
+			ID: "task-uuid",
+		},
+		InAssets: nil,
+	}
+	resp, err := cli.CreateReport(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during CreateReport: %s", err)
+	}
+	if resp.Status != "201" {
+		t.Errorf("Expected status 201, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK, resource created" {
+		t.Errorf("Expected status text 'OK, resource created', got '%s'", resp.StatusText)
+	}
+	if resp.ID != "created-report-id" {
+		t.Errorf("Expected ID 'created-report-id', got '%s'", resp.ID)
+	}
+
+	// Failure case
+	cmdFail := &gmp.CreateReportCommand{
+		Report: &gmp.ReportWrapper{
+			ID: "wrong-id",
+		},
+		Task: &gmp.CreateReportTask{
+			ID: "wrong-task",
+		},
+	}
+	respFail, err := cli.CreateReport(cmdFail)
+	if err != nil {
+		t.Fatalf("Unexpected error during CreateReport (fail): %s", err)
+	}
+	if respFail.Status != "400" {
+		t.Errorf("Expected status 400, got %s", respFail.Status)
+	}
+	if respFail.StatusText != "Bad request" {
+		t.Errorf("Expected status text 'Bad request', got '%s'", respFail.StatusText)
 	}
 }
