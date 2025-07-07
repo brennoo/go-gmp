@@ -41,7 +41,7 @@ The following table shows the current implementation status of GMP commands in t
 | `get_targets` | Retrieve scan targets | :white_check_mark: |
 | `delete_target` | Delete a scan target | :white_check_mark: |
 | **Scanner Management** | | |
-| `create_scanner` | Create a new scanner | :x: |
+| `create_scanner` | Create a new scanner | :white_check_mark: |
 | `modify_scanner` | Modify an existing scanner | :x: |
 | `get_scanners` | Retrieve available scanners | :white_check_mark: |
 | `delete_scanner` | Delete a scanner | :x: |

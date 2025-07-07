@@ -55,4 +55,5 @@ type Client interface {
 	ModifyCredential(cmd *ModifyCredentialCommand) (*ModifyCredentialResponse, error)
 	GetCredentials(cmd *GetCredentialsCommand) (*GetCredentialsResponse, error)
 	DeleteCredential(cmd *DeleteCredentialCommand) (*DeleteCredentialResponse, error)
+	CreateScanner(cmd *CreateScannerCommand) (*CreateScannerResponse, error)
 }

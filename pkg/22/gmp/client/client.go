@@ -352,3 +352,12 @@ func (cli *client) DeleteCredential(cmd *gmp.DeleteCredentialCommand) (*gmp.Dele
 	}
 	return &resp, nil
 }
+
+func (cli *client) CreateScanner(cmd *gmp.CreateScannerCommand) (*gmp.CreateScannerResponse, error) {
+	var resp gmp.CreateScannerResponse
+	err := cli.conn.Execute(cmd, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}

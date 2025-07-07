@@ -644,6 +644,17 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.CreateScannerCommand); ok {
+		if cmd.Name == "Default Scanner" && cmd.Host == "localhost" && cmd.Port == "9391" && cmd.Type == "2" && cmd.CAPub != "" && cmd.Credential != nil && cmd.Credential.ID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+			(*response.(*gmp.CreateScannerResponse)).Status = "201"
+			(*response.(*gmp.CreateScannerResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateScannerResponse)).ID = "814cd30f-dee1-4d58-851d-21b8d0c048e3"
+		} else {
+			(*response.(*gmp.CreateScannerResponse)).Status = "400"
+			(*response.(*gmp.CreateScannerResponse)).StatusText = "Bad request"
+		}
+	}
+
 	return nil
 }
 
@@ -2005,5 +2016,53 @@ func TestDeleteCredential(t *testing.T) {
 	}
 	if respFail.StatusText != "Not found" {
 		t.Errorf("Expected status text 'Not found', got '%s'", respFail.StatusText)
+	}
+}
+
+func TestCreateScanner(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case
+	cmd := &gmp.CreateScannerCommand{
+		Name:  "Default Scanner",
+		Host:  "localhost",
+		Port:  "9391",
+		Type:  "2",
+		CAPub: "dummy-ca-pub",
+		Credential: &gmp.CreateScannerCredential{
+			ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
+		},
+	}
+	resp, err := cli.CreateScanner(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during CreateScanner: %s", err)
+	}
+	if resp.Status != "201" {
+		t.Errorf("Expected status 201, got %s", resp.Status)
+	}
+	if resp.ID != "814cd30f-dee1-4d58-851d-21b8d0c048e3" {
+		t.Errorf("Expected ID '814cd30f-dee1-4d58-851d-21b8d0c048e3', got %s", resp.ID)
+	}
+
+	// Failure case
+	cmdFail := &gmp.CreateScannerCommand{
+		Name:  "",
+		Host:  "localhost",
+		Port:  "9391",
+		Type:  "2",
+		CAPub: "dummy-ca-pub",
+		Credential: &gmp.CreateScannerCredential{
+			ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
+		},
+	}
+	respFail, err := cli.CreateScanner(cmdFail)
+	if err != nil {
+		t.Fatalf("Unexpected error during CreateScanner (fail): %s", err)
+	}
+	if respFail.Status != "400" {
+		t.Errorf("Expected status 400, got %s", respFail.Status)
 	}
 }
