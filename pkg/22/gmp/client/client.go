@@ -436,3 +436,9 @@ func (cli *client) MoveTask(cmd *gmp.MoveTaskCommand) (resp *gmp.MoveTaskRespons
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) CreateTLSCertificate(cmd *gmp.CreateTLSCertificateCommand) (resp *gmp.CreateTLSCertificateResponse, err error) {
+	resp = new(gmp.CreateTLSCertificateResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

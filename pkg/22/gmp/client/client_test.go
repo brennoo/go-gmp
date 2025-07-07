@@ -806,6 +806,18 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.CreateTLSCertificateCommand); ok {
+		if cmd.Name == "Example Certificate" && cmd.Certificate == "MIIDNjCCAp+gAwIBAgIBATANBgkqhkiG9w0BAQQFADCBqTELM[...]" {
+			(*response.(*gmp.CreateTLSCertificateResponse)).Status = "201"
+			(*response.(*gmp.CreateTLSCertificateResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateTLSCertificateResponse)).ID = "8a925978-59d0-494b-a837-40b271569727"
+		} else {
+			(*response.(*gmp.CreateTLSCertificateResponse)).Status = "400"
+			(*response.(*gmp.CreateTLSCertificateResponse)).StatusText = "Bad request"
+			(*response.(*gmp.CreateTLSCertificateResponse)).ID = ""
+		}
+	}
+
 	return nil
 }
 

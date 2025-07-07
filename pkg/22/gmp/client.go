@@ -71,4 +71,5 @@ type Client interface {
 	DeleteConfig(cmd *DeleteConfigCommand) (resp *DeleteConfigResponse, err error)
 	SyncConfig(cmd *SyncConfigCommand) (resp *SyncConfigResponse, err error)
 	MoveTask(cmd *MoveTaskCommand) (resp *MoveTaskResponse, err error)
+	CreateTLSCertificate(cmd *CreateTLSCertificateCommand) (resp *CreateTLSCertificateResponse, err error)
 }
