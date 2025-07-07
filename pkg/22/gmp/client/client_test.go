@@ -918,6 +918,21 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if _, ok := command.(*gmp.GetNvtFamiliesCommand); ok {
+		(*response.(*gmp.GetNvtFamiliesResponse)).Status = "200"
+		(*response.(*gmp.GetNvtFamiliesResponse)).StatusText = "OK"
+		(*response.(*gmp.GetNvtFamiliesResponse)).Families = []gmp.Family{
+			{
+				Name:        "Credentials",
+				MaxNvtCount: 8,
+			},
+			{
+				Name:        "Port scanners",
+				MaxNvtCount: 12,
+			},
+		}
+	}
+
 	return nil
 }
 

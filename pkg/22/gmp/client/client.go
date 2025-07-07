@@ -478,3 +478,9 @@ func (cli *client) GetNvts(cmd *gmp.GetNvtsCommand) (resp *gmp.GetNvtsResponse, 
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) GetNvtFamilies(cmd *gmp.GetNvtFamiliesCommand) (resp *gmp.GetNvtFamiliesResponse, err error) {
+	resp = new(gmp.GetNvtFamiliesResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

@@ -78,4 +78,5 @@ type Client interface {
 	GetAgents(cmd *GetAgentsCommand) (resp *GetAgentsResponse, err error)
 	DeleteAgents(cmd *DeleteAgentsCommand) (resp *DeleteAgentsResponse, err error)
 	GetNvts(cmd *GetNvtsCommand) (resp *GetNvtsResponse, err error)
+	GetNvtFamilies(cmd *GetNvtFamiliesCommand) (resp *GetNvtFamiliesResponse, err error)
 }
