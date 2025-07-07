@@ -105,3 +105,20 @@ func TestCreatePortRange(t *testing.T) {
 		t.Fatalf("Unexpected ID. Expected: 254cd3ef-bbe1-4d58-859d-21b8d0c046c6 Got: %s", resp.ID)
 	}
 }
+func TestDeletePortRange(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.DeletePortRangeCommand{
+		PortRangeID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
+	}
+	resp, err := cli.DeletePortRange(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeletePortRange: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+}

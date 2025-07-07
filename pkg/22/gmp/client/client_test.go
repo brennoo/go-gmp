@@ -728,6 +728,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.DeletePortRangeCommand); ok {
+		if cmd.PortRangeID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" {
+			(*response.(*gmp.DeletePortRangeResponse)).Status = "200"
+			(*response.(*gmp.DeletePortRangeResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeletePortRangeResponse)).Status = "404"
+			(*response.(*gmp.DeletePortRangeResponse)).StatusText = "Not found"
+		}
+	}
+
 	return nil
 }
 
