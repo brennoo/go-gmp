@@ -53,4 +53,5 @@ type Client interface {
 	GetSystemReports(cmd *GetSystemReportsCommand) (resp *GetSystemReportsResponse, err error)
 	CreateCredential(cmd *CreateCredentialCommand) (*CreateCredentialResponse, error)
 	ModifyCredential(cmd *ModifyCredentialCommand) (*ModifyCredentialResponse, error)
+	GetCredentials(cmd *GetCredentialsCommand) (*GetCredentialsResponse, error)
 }

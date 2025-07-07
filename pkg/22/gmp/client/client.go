@@ -334,3 +334,12 @@ func (cli *client) ModifyCredential(cmd *gmp.ModifyCredentialCommand) (*gmp.Modi
 	}
 	return &resp, nil
 }
+
+func (cli *client) GetCredentials(cmd *gmp.GetCredentialsCommand) (*gmp.GetCredentialsResponse, error) {
+	var resp gmp.GetCredentialsResponse
+	err := cli.conn.Execute(cmd, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
