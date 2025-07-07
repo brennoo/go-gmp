@@ -818,6 +818,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.ModifyTLSCertificateCommand); ok {
+		if cmd.TLSCertificateID == "8a925978-59d0-494b-a837-40b271569727" && cmd.Name == "Renamed Example Certificate" {
+			(*response.(*gmp.ModifyTLSCertificateResponse)).Status = "200"
+			(*response.(*gmp.ModifyTLSCertificateResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyTLSCertificateResponse)).Status = "404"
+			(*response.(*gmp.ModifyTLSCertificateResponse)).StatusText = "Not found"
+		}
+	}
+
 	return nil
 }
 

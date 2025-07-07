@@ -30,3 +30,25 @@ func TestCreateTLSCertificate(t *testing.T) {
 		t.Fatalf("Unexpected ID. Expected: 8a925978-59d0-494b-a837-40b271569727 Got: %s", resp.ID)
 	}
 }
+
+func TestModifyTLSCertificate(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.ModifyTLSCertificateCommand{
+		TLSCertificateID: "8a925978-59d0-494b-a837-40b271569727",
+		Name:             "Renamed Example Certificate",
+	}
+	resp, err := cli.ModifyTLSCertificate(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyTLSCertificate: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+}

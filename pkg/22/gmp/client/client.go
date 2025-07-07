@@ -442,3 +442,9 @@ func (cli *client) CreateTLSCertificate(cmd *gmp.CreateTLSCertificateCommand) (r
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) ModifyTLSCertificate(cmd *gmp.ModifyTLSCertificateCommand) (resp *gmp.ModifyTLSCertificateResponse, err error) {
+	resp = new(gmp.ModifyTLSCertificateResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
