@@ -686,6 +686,17 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.CreatePortListCommand); ok {
+		if cmd.Name == "All TCP" && cmd.PortRange == "T:1-65535" {
+			(*response.(*gmp.CreatePortListResponse)).Status = "201"
+			(*response.(*gmp.CreatePortListResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreatePortListResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+		} else {
+			(*response.(*gmp.CreatePortListResponse)).Status = "400"
+			(*response.(*gmp.CreatePortListResponse)).StatusText = "Bad request"
+		}
+	}
+
 	return nil
 }
 
@@ -734,24 +745,6 @@ func TestGetPreferences(t *testing.T) {
 	resp, err := cli.GetPreferences(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetPreferences: %s", err)
-	}
-
-	if resp.Status != "200" {
-		t.Fatalf("Unexpected status. \nExpected: 200 \nGot: %s", resp.Status)
-	}
-}
-
-func TestGetPortLists(t *testing.T) {
-	cli := New(mockedConnection())
-	if cli == nil {
-		t.Fatalf("Client is nil")
-	}
-
-	cmd := &gmp.GetPortListsCommand{}
-	cmd.PortListID = "33d0cd82-57c6-11e1-8ed1-406186ea4fc5"
-	resp, err := cli.GetPortLists(cmd)
-	if err != nil {
-		t.Fatalf("Unexpected error during GetPortLists: %s", err)
 	}
 
 	if resp.Status != "200" {

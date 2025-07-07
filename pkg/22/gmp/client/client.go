@@ -364,3 +364,9 @@ func (cli *client) VerifyScanner(cmd *gmp.VerifyScannerCommand) (resp *gmp.Verif
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) CreatePortList(cmd *gmp.CreatePortListCommand) (resp *gmp.CreatePortListResponse, err error) {
+	resp = new(gmp.CreatePortListResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
