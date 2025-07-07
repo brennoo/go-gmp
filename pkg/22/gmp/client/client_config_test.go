@@ -59,3 +59,25 @@ func TestModifyConfig(t *testing.T) {
 		t.Fatalf("Unexpected status. \nExpected: 200 \nGot: %s", resp.Status)
 	}
 }
+
+func TestDeleteConfig(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.DeleteConfigCommand{
+		ConfigID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
+		Ultimate: "1",
+	}
+	resp, err := cli.DeleteConfig(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeleteConfig: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+}

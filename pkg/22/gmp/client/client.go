@@ -418,3 +418,9 @@ func (cli *client) Help(cmd *gmp.HelpCommand) (resp *gmp.HelpResponse, err error
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) DeleteConfig(cmd *gmp.DeleteConfigCommand) (resp *gmp.DeleteConfigResponse, err error) {
+	resp = new(gmp.DeleteConfigResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

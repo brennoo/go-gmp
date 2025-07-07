@@ -24,7 +24,7 @@ The following table shows the current implementation status of GMP commands in t
 | `create_config` | Create a new scan configuration | :white_check_mark: |
 | `modify_config` | Modify an existing scan configuration | :white_check_mark: |
 | `get_configs` | Retrieve scan configurations | :white_check_mark: |
-| `delete_config` | Delete a scan configuration | :x: |
+| `delete_config` | Delete a scan configuration | :white_check_mark: |
 | `sync_config` | Sync configuration with feed | :x: |
 | **Task Management** | | |
 | `create_task` | Create a new scan task | :white_check_mark: |

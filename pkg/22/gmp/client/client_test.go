@@ -781,6 +781,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.DeleteConfigCommand); ok {
+		if cmd.ConfigID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" && cmd.Ultimate == "1" {
+			(*response.(*gmp.DeleteConfigResponse)).Status = "200"
+			(*response.(*gmp.DeleteConfigResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeleteConfigResponse)).Status = "404"
+			(*response.(*gmp.DeleteConfigResponse)).StatusText = "Not found"
+		}
+	}
+
 	return nil
 }
 
