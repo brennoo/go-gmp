@@ -60,4 +60,5 @@ type Client interface {
 	DeleteScanner(cmd *DeleteScannerCommand) (resp *DeleteScannerResponse, err error)
 	VerifyScanner(cmd *VerifyScannerCommand) (resp *VerifyScannerResponse, err error)
 	CreatePortList(cmd *CreatePortListCommand) (resp *CreatePortListResponse, err error)
+	ModifyPortList(cmd *ModifyPortListCommand) (resp *ModifyPortListResponse, err error)
 }

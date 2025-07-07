@@ -370,3 +370,9 @@ func (cli *client) CreatePortList(cmd *gmp.CreatePortListCommand) (resp *gmp.Cre
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) ModifyPortList(cmd *gmp.ModifyPortListCommand) (resp *gmp.ModifyPortListResponse, err error) {
+	resp = new(gmp.ModifyPortListResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

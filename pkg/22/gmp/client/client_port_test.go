@@ -45,3 +45,22 @@ func TestCreatePortList(t *testing.T) {
 		t.Fatalf("Unexpected ID. Expected: 254cd3ef-bbe1-4d58-859d-21b8d0c046c6 Got: %s", resp.ID)
 	}
 }
+func TestModifyPortList(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.ModifyPortListCommand{
+		PortListID: "27140836-05ae-4e8b-9abf-f725ddc2888f",
+		Name:       "PL-WS1",
+		Comment:    "Port List for Web Server 1",
+	}
+	resp, err := cli.ModifyPortList(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyPortList: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+}

@@ -697,6 +697,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.ModifyPortListCommand); ok {
+		if cmd.PortListID == "27140836-05ae-4e8b-9abf-f725ddc2888f" {
+			(*response.(*gmp.ModifyPortListResponse)).Status = "200"
+			(*response.(*gmp.ModifyPortListResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyPortListResponse)).Status = "400"
+			(*response.(*gmp.ModifyPortListResponse)).StatusText = "Bad request"
+		}
+	}
+
 	return nil
 }
 
