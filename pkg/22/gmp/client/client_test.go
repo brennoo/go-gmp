@@ -457,6 +457,17 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.CreateReportConfigCommand); ok {
+		if cmd.Name == "Test config" && cmd.ReportFormat.ID == "format-uuid" {
+			(*response.(*gmp.CreateReportConfigResponse)).Status = "201"
+			(*response.(*gmp.CreateReportConfigResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateReportConfigResponse)).ID = "created-config-id"
+		} else {
+			(*response.(*gmp.CreateReportConfigResponse)).Status = "400"
+			(*response.(*gmp.CreateReportConfigResponse)).StatusText = "Bad request"
+		}
+	}
+
 	return nil
 }
 
@@ -1661,6 +1672,47 @@ func TestVerifyReportFormat(t *testing.T) {
 		t.Fatalf("VerifyReportFormat failed: %v", err)
 	}
 	if resp.Status != "404" || resp.StatusText != "Not found" {
+		t.Errorf("unexpected response: %+v", resp)
+	}
+}
+
+func TestCreateReportConfig(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case
+	cmd := &gmp.CreateReportConfigCommand{
+		Name: "Test config",
+		ReportFormat: gmp.CreateReportConfigFormat{
+			ID: "format-uuid",
+		},
+		Params: []gmp.CreateReportConfigParam{
+			{Name: "Node Distance", Value: "10"},
+		},
+		Comment: "Test comment",
+	}
+	resp, err := cli.CreateReportConfig(cmd)
+	if err != nil {
+		t.Fatalf("CreateReportConfig failed: %v", err)
+	}
+	if resp.Status != "201" || resp.StatusText != "OK, resource created" || resp.ID != "created-config-id" {
+		t.Errorf("unexpected response: %+v", resp)
+	}
+
+	// Failure case
+	cmd = &gmp.CreateReportConfigCommand{
+		Name: "",
+		ReportFormat: gmp.CreateReportConfigFormat{
+			ID: "",
+		},
+	}
+	resp, err = cli.CreateReportConfig(cmd)
+	if err != nil {
+		t.Fatalf("CreateReportConfig failed: %v", err)
+	}
+	if resp.Status != "400" || resp.StatusText != "Bad request" {
 		t.Errorf("unexpected response: %+v", resp)
 	}
 }
