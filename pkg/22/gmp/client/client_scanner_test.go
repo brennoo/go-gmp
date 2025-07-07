@@ -139,3 +139,25 @@ func TestDeleteScanner(t *testing.T) {
 		t.Fatalf("Expected status text 'OK', got '%s'", resp.StatusText)
 	}
 }
+
+func TestVerifyScanner(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.VerifyScannerCommand{ScannerID: "scanner-uuid"}
+	resp, err := cli.VerifyScanner(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Expected status text 'OK', got '%s'", resp.StatusText)
+	}
+	if resp.Version != "OTP/2.0" {
+		t.Fatalf("Expected version 'OTP/2.0', got '%s'", resp.Version)
+	}
+}

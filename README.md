@@ -45,7 +45,7 @@ The following table shows the current implementation status of GMP commands in t
 | `modify_scanner` | Modify an existing scanner | :white_check_mark: |
 | `get_scanners` | Retrieve available scanners | :white_check_mark: |
 | `delete_scanner` | Delete a scanner | :white_check_mark: |
-| `verify_scanner` | Verify scanner connectivity | :x: |
+| `verify_scanner` | Verify scanner connectivity | :white_check_mark: |
 | **Port List Management** | | |
 | `create_port_list` | Create a new port list | :x: |
 | `modify_port_list` | Modify an existing port list | :x: |

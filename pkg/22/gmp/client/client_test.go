@@ -675,6 +675,17 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.VerifyScannerCommand); ok {
+		if cmd.ScannerID == "scanner-uuid" {
+			(*response.(*gmp.VerifyScannerResponse)).Status = "200"
+			(*response.(*gmp.VerifyScannerResponse)).StatusText = "OK"
+			(*response.(*gmp.VerifyScannerResponse)).Version = "OTP/2.0"
+		} else {
+			(*response.(*gmp.VerifyScannerResponse)).Status = "404"
+			(*response.(*gmp.VerifyScannerResponse)).StatusText = "Not found"
+		}
+	}
+
 	return nil
 }
 
