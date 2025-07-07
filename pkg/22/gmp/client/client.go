@@ -454,3 +454,9 @@ func (cli *client) GetTLSCertificates(cmd *gmp.GetTLSCertificatesCommand) (resp 
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) ModifyAgents(cmd *gmp.ModifyAgentsCommand) (resp *gmp.ModifyAgentsResponse, err error) {
+	resp = new(gmp.ModifyAgentsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

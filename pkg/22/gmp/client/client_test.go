@@ -841,6 +841,18 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.ModifyAgentsCommand); ok {
+		if len(cmd.Agents) == 1 && cmd.Agents[0].ID == "fb6451bf-ec5a-45a8-8bab-5cf4b862e51b" &&
+			cmd.Authorized == "1" && cmd.MinInterval == "1000" && cmd.HeartbeatInterval == "0" &&
+			cmd.Schedule == "@every 12h" && cmd.Comment == "example update" {
+			(*response.(*gmp.ModifyAgentsResponse)).Status = "200"
+			(*response.(*gmp.ModifyAgentsResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyAgentsResponse)).Status = "400"
+			(*response.(*gmp.ModifyAgentsResponse)).StatusText = "Bad request"
+		}
+	}
+
 	return nil
 }
 
