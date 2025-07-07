@@ -447,6 +447,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.VerifyReportFormatCommand); ok {
+		if cmd.ReportFormatID == "format-uuid" {
+			(*response.(*gmp.VerifyReportFormatResponse)).Status = "200"
+			(*response.(*gmp.VerifyReportFormatResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.VerifyReportFormatResponse)).Status = "404"
+			(*response.(*gmp.VerifyReportFormatResponse)).StatusText = "Not found"
+		}
+	}
+
 	return nil
 }
 
@@ -1618,6 +1628,37 @@ func TestDeleteReportFormat(t *testing.T) {
 	resp, err = cli.DeleteReportFormat(cmd)
 	if err != nil {
 		t.Fatalf("DeleteReportFormat failed: %v", err)
+	}
+	if resp.Status != "404" || resp.StatusText != "Not found" {
+		t.Errorf("unexpected response: %+v", resp)
+	}
+}
+
+func TestVerifyReportFormat(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case
+	cmd := &gmp.VerifyReportFormatCommand{
+		ReportFormatID: "format-uuid",
+	}
+	resp, err := cli.VerifyReportFormat(cmd)
+	if err != nil {
+		t.Fatalf("VerifyReportFormat failed: %v", err)
+	}
+	if resp.Status != "200" || resp.StatusText != "OK" {
+		t.Errorf("unexpected response: %+v", resp)
+	}
+
+	// Failure case
+	cmd = &gmp.VerifyReportFormatCommand{
+		ReportFormatID: "notfound",
+	}
+	resp, err = cli.VerifyReportFormat(cmd)
+	if err != nil {
+		t.Fatalf("VerifyReportFormat failed: %v", err)
 	}
 	if resp.Status != "404" || resp.StatusText != "Not found" {
 		t.Errorf("unexpected response: %+v", resp)

@@ -280,3 +280,9 @@ func (cli *client) DeleteReportFormat(cmd *gmp.DeleteReportFormatCommand) (resp 
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) VerifyReportFormat(cmd *gmp.VerifyReportFormatCommand) (resp *gmp.VerifyReportFormatResponse, err error) {
+	resp = new(gmp.VerifyReportFormatResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
