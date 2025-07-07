@@ -62,4 +62,5 @@ type Client interface {
 	CreatePortList(cmd *CreatePortListCommand) (resp *CreatePortListResponse, err error)
 	ModifyPortList(cmd *ModifyPortListCommand) (resp *ModifyPortListResponse, err error)
 	DeletePortList(cmd *DeletePortListCommand) (resp *DeletePortListResponse, err error)
+	CreatePortRange(cmd *CreatePortRangeCommand) (resp *CreatePortRangeResponse, err error)
 }

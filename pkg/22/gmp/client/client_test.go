@@ -717,6 +717,17 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.CreatePortRangeCommand); ok {
+		if cmd.PortList.ID == "354cd3ef-bbe1-4d58-859d-21b8d0c046c4" && cmd.Start == "777" && cmd.End == "779" && cmd.Type == "TCP" {
+			(*response.(*gmp.CreatePortRangeResponse)).Status = "201"
+			(*response.(*gmp.CreatePortRangeResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreatePortRangeResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+		} else {
+			(*response.(*gmp.CreatePortRangeResponse)).Status = "400"
+			(*response.(*gmp.CreatePortRangeResponse)).StatusText = "Bad request"
+		}
+	}
+
 	return nil
 }
 

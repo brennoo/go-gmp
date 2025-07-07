@@ -51,7 +51,7 @@ The following table shows the current implementation status of GMP commands in t
 | `modify_port_list` | Modify an existing port list | :white_check_mark: |
 | `get_port_lists` | Retrieve port lists | :white_check_mark: |
 | `delete_port_list` | Delete a port list | :white_check_mark: |
-| `create_port_range` | Create a port range | :x: |
+| `create_port_range` | Create a port range | :white_check_mark: |
 | `delete_port_range` | Delete a port range | :x: |
 | **Schedule Management** | | |
 | `create_schedule` | Create a new schedule | :white_check_mark: |

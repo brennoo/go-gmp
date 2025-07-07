@@ -382,3 +382,9 @@ func (cli *client) DeletePortList(cmd *gmp.DeletePortListCommand) (resp *gmp.Del
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) CreatePortRange(cmd *gmp.CreatePortRangeCommand) (resp *gmp.CreatePortRangeResponse, err error) {
+	resp = new(gmp.CreatePortRangeResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
