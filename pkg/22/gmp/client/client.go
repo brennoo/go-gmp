@@ -238,3 +238,81 @@ func (cli *client) ModifyOverride(cmd *gmp.ModifyOverrideCommand) (resp *gmp.Mod
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) CreateReport(cmd *gmp.CreateReportCommand) (resp *gmp.CreateReportResponse, err error) {
+	resp = new(gmp.CreateReportResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetReports(cmd *gmp.GetReportsCommand) (resp *gmp.GetReportsResponse, err error) {
+	resp = new(gmp.GetReportsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) DeleteReport(cmd *gmp.DeleteReportCommand) (resp *gmp.DeleteReportResponse, err error) {
+	resp = new(gmp.DeleteReportResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) CreateReportFormat(cmd *gmp.CreateReportFormatCommand) (resp *gmp.CreateReportFormatResponse, err error) {
+	resp = new(gmp.CreateReportFormatResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) ModifyReportFormat(cmd *gmp.ModifyReportFormatCommand) (resp *gmp.ModifyReportFormatResponse, err error) {
+	resp = new(gmp.ModifyReportFormatResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetReportFormats(cmd *gmp.GetReportFormatsCommand) (resp *gmp.GetReportFormatsResponse, err error) {
+	resp = new(gmp.GetReportFormatsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) DeleteReportFormat(cmd *gmp.DeleteReportFormatCommand) (resp *gmp.DeleteReportFormatResponse, err error) {
+	resp = new(gmp.DeleteReportFormatResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) VerifyReportFormat(cmd *gmp.VerifyReportFormatCommand) (resp *gmp.VerifyReportFormatResponse, err error) {
+	resp = new(gmp.VerifyReportFormatResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) CreateReportConfig(cmd *gmp.CreateReportConfigCommand) (resp *gmp.CreateReportConfigResponse, err error) {
+	resp = new(gmp.CreateReportConfigResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) ModifyReportConfig(cmd *gmp.ModifyReportConfigCommand) (resp *gmp.ModifyReportConfigResponse, err error) {
+	resp = new(gmp.ModifyReportConfigResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetReportConfigs(cmd *gmp.GetReportConfigsCommand) (resp *gmp.GetReportConfigsResponse, err error) {
+	resp = new(gmp.GetReportConfigsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) DeleteReportConfig(cmd *gmp.DeleteReportConfigCommand) (resp *gmp.DeleteReportConfigResponse, err error) {
+	resp = new(gmp.DeleteReportConfigResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetSystemReports(cmd *gmp.GetSystemReportsCommand) (resp *gmp.GetSystemReportsResponse, err error) {
+	resp = new(gmp.GetSystemReportsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

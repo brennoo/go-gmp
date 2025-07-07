@@ -65,19 +65,19 @@ The following table shows the current implementation status of GMP commands in t
 | `delete_alert` | Delete an alert | :white_check_mark: |
 | `test_alert` | Test an alert | :white_check_mark: |
 | **Report Management** | | |
-| `create_report` | Create a new report | :x: |
-| `get_reports` | Retrieve reports | :x: |
-| `delete_report` | Delete a report | :x: |
-| `create_report_format` | Create a new report format | :x: |
-| `modify_report_format` | Modify an existing report format | :x: |
-| `get_report_formats` | Retrieve report formats | :x: |
-| `delete_report_format` | Delete a report format | :x: |
-| `verify_report_format` | Verify report format | :x: |
-| `create_report_config` | Create a new report config | :x: |
-| `modify_report_config` | Modify an existing report config | :x: |
-| `get_report_configs` | Retrieve report configs | :x: |
-| `delete_report_config` | Delete a report config | :x: |
-| `get_system_reports` | Retrieve system reports | :x: |
+| `create_report` | Create a new report | :white_check_mark: |
+| `get_reports` | Retrieve reports | :white_check_mark: |
+| `delete_report` | Delete a report | :white_check_mark: |
+| `create_report_format` | Create a new report format | :white_check_mark: |
+| `modify_report_format` | Modify an existing report format | :white_check_mark: |
+| `get_report_formats` | Retrieve report formats | :white_check_mark: |
+| `delete_report_format` | Delete a report format | :white_check_mark: |
+| `verify_report_format` | Verify report format | :white_check_mark: |
+| `create_report_config` | Create a new report config | :white_check_mark: |
+| `modify_report_config` | Modify an existing report config | :white_check_mark: |
+| `get_report_configs` | Retrieve report configs | :white_check_mark: |
+| `delete_report_config` | Delete a report config | :white_check_mark: |
+| `get_system_reports` | Retrieve system reports | :white_check_mark: |
 | **Results & Vulnerabilities** | | |
 | `get_results` | Retrieve scan results | :white_check_mark: |
 | `get_vulns` | Retrieve vulnerabilities | :white_check_mark: |
