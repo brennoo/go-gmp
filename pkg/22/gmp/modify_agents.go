@@ -14,7 +14,8 @@ type ModifyAgentsCommand struct {
 }
 
 type Agent struct {
-	ID string `xml:"id,attr"`
+	ID      string `xml:"id,attr"`
+	AgentID string `xml:"agent_id,omitempty"`
 }
 
 // ModifyAgentsResponse represents a modify_agents command response.

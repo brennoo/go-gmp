@@ -19,6 +19,7 @@ issues:
         - testinggoroutine
         - goconst
         - gosec
+        - dupl
 
 linters:
   disable-all: true

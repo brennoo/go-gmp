@@ -33,3 +33,32 @@ func TestModifyAgents(t *testing.T) {
 		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
 	}
 }
+
+func TestGetAgents(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetAgentsCommand{}
+	resp, err := cli.GetAgents(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetAgents: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+	if len(resp.Agents) != 1 {
+		t.Fatalf("Expected 1 agent, got %d", len(resp.Agents))
+	}
+	agent := resp.Agents[0]
+	if agent.ID != "62462fe0-5834-4630-afc2-0d040c63487c" {
+		t.Fatalf("Unexpected agent ID. Expected: 62462fe0-5834-4630-afc2-0d040c63487c Got: %s", agent.ID)
+	}
+	if agent.AgentID != "GAT-29-p0MPX0FT" {
+		t.Fatalf("Unexpected agent_id. Expected: GAT-29-p0MPX0FT Got: %s", agent.AgentID)
+	}
+}

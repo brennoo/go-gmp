@@ -853,6 +853,18 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if _, ok := command.(*gmp.GetAgentsCommand); ok {
+		resp := response.(*gmp.GetAgentsResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		resp.Agents = []gmp.Agent{
+			{
+				ID:      "62462fe0-5834-4630-afc2-0d040c63487c",
+				AgentID: "GAT-29-p0MPX0FT",
+			},
+		}
+	}
+
 	return nil
 }
 

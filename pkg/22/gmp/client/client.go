@@ -460,3 +460,9 @@ func (cli *client) ModifyAgents(cmd *gmp.ModifyAgentsCommand) (resp *gmp.ModifyA
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) GetAgents(cmd *gmp.GetAgentsCommand) (resp *gmp.GetAgentsResponse, err error) {
+	resp = new(gmp.GetAgentsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
