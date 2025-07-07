@@ -791,6 +791,11 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if _, ok := command.(*gmp.SyncConfigCommand); ok {
+		(*response.(*gmp.SyncConfigResponse)).Status = "202"
+		(*response.(*gmp.SyncConfigResponse)).StatusText = "OK, request submitted"
+	}
+
 	return nil
 }
 

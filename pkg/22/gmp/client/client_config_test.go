@@ -81,3 +81,22 @@ func TestDeleteConfig(t *testing.T) {
 		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
 	}
 }
+
+func TestSyncConfig(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.SyncConfigCommand{}
+	resp, err := cli.SyncConfig(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during SyncConfig: %s", err)
+	}
+	if resp.Status != "202" {
+		t.Fatalf("Unexpected status. Expected: 202 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK, request submitted" {
+		t.Fatalf("Unexpected status text. Expected: OK, request submitted Got: %s", resp.StatusText)
+	}
+}

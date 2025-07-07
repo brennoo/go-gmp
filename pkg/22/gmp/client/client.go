@@ -424,3 +424,9 @@ func (cli *client) DeleteConfig(cmd *gmp.DeleteConfigCommand) (resp *gmp.DeleteC
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) SyncConfig(cmd *gmp.SyncConfigCommand) (resp *gmp.SyncConfigResponse, err error) {
+	resp = new(gmp.SyncConfigResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

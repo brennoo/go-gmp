@@ -69,4 +69,5 @@ type Client interface {
 	GetVersion(cmd *GetVersionCommand) (resp *GetVersionResponse, err error)
 	Help(cmd *HelpCommand) (resp *HelpResponse, err error)
 	DeleteConfig(cmd *DeleteConfigCommand) (resp *DeleteConfigResponse, err error)
+	SyncConfig(cmd *SyncConfigCommand) (resp *SyncConfigResponse, err error)
 }
