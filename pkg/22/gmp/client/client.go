@@ -400,3 +400,9 @@ func (cli *client) DescribeAuth(cmd *gmp.DescribeAuthCommand) (resp *gmp.Describ
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) GetInfo(cmd *gmp.GetInfoCommand) (resp *gmp.GetInfoResponse, err error) {
+	resp = new(gmp.GetInfoResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

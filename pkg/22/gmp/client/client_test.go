@@ -893,3 +893,32 @@ func TestDescribeAuth(t *testing.T) {
 		t.Fatalf("Unexpected second setting: %+v", group.Settings[1])
 	}
 }
+
+func TestGetInfo(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetInfoCommand{
+		Name: "CVE-2011-0018",
+		Type: "cve",
+	}
+	resp, err := cli.GetInfo(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetInfo: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+	if len(resp.Infos) != 1 {
+		t.Fatalf("Expected 1 info, got %d", len(resp.Infos))
+	}
+	info := resp.Infos[0]
+	if info.ID != "CVE-2011-0018" || info.Name != "CVE-2011-0018" {
+		t.Fatalf("Unexpected info: %+v", info)
+	}
+}
