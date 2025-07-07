@@ -378,6 +378,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.DeleteReportCommand); ok {
+		if cmd.ReportID == "report-uuid" {
+			(*response.(*gmp.DeleteReportResponse)).Status = "200"
+			(*response.(*gmp.DeleteReportResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeleteReportResponse)).Status = "404"
+			(*response.(*gmp.DeleteReportResponse)).StatusText = "Not found"
+		}
+	}
+
 	return nil
 }
 
@@ -1322,6 +1332,43 @@ func TestGetReports(t *testing.T) {
 	respFail, err := cli.GetReports(cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetReports (fail): %s", err)
+	}
+	if respFail.Status != "404" {
+		t.Errorf("Expected status 404, got %s", respFail.Status)
+	}
+	if respFail.StatusText != "Not found" {
+		t.Errorf("Expected status text 'Not found', got '%s'", respFail.StatusText)
+	}
+}
+
+func TestDeleteReport(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case
+	cmd := &gmp.DeleteReportCommand{
+		ReportID: "report-uuid",
+	}
+	resp, err := cli.DeleteReport(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeleteReport: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status text 'OK', got '%s'", resp.StatusText)
+	}
+
+	// Failure case
+	cmdFail := &gmp.DeleteReportCommand{
+		ReportID: "wrong-id",
+	}
+	respFail, err := cli.DeleteReport(cmdFail)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeleteReport (fail): %s", err)
 	}
 	if respFail.Status != "404" {
 		t.Errorf("Expected status 404, got %s", respFail.Status)

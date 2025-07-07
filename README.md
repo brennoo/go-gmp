@@ -67,7 +67,7 @@ The following table shows the current implementation status of GMP commands in t
 | **Report Management** | | |
 | `create_report` | Create a new report | :white_check_mark: |
 | `get_reports` | Retrieve reports | :white_check_mark: |
-| `delete_report` | Delete a report | :x: |
+| `delete_report` | Delete a report | :white_check_mark: |
 | `create_report_format` | Create a new report format | :x: |
 | `modify_report_format` | Modify an existing report format | :x: |
 | `get_report_formats` | Retrieve report formats | :x: |

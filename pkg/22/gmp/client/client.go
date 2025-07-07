@@ -250,3 +250,9 @@ func (cli *client) GetReports(cmd *gmp.GetReportsCommand) (resp *gmp.GetReportsR
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) DeleteReport(cmd *gmp.DeleteReportCommand) (resp *gmp.DeleteReportResponse, err error) {
+	resp = new(gmp.DeleteReportResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

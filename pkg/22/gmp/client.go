@@ -40,4 +40,5 @@ type Client interface {
 	ModifyOverride(cmd *ModifyOverrideCommand) (resp *ModifyOverrideResponse, err error)
 	CreateReport(cmd *CreateReportCommand) (resp *CreateReportResponse, err error)
 	GetReports(cmd *GetReportsCommand) (resp *GetReportsResponse, err error)
+	DeleteReport(cmd *DeleteReportCommand) (resp *DeleteReportResponse, err error)
 }
