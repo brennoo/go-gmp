@@ -120,3 +120,22 @@ func TestModifyScannerFail(t *testing.T) {
 		t.Fatalf("Unexpected status text. Expected: Bad request Got: %s", resp.StatusText)
 	}
 }
+
+func TestDeleteScanner(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.DeleteScannerCommand{ScannerID: "scanner-uuid", Ultimate: "1"}
+	resp, err := cli.DeleteScanner(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Expected status text 'OK', got '%s'", resp.StatusText)
+	}
+}

@@ -352,3 +352,9 @@ func (cli *client) ModifyScanner(cmd *gmp.ModifyScannerCommand) (resp *gmp.Modif
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) DeleteScanner(cmd *gmp.DeleteScannerCommand) (resp *gmp.DeleteScannerResponse, err error) {
+	resp = new(gmp.DeleteScannerResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

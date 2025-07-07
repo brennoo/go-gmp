@@ -665,6 +665,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.DeleteScannerCommand); ok {
+		if cmd.ScannerID == "scanner-uuid" && cmd.Ultimate == "1" {
+			(*response.(*gmp.DeleteScannerResponse)).Status = "200"
+			(*response.(*gmp.DeleteScannerResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeleteScannerResponse)).Status = "404"
+			(*response.(*gmp.DeleteScannerResponse)).StatusText = "Not found"
+		}
+	}
+
 	return nil
 }
 
