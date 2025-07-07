@@ -468,6 +468,21 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.ModifyReportConfigCommand); ok {
+		if len(cmd.Params) > 0 && cmd.Params[0].Name == "Node Distance" && cmd.Params[0].UseDefault == "1" {
+			(*response.(*gmp.ModifyReportConfigResponse)).Status = "200"
+			(*response.(*gmp.ModifyReportConfigResponse)).StatusText = "OK"
+			(*response.(*gmp.ModifyReportConfigResponse)).ID = "modified-config-id"
+		} else if cmd.Name == "Renamed config" {
+			(*response.(*gmp.ModifyReportConfigResponse)).Status = "200"
+			(*response.(*gmp.ModifyReportConfigResponse)).StatusText = "OK"
+			(*response.(*gmp.ModifyReportConfigResponse)).ID = "modified-config-id"
+		} else {
+			(*response.(*gmp.ModifyReportConfigResponse)).Status = "400"
+			(*response.(*gmp.ModifyReportConfigResponse)).StatusText = "Bad request"
+		}
+	}
+
 	return nil
 }
 
@@ -1711,6 +1726,40 @@ func TestCreateReportConfig(t *testing.T) {
 	resp, err = cli.CreateReportConfig(cmd)
 	if err != nil {
 		t.Fatalf("CreateReportConfig failed: %v", err)
+	}
+	if resp.Status != "400" || resp.StatusText != "Bad request" {
+		t.Errorf("unexpected response: %+v", resp)
+	}
+}
+
+func TestModifyReportConfig(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case: rename and reset param
+	cmd := &gmp.ModifyReportConfigCommand{
+		Name: "Renamed config",
+		Params: []gmp.ModifyReportConfigParam{
+			{Name: "Node Distance", UseDefault: "1"},
+		},
+	}
+	resp, err := cli.ModifyReportConfig(cmd)
+	if err != nil {
+		t.Fatalf("ModifyReportConfig failed: %v", err)
+	}
+	if resp.Status != "200" || resp.StatusText != "OK" || resp.ID != "modified-config-id" {
+		t.Errorf("unexpected response: %+v", resp)
+	}
+
+	// Failure case
+	cmd = &gmp.ModifyReportConfigCommand{
+		Name: "",
+	}
+	resp, err = cli.ModifyReportConfig(cmd)
+	if err != nil {
+		t.Fatalf("ModifyReportConfig failed: %v", err)
 	}
 	if resp.Status != "400" || resp.StatusText != "Bad request" {
 		t.Errorf("unexpected response: %+v", resp)
