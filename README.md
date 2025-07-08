@@ -165,7 +165,7 @@ The following table shows the current implementation status of GMP commands in t
 | `get_preferences` | Retrieve configuration preferences | :white_check_mark: |
 | **Utility Commands** | | |
 | `empty_trashcan` | Empty trashcan | :white_check_mark: |
-| `restore` | Restore from trashcan | :x: |
+| `restore` | Restore from trashcan | :white_check_mark: |
 | `run_wizard` | Run wizard | :x: |
 
 **Legend:**

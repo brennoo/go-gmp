@@ -538,3 +538,9 @@ func (cli *client) EmptyTrashcan(cmd *gmp.EmptyTrashcanCommand) (resp *gmp.Empty
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) Restore(cmd *gmp.RestoreCommand) (resp *gmp.RestoreResponse, err error) {
+	resp = new(gmp.RestoreResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

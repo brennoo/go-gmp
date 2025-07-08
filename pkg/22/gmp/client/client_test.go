@@ -1069,6 +1069,12 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		resp.StatusText = "OK"
 	}
 
+	if _, ok := command.(*gmp.RestoreCommand); ok {
+		resp := response.(*gmp.RestoreResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+	}
+
 	return nil
 }
 
@@ -1579,6 +1585,25 @@ func TestEmptyTrashcan(t *testing.T) {
 	resp, err := cli.EmptyTrashcan(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during EmptyTrashcan: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+}
+
+func TestRestore(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.RestoreCommand{ID: "97390ade-e075-11df-9973-002264764cea"}
+	resp, err := cli.Restore(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during Restore: %s", err)
 	}
 	if resp.Status != "200" {
 		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)

@@ -88,4 +88,5 @@ type Client interface {
 	GetAggregates(cmd *GetAggregatesCommand) (resp *GetAggregatesResponse, err error)
 	GetFeatures(cmd *GetFeaturesCommand) (resp *GetFeaturesResponse, err error)
 	EmptyTrashcan(cmd *EmptyTrashcanCommand) (resp *EmptyTrashcanResponse, err error)
+	Restore(cmd *RestoreCommand) (resp *RestoreResponse, err error)
 }
