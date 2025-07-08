@@ -1014,6 +1014,19 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if _, ok := command.(*gmp.GetSettingsCommand); ok {
+		resp := response.(*gmp.GetSettingsResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		resp.Settings = &gmp.SettingsBlock{
+			Setting: []gmp.Setting{{
+				ID:    "5f5a8712-8017-11e1-8556-406186ea4fc5",
+				Name:  "Rows Per Page",
+				Value: "15",
+			}},
+		}
+	}
+
 	return nil
 }
 
@@ -1365,6 +1378,37 @@ func TestModifySetting(t *testing.T) {
 	}
 	if resp.StatusText != "OK" {
 		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+}
+
+func TestGetSettings(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetSettingsCommand{}
+	resp, err := cli.GetSettings(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetSettings: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+	if resp.Settings == nil || len(resp.Settings.Setting) == 0 {
+		t.Fatalf("Expected at least one setting, got %+v", resp.Settings)
+	}
+	if resp.Settings.Setting[0].ID != "5f5a8712-8017-11e1-8556-406186ea4fc5" {
+		t.Fatalf("Unexpected setting id. Expected: 5f5a8712-8017-11e1-8556-406186ea4fc5 Got: %s", resp.Settings.Setting[0].ID)
+	}
+	if resp.Settings.Setting[0].Name != "Rows Per Page" {
+		t.Fatalf("Unexpected setting name. Expected: Rows Per Page Got: %s", resp.Settings.Setting[0].Name)
+	}
+	if resp.Settings.Setting[0].Value != "15" {
+		t.Fatalf("Unexpected setting value. Expected: 15 Got: %s", resp.Settings.Setting[0].Value)
 	}
 }
 

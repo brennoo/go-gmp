@@ -508,3 +508,9 @@ func (cli *client) ModifySetting(cmd *gmp.ModifySettingCommand) (resp *gmp.Modif
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) GetSettings(cmd *gmp.GetSettingsCommand) (resp *gmp.GetSettingsResponse, err error) {
+	resp = new(gmp.GetSettingsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
