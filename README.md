@@ -158,7 +158,7 @@ The following table shows the current implementation status of GMP commands in t
 | **Resource Management** | | |
 | `get_resource_names` | Retrieve resource names | :white_check_mark: |
 | **Aggregate Management** | | |
-| `get_aggregates` | Retrieve aggregates | :x: |
+| `get_aggregates` | Retrieve aggregates | :white_check_mark: |
 | **Features Management** | | |
 | `get_features` | Retrieve features | :x: |
 | **Preferences Management** | | |

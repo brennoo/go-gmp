@@ -1038,6 +1038,21 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if _, ok := command.(*gmp.GetAggregatesCommand); ok {
+		resp := response.(*gmp.GetAggregatesResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		resp.Aggregate = &gmp.AggregateBlock{
+			DataType:    "nvt",
+			DataColumn:  "severity",
+			GroupColumn: "family",
+			Groups: []gmp.AggregateGroup{
+				{Value: "AIX Local Security Checks", Count: 1, CCount: 1, Min: 3.3, Max: 3.3, Mean: 3.3, Sum: 3.3, CSum: 3.3},
+				{Value: "Brute force attacks", Count: 8, CCount: 9, Min: 0, Max: 7.8, Mean: 6.275, Sum: 50.2, CSum: 53.5},
+			},
+		}
+	}
+
 	return nil
 }
 
@@ -1457,6 +1472,52 @@ func TestGetResourceNames(t *testing.T) {
 	}
 	if resp.Resources[1].Name != "cpe:/o:canonical:ubuntu_linux:18.04" {
 		t.Fatalf("Unexpected resource name. Expected: cpe:/o:canonical:ubuntu_linux:18.04 Got: %s", resp.Resources[1].Name)
+	}
+}
+
+func TestGetAggregates(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetAggregatesCommand{Type: "nvt", GroupColumn: "family", DataColumn: "severity"}
+	resp, err := cli.GetAggregates(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetAggregates: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+	if resp.Aggregate == nil {
+		t.Fatalf("Expected aggregate block, got nil")
+	}
+	if resp.Aggregate.DataType != "nvt" {
+		t.Fatalf("Unexpected data_type. Expected: nvt Got: %s", resp.Aggregate.DataType)
+	}
+	if resp.Aggregate.DataColumn != "severity" {
+		t.Fatalf("Unexpected data_column. Expected: severity Got: %s", resp.Aggregate.DataColumn)
+	}
+	if resp.Aggregate.GroupColumn != "family" {
+		t.Fatalf("Unexpected group_column. Expected: family Got: %s", resp.Aggregate.GroupColumn)
+	}
+	if len(resp.Aggregate.Groups) != 2 {
+		t.Fatalf("Expected 2 groups, got %d", len(resp.Aggregate.Groups))
+	}
+	if resp.Aggregate.Groups[0].Value != "AIX Local Security Checks" {
+		t.Fatalf("Unexpected group value. Expected: AIX Local Security Checks Got: %s", resp.Aggregate.Groups[0].Value)
+	}
+	if resp.Aggregate.Groups[0].Count != 1 {
+		t.Fatalf("Unexpected group count. Expected: 1 Got: %d", resp.Aggregate.Groups[0].Count)
+	}
+	if resp.Aggregate.Groups[1].Value != "Brute force attacks" {
+		t.Fatalf("Unexpected group value. Expected: Brute force attacks Got: %s", resp.Aggregate.Groups[1].Value)
+	}
+	if resp.Aggregate.Groups[1].Count != 8 {
+		t.Fatalf("Unexpected group count. Expected: 8 Got: %d", resp.Aggregate.Groups[1].Count)
 	}
 }
 

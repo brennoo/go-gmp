@@ -85,4 +85,5 @@ type Client interface {
 	ModifySetting(cmd *ModifySettingCommand) (resp *ModifySettingResponse, err error)
 	GetSettings(cmd *GetSettingsCommand) (resp *GetSettingsResponse, err error)
 	GetResourceNames(cmd *GetResourceNamesCommand) (resp *GetResourceNamesResponse, err error)
+	GetAggregates(cmd *GetAggregatesCommand) (resp *GetAggregatesResponse, err error)
 }

@@ -520,3 +520,9 @@ func (cli *client) GetResourceNames(cmd *gmp.GetResourceNamesCommand) (resp *gmp
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) GetAggregates(cmd *gmp.GetAggregatesCommand) (resp *gmp.GetAggregatesResponse, err error) {
+	resp = new(gmp.GetAggregatesResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
