@@ -441,9 +441,13 @@ func (g *GMPClient) getTaskProgress(ctx context.Context, taskID string) (int, er
 		return 0, fmt.Errorf("task not found")
 	}
 
-	progress, err := strconv.Atoi(resp.Task[0].Progress.Value)
+	progressStr := resp.Task[0].Progress
+	if progressStr == "" {
+		return 0, fmt.Errorf("progress value is empty")
+	}
+	progress, err := strconv.Atoi(progressStr)
 	if err != nil {
-		return 0, fmt.Errorf("invalid progress value: %s", resp.Task[0].Progress.Value)
+		return 0, fmt.Errorf("invalid progress value: %s", progressStr)
 	}
 
 	return progress, nil

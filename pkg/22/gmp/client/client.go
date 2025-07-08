@@ -550,3 +550,199 @@ func (cli *client) RunWizard(cmd *gmp.RunWizardCommand) (resp *gmp.RunWizardResp
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) RawXML(xmlStr string) (string, error) {
+	return cli.conn.RawXML(xmlStr)
+}
+
+func (cli *client) CreateUser(cmd *gmp.CreateUserCommand) (resp *gmp.CreateUserResponse, err error) {
+	resp = new(gmp.CreateUserResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) ModifyUser(cmd *gmp.ModifyUserCommand) (resp *gmp.ModifyUserResponse, err error) {
+	resp = new(gmp.ModifyUserResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetUsers(cmd *gmp.GetUsersCommand) (resp *gmp.GetUsersResponse, err error) {
+	resp = new(gmp.GetUsersResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) DeleteUser(cmd *gmp.DeleteUserCommand) (resp *gmp.DeleteUserResponse, err error) {
+	resp = new(gmp.DeleteUserResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) CreateRole(cmd *gmp.CreateRoleCommand) (resp *gmp.CreateRoleResponse, err error) {
+	resp = new(gmp.CreateRoleResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) ModifyRole(cmd *gmp.ModifyRoleCommand) (resp *gmp.ModifyRoleResponse, err error) {
+	resp = new(gmp.ModifyRoleResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetRoles(cmd *gmp.GetRolesCommand) (resp *gmp.GetRolesResponse, err error) {
+	resp = new(gmp.GetRolesResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) DeleteRole(cmd *gmp.DeleteRoleCommand) (resp *gmp.DeleteRoleResponse, err error) {
+	resp = new(gmp.DeleteRoleResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) CreatePermission(cmd *gmp.CreatePermissionCommand) (resp *gmp.CreatePermissionResponse, err error) {
+	resp = new(gmp.CreatePermissionResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) ModifyPermission(cmd *gmp.ModifyPermissionCommand) (resp *gmp.ModifyPermissionResponse, err error) {
+	resp = new(gmp.ModifyPermissionResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetPermissions(cmd *gmp.GetPermissionsCommand) (resp *gmp.GetPermissionsResponse, err error) {
+	resp = new(gmp.GetPermissionsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) DeletePermission(cmd *gmp.DeletePermissionCommand) (resp *gmp.DeletePermissionResponse, err error) {
+	resp = new(gmp.DeletePermissionResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) CreateGroup(cmd *gmp.CreateGroupCommand) (resp *gmp.CreateGroupResponse, err error) {
+	resp = new(gmp.CreateGroupResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) ModifyGroup(cmd *gmp.ModifyGroupCommand) (resp *gmp.ModifyGroupResponse, err error) {
+	resp = new(gmp.ModifyGroupResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetGroups(cmd *gmp.GetGroupsCommand) (resp *gmp.GetGroupsResponse, err error) {
+	resp = new(gmp.GetGroupsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) DeleteGroup(cmd *gmp.DeleteGroupCommand) (resp *gmp.DeleteGroupResponse, err error) {
+	resp = new(gmp.DeleteGroupResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) CreateTag(cmd *gmp.CreateTagCommand) (resp *gmp.CreateTagResponse, err error) {
+	resp = new(gmp.CreateTagResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) ModifyTag(cmd *gmp.ModifyTagCommand) (resp *gmp.ModifyTagResponse, err error) {
+	resp = new(gmp.ModifyTagResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetTags(cmd *gmp.GetTagsCommand) (resp *gmp.GetTagsResponse, err error) {
+	resp = new(gmp.GetTagsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) DeleteTag(cmd *gmp.DeleteTagCommand) (resp *gmp.DeleteTagResponse, err error) {
+	resp = new(gmp.DeleteTagResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) CreateNote(cmd *gmp.CreateNoteCommand) (resp *gmp.CreateNoteResponse, err error) {
+	resp = new(gmp.CreateNoteResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) ModifyNote(cmd *gmp.ModifyNoteCommand) (resp *gmp.ModifyNoteResponse, err error) {
+	resp = new(gmp.ModifyNoteResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetNotes(cmd *gmp.GetNotesCommand) (resp *gmp.GetNotesResponse, err error) {
+	resp = new(gmp.GetNotesResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) DeleteNote(cmd *gmp.DeleteNoteCommand) (resp *gmp.DeleteNoteResponse, err error) {
+	resp = new(gmp.DeleteNoteResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) CreateFilter(cmd *gmp.CreateFilterCommand) (resp *gmp.CreateFilterResponse, err error) {
+	resp = new(gmp.CreateFilterResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) ModifyFilter(cmd *gmp.ModifyFilterCommand) (resp *gmp.ModifyFilterResponse, err error) {
+	resp = new(gmp.ModifyFilterResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetFilters(cmd *gmp.GetFiltersCommand) (resp *gmp.GetFiltersResponse, err error) {
+	resp = new(gmp.GetFiltersResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) DeleteFilter(cmd *gmp.DeleteFilterCommand) (resp *gmp.DeleteFilterResponse, err error) {
+	resp = new(gmp.DeleteFilterResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) CreateTicket(cmd *gmp.CreateTicketCommand) (resp *gmp.CreateTicketResponse, err error) {
+	resp = new(gmp.CreateTicketResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) ModifyTicket(cmd *gmp.ModifyTicketCommand) (resp *gmp.ModifyTicketResponse, err error) {
+	resp = new(gmp.ModifyTicketResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetTickets(cmd *gmp.GetTicketsCommand) (resp *gmp.GetTicketsResponse, err error) {
+	resp = new(gmp.GetTicketsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) DeleteTicket(cmd *gmp.DeleteTicketCommand) (resp *gmp.DeleteTicketResponse, err error) {
+	resp = new(gmp.DeleteTicketResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

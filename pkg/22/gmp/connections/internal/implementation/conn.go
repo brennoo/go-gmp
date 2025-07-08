@@ -56,6 +56,14 @@ func (conn *Connection) Execute(command interface{}, response interface{}) error
 	return nil
 }
 
+func (conn *Connection) RawXML(xmlStr string) (string, error) {
+	resp, err := conn.performRequest([]byte(xmlStr))
+	if err != nil {
+		return "", err
+	}
+	return string(resp), nil
+}
+
 func (conn *Connection) Close() error {
 	return conn.rawConn.Close()
 }

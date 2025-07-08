@@ -92,50 +92,50 @@ The following table shows the current implementation status of GMP commands in t
 | `get_credentials` | Retrieve credentials | :white_check_mark: |
 | `delete_credential` | Delete a credential | :white_check_mark: |
 | **User Management** | | |
-| `create_user` | Create a new user | :x: |
-| `modify_user` | Modify an existing user | :x: |
-| `get_users` | Retrieve users | :x: |
-| `delete_user` | Delete a user | :x: |
+| `create_user` | Create a new user | :white_check_mark: |
+| `modify_user` | Modify an existing user | :white_check_mark: |
+| `get_users` | Retrieve users | :white_check_mark: |
+| `delete_user` | Delete a user | :white_check_mark: |
 | **Role Management** | | |
-| `create_role` | Create a new role | :x: |
-| `modify_role` | Modify an existing role | :x: |
-| `get_roles` | Retrieve roles | :x: |
-| `delete_role` | Delete a role | :x: |
+| `create_role` | Create a new role | :white_check_mark: |
+| `modify_role` | Modify an existing role | :white_check_mark: |
+| `get_roles` | Retrieve roles | :white_check_mark: |
+| `delete_role` | Delete a role | :white_check_mark: |
 | **Permission Management** | | |
-| `create_permission` | Create a new permission | :x: |
-| `modify_permission` | Modify an existing permission | :x: |
-| `get_permissions` | Retrieve permissions | :x: |
-| `delete_permission` | Delete a permission | :x: |
+| `create_permission` | Create a new permission | :white_check_mark: |
+| `modify_permission` | Modify an existing permission | :white_check_mark: |
+| `get_permissions` | Retrieve permissions | :white_check_mark: |
+| `delete_permission` | Delete a permission | :white_check_mark: |
 | **Group Management** | | |
-| `create_group` | Create a new group | :x: |
-| `modify_group` | Modify an existing group | :x: |
-| `get_groups` | Retrieve groups | :x: |
-| `delete_group` | Delete a group | :x: |
+| `create_group` | Create a new group | :white_check_mark: |
+| `modify_group` | Modify an existing group | :white_check_mark: |
+| `get_groups` | Retrieve groups | :white_check_mark: |
+| `delete_group` | Delete a group | :white_check_mark: |
 | **Tag Management** | | |
-| `create_tag` | Create a new tag | :x: |
-| `modify_tag` | Modify an existing tag | :x: |
-| `get_tags` | Retrieve tags | :x: |
-| `delete_tag` | Delete a tag | :x: |
+| `create_tag` | Create a new tag | :white_check_mark: |
+| `modify_tag` | Modify an existing tag | :white_check_mark: |
+| `get_tags` | Retrieve tags | :white_check_mark: |
+| `delete_tag` | Delete a tag | :white_check_mark: |
 | **Note Management** | | |
-| `create_note` | Create a new note | :x: |
-| `modify_note` | Modify an existing note | :x: |
-| `get_notes` | Retrieve notes | :x: |
-| `delete_note` | Delete a note | :x: |
+| `create_note` | Create a new note | :white_check_mark: |
+| `modify_note` | Modify an existing note | :white_check_mark: |
+| `get_notes` | Retrieve notes | :white_check_mark: |
+| `delete_note` | Delete a note | :white_check_mark: |
 | **Override Management** | | |
 | `create_override` | Create a new override | :white_check_mark: |
 | `modify_override` | Modify an existing override | :white_check_mark: |
 | `get_overrides` | Retrieve overrides | :white_check_mark: |
 | `delete_override` | Delete an override | :white_check_mark: |
 | **Filter Management** | | |
-| `create_filter` | Create a new filter | :x: |
-| `modify_filter` | Modify an existing filter | :x: |
-| `get_filters` | Retrieve filters | :x: |
-| `delete_filter` | Delete a filter | :x: |
+| `create_filter` | Create a new filter | :white_check_mark: |
+| `modify_filter` | Modify an existing filter | :white_check_mark: |
+| `get_filters` | Retrieve filters | :white_check_mark: |
+| `delete_filter` | Delete a filter | :white_check_mark: |
 | **Ticket Management** | | |
-| `create_ticket` | Create a new ticket | :x: |
-| `modify_ticket` | Modify an existing ticket | :x: |
-| `get_tickets` | Retrieve tickets | :x: |
-| `delete_ticket` | Delete a ticket | :x: |
+| `create_ticket` | Create a new ticket | :white_check_mark: |
+| `modify_ticket` | Modify an existing ticket | :white_check_mark: |
+| `get_tickets` | Retrieve tickets | :white_check_mark: |
+| `delete_ticket` | Delete a ticket | :white_check_mark: |
 | **TLS Certificate Management** | | |
 | `create_tls_certificate` | Create a new TLS certificate | :white_check_mark: |
 | `modify_tls_certificate` | Modify an existing TLS certificate | :white_check_mark: |

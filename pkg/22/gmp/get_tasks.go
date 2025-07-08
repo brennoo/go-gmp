@@ -2,7 +2,6 @@ package gmp
 
 import (
 	"encoding/xml"
-	"time"
 )
 
 // GetTasksCommand represents a get_tasks command request.
@@ -33,189 +32,90 @@ type GetTasksResponse struct {
 
 // GetTasksResponseTask represents a task element in the get_tasks response.
 type GetTasksResponseTask struct {
-	ID               string                               `xml:"id,attr"`
-	Owner            GetTasksResponseTaskOwner            `xml:"owner"`
-	Name             string                               `xml:"name"`
-	Comment          string                               `xml:"comment"`
-	CreationTime     time.Time                            `xml:"creation_time"`
-	ModificationTime time.Time                            `xml:"modification_time"`
-	Writable         bool                                 `xml:"writable"`
-	InUse            bool                                 `xml:"in_use"`
-	Permissions      GetTasksResponseTaskPermissions      `xml:"permissions"`
-	UserTags         GetTasksResponseTaskUserTags         `xml:"user_tags"`
-	Status           string                               `xml:"status"`
-	Progress         GetTasksResponseTaskProgress         `xml:"progress"`
-	Alterable        bool                                 `xml:"alterable"`
-	UsageType        string                               `xml:"usage_type"`
-	Config           GetTasksResponseTaskConfig           `xml:"config"`
-	Target           GetTasksResponseTaskTarget           `xml:"target"`
-	HostsOrdering    string                               `xml:"hosts_ordering"`
-	Scanner          GetTasksResponseTaskScanner          `xml:"scanner"`
-	Alert            GetTasksResponseTaskAlert            `xml:"alert"`
-	Observers        GetTasksResponseTaskObservers        `xml:"observers"`
-	Schedule         GetTasksResponseTaskSchedule         `xml:"schedule"`
-	SchedulePeriods  int                                  `xml:"schedule_periods"`
-	ReportCount      GetTasksResponseTaskReportCount      `xml:"report_count"`
-	Trend            string                               `xml:"trend"`
-	CurrentReport    GetTasksResponseTaskCurrentReport    `xml:"current_report"`
-	LastReport       GetTasksResponseTaskLastReportReport `xml:"last_report"`
-	Reports          GetTasksResponseTaskReports          `xml:"reports"`
-	AverageDuration  string                               `xml:"average_duration"`
-	ResultCount      string                               `xml:"result_count"`
-	Preferences      GetTasksResponseTaskPreferences      `xml:"preferences"`
+	ID               string           `xml:"id,attr"`
+	Owner            *TaskOwner       `xml:"owner,omitempty"`
+	Name             string           `xml:"name"`
+	Comment          string           `xml:"comment,omitempty"`
+	CreationTime     string           `xml:"creation_time,omitempty"`
+	ModificationTime string           `xml:"modification_time,omitempty"`
+	Writable         string           `xml:"writable,omitempty"`
+	InUse            string           `xml:"in_use,omitempty"`
+	Permissions      *TaskPermissions `xml:"permissions,omitempty"`
+	Alterable        string           `xml:"alterable,omitempty"`
+	UsageType        string           `xml:"usage_type,omitempty"`
+	Config           *TaskConfig      `xml:"config,omitempty"`
+	Target           *TaskTarget      `xml:"target,omitempty"`
+	HostsOrdering    string           `xml:"hosts_ordering,omitempty"`
+	Scanner          *TaskScanner     `xml:"scanner,omitempty"`
+	Alert            *TaskAlert       `xml:"alert,omitempty"`
+	Observers        *TaskObservers   `xml:"observers,omitempty"`
+	Schedule         *TaskSchedule    `xml:"schedule,omitempty"`
+	ReportCount      string           `xml:"report_count,omitempty"`
+	Trend            string           `xml:"trend,omitempty"`
+	Status           string           `xml:"status,omitempty"`
+	Progress         string           `xml:"progress,omitempty"`
+	LastReport       *TaskLastReport  `xml:"last_report,omitempty"`
+	Reports          *TaskReports     `xml:"reports,omitempty"`
+	Preferences      *TaskPreferences `xml:"preferences,omitempty"`
 }
 
-type GetTasksResponseTaskOwner struct {
-	Name string `xml:"name"`
-}
-type GetTasksResponseTaskPermissions struct {
-	Permission []GetTasksResponseTaskPermissionsPermission `xml:"permission"`
-}
-
-type GetTasksResponseTaskPermissionsPermission struct {
+type TaskOwner struct {
 	Name string `xml:"name"`
 }
 
-type GetTasksResponseTaskUserTags struct {
-	Count int                               `xml:"count"`
-	Tag   []GetTasksTesponseTaskUserTagsTag `xml:"tag"`
+type TaskPermissions struct {
+	Permission []TaskPermission `xml:"permission"`
 }
 
-type GetTasksTesponseTaskUserTagsTag struct {
-	ID      string `xml:"id,attr"`
-	Name    string `xml:"name"`
-	Value   string `xml:"value"`
-	Comment string `xml:"comment"`
+type TaskPermission struct {
+	Name string `xml:"name"`
 }
 
-type GetTasksResponseTaskProgress struct {
-	Value        string                                     `xml:",chardata"`
-	HostProgress []GetTasksResponseTaskProgressHostProgress `xml:"host_progress"`
-}
-
-type GetTasksResponseTaskProgressHostProgress struct {
-	Value string `xml:",chardata"`
-	Host  string `xml:"host"`
-}
-
-type GetTasksResponseTaskConfig struct {
+type TaskConfig struct {
 	ID    string `xml:"id,attr"`
 	Name  string `xml:"name"`
 	Type  string `xml:"type"`
-	Trash bool   `xml:"trash"`
+	Trash string `xml:"trash,omitempty"`
 }
 
-type GetTasksResponseTaskTarget struct {
-	ID          string `xml:"id,attr"`
-	Name        string `xml:"name"`
-	Permissions string `xml:"permissions"`
-	Trash       bool   `xml:"trash"`
+type TaskTarget struct {
+	ID    string `xml:"id,attr"`
+	Name  string `xml:"name"`
+	Trash string `xml:"trash,omitempty"`
 }
 
-type GetTasksResponseTaskScanner struct {
-	ID          string `xml:"id,attr"`
-	Name        string `xml:"name"`
-	Type        int    `xml:"type"`
-	Permissions string `xml:"permissions"`
+type TaskScanner struct {
+	ID    string `xml:"id,attr"`
+	Name  string `xml:"name"`
+	Type  string `xml:"type"`
+	Trash string `xml:"trash,omitempty"`
 }
 
-type GetTasksResponseTaskAlert struct {
-	ID          string `xml:"id,attr"`
-	Name        string `xml:"name"`
-	Permissions string `xml:"permissions"`
-	Trash       bool   `xml:"trash"`
-}
-
-type GetTasksResponseTaskObservers struct {
-	Value string                               `xml:",chardata"`
-	Group []GetTasksTesponseTaskObserversGroup `xml:"group"`
-	Role  []GetTasksTesponseTaskObserversRole  `xml:"role"`
-}
-
-type GetTasksTesponseTaskObserversGroup struct {
+type TaskAlert struct {
 	ID   string `xml:"id,attr"`
 	Name string `xml:"name"`
 }
 
-type GetTasksTesponseTaskObserversRole struct {
+type TaskObservers struct {
+	UserList string          `xml:"user_list,omitempty"`
+	Groups   []ObserverGroup `xml:"group,omitempty"`
+	Roles    []ObserverRole  `xml:"role,omitempty"`
+}
+
+type ObserverGroup struct {
 	ID   string `xml:"id,attr"`
 	Name string `xml:"name"`
 }
 
-type GetTasksResponseTaskSchedule struct {
-	ID           string    `xml:"id,attr"`
-	Name         string    `xml:"name"`
-	Trash        bool      `xml:"trash"`
-	FirstTime    time.Time `xml:"first_time"`
-	NextTime     string    `xml:"next_time"`
-	Icalendar    time.Time `xml:"icalendar"`
-	Period       int       `xml:"period"`
-	PeriodMonths int       `xml:"period_months"`
-	Duration     int       `xml:"duration"`
-	Timezone     string    `xml:"timezone"`
+type ObserverRole struct {
+	ID   string `xml:"id,attr"`
+	Name string `xml:"name"`
 }
 
-type GetTasksResponseTaskReportCount struct {
-	Value    string `xml:",chardata"`
-	Finished int    `xml:"finished"`
-}
-
-type GetTasksResponseTaskCurrentReport struct {
-	Report GetTasksResponseTaskCurrentReportReport `xml:",report"`
-}
-
-type GetTasksResponseTaskCurrentReportReport struct {
-	ID        string    `xml:"id,attr"`
-	Timestamp time.Time `xml:"timestamp"`
-}
-
-type GetTasksResponseTaskLastReportReport struct {
-	ID          string                                          `xml:"id,attr"`
-	Timestamp   time.Time                                       `xml:"timestamp"`
-	ScanEnd     time.Time                                       `xml:"scan_end"`
-	ResultCount GetTasksResponseTaskLastReportReportResultCount `xml:"result_count"`
-	Severity    float32                                         `xml:"severity"`
-}
-
-type GetTasksResponseTaskLastReportReportResultCount struct {
-	Debug         int `xml:"debug"`
-	FalsePositive int `xml:"false_positive"`
-	Log           int `xml:"log"`
-	Info          int `xml:"info"`
-	Warning       int `xml:"warning"`
-	Hole          int `xml:"hole"`
-}
-
-type GetTasksResponseTaskReports struct {
-	Report []GetTasksResponseTaskReportsReport `xml:"report"`
-}
-
-type GetTasksResponseTaskReportsReport struct {
-	ID            string                                       `xml:"id,attr"`
-	Timestamp     time.Time                                    `xml:"timestamp"`
-	ScanEnd       time.Time                                    `xml:"scan_end"`
-	ScanRunStatus string                                       `xml:"scan_run_status"`
-	ResultCount   GetTasksResponseTaskReportsReportResultCount `xml:"result_count"`
-	Severity      float32                                      `xml:"severity"`
-}
-
-type GetTasksResponseTaskReportsReportResultCount struct {
-	Debug         int `xml:"debug"`
-	FalsePositive int `xml:"false_positive"`
-	Log           int `xml:"log"`
-	Info          int `xml:"info"`
-	Warning       int `xml:"warning"`
-	Hole          int `xml:"hole"`
-}
-
-type GetTasksResponseTaskPreferences struct {
-	Preferences []getTasksResponseTaskPreferencesPreference `xml:"preference"`
-}
-
-type getTasksResponseTaskPreferencesPreference struct {
-	Name        string `xml:"name"`
-	ScannerName string `xml:"scanner_name"`
-	Value       string `xml:"value"`
+type TaskSchedule struct {
+	ID    string `xml:"id,attr"`
+	Name  string `xml:"name"`
+	Trash string `xml:"trash,omitempty"`
 }
 
 type GetTasksResponseFilters struct {
@@ -252,4 +152,31 @@ type GetTasksResponseTasks struct {
 type GetTasksResponseTaskCount struct {
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
+}
+
+type TaskLastReport struct {
+	Report *TaskReport `xml:"report"`
+}
+
+type TaskReports struct {
+	Report []TaskReport `xml:"report"`
+}
+
+type TaskPreferences struct {
+	Preference []TaskPreference `xml:"preference"`
+}
+
+type TaskPreference struct {
+	Name        string `xml:"name"`
+	ScannerName string `xml:"scanner_name"`
+	Value       string `xml:"value"`
+}
+
+type TaskReport struct {
+	ID            string `xml:"id,attr"`
+	Timestamp     string `xml:"timestamp,omitempty"`
+	ScanStart     string `xml:"scan_start,omitempty"`
+	ScanEnd       string `xml:"scan_end,omitempty"`
+	ScanRunStatus string `xml:"scan_run_status,omitempty"`
+	Severity      string `xml:"severity,omitempty"`
 }
