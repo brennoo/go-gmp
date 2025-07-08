@@ -100,7 +100,7 @@ The following table shows the current implementation status of GMP commands in t
 | `create_role` | Create a new role | :white_check_mark: |
 | `modify_role` | Modify an existing role | :white_check_mark: |
 | `get_roles` | Retrieve roles | :white_check_mark: |
-| `delete_role` | Delete a role | :x: |
+| `delete_role` | Delete a role | :white_check_mark: |
 | **Permission Management** | | |
 | `create_permission` | Create a new permission | :x: |
 | `modify_permission` | Modify an existing permission | :x: |

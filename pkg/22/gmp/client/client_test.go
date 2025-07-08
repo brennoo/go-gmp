@@ -1168,6 +1168,15 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.DeleteRoleCommand); ok {
+		if cmd.RoleID == "b64c81b2-b9de-11e3-a2e9-406186ea4fc5" && cmd.Ultimate == "1" {
+			(*response.(*gmp.DeleteRoleResponse)).Status = "200"
+			(*response.(*gmp.DeleteRoleResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeleteRoleResponse)).Status = "400"
+		}
+	}
+
 	return nil
 }
 

@@ -100,3 +100,39 @@ func TestGetRoles(t *testing.T) {
 		t.Errorf("Expected role 'Management', got %+v", resp.Roles)
 	}
 }
+
+func TestDeleteRole(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case
+	cmd := &gmp.DeleteRoleCommand{
+		RoleID:   "b64c81b2-b9de-11e3-a2e9-406186ea4fc5",
+		Ultimate: "1",
+	}
+	resp, err := cli.DeleteRole(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeleteRole: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status text OK, got %s", resp.StatusText)
+	}
+
+	// Failure case
+	cmdFail := &gmp.DeleteRoleCommand{
+		RoleID:   "",
+		Ultimate: "1",
+	}
+	respFail, err := cli.DeleteRole(cmdFail)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeleteRole (fail): %s", err)
+	}
+	if respFail.Status != "400" {
+		t.Errorf("Expected status 400, got %s", respFail.Status)
+	}
+}
