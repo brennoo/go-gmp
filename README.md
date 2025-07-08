@@ -94,7 +94,7 @@ The following table shows the current implementation status of GMP commands in t
 | **User Management** | | |
 | `create_user` | Create a new user | :white_check_mark: |
 | `modify_user` | Modify an existing user | :white_check_mark: |
-| `get_users` | Retrieve users | :x: |
+| `get_users` | Retrieve users | :white_check_mark: |
 | `delete_user` | Delete a user | :x: |
 | **Role Management** | | |
 | `create_role` | Create a new role | :x: |

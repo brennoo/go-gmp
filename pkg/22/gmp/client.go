@@ -93,4 +93,5 @@ type Client interface {
 	RawXML(xml string) (string, error)
 	CreateUser(cmd *CreateUserCommand) (resp *CreateUserResponse, err error)
 	ModifyUser(cmd *ModifyUserCommand) (resp *ModifyUserResponse, err error)
+	GetUsers(cmd *GetUsersCommand) (resp *GetUsersResponse, err error)
 }

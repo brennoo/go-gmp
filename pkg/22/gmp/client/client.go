@@ -566,3 +566,9 @@ func (cli *client) ModifyUser(cmd *gmp.ModifyUserCommand) (resp *gmp.ModifyUserR
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) GetUsers(cmd *gmp.GetUsersCommand) (resp *gmp.GetUsersResponse, err error) {
+	resp = new(gmp.GetUsersResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

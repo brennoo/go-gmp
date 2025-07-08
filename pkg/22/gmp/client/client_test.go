@@ -1107,6 +1107,19 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if _, ok := command.(*gmp.GetUsersCommand); ok {
+		(*response.(*gmp.GetUsersResponse)).Status = "200"
+		(*response.(*gmp.GetUsersResponse)).StatusText = "OK"
+		(*response.(*gmp.GetUsersResponse)).Users = []gmp.UserWrapper{
+			{
+				Name:    "foobar",
+				Role:    &gmp.UserRole{ID: "8d453140-b74d-11e2-b0be-406186ea4fc5", Name: "User"},
+				Hosts:   &gmp.CreateUserHosts{Allow: "2"},
+				Sources: &gmp.CreateUserSources{Source: &gmp.CreateUserSource{Type: "file"}},
+			},
+		}
+	}
+
 	return nil
 }
 

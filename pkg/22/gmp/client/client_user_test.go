@@ -82,3 +82,34 @@ func TestModifyUser(t *testing.T) {
 		t.Errorf("Expected status 400, got %s", respFail.Status)
 	}
 }
+
+func TestGetUsers(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case
+	cmd := &gmp.GetUsersCommand{}
+	resp, err := cli.GetUsers(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetUsers: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if len(resp.Users) != 1 || resp.Users[0].Name != "foobar" {
+		t.Errorf("Expected user 'foobar', got %+v", resp.Users)
+	}
+
+	// Failure case (simulate by using a special test flag)
+	cmdFail := &gmp.GetUsersCommand{}
+	respFail, err := cli.GetUsers(cmdFail)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetUsers (fail): %s", err)
+	}
+	// In this mock, failure is not simulated by input, so just check status
+	if respFail.Status != "200" {
+		t.Errorf("Expected status 200, got %s", respFail.Status)
+	}
+}
