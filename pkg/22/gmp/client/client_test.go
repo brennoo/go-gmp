@@ -933,6 +933,35 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if _, ok := command.(*gmp.GetFeedsCommand); ok {
+		resp := response.(*gmp.GetFeedsResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		resp.FeedOwnerSet = "1"
+		resp.FeedRolesSet = "1"
+		resp.FeedResourcesAccess = "1"
+		resp.Feeds = []gmp.Feed{
+			{
+				Type:        "NVT",
+				Name:        "Greenbone Security Feed",
+				Version:     "201608180124",
+				Description: "This script synchronizes an NVT collection with...",
+			},
+			{
+				Type:        "CERT",
+				Name:        "Greenbone CERT Feed",
+				Version:     "201609130000",
+				Description: "This script synchronizes a CERT collection with...",
+			},
+			{
+				Type:        "SCAP",
+				Name:        "Greenbone SCAP Feed",
+				Version:     "201608172300",
+				Description: "This script synchronizes a SCAP collection with...",
+			},
+		}
+	}
+
 	return nil
 }
 
@@ -1144,6 +1173,46 @@ func TestHelp(t *testing.T) {
 	}
 	if resp.Text == "" || !contains(resp.Text, "AUTHENTICATE") {
 		t.Fatalf("Expected help text to contain 'AUTHENTICATE', got: %s", resp.Text)
+	}
+}
+
+func TestGetFeeds(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetFeedsCommand{}
+	resp, err := cli.GetFeeds(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetFeeds: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+	if resp.FeedOwnerSet != "1" {
+		t.Fatalf("Unexpected feed_owner_set. Expected: 1 Got: %s", resp.FeedOwnerSet)
+	}
+	if resp.FeedRolesSet != "1" {
+		t.Fatalf("Unexpected feed_roles_set. Expected: 1 Got: %s", resp.FeedRolesSet)
+	}
+	if resp.FeedResourcesAccess != "1" {
+		t.Fatalf("Unexpected feed_resources_access. Expected: 1 Got: %s", resp.FeedResourcesAccess)
+	}
+	if len(resp.Feeds) != 3 {
+		t.Fatalf("Expected 3 feeds, got %d", len(resp.Feeds))
+	}
+	if resp.Feeds[0].Type != "NVT" || resp.Feeds[0].Name != "Greenbone Security Feed" {
+		t.Fatalf("Unexpected first feed: %+v", resp.Feeds[0])
+	}
+	if resp.Feeds[1].Type != "CERT" || resp.Feeds[1].Name != "Greenbone CERT Feed" {
+		t.Fatalf("Unexpected second feed: %+v", resp.Feeds[1])
+	}
+	if resp.Feeds[2].Type != "SCAP" || resp.Feeds[2].Name != "Greenbone SCAP Feed" {
+		t.Fatalf("Unexpected third feed: %+v", resp.Feeds[2])
 	}
 }
 
