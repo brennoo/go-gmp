@@ -544,3 +544,9 @@ func (cli *client) Restore(cmd *gmp.RestoreCommand) (resp *gmp.RestoreResponse, 
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) RunWizard(cmd *gmp.RunWizardCommand) (resp *gmp.RunWizardResponse, err error) {
+	resp = new(gmp.RunWizardResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

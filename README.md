@@ -166,7 +166,7 @@ The following table shows the current implementation status of GMP commands in t
 | **Utility Commands** | | |
 | `empty_trashcan` | Empty trashcan | :white_check_mark: |
 | `restore` | Restore from trashcan | :white_check_mark: |
-| `run_wizard` | Run wizard | :x: |
+| `run_wizard` | Run wizard | :white_check_mark: |
 
 **Legend:**
 - :white_check_mark: Implemented and tested

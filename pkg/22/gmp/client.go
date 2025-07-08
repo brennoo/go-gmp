@@ -89,4 +89,5 @@ type Client interface {
 	GetFeatures(cmd *GetFeaturesCommand) (resp *GetFeaturesResponse, err error)
 	EmptyTrashcan(cmd *EmptyTrashcanCommand) (resp *EmptyTrashcanResponse, err error)
 	Restore(cmd *RestoreCommand) (resp *RestoreResponse, err error)
+	RunWizard(cmd *RunWizardCommand) (resp *RunWizardResponse, err error)
 }

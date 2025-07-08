@@ -1075,6 +1075,19 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		resp.StatusText = "OK"
 	}
 
+	if _, ok := command.(*gmp.RunWizardCommand); ok {
+		resp := response.(*gmp.RunWizardResponse)
+		resp.Status = "202"
+		resp.StatusText = "OK, request submitted"
+		resp.Response = &gmp.WizardResponse{
+			StartTaskResponse: &gmp.StartTaskResponse{
+				Status:     "202",
+				StatusText: "OK, request submitted",
+				ReportID:   "a06d21f7-8e2f-4d7f-bceb-1df852d8b37d",
+			},
+		}
+	}
+
 	return nil
 }
 
@@ -1610,5 +1623,38 @@ func TestRestore(t *testing.T) {
 	}
 	if resp.StatusText != "OK" {
 		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+}
+
+func TestRunWizard(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.RunWizardCommand{
+		Name: "quick_first_scan",
+		Params: &gmp.WizardParams{
+			Params: []gmp.WizardParam{{
+				Name:  "hosts",
+				Value: "localhost",
+			}},
+		},
+	}
+	resp, err := cli.RunWizard(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during RunWizard: %s", err)
+	}
+	if resp.Status != "202" {
+		t.Fatalf("Unexpected status. Expected: 202 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK, request submitted" {
+		t.Fatalf("Unexpected status text. Expected: OK, request submitted Got: %s", resp.StatusText)
+	}
+	if resp.Response == nil || resp.Response.StartTaskResponse == nil {
+		t.Fatalf("Expected StartTaskResponse in wizard response, got: %+v", resp.Response)
+	}
+	if resp.Response.StartTaskResponse.ReportID != "a06d21f7-8e2f-4d7f-bceb-1df852d8b37d" {
+		t.Fatalf("Unexpected report_id. Expected: a06d21f7-8e2f-4d7f-bceb-1df852d8b37d Got: %s", resp.Response.StartTaskResponse.ReportID)
 	}
 }
