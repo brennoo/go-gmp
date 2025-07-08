@@ -734,3 +734,9 @@ func (cli *client) ModifyTicket(cmd *gmp.ModifyTicketCommand) (resp *gmp.ModifyT
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) GetTickets(cmd *gmp.GetTicketsCommand) (resp *gmp.GetTicketsResponse, err error) {
+	resp = new(gmp.GetTicketsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

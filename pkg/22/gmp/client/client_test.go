@@ -1437,6 +1437,35 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if _, ok := command.(*gmp.GetTicketsCommand); ok {
+		resp := response.(*gmp.GetTicketsResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		resp.Tickets = []gmp.TicketEntry{
+			{
+				ID:               "93cd2f71-48c3-4cf2-b542-5b256f59cae0",
+				Name:             "OpenSSH Denial of Service Vulnerability - Jan16",
+				Comment:          "",
+				CreationTime:     "2018-11-29T16:18:56Z",
+				ModificationTime: "2018-11-29T16:18:56Z",
+				Writable:         "1",
+				InUse:            "0",
+				Status:           "Open",
+				OpenNote:         "Probably the new version fixes this",
+			},
+		}
+	}
+
+	if cmd, ok := command.(*gmp.ModifyTicketCommand); ok {
+		if cmd.TicketID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+			(*response.(*gmp.ModifyTicketResponse)).Status = "200"
+			(*response.(*gmp.ModifyTicketResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyTicketResponse)).Status = "400"
+			(*response.(*gmp.ModifyTicketResponse)).StatusText = "Not Found"
+		}
+	}
+
 	return nil
 }
 
