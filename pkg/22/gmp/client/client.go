@@ -692,3 +692,9 @@ func (cli *client) GetNotes(cmd *gmp.GetNotesCommand) (resp *gmp.GetNotesRespons
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) DeleteNote(cmd *gmp.DeleteNoteCommand) (resp *gmp.DeleteNoteResponse, err error) {
+	resp = new(gmp.DeleteNoteResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

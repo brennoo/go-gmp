@@ -67,3 +67,25 @@ func TestGetNotes(t *testing.T) {
 		t.Errorf("Expected note text 'This is the full text of the note.', got %+v", resp.Notes)
 	}
 }
+
+func TestDeleteNote(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.DeleteNoteCommand{
+		NoteID:   "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
+		Ultimate: "0",
+	}
+	resp, err := cli.DeleteNote(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeleteNote: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status_text 'OK', got %s", resp.StatusText)
+	}
+}

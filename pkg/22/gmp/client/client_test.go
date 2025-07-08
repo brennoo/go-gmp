@@ -1368,6 +1368,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.DeleteNoteCommand); ok {
+		if cmd.NoteID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+			(*response.(*gmp.DeleteNoteResponse)).Status = "200"
+			(*response.(*gmp.DeleteNoteResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeleteNoteResponse)).Status = "400"
+			(*response.(*gmp.DeleteNoteResponse)).StatusText = "Not Found"
+		}
+	}
+
 	return nil
 }
 
