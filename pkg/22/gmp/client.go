@@ -99,4 +99,5 @@ type Client interface {
 	ModifyRole(cmd *ModifyRoleCommand) (resp *ModifyRoleResponse, err error)
 	GetRoles(cmd *GetRolesCommand) (resp *GetRolesResponse, err error)
 	DeleteRole(cmd *DeleteRoleCommand) (resp *DeleteRoleResponse, err error)
+	CreatePermission(cmd *CreatePermissionCommand) (resp *CreatePermissionResponse, err error)
 }

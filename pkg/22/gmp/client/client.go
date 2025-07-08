@@ -602,3 +602,9 @@ func (cli *client) DeleteRole(cmd *gmp.DeleteRoleCommand) (resp *gmp.DeleteRoleR
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) CreatePermission(cmd *gmp.CreatePermissionCommand) (resp *gmp.CreatePermissionResponse, err error) {
+	resp = new(gmp.CreatePermissionResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

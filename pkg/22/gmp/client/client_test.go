@@ -1177,6 +1177,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.CreatePermissionCommand); ok {
+		if cmd.Name == "get_targets" && cmd.Subject != nil && cmd.Subject.ID == "66abe5ce-c011-11e3-b96e-406186ea4fc5" && cmd.Subject.Type == "user" && cmd.Resource != nil && cmd.Resource.ID == "b493b7a8-7489-11df-a3ec-002264764cea" {
+			(*response.(*gmp.CreatePermissionResponse)).Status = "201"
+			(*response.(*gmp.CreatePermissionResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreatePermissionResponse)).ID = "created-permission-id"
+		} else {
+			(*response.(*gmp.CreatePermissionResponse)).Status = "400"
+		}
+	}
+
 	return nil
 }
 
