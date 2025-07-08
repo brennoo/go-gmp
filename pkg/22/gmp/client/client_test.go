@@ -1098,6 +1098,15 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.ModifyUserCommand); ok {
+		if cmd.UserID == "user-uuid" && cmd.Name == "testuser" && cmd.NewName == "newuser" && cmd.Comment == "Updated user" && cmd.Password != nil && cmd.Password.Modify == "1" && cmd.Password.Text == "newpass" && len(cmd.Roles) > 0 && cmd.Roles[0].ID == "role-uuid" {
+			(*response.(*gmp.ModifyUserResponse)).Status = "200"
+			(*response.(*gmp.ModifyUserResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyUserResponse)).Status = "400"
+		}
+	}
+
 	return nil
 }
 

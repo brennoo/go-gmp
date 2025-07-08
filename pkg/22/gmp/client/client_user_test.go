@@ -42,3 +42,43 @@ func TestCreateUser(t *testing.T) {
 		t.Errorf("Expected status 400, got %s", respFail.Status)
 	}
 }
+
+func TestModifyUser(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case
+	cmd := &gmp.ModifyUserCommand{
+		UserID:  "user-uuid",
+		Name:    "testuser",
+		NewName: "newuser",
+		Comment: "Updated user",
+		Password: &gmp.ModifyUserPassword{
+			Modify: "1",
+			Text:   "newpass",
+		},
+		Roles: []gmp.CreateUserRole{{ID: "role-uuid"}},
+	}
+	resp, err := cli.ModifyUser(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyUser: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+
+	// Failure case
+	cmdFail := &gmp.ModifyUserCommand{
+		UserID: "",
+		Name:   "",
+	}
+	respFail, err := cli.ModifyUser(cmdFail)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyUser (fail): %s", err)
+	}
+	if respFail.Status != "400" {
+		t.Errorf("Expected status 400, got %s", respFail.Status)
+	}
+}

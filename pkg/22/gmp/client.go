@@ -92,4 +92,5 @@ type Client interface {
 	RunWizard(cmd *RunWizardCommand) (resp *RunWizardResponse, err error)
 	RawXML(xml string) (string, error)
 	CreateUser(cmd *CreateUserCommand) (resp *CreateUserResponse, err error)
+	ModifyUser(cmd *ModifyUserCommand) (resp *ModifyUserResponse, err error)
 }
