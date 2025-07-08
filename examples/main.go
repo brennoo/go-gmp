@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/brennoo/go-gmp/pkg/22/gmp"
-	"github.com/brennoo/go-gmp/pkg/22/gmp/client"
-	"github.com/brennoo/go-gmp/pkg/22/gmp/connections"
+	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/client"
+	"github.com/brennoo/go-gmp/connections"
 )
 
 // Configuration constants
