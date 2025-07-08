@@ -80,4 +80,5 @@ type Client interface {
 	GetNvts(cmd *GetNvtsCommand) (resp *GetNvtsResponse, err error)
 	GetNvtFamilies(cmd *GetNvtFamiliesCommand) (resp *GetNvtFamiliesResponse, err error)
 	GetFeeds(cmd *GetFeedsCommand) (resp *GetFeedsResponse, err error)
+	ModifyLicense(cmd *ModifyLicenseCommand) (resp *ModifyLicenseResponse, err error)
 }

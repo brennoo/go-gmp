@@ -490,3 +490,9 @@ func (cli *client) GetFeeds(cmd *gmp.GetFeedsCommand) (resp *gmp.GetFeedsRespons
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) ModifyLicense(cmd *gmp.ModifyLicenseCommand) (resp *gmp.ModifyLicenseResponse, err error) {
+	resp = new(gmp.ModifyLicenseResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

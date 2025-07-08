@@ -962,6 +962,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.ModifyLicenseCommand); ok {
+		if cmd.File != "" {
+			(*response.(*gmp.ModifyLicenseResponse)).Status = "200"
+			(*response.(*gmp.ModifyLicenseResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyLicenseResponse)).Status = "400"
+			(*response.(*gmp.ModifyLicenseResponse)).StatusText = "Missing file"
+		}
+	}
+
 	return nil
 }
 
@@ -1213,6 +1223,27 @@ func TestGetFeeds(t *testing.T) {
 	}
 	if resp.Feeds[2].Type != "SCAP" || resp.Feeds[2].Name != "Greenbone SCAP Feed" {
 		t.Fatalf("Unexpected third feed: %+v", resp.Feeds[2])
+	}
+}
+
+func TestModifyLicense(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.ModifyLicenseCommand{
+		File: "YmFzZTY0bGljZW5zZQ==", // "baselicenses" in base64
+	}
+	resp, err := cli.ModifyLicense(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyLicense: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
 	}
 }
 
