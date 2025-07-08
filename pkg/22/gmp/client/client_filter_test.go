@@ -32,3 +32,25 @@ func TestCreateFilter(t *testing.T) {
 		t.Errorf("Expected filter ID '254cd3ef-bbe1-4d58-859d-21b8d0c046c7', got %s", resp.ID)
 	}
 }
+
+func TestModifyFilter(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.ModifyFilterCommand{
+		FilterID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c7",
+		Term:     "name=local",
+	}
+	resp, err := cli.ModifyFilter(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyFilter: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status_text 'OK', got %s", resp.StatusText)
+	}
+}

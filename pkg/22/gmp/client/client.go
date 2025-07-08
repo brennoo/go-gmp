@@ -704,3 +704,9 @@ func (cli *client) CreateFilter(cmd *gmp.CreateFilterCommand) (resp *gmp.CreateF
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) ModifyFilter(cmd *gmp.ModifyFilterCommand) (resp *gmp.ModifyFilterResponse, err error) {
+	resp = new(gmp.ModifyFilterResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

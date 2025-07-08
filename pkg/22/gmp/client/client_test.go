@@ -1388,6 +1388,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.ModifyFilterCommand); ok {
+		if cmd.FilterID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c7" {
+			(*response.(*gmp.ModifyFilterResponse)).Status = "200"
+			(*response.(*gmp.ModifyFilterResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyFilterResponse)).Status = "400"
+			(*response.(*gmp.ModifyFilterResponse)).StatusText = "Not Found"
+		}
+	}
+
 	return nil
 }
 
