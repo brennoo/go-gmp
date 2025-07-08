@@ -1319,6 +1319,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.DeleteTagCommand); ok {
+		if cmd.TagID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+			(*response.(*gmp.DeleteTagResponse)).Status = "200"
+			(*response.(*gmp.DeleteTagResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeleteTagResponse)).Status = "400"
+			(*response.(*gmp.DeleteTagResponse)).StatusText = "Bad request"
+		}
+	}
+
 	return nil
 }
 

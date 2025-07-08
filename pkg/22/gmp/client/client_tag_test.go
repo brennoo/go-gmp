@@ -69,3 +69,22 @@ func TestGetTags(t *testing.T) {
 		t.Errorf("Expected tag 'geo:long', got %+v", resp.Tags)
 	}
 }
+
+func TestDeleteTag(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.DeleteTagCommand{
+		TagID:    "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
+		Ultimate: "1",
+	}
+	resp, err := cli.DeleteTag(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeleteTag: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+}

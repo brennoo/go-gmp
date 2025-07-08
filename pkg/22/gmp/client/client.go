@@ -668,3 +668,9 @@ func (cli *client) GetTags(cmd *gmp.GetTagsCommand) (resp *gmp.GetTagsResponse, 
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) DeleteTag(cmd *gmp.DeleteTagCommand) (resp *gmp.DeleteTagResponse, err error) {
+	resp = new(gmp.DeleteTagResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
