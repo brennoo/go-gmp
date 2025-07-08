@@ -1088,6 +1088,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.CreateUserCommand); ok {
+		if cmd.Name == "testuser" && cmd.Password == "testpass" && len(cmd.Roles) > 0 && cmd.Roles[0].ID == "role-uuid" {
+			(*response.(*gmp.CreateUserResponse)).Status = "201"
+			(*response.(*gmp.CreateUserResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateUserResponse)).ID = "created-user-id"
+		} else {
+			(*response.(*gmp.CreateUserResponse)).Status = "400"
+		}
+	}
+
 	return nil
 }
 

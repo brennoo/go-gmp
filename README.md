@@ -92,7 +92,7 @@ The following table shows the current implementation status of GMP commands in t
 | `get_credentials` | Retrieve credentials | :white_check_mark: |
 | `delete_credential` | Delete a credential | :white_check_mark: |
 | **User Management** | | |
-| `create_user` | Create a new user | :x: |
+| `create_user` | Create a new user | :white_check_mark: |
 | `modify_user` | Modify an existing user | :x: |
 | `get_users` | Retrieve users | :x: |
 | `delete_user` | Delete a user | :x: |

@@ -554,3 +554,9 @@ func (cli *client) RunWizard(cmd *gmp.RunWizardCommand) (resp *gmp.RunWizardResp
 func (cli *client) RawXML(xmlStr string) (string, error) {
 	return cli.conn.RawXML(xmlStr)
 }
+
+func (cli *client) CreateUser(cmd *gmp.CreateUserCommand) (resp *gmp.CreateUserResponse, err error) {
+	resp = new(gmp.CreateUserResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

@@ -91,4 +91,5 @@ type Client interface {
 	Restore(cmd *RestoreCommand) (resp *RestoreResponse, err error)
 	RunWizard(cmd *RunWizardCommand) (resp *RunWizardResponse, err error)
 	RawXML(xml string) (string, error)
+	CreateUser(cmd *CreateUserCommand) (resp *CreateUserResponse, err error)
 }
