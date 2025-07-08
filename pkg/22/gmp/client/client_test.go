@@ -1272,6 +1272,17 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.CreateTagCommand); ok {
+		if cmd.Name == "geo:long" && cmd.Resources != nil && cmd.Resources.Resource != nil && cmd.Resources.Resource.ID == "b493b7a8-7489-11df-a3ec-002264764cea" {
+			(*response.(*gmp.CreateTagResponse)).Status = "201"
+			(*response.(*gmp.CreateTagResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateTagResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+		} else {
+			(*response.(*gmp.CreateTagResponse)).Status = "400"
+			(*response.(*gmp.CreateTagResponse)).StatusText = "Bad request"
+		}
+	}
+
 	return nil
 }
 

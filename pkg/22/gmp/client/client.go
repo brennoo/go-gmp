@@ -650,3 +650,9 @@ func (cli *client) DeleteGroup(cmd *gmp.DeleteGroupCommand) (resp *gmp.DeleteGro
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) CreateTag(cmd *gmp.CreateTagCommand) (resp *gmp.CreateTagResponse, err error) {
+	resp = new(gmp.CreateTagResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
