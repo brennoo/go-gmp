@@ -1427,6 +1427,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.CreateTicketCommand); ok {
+		if cmd.Result.ID == "138c1216-4acb-4ded-bef3-7fab80eac8c7" && cmd.Assigned.User.ID == "33e92d3e-a379-4c46-a4cf-88c8201ab710" {
+			(*response.(*gmp.CreateTicketResponse)).Status = "201"
+			(*response.(*gmp.CreateTicketResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateTicketResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+		} else {
+			(*response.(*gmp.CreateTicketResponse)).Status = "400"
+		}
+	}
+
 	return nil
 }
 

@@ -722,3 +722,9 @@ func (cli *client) DeleteFilter(cmd *gmp.DeleteFilterCommand) (resp *gmp.DeleteF
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) CreateTicket(cmd *gmp.CreateTicketCommand) (resp *gmp.CreateTicketResponse, err error) {
+	resp = new(gmp.CreateTicketResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

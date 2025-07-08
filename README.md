@@ -132,7 +132,7 @@ The following table shows the current implementation status of GMP commands in t
 | `get_filters` | Retrieve filters | :white_check_mark: |
 | `delete_filter` | Delete a filter | :white_check_mark: |
 | **Ticket Management** | | |
-| `create_ticket` | Create a new ticket | :x: |
+| `create_ticket` | Create a new ticket | :white_check_mark: |
 | `modify_ticket` | Modify an existing ticket | :x: |
 | `get_tickets` | Retrieve tickets | :x: |
 | `delete_ticket` | Delete a ticket | :x: |
