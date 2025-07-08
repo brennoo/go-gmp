@@ -103,4 +103,5 @@ type Client interface {
 	ModifyPermission(cmd *ModifyPermissionCommand) (resp *ModifyPermissionResponse, err error)
 	GetPermissions(cmd *GetPermissionsCommand) (resp *GetPermissionsResponse, err error)
 	DeletePermission(cmd *DeletePermissionCommand) (resp *DeletePermissionResponse, err error)
+	CreateGroup(cmd *CreateGroupCommand) (resp *CreateGroupResponse, err error)
 }

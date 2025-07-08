@@ -1125,6 +1125,17 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.CreateGroupCommand); ok {
+		if cmd.Name == "Managers" {
+			(*response.(*gmp.CreateGroupResponse)).Status = "201"
+			(*response.(*gmp.CreateGroupResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateGroupResponse)).ID = "d94211b6-ba40-11e3-bcb1-406186ea4fc5"
+		} else {
+			(*response.(*gmp.CreateGroupResponse)).Status = "400"
+			(*response.(*gmp.CreateGroupResponse)).StatusText = "Bad request"
+		}
+	}
+
 	if cmd, ok := command.(*gmp.CreateRoleCommand); ok {
 		if cmd.Name == "Test Role" && cmd.Comment == "A test role" {
 			(*response.(*gmp.CreateRoleResponse)).Status = "201"
@@ -1132,6 +1143,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 			(*response.(*gmp.CreateRoleResponse)).ID = "created-role-id"
 		} else {
 			(*response.(*gmp.CreateRoleResponse)).Status = "400"
+			(*response.(*gmp.CreateRoleResponse)).StatusText = "Bad request"
 		}
 	}
 

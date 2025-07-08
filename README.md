@@ -107,7 +107,7 @@ The following table shows the current implementation status of GMP commands in t
 | `get_permissions` | Retrieve permissions | :white_check_mark: |
 | `delete_permission` | Delete a permission | :white_check_mark: |
 | **Group Management** | | |
-| `create_group` | Create a new group | :x: |
+| `create_group` | Create a new group | :white_check_mark: |
 | `modify_group` | Modify an existing group | :x: |
 | `get_groups` | Retrieve groups | :x: |
 | `delete_group` | Delete a group | :x: |

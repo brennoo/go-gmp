@@ -626,3 +626,9 @@ func (cli *client) DeletePermission(cmd *gmp.DeletePermissionCommand) (resp *gmp
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) CreateGroup(cmd *gmp.CreateGroupCommand) (resp *gmp.CreateGroupResponse, err error) {
+	resp = new(gmp.CreateGroupResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
