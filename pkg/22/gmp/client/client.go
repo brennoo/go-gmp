@@ -740,3 +740,9 @@ func (cli *client) GetTickets(cmd *gmp.GetTicketsCommand) (resp *gmp.GetTicketsR
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) DeleteTicket(cmd *gmp.DeleteTicketCommand) (resp *gmp.DeleteTicketResponse, err error) {
+	resp = new(gmp.DeleteTicketResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

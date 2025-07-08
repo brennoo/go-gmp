@@ -1466,6 +1466,15 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.DeleteTicketCommand); ok {
+		if cmd.TicketID == "ticket-uuid" && cmd.Ultimate == "1" {
+			(*response.(*gmp.DeleteTicketResponse)).Status = "200"
+			(*response.(*gmp.DeleteTicketResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeleteTicketResponse)).Status = "400"
+		}
+	}
+
 	return nil
 }
 

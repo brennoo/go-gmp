@@ -122,4 +122,5 @@ type Client interface {
 	CreateTicket(cmd *CreateTicketCommand) (resp *CreateTicketResponse, err error)
 	ModifyTicket(cmd *ModifyTicketCommand) (resp *ModifyTicketResponse, err error)
 	GetTickets(cmd *GetTicketsCommand) (resp *GetTicketsResponse, err error)
+	DeleteTicket(cmd *DeleteTicketCommand) (resp *DeleteTicketResponse, err error)
 }

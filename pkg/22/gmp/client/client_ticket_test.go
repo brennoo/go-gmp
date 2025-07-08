@@ -91,3 +91,21 @@ func TestModifyTicket(t *testing.T) {
 		t.Errorf("Expected status_text 'OK', got %s", resp.StatusText)
 	}
 }
+
+func TestDeleteTicket(t *testing.T) {
+	cli := New(mockedConnection())
+	cmd := &gmp.DeleteTicketCommand{
+		TicketID: "ticket-uuid",
+		Ultimate: "1",
+	}
+	resp, err := cli.DeleteTicket(cmd)
+	if err != nil {
+		t.Fatalf("expected no error, got: %v", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("expected status 200, got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("expected status text OK, got: %s", resp.StatusText)
+	}
+}

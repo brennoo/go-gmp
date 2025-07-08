@@ -135,7 +135,7 @@ The following table shows the current implementation status of GMP commands in t
 | `create_ticket` | Create a new ticket | :white_check_mark: |
 | `modify_ticket` | Modify an existing ticket | :white_check_mark: |
 | `get_tickets` | Retrieve tickets | :white_check_mark: |
-| `delete_ticket` | Delete a ticket | :x: |
+| `delete_ticket` | Delete a ticket | :white_check_mark: |
 | **TLS Certificate Management** | | |
 | `create_tls_certificate` | Create a new TLS certificate | :white_check_mark: |
 | `modify_tls_certificate` | Modify an existing TLS certificate | :white_check_mark: |

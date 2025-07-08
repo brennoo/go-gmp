@@ -27,8 +27,8 @@ type TicketEntry struct {
 	InUse            string             `xml:"in_use"`
 	Permissions      *TicketPermissions `xml:"permissions,omitempty"`
 	AssignedTo       *TicketAssignedTo  `xml:"assigned_to,omitempty"`
-	TaskID           string             `xml:"task\,attr,omitempty"`
-	ReportID         string             `xml:"report\,attr,omitempty"`
+	TaskID           string             `xml:"task,attr,omitempty"`
+	ReportID         string             `xml:"report,attr,omitempty"`
 	Severity         string             `xml:"severity,omitempty"`
 	Host             string             `xml:"host,omitempty"`
 	Location         string             `xml:"location,omitempty"`
