@@ -632,3 +632,9 @@ func (cli *client) CreateGroup(cmd *gmp.CreateGroupCommand) (resp *gmp.CreateGro
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) ModifyGroup(cmd *gmp.ModifyGroupCommand) (resp *gmp.ModifyGroupResponse, err error) {
+	resp = new(gmp.ModifyGroupResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

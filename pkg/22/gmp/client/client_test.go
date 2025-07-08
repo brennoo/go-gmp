@@ -1235,6 +1235,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.ModifyGroupCommand); ok {
+		if cmd.GroupID == "d94211b6-ba40-11e3-bcb1-406186ea4fc5" && cmd.Name == "Line Managers" {
+			(*response.(*gmp.ModifyGroupResponse)).Status = "200"
+			(*response.(*gmp.ModifyGroupResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyGroupResponse)).Status = "400"
+			(*response.(*gmp.ModifyGroupResponse)).StatusText = "Bad request"
+		}
+	}
+
 	return nil
 }
 
