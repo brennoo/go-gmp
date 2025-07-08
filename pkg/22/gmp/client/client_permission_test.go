@@ -47,3 +47,42 @@ func TestCreatePermission(t *testing.T) {
 		t.Errorf("Expected status 400, got %s", respFail.Status)
 	}
 }
+
+func TestModifyPermission(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case
+	cmd := &gmp.ModifyPermissionCommand{
+		PermissionID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
+		Subject: &gmp.CreatePermissionSubject{
+			ID:   "76e47468-c095-11e3-9285-406186ea4fc5",
+			Type: "user",
+		},
+	}
+	resp, err := cli.ModifyPermission(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyPermission: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status text 'OK', got '%s'", resp.StatusText)
+	}
+
+	// Failure case
+	cmdFail := &gmp.ModifyPermissionCommand{
+		PermissionID: "",
+		Subject:      &gmp.CreatePermissionSubject{},
+	}
+	respFail, err := cli.ModifyPermission(cmdFail)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyPermission (fail): %s", err)
+	}
+	if respFail.Status != "400" {
+		t.Errorf("Expected status 400, got %s", respFail.Status)
+	}
+}

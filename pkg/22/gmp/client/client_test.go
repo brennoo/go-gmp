@@ -1187,6 +1187,15 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.ModifyPermissionCommand); ok {
+		if cmd.PermissionID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" && cmd.Subject != nil && cmd.Subject.ID == "76e47468-c095-11e3-9285-406186ea4fc5" && cmd.Subject.Type == "user" {
+			(*response.(*gmp.ModifyPermissionResponse)).Status = "200"
+			(*response.(*gmp.ModifyPermissionResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyPermissionResponse)).Status = "400"
+		}
+	}
+
 	return nil
 }
 
