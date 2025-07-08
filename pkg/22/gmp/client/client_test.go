@@ -1658,3 +1658,38 @@ func TestRunWizard(t *testing.T) {
 		t.Fatalf("Unexpected report_id. Expected: a06d21f7-8e2f-4d7f-bceb-1df852d8b37d Got: %s", resp.Response.StartTaskResponse.ReportID)
 	}
 }
+
+func (m *mockConn) RawXML(xmlStr string) (string, error) {
+	// For testing, just echo back a canned response or the input for now.
+	if strings.Contains(xmlStr, "undocumented_command") {
+		return `<undocumented_command_response status="200" status_text="OK">mocked</undocumented_command_response>`, nil
+	}
+	return `<response status="200" status_text="OK">mocked</response>`, nil
+}
+
+func TestRawXML(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Test a generic command
+	xml := `<get_version/>`
+	resp, err := cli.RawXML(xml)
+	if err != nil {
+		t.Fatalf("Unexpected error from RawXML: %v", err)
+	}
+	if !strings.Contains(resp, `status="200"`) || !strings.Contains(resp, "mocked") {
+		t.Errorf("Unexpected RawXML response: %s", resp)
+	}
+
+	// Test an undocumented command
+	undoc := `<undocumented_command/>`
+	resp, err = cli.RawXML(undoc)
+	if err != nil {
+		t.Fatalf("Unexpected error from RawXML (undocumented): %v", err)
+	}
+	if !strings.Contains(resp, "<undocumented_command_response") || !strings.Contains(resp, "mocked") {
+		t.Errorf("Unexpected RawXML response for undocumented: %s", resp)
+	}
+}

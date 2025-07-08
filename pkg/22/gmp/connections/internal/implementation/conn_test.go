@@ -248,3 +248,48 @@ func TestExecutePerformRequestFail(t *testing.T) {
 		t.Fatalf("Unexpected error during Execute.\nExpected: %s\n     Got: %s", expectedError, err)
 	}
 }
+
+func TestRawXML(t *testing.T) {
+	c1, c2 := net.Pipe()
+
+	conn := Connection{}
+	conn.SetRawConn(c1)
+
+	go func() {
+		buf := make([]byte, 1024)
+		n, _ := c2.Read(buf)
+		// Echo back the same bytes as a response
+		c2.Write(buf[:n])
+	}()
+
+	xml := `<raw_test_command foo="bar"/>`
+	resp, err := conn.RawXML(xml)
+	if err != nil {
+		t.Fatalf("Unexpected error from RawXML: %v", err)
+	}
+	if resp != xml {
+		t.Errorf("RawXML response did not match input.\nExpected: %s\nGot: %s", xml, resp)
+	}
+}
+
+func TestRawXMLEmptyResponse(t *testing.T) {
+	c1, c2 := net.Pipe()
+
+	conn := Connection{}
+	conn.SetRawConn(c1)
+
+	go func() {
+		// Do not write anything back, simulating an empty response
+		c2.Read(make([]byte, 1024)) // Read the request but don't respond
+		c2.Close()
+	}()
+
+	xml := `<raw_test_command foo="bar"/>`
+	resp, err := conn.RawXML(xml)
+	if err == nil {
+		t.Errorf("Expected error for empty response, got nil")
+	}
+	if resp != "" {
+		t.Errorf("Expected empty string for response, got: %q", resp)
+	}
+}

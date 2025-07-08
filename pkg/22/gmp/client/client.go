@@ -550,3 +550,7 @@ func (cli *client) RunWizard(cmd *gmp.RunWizardCommand) (resp *gmp.RunWizardResp
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) RawXML(xmlStr string) (string, error) {
+	return cli.conn.RawXML(xmlStr)
+}
