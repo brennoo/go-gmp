@@ -1283,6 +1283,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.ModifyTagCommand); ok {
+		if cmd.TagID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" && cmd.Active == "0" {
+			(*response.(*gmp.ModifyTagResponse)).Status = "200"
+			(*response.(*gmp.ModifyTagResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyTagResponse)).Status = "400"
+			(*response.(*gmp.ModifyTagResponse)).StatusText = "Bad request"
+		}
+	}
+
 	return nil
 }
 

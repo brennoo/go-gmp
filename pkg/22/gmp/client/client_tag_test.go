@@ -31,3 +31,22 @@ func TestCreateTag(t *testing.T) {
 		t.Errorf("Expected tag ID '254cd3ef-bbe1-4d58-859d-21b8d0c046c6', got %s", resp.ID)
 	}
 }
+
+func TestModifyTag(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.ModifyTagCommand{
+		TagID:  "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
+		Active: "0",
+	}
+	resp, err := cli.ModifyTag(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyTag: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+}

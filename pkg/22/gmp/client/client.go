@@ -656,3 +656,9 @@ func (cli *client) CreateTag(cmd *gmp.CreateTagCommand) (resp *gmp.CreateTagResp
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) ModifyTag(cmd *gmp.ModifyTagCommand) (resp *gmp.ModifyTagResponse, err error) {
+	resp = new(gmp.ModifyTagResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
