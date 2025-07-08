@@ -114,7 +114,7 @@ The following table shows the current implementation status of GMP commands in t
 | **Tag Management** | | |
 | `create_tag` | Create a new tag | :white_check_mark: |
 | `modify_tag` | Modify an existing tag | :white_check_mark: |
-| `get_tags` | Retrieve tags | :x: |
+| `get_tags` | Retrieve tags | :white_check_mark: |
 | `delete_tag` | Delete a tag | :x: |
 | **Note Management** | | |
 | `create_note` | Create a new note | :x: |

@@ -50,3 +50,22 @@ func TestModifyTag(t *testing.T) {
 		t.Errorf("Expected status 200, got %s", resp.Status)
 	}
 }
+
+func TestGetTags(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetTagsCommand{}
+	resp, err := cli.GetTags(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetTags: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if len(resp.Tags) != 1 || resp.Tags[0].Name != "geo:long" {
+		t.Errorf("Expected tag 'geo:long', got %+v", resp.Tags)
+	}
+}

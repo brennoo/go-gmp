@@ -109,4 +109,5 @@ type Client interface {
 	DeleteGroup(cmd *DeleteGroupCommand) (resp *DeleteGroupResponse, err error)
 	CreateTag(cmd *CreateTagCommand) (resp *CreateTagResponse, err error)
 	ModifyTag(cmd *ModifyTagCommand) (resp *ModifyTagResponse, err error)
+	GetTags(cmd *GetTagsCommand) (resp *GetTagsResponse, err error)
 }

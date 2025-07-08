@@ -1293,6 +1293,32 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if _, ok := command.(*gmp.GetTagsCommand); ok {
+		(*response.(*gmp.GetTagsResponse)).Status = "200"
+		(*response.(*gmp.GetTagsResponse)).StatusText = "OK"
+		(*response.(*gmp.GetTagsResponse)).Tags = []gmp.TagInfo{
+			{
+				ID:               "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
+				Name:             "geo:long",
+				Comment:          "",
+				CreationTime:     "2016-03-03T11:46:56Z",
+				ModificationTime: "2016-03-03T11:46:56Z",
+				Writable:         "1",
+				InUse:            "0",
+				Value:            "52.2788",
+				Active:           "1",
+				Resources: []gmp.TagResource{
+					{
+						ID:    "b493b7a8-7489-11df-a3ec-002264764cea",
+						Type:  "target",
+						Name:  "Server 1",
+						Trash: "0",
+					},
+				},
+			},
+		}
+	}
+
 	return nil
 }
 
