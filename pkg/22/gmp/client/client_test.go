@@ -1398,6 +1398,25 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if _, ok := command.(*gmp.GetFiltersCommand); ok {
+		resp := response.(*gmp.GetFiltersResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		resp.Filters = []gmp.FilterEntry{
+			{
+				ID:               "b493b7a8-7489-11df-a3ec-001164764cea",
+				Name:             "Single Targets",
+				Comment:          "Targets with only one host",
+				Term:             "ips=1 first=1 rows=-2",
+				Type:             "target",
+				InUse:            "1",
+				Writable:         "1",
+				CreationTime:     "2015-07-15T15:05:55Z",
+				ModificationTime: "2015-07-15T15:05:55Z",
+			},
+		}
+	}
+
 	return nil
 }
 
