@@ -48,3 +48,22 @@ func TestModifyNote(t *testing.T) {
 		t.Errorf("Expected status 200, got %s", resp.Status)
 	}
 }
+
+func TestGetNotes(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetNotesCommand{}
+	resp, err := cli.GetNotes(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetNotes: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if len(resp.Notes) != 1 || resp.Notes[0].Text != "This is the full text of the note." {
+		t.Errorf("Expected note text 'This is the full text of the note.', got %+v", resp.Notes)
+	}
+}

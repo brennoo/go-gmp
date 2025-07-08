@@ -1350,6 +1350,24 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if _, ok := command.(*gmp.GetNotesCommand); ok {
+		(*response.(*gmp.GetNotesResponse)).Status = "200"
+		(*response.(*gmp.GetNotesResponse)).StatusText = "OK"
+		(*response.(*gmp.GetNotesResponse)).Notes = []gmp.NoteInfo{
+			{
+				ID:               "b76b81a7-9df8-42df-afff-baa9d4620128",
+				NVT:              &gmp.GetNoteNVT{OID: "1.3.6.1.4.1.25623.1.0.75", Name: "Test NVT: long lines"},
+				CreationTime:     "2013-01-09T09:47:41+01:00",
+				ModificationTime: "2013-01-09T09:47:41+01:00",
+				Writable:         "1",
+				InUse:            "0",
+				Active:           "1",
+				Orphan:           "1",
+				Text:             "This is the full text of the note.",
+			},
+		}
+	}
+
 	return nil
 }
 

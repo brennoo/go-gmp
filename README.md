@@ -119,7 +119,7 @@ The following table shows the current implementation status of GMP commands in t
 | **Note Management** | | |
 | `create_note` | Create a new note | :white_check_mark: |
 | `modify_note` | Modify an existing note | :white_check_mark: |
-| `get_notes` | Retrieve notes | :x: |
+| `get_notes` | Retrieve notes | :white_check_mark: |
 | `delete_note` | Delete a note | :x: |
 | **Override Management** | | |
 | `create_override` | Create a new override | :white_check_mark: |
