@@ -620,3 +620,9 @@ func (cli *client) GetPermissions(cmd *gmp.GetPermissionsCommand) (resp *gmp.Get
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) DeletePermission(cmd *gmp.DeletePermissionCommand) (resp *gmp.DeletePermissionResponse, err error) {
+	resp = new(gmp.DeletePermissionResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

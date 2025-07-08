@@ -106,3 +106,22 @@ func TestGetPermissions(t *testing.T) {
 		t.Errorf("Expected permission 'Management', got %+v", resp.Permissions)
 	}
 }
+
+func TestDeletePermission(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.DeletePermissionCommand{
+		PermissionID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
+		Ultimate:     "1",
+	}
+	resp, err := cli.DeletePermission(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeletePermission: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+}

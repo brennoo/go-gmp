@@ -1213,6 +1213,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.DeletePermissionCommand); ok {
+		if cmd.PermissionID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" {
+			(*response.(*gmp.DeletePermissionResponse)).Status = "200"
+			(*response.(*gmp.DeletePermissionResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeletePermissionResponse)).Status = "400"
+			(*response.(*gmp.DeletePermissionResponse)).StatusText = "Bad request"
+		}
+	}
+
 	return nil
 }
 
