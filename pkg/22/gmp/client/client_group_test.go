@@ -46,3 +46,22 @@ func TestModifyGroup(t *testing.T) {
 		t.Errorf("Expected status 200, got %s", resp.Status)
 	}
 }
+
+func TestGetGroups(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetGroupsCommand{}
+	resp, err := cli.GetGroups(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetGroups: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if len(resp.Groups) != 1 || resp.Groups[0].Name != "Management" {
+		t.Errorf("Expected group 'Management', got %+v", resp.Groups)
+	}
+}

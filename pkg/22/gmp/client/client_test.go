@@ -1245,6 +1245,23 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if _, ok := command.(*gmp.GetGroupsCommand); ok {
+		(*response.(*gmp.GetGroupsResponse)).Status = "200"
+		(*response.(*gmp.GetGroupsResponse)).StatusText = "OK"
+		(*response.(*gmp.GetGroupsResponse)).Groups = []gmp.GroupInfo{
+			{
+				ID:               "b493b7a8-7489-11df-a3ec-002264764cea",
+				Name:             "Management",
+				Comment:          "Managers",
+				CreationTime:     "2018-08-29T20:21:33Z",
+				ModificationTime: "2018-08-29T20:21:33Z",
+				Writable:         "1",
+				InUse:            "0",
+				Users:            "sarah, frank",
+			},
+		}
+	}
+
 	return nil
 }
 
