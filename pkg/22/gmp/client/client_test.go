@@ -1027,6 +1027,17 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if _, ok := command.(*gmp.GetResourceNamesCommand); ok {
+		resp := response.(*gmp.GetResourceNamesResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		resp.Type = "os"
+		resp.Resources = []gmp.ResourceName{
+			{ID: "5b6b6aef-b320-42ca-899f-3161ee2a4195", Name: "cpe:/h:hp:jetdirect"},
+			{ID: "5be25864-9249-431e-8a91-039e334371ad", Name: "cpe:/o:canonical:ubuntu_linux:18.04"},
+		}
+	}
+
 	return nil
 }
 
@@ -1409,6 +1420,43 @@ func TestGetSettings(t *testing.T) {
 	}
 	if resp.Settings.Setting[0].Value != "15" {
 		t.Fatalf("Unexpected setting value. Expected: 15 Got: %s", resp.Settings.Setting[0].Value)
+	}
+}
+
+func TestGetResourceNames(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetResourceNamesCommand{Type: "os"}
+	resp, err := cli.GetResourceNames(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetResourceNames: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+	if resp.Type != "os" {
+		t.Fatalf("Unexpected type. Expected: os Got: %s", resp.Type)
+	}
+	if len(resp.Resources) != 2 {
+		t.Fatalf("Expected 2 resources, got %d", len(resp.Resources))
+	}
+	if resp.Resources[0].ID != "5b6b6aef-b320-42ca-899f-3161ee2a4195" {
+		t.Fatalf("Unexpected resource id. Expected: 5b6b6aef-b320-42ca-899f-3161ee2a4195 Got: %s", resp.Resources[0].ID)
+	}
+	if resp.Resources[0].Name != "cpe:/h:hp:jetdirect" {
+		t.Fatalf("Unexpected resource name. Expected: cpe:/h:hp:jetdirect Got: %s", resp.Resources[0].Name)
+	}
+	if resp.Resources[1].ID != "5be25864-9249-431e-8a91-039e334371ad" {
+		t.Fatalf("Unexpected resource id. Expected: 5be25864-9249-431e-8a91-039e334371ad Got: %s", resp.Resources[1].ID)
+	}
+	if resp.Resources[1].Name != "cpe:/o:canonical:ubuntu_linux:18.04" {
+		t.Fatalf("Unexpected resource name. Expected: cpe:/o:canonical:ubuntu_linux:18.04 Got: %s", resp.Resources[1].Name)
 	}
 }
 

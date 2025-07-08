@@ -84,4 +84,5 @@ type Client interface {
 	GetLicense(cmd *GetLicenseCommand) (resp *GetLicenseResponse, err error)
 	ModifySetting(cmd *ModifySettingCommand) (resp *ModifySettingResponse, err error)
 	GetSettings(cmd *GetSettingsCommand) (resp *GetSettingsResponse, err error)
+	GetResourceNames(cmd *GetResourceNamesCommand) (resp *GetResourceNamesResponse, err error)
 }

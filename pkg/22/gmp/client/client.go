@@ -514,3 +514,9 @@ func (cli *client) GetSettings(cmd *gmp.GetSettingsCommand) (resp *gmp.GetSettin
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) GetResourceNames(cmd *gmp.GetResourceNamesCommand) (resp *gmp.GetResourceNamesResponse, err error) {
+	resp = new(gmp.GetResourceNamesResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
