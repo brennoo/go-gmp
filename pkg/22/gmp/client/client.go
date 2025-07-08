@@ -674,3 +674,9 @@ func (cli *client) DeleteTag(cmd *gmp.DeleteTagCommand) (resp *gmp.DeleteTagResp
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) CreateNote(cmd *gmp.CreateNoteCommand) (resp *gmp.CreateNoteResponse, err error) {
+	resp = new(gmp.CreateNoteResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

@@ -1329,6 +1329,17 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.CreateNoteCommand); ok {
+		if cmd.Text == "This issue should be resolved after the upgrade." && cmd.NVT != nil && cmd.NVT.OID == "1.3.6.1.4.1.25623.1.0.10330" && cmd.Result != nil && cmd.Result.ID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+			(*response.(*gmp.CreateNoteResponse)).Status = "202"
+			(*response.(*gmp.CreateNoteResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateNoteResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+		} else {
+			(*response.(*gmp.CreateNoteResponse)).Status = "400"
+			(*response.(*gmp.CreateNoteResponse)).StatusText = "Bad request"
+		}
+	}
+
 	return nil
 }
 
