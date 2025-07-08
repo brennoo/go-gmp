@@ -17,7 +17,7 @@ A modern (Go) client for the Greenbone Management Protocol (GMP), used to intera
 
 - Go 1.23
 - Access to a running Greenbone/OpenVAS server with GMP enabled
-- Network access to the GMP server (typically via TLS or Unix socket)
+- Access to the GMP server (typically via TLS or Unix socket)
 
 ---
 
@@ -35,9 +35,9 @@ import (
 	"fmt"
 	"log"
 
-	gmp "github.com/brennoo/go-gmp/pkg"
-	"github.com/brennoo/go-gmp/pkg/client"
-	"github.com/brennoo/go-gmp/pkg/connections"
+	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/client"
+	"github.com/brennoo/go-gmp/connections"
 )
 
 func main() {
@@ -88,7 +88,7 @@ func main() {
 - **Responses**: Each command returns a strongly-typed response struct (e.g., `GetTasksResponse`).
 - **Error Handling**: All client methods return a response and an error. Protocol errors are mapped to Go errors.
 
-## Filtering Example
+## Filtering
 
 GMP supports powerful filtering for most list/get commands. You can use the `Filter` field:
 
@@ -108,7 +108,7 @@ for _, task := range tasksResp.Task {
 }
 ```
 
-## Pagination Example
+## Pagination
 
 > [!IMPORTANT]
 > By default, the GMP server returns 10 rows per page if you do not specify the `rows` filter.
@@ -132,7 +132,7 @@ for _, result := range resultsResp.Result {
 }
 ```
 
-## Error Handling Example
+## Error Handling
 
 All client methods return a response and an error. If the server returns a protocol error, it is mapped to a Go error:
 
@@ -163,14 +163,14 @@ This is useful for experimenting with custom or not-yet-supported GMP commands.
 
 ## Extending the client
 
-- All GMP commands are available as methods on the client.
-- Each command/response struct is documented and matches the protocol XML.
+- All GMP commands are available.
+- Each command/response struct is documented and should match the protocol XML.
 - You can add new commands by following the same pattern.
 
 ## See Also
 
 - [Greenbone GMP Protocol Documentation](https://docs.greenbone.net/API/GMP/gmp-22.6.html)
-- [Examples](../../../examples/)
+- [Examples](./examples/)
 
 ## Credits
 
