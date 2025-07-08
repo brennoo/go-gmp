@@ -1378,6 +1378,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.CreateFilterCommand); ok {
+		if cmd.Name == "Single Targets" {
+			(*response.(*gmp.CreateFilterResponse)).Status = "201"
+			(*response.(*gmp.CreateFilterResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateFilterResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c7"
+		} else {
+			(*response.(*gmp.CreateFilterResponse)).Status = "400"
+		}
+	}
+
 	return nil
 }
 

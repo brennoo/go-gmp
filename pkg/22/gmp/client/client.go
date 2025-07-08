@@ -698,3 +698,9 @@ func (cli *client) DeleteNote(cmd *gmp.DeleteNoteCommand) (resp *gmp.DeleteNoteR
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) CreateFilter(cmd *gmp.CreateFilterCommand) (resp *gmp.CreateFilterResponse, err error) {
+	resp = new(gmp.CreateFilterResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

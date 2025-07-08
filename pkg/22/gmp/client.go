@@ -115,4 +115,5 @@ type Client interface {
 	ModifyNote(cmd *ModifyNoteCommand) (resp *ModifyNoteResponse, err error)
 	GetNotes(cmd *GetNotesCommand) (resp *GetNotesResponse, err error)
 	DeleteNote(cmd *DeleteNoteCommand) (resp *DeleteNoteResponse, err error)
+	CreateFilter(cmd *CreateFilterCommand) (resp *CreateFilterResponse, err error)
 }
