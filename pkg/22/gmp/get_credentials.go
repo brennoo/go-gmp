@@ -3,7 +3,6 @@ package gmp
 import "encoding/xml"
 
 // GetCredentialsCommand represents a get_credentials command request to GMP.
-// It can be used to fetch one or more credentials, optionally filtered by credential_id, format, or targets.
 type GetCredentialsCommand struct {
 	XMLName      xml.Name `xml:"get_credentials"`
 	CredentialID string   `xml:"credential_id,attr,omitempty"`
@@ -12,7 +11,6 @@ type GetCredentialsCommand struct {
 }
 
 // GetCredentialsResponse represents a get_credentials command response from GMP.
-// It contains a list of credentials and the response status.
 type GetCredentialsResponse struct {
 	XMLName     xml.Name            `xml:"get_credentials_response"`
 	Status      string              `xml:"status,attr"`

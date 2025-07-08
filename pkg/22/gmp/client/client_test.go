@@ -1,6 +1,7 @@
 package client
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/brennoo/go-gmp/pkg/22/gmp"
@@ -738,6 +739,355 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if _, ok := command.(*gmp.DescribeAuthCommand); ok {
+		resp := response.(*gmp.DescribeAuthResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		resp.Groups = []gmp.DescribeAuthGroup{
+			{
+				Name: "method:file",
+				Settings: []gmp.DescribeAuthSetting{
+					{Key: "enable", Value: "true"},
+					{Key: "order", Value: "1"},
+				},
+			},
+		}
+	}
+
+	if _, ok := command.(*gmp.GetVersionCommand); ok {
+		resp := response.(*gmp.GetVersionResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		resp.Version = "1.0"
+	}
+
+	if _, ok := command.(*gmp.HelpCommand); ok {
+		resp := response.(*gmp.HelpResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		resp.Text = "AUTHENTICATE           Authenticate with the manager.\nCREATE_ALERT           Create an alert.\n...\nVERIFY_SCANNER         Verify a scanner."
+	}
+
+	if cmd, ok := command.(*gmp.GetInfoCommand); ok {
+		if cmd.Name == "CVE-2011-0018" && cmd.Type == "cve" {
+			resp := response.(*gmp.GetInfoResponse)
+			resp.Status = "200"
+			resp.StatusText = "OK"
+			resp.Infos = []gmp.GetInfoInfo{{ID: "CVE-2011-0018", Name: "CVE-2011-0018"}}
+		} else {
+			resp := response.(*gmp.GetInfoResponse)
+			resp.Status = "404"
+			resp.StatusText = "Not found"
+		}
+	}
+
+	if cmd, ok := command.(*gmp.DeleteConfigCommand); ok {
+		if cmd.ConfigID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" && cmd.Ultimate == "1" {
+			(*response.(*gmp.DeleteConfigResponse)).Status = "200"
+			(*response.(*gmp.DeleteConfigResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeleteConfigResponse)).Status = "404"
+			(*response.(*gmp.DeleteConfigResponse)).StatusText = "Not found"
+		}
+	}
+
+	if _, ok := command.(*gmp.SyncConfigCommand); ok {
+		(*response.(*gmp.SyncConfigResponse)).Status = "202"
+		(*response.(*gmp.SyncConfigResponse)).StatusText = "OK, request submitted"
+	}
+
+	if cmd, ok := command.(*gmp.MoveTaskCommand); ok {
+		if cmd.TaskID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" && cmd.SlaveID == "97390ade-e075-11df-9973-002264764cea" {
+			(*response.(*gmp.MoveTaskResponse)).Status = "200"
+			(*response.(*gmp.MoveTaskResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.MoveTaskResponse)).Status = "404"
+			(*response.(*gmp.MoveTaskResponse)).StatusText = "Not found"
+		}
+	}
+
+	if cmd, ok := command.(*gmp.CreateTLSCertificateCommand); ok {
+		if cmd.Name == "Example Certificate" && cmd.Certificate == "MIIDNjCCAp+gAwIBAgIBATANBgkqhkiG9w0BAQQFADCBqTELM[...]" {
+			(*response.(*gmp.CreateTLSCertificateResponse)).Status = "201"
+			(*response.(*gmp.CreateTLSCertificateResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateTLSCertificateResponse)).ID = "8a925978-59d0-494b-a837-40b271569727"
+		} else {
+			(*response.(*gmp.CreateTLSCertificateResponse)).Status = "400"
+			(*response.(*gmp.CreateTLSCertificateResponse)).StatusText = "Bad request"
+			(*response.(*gmp.CreateTLSCertificateResponse)).ID = ""
+		}
+	}
+
+	if cmd, ok := command.(*gmp.ModifyTLSCertificateCommand); ok {
+		if cmd.TLSCertificateID == "8a925978-59d0-494b-a837-40b271569727" && cmd.Name == "Renamed Example Certificate" {
+			(*response.(*gmp.ModifyTLSCertificateResponse)).Status = "200"
+			(*response.(*gmp.ModifyTLSCertificateResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyTLSCertificateResponse)).Status = "404"
+			(*response.(*gmp.ModifyTLSCertificateResponse)).StatusText = "Not found"
+		}
+	}
+
+	if _, ok := command.(*gmp.GetTLSCertificatesCommand); ok {
+		resp := response.(*gmp.GetTLSCertificatesResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		resp.TLSCertificates = []gmp.TLSCertificate{
+			{
+				ID:    "ba36ed15-92fa-4ae0-af53-bad8ce472f18",
+				Owner: &gmp.Owner{Name: "admin"},
+				Name:  "Example Certificate",
+			},
+		}
+	}
+
+	if cmd, ok := command.(*gmp.ModifyAgentsCommand); ok {
+		if len(cmd.Agents) == 1 && cmd.Agents[0].ID == "fb6451bf-ec5a-45a8-8bab-5cf4b862e51b" &&
+			cmd.Authorized == "1" && cmd.MinInterval == "1000" && cmd.HeartbeatInterval == "0" &&
+			cmd.Schedule == "@every 12h" && cmd.Comment == "example update" {
+			(*response.(*gmp.ModifyAgentsResponse)).Status = "200"
+			(*response.(*gmp.ModifyAgentsResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyAgentsResponse)).Status = "400"
+			(*response.(*gmp.ModifyAgentsResponse)).StatusText = "Bad request"
+		}
+	}
+
+	if _, ok := command.(*gmp.GetAgentsCommand); ok {
+		resp := response.(*gmp.GetAgentsResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		resp.Agents = []gmp.Agent{
+			{
+				ID:      "62462fe0-5834-4630-afc2-0d040c63487c",
+				AgentID: "GAT-29-p0MPX0FT",
+			},
+		}
+	}
+
+	if cmd, ok := command.(*gmp.DeleteAgentsCommand); ok {
+		if len(cmd.Agents) == 1 && cmd.Agents[0].ID == "c6f1cdc3-8c2c-4b2e-9f43-139d23c7cfd4" {
+			(*response.(*gmp.DeleteAgentsResponse)).Status = "200"
+			(*response.(*gmp.DeleteAgentsResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeleteAgentsResponse)).Status = "404"
+			(*response.(*gmp.DeleteAgentsResponse)).StatusText = "Not found"
+		}
+	}
+
+	if cmd, ok := command.(*gmp.GetNvtsCommand); ok {
+		if cmd.Details == "1" {
+			(*response.(*gmp.GetNvtsResponse)).Status = "200"
+			(*response.(*gmp.GetNvtsResponse)).StatusText = "OK"
+			(*response.(*gmp.GetNvtsResponse)).Nvts = []gmp.NVT{
+				{
+					OID:              "1.3.6.1.4.1.25623.1.7.13005",
+					Name:             "Services",
+					CreationTime:     "2011-01-14T10:12:23+01:00",
+					ModificationTime: "2012-09-19T20:56:15+02:00",
+					Category:         "3",
+					Family:           "Service detection",
+					CvssBase:         "",
+					Severities:       "0",
+					Refs:             "",
+					Tags:             "NOTAG",
+					PreferenceCount:  "-1",
+					Timeout:          "",
+				},
+				{
+					OID:              "1.3.6.1.4.1.25623.1.7.13006",
+					Name:             "FooBar 21",
+					CreationTime:     "2011-01-14T10:12:23+01:00",
+					ModificationTime: "2012-09-19T20:56:15+02:00",
+					Category:         "3",
+					Family:           "Service detection",
+				},
+			}
+		} else if cmd.NvtOID == "1.3.6.1.4.1.25623.1.0.10330" {
+			(*response.(*gmp.GetNvtsResponse)).Status = "200"
+			(*response.(*gmp.GetNvtsResponse)).StatusText = "OK"
+			(*response.(*gmp.GetNvtsResponse)).Nvts = []gmp.NVT{
+				{
+					OID:  "1.3.6.1.4.1.25623.1.0.10330",
+					Name: "Services",
+				},
+			}
+		} else {
+			(*response.(*gmp.GetNvtsResponse)).Status = "404"
+			(*response.(*gmp.GetNvtsResponse)).StatusText = "Not found"
+		}
+	}
+
+	if _, ok := command.(*gmp.GetNvtFamiliesCommand); ok {
+		(*response.(*gmp.GetNvtFamiliesResponse)).Status = "200"
+		(*response.(*gmp.GetNvtFamiliesResponse)).StatusText = "OK"
+		(*response.(*gmp.GetNvtFamiliesResponse)).Families = []gmp.Family{
+			{
+				Name:        "Credentials",
+				MaxNvtCount: 8,
+			},
+			{
+				Name:        "Port scanners",
+				MaxNvtCount: 12,
+			},
+		}
+	}
+
+	if _, ok := command.(*gmp.GetFeedsCommand); ok {
+		resp := response.(*gmp.GetFeedsResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		resp.FeedOwnerSet = "1"
+		resp.FeedRolesSet = "1"
+		resp.FeedResourcesAccess = "1"
+		resp.Feeds = []gmp.Feed{
+			{
+				Type:        "NVT",
+				Name:        "Greenbone Security Feed",
+				Version:     "201608180124",
+				Description: "This script synchronizes an NVT collection with...",
+			},
+			{
+				Type:        "CERT",
+				Name:        "Greenbone CERT Feed",
+				Version:     "201609130000",
+				Description: "This script synchronizes a CERT collection with...",
+			},
+			{
+				Type:        "SCAP",
+				Name:        "Greenbone SCAP Feed",
+				Version:     "201608172300",
+				Description: "This script synchronizes a SCAP collection with...",
+			},
+		}
+	}
+
+	if cmd, ok := command.(*gmp.ModifyLicenseCommand); ok {
+		if cmd.File != "" {
+			(*response.(*gmp.ModifyLicenseResponse)).Status = "200"
+			(*response.(*gmp.ModifyLicenseResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyLicenseResponse)).Status = "400"
+			(*response.(*gmp.ModifyLicenseResponse)).StatusText = "Missing file"
+		}
+	}
+
+	if _, ok := command.(*gmp.GetLicenseCommand); ok {
+		resp := response.(*gmp.GetLicenseResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		resp.License = &gmp.License{
+			Status: "active",
+			Content: &gmp.LicenseContent{
+				Meta: &gmp.LicenseMeta{
+					ID:           "4711",
+					Version:      "1.0.0",
+					Comment:      "Test License",
+					Type:         "trial",
+					CustomerName: "Jane Doe",
+					Created:      "2021-08-27T06:05:21Z",
+					Begins:       "2021-08-27T07:05:21Z",
+					Expires:      "2021-09-04T07:05:21Z",
+				},
+				Appliance: &gmp.LicenseAppliance{
+					Model:     "trial",
+					ModelType: "virtual",
+					Sensor:    "0",
+				},
+				Keys: &gmp.LicenseKeys{
+					Keys: []gmp.LicenseKey{{Name: "feed", Value: "*base64 GSF key*"}},
+				},
+				Signatures: &gmp.LicenseSignatures{
+					Signatures: []gmp.LicenseSignature{{Name: "license", Value: "*base64 signature*"}},
+				},
+			},
+		}
+	}
+
+	if cmd, ok := command.(*gmp.ModifySettingCommand); ok {
+		if cmd.Name == "Timezone" && cmd.Value == "QWZyaWNhL0pvaGFubmVzYnVyZw==" {
+			(*response.(*gmp.ModifySettingResponse)).Status = "200"
+			(*response.(*gmp.ModifySettingResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifySettingResponse)).Status = "400"
+			(*response.(*gmp.ModifySettingResponse)).StatusText = "Bad request"
+		}
+	}
+
+	if _, ok := command.(*gmp.GetSettingsCommand); ok {
+		resp := response.(*gmp.GetSettingsResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		resp.Settings = &gmp.SettingsBlock{
+			Setting: []gmp.Setting{{
+				ID:    "5f5a8712-8017-11e1-8556-406186ea4fc5",
+				Name:  "Rows Per Page",
+				Value: "15",
+			}},
+		}
+	}
+
+	if _, ok := command.(*gmp.GetResourceNamesCommand); ok {
+		resp := response.(*gmp.GetResourceNamesResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		resp.Type = "os"
+		resp.Resources = []gmp.ResourceName{
+			{ID: "5b6b6aef-b320-42ca-899f-3161ee2a4195", Name: "cpe:/h:hp:jetdirect"},
+			{ID: "5be25864-9249-431e-8a91-039e334371ad", Name: "cpe:/o:canonical:ubuntu_linux:18.04"},
+		}
+	}
+
+	if _, ok := command.(*gmp.GetAggregatesCommand); ok {
+		resp := response.(*gmp.GetAggregatesResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		resp.Aggregate = &gmp.AggregateBlock{
+			DataType:    "nvt",
+			DataColumn:  "severity",
+			GroupColumn: "family",
+			Groups: []gmp.AggregateGroup{
+				{Value: "AIX Local Security Checks", Count: 1, CCount: 1, Min: 3.3, Max: 3.3, Mean: 3.3, Sum: 3.3, CSum: 3.3},
+				{Value: "Brute force attacks", Count: 8, CCount: 9, Min: 0, Max: 7.8, Mean: 6.275, Sum: 50.2, CSum: 53.5},
+			},
+		}
+	}
+
+	if _, ok := command.(*gmp.GetFeaturesCommand); ok {
+		resp := response.(*gmp.GetFeaturesResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		resp.Features = []gmp.FeatureInfo{{
+			Enabled: "0",
+			Name:    "OPENVASD",
+		}}
+	}
+
+	if _, ok := command.(*gmp.EmptyTrashcanCommand); ok {
+		resp := response.(*gmp.EmptyTrashcanResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+	}
+
+	if _, ok := command.(*gmp.RestoreCommand); ok {
+		resp := response.(*gmp.RestoreResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+	}
+
+	if _, ok := command.(*gmp.RunWizardCommand); ok {
+		resp := response.(*gmp.RunWizardResponse)
+		resp.Status = "202"
+		resp.StatusText = "OK, request submitted"
+		resp.Response = &gmp.WizardResponse{
+			StartTaskResponse: &gmp.StartTaskResponse{
+				Status:     "202",
+				StatusText: "OK, request submitted",
+				ReportID:   "a06d21f7-8e2f-4d7f-bceb-1df852d8b37d",
+			},
+		}
+	}
+
 	return nil
 }
 
@@ -841,5 +1191,470 @@ func TestGetSystemReports(t *testing.T) {
 	}
 	if resp.Status != "404" || resp.StatusText != "Not found" {
 		t.Errorf("unexpected response: %+v", resp)
+	}
+}
+
+func TestDescribeAuth(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.DescribeAuthCommand{}
+	resp, err := cli.DescribeAuth(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during DescribeAuth: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+	if len(resp.Groups) != 1 {
+		t.Fatalf("Expected 1 group, got %d", len(resp.Groups))
+	}
+	group := resp.Groups[0]
+	if group.Name != "method:file" {
+		t.Fatalf("Unexpected group name. Expected: method:file Got: %s", group.Name)
+	}
+	if len(group.Settings) != 2 {
+		t.Fatalf("Expected 2 auth_conf_setting, got %d", len(group.Settings))
+	}
+	if group.Settings[0].Key != "enable" || group.Settings[0].Value != "true" {
+		t.Fatalf("Unexpected first setting: %+v", group.Settings[0])
+	}
+	if group.Settings[1].Key != "order" || group.Settings[1].Value != "1" {
+		t.Fatalf("Unexpected second setting: %+v", group.Settings[1])
+	}
+}
+
+func TestGetInfo(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetInfoCommand{
+		Name: "CVE-2011-0018",
+		Type: "cve",
+	}
+	resp, err := cli.GetInfo(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetInfo: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+	if len(resp.Infos) != 1 {
+		t.Fatalf("Expected 1 info, got %d", len(resp.Infos))
+	}
+	info := resp.Infos[0]
+	if info.ID != "CVE-2011-0018" || info.Name != "CVE-2011-0018" {
+		t.Fatalf("Unexpected info: %+v", info)
+	}
+}
+
+func TestGetVersion(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetVersionCommand{}
+	resp, err := cli.GetVersion(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetVersion: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+	if resp.Version != "1.0" {
+		t.Fatalf("Unexpected version. Expected: 1.0 Got: %s", resp.Version)
+	}
+}
+
+func TestHelp(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.HelpCommand{}
+	resp, err := cli.Help(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during Help: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+	if resp.Text == "" || !contains(resp.Text, "AUTHENTICATE") {
+		t.Fatalf("Expected help text to contain 'AUTHENTICATE', got: %s", resp.Text)
+	}
+}
+
+func TestGetFeeds(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetFeedsCommand{}
+	resp, err := cli.GetFeeds(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetFeeds: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+	if resp.FeedOwnerSet != "1" {
+		t.Fatalf("Unexpected feed_owner_set. Expected: 1 Got: %s", resp.FeedOwnerSet)
+	}
+	if resp.FeedRolesSet != "1" {
+		t.Fatalf("Unexpected feed_roles_set. Expected: 1 Got: %s", resp.FeedRolesSet)
+	}
+	if resp.FeedResourcesAccess != "1" {
+		t.Fatalf("Unexpected feed_resources_access. Expected: 1 Got: %s", resp.FeedResourcesAccess)
+	}
+	if len(resp.Feeds) != 3 {
+		t.Fatalf("Expected 3 feeds, got %d", len(resp.Feeds))
+	}
+	if resp.Feeds[0].Type != "NVT" || resp.Feeds[0].Name != "Greenbone Security Feed" {
+		t.Fatalf("Unexpected first feed: %+v", resp.Feeds[0])
+	}
+	if resp.Feeds[1].Type != "CERT" || resp.Feeds[1].Name != "Greenbone CERT Feed" {
+		t.Fatalf("Unexpected second feed: %+v", resp.Feeds[1])
+	}
+	if resp.Feeds[2].Type != "SCAP" || resp.Feeds[2].Name != "Greenbone SCAP Feed" {
+		t.Fatalf("Unexpected third feed: %+v", resp.Feeds[2])
+	}
+}
+
+func TestModifyLicense(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.ModifyLicenseCommand{
+		File: "YmFzZTY0bGljZW5zZQ==", // "baselicenses" in base64
+	}
+	resp, err := cli.ModifyLicense(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyLicense: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+}
+
+// nolint:gocyclo
+// gocyclo:ignore
+func TestGetLicense(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetLicenseCommand{}
+	resp, err := cli.GetLicense(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetLicense: %s", err)
+	}
+
+	hasErr := false
+	if resp == nil || resp.License == nil || resp.License.Content == nil || resp.License.Content.Meta == nil ||
+		resp.License.Content.Appliance == nil || resp.License.Content.Keys == nil || resp.License.Content.Signatures == nil {
+		t.Error("Missing required license fields")
+		hasErr = true
+	}
+	if resp.Status != "200" {
+		t.Error("Unexpected status:", resp.Status)
+		hasErr = true
+	}
+	if resp.StatusText != "OK" {
+		t.Error("Unexpected status text:", resp.StatusText)
+		hasErr = true
+	}
+	if resp.License.Status != "active" {
+		t.Error("Unexpected license status:", resp.License.Status)
+		hasErr = true
+	}
+	if resp.License.Content.Meta.ID != "4711" {
+		t.Error("Unexpected license id:", resp.License.Content.Meta.ID)
+		hasErr = true
+	}
+	if resp.License.Content.Meta.CustomerName != "Jane Doe" {
+		t.Error("Unexpected customer name:", resp.License.Content.Meta.CustomerName)
+		hasErr = true
+	}
+	if resp.License.Content.Appliance.Model != "trial" {
+		t.Error("Unexpected appliance model:", resp.License.Content.Appliance.Model)
+		hasErr = true
+	}
+	if len(resp.License.Content.Keys.Keys) != 1 || resp.License.Content.Keys.Keys[0].Name != "feed" {
+		t.Error("Unexpected keys:", resp.License.Content.Keys)
+		hasErr = true
+	}
+	if len(resp.License.Content.Signatures.Signatures) != 1 || resp.License.Content.Signatures.Signatures[0].Name != "license" {
+		t.Error("Unexpected signatures:", resp.License.Content.Signatures)
+		hasErr = true
+	}
+	if hasErr {
+		t.FailNow()
+	}
+}
+
+func TestModifySetting(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.ModifySettingCommand{
+		Name:  "Timezone",
+		Value: "QWZyaWNhL0pvaGFubmVzYnVyZw==", // "Africa/Johannesburg" in base64
+	}
+	resp, err := cli.ModifySetting(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifySetting: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+}
+
+func TestGetSettings(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetSettingsCommand{}
+	resp, err := cli.GetSettings(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetSettings: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+	if resp.Settings == nil || len(resp.Settings.Setting) == 0 {
+		t.Fatalf("Expected at least one setting, got %+v", resp.Settings)
+	}
+	if resp.Settings.Setting[0].ID != "5f5a8712-8017-11e1-8556-406186ea4fc5" {
+		t.Fatalf("Unexpected setting id. Expected: 5f5a8712-8017-11e1-8556-406186ea4fc5 Got: %s", resp.Settings.Setting[0].ID)
+	}
+	if resp.Settings.Setting[0].Name != "Rows Per Page" {
+		t.Fatalf("Unexpected setting name. Expected: Rows Per Page Got: %s", resp.Settings.Setting[0].Name)
+	}
+	if resp.Settings.Setting[0].Value != "15" {
+		t.Fatalf("Unexpected setting value. Expected: 15 Got: %s", resp.Settings.Setting[0].Value)
+	}
+}
+
+func TestGetResourceNames(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetResourceNamesCommand{Type: "os"}
+	resp, err := cli.GetResourceNames(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetResourceNames: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+	if resp.Type != "os" {
+		t.Fatalf("Unexpected type. Expected: os Got: %s", resp.Type)
+	}
+	if len(resp.Resources) != 2 {
+		t.Fatalf("Expected 2 resources, got %d", len(resp.Resources))
+	}
+	if resp.Resources[0].ID != "5b6b6aef-b320-42ca-899f-3161ee2a4195" {
+		t.Fatalf("Unexpected resource id. Expected: 5b6b6aef-b320-42ca-899f-3161ee2a4195 Got: %s", resp.Resources[0].ID)
+	}
+	if resp.Resources[0].Name != "cpe:/h:hp:jetdirect" {
+		t.Fatalf("Unexpected resource name. Expected: cpe:/h:hp:jetdirect Got: %s", resp.Resources[0].Name)
+	}
+	if resp.Resources[1].ID != "5be25864-9249-431e-8a91-039e334371ad" {
+		t.Fatalf("Unexpected resource id. Expected: 5be25864-9249-431e-8a91-039e334371ad Got: %s", resp.Resources[1].ID)
+	}
+	if resp.Resources[1].Name != "cpe:/o:canonical:ubuntu_linux:18.04" {
+		t.Fatalf("Unexpected resource name. Expected: cpe:/o:canonical:ubuntu_linux:18.04 Got: %s", resp.Resources[1].Name)
+	}
+}
+
+func TestGetAggregates(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetAggregatesCommand{Type: "nvt", GroupColumn: "family", DataColumn: "severity"}
+	resp, err := cli.GetAggregates(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetAggregates: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+	if resp.Aggregate == nil {
+		t.Fatalf("Expected aggregate block, got nil")
+	}
+	if resp.Aggregate.DataType != "nvt" {
+		t.Fatalf("Unexpected data_type. Expected: nvt Got: %s", resp.Aggregate.DataType)
+	}
+	if resp.Aggregate.DataColumn != "severity" {
+		t.Fatalf("Unexpected data_column. Expected: severity Got: %s", resp.Aggregate.DataColumn)
+	}
+	if resp.Aggregate.GroupColumn != "family" {
+		t.Fatalf("Unexpected group_column. Expected: family Got: %s", resp.Aggregate.GroupColumn)
+	}
+	if len(resp.Aggregate.Groups) != 2 {
+		t.Fatalf("Expected 2 groups, got %d", len(resp.Aggregate.Groups))
+	}
+	if resp.Aggregate.Groups[0].Value != "AIX Local Security Checks" {
+		t.Fatalf("Unexpected group value. Expected: AIX Local Security Checks Got: %s", resp.Aggregate.Groups[0].Value)
+	}
+	if resp.Aggregate.Groups[0].Count != 1 {
+		t.Fatalf("Unexpected group count. Expected: 1 Got: %d", resp.Aggregate.Groups[0].Count)
+	}
+	if resp.Aggregate.Groups[1].Value != "Brute force attacks" {
+		t.Fatalf("Unexpected group value. Expected: Brute force attacks Got: %s", resp.Aggregate.Groups[1].Value)
+	}
+	if resp.Aggregate.Groups[1].Count != 8 {
+		t.Fatalf("Unexpected group count. Expected: 8 Got: %d", resp.Aggregate.Groups[1].Count)
+	}
+}
+
+func contains(s, substr string) bool {
+	return strings.Contains(s, substr)
+}
+
+func TestGetFeatures(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetFeaturesCommand{}
+	resp, err := cli.GetFeatures(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetFeatures: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+	if len(resp.Features) != 1 {
+		t.Fatalf("Expected 1 feature, got %d", len(resp.Features))
+	}
+	if resp.Features[0].Enabled != "0" {
+		t.Fatalf("Unexpected feature enabled. Expected: 0 Got: %s", resp.Features[0].Enabled)
+	}
+	if resp.Features[0].Name != "OPENVASD" {
+		t.Fatalf("Unexpected feature name. Expected: OPENVASD Got: %s", resp.Features[0].Name)
+	}
+}
+
+func TestEmptyTrashcan(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.EmptyTrashcanCommand{}
+	resp, err := cli.EmptyTrashcan(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during EmptyTrashcan: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+}
+
+func TestRestore(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.RestoreCommand{ID: "97390ade-e075-11df-9973-002264764cea"}
+	resp, err := cli.Restore(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during Restore: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+}
+
+func TestRunWizard(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.RunWizardCommand{
+		Name: "quick_first_scan",
+		Params: &gmp.WizardParams{
+			Params: []gmp.WizardParam{{
+				Name:  "hosts",
+				Value: "localhost",
+			}},
+		},
+	}
+	resp, err := cli.RunWizard(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during RunWizard: %s", err)
+	}
+	if resp.Status != "202" {
+		t.Fatalf("Unexpected status. Expected: 202 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK, request submitted" {
+		t.Fatalf("Unexpected status text. Expected: OK, request submitted Got: %s", resp.StatusText)
+	}
+	if resp.Response == nil || resp.Response.StartTaskResponse == nil {
+		t.Fatalf("Expected StartTaskResponse in wizard response, got: %+v", resp.Response)
+	}
+	if resp.Response.StartTaskResponse.ReportID != "a06d21f7-8e2f-4d7f-bceb-1df852d8b37d" {
+		t.Fatalf("Unexpected report_id. Expected: a06d21f7-8e2f-4d7f-bceb-1df852d8b37d Got: %s", resp.Response.StartTaskResponse.ReportID)
 	}
 }

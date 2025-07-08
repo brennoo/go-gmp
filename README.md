@@ -16,16 +16,16 @@ The following table shows the current implementation status of GMP commands in t
 |---------|-------------|--------|
 | **Authentication & Info** | | |
 | `authenticate` | Authenticate with the GMP server | :white_check_mark: |
-| `describe_auth` | Describe authentication methods | :x: |
-| `get_info` | Get server information | :x: |
-| `get_version` | Get GMP version | :x: |
-| `help` | Get command help | :x: |
+| `describe_auth` | Describe authentication methods | :white_check_mark: |
+| `get_info` | Get server information | :white_check_mark: |
+| `get_version` | Get GMP version | :white_check_mark: |
+| `help` | Get command help | :white_check_mark: |
 | **Configuration Management** | | |
 | `create_config` | Create a new scan configuration | :white_check_mark: |
 | `modify_config` | Modify an existing scan configuration | :white_check_mark: |
 | `get_configs` | Retrieve scan configurations | :white_check_mark: |
-| `delete_config` | Delete a scan configuration | :x: |
-| `sync_config` | Sync configuration with feed | :x: |
+| `delete_config` | Delete a scan configuration | :white_check_mark: |
+| `sync_config` | Sync configuration with feed | :white_check_mark: |
 | **Task Management** | | |
 | `create_task` | Create a new scan task | :white_check_mark: |
 | `modify_task` | Modify an existing scan task | :white_check_mark: |
@@ -34,7 +34,7 @@ The following table shows the current implementation status of GMP commands in t
 | `start_task` | Start a scan task | :white_check_mark: |
 | `stop_task` | Stop a running scan task | :white_check_mark: |
 | `resume_task` | Resume a stopped task | :white_check_mark: |
-| `move_task` | Move task to different scanner | :x: |
+| `move_task` | Move task to different scanner | :white_check_mark: |
 | **Target Management** | | |
 | `create_target` | Create a new scan target | :white_check_mark: |
 | `modify_target` | Modify an existing scan target | :white_check_mark: |
@@ -137,36 +137,36 @@ The following table shows the current implementation status of GMP commands in t
 | `get_tickets` | Retrieve tickets | :x: |
 | `delete_ticket` | Delete a ticket | :x: |
 | **TLS Certificate Management** | | |
-| `create_tls_certificate` | Create a new TLS certificate | :x: |
-| `modify_tls_certificate` | Modify an existing TLS certificate | :x: |
-| `get_tls_certificates` | Retrieve TLS certificates | :x: |
+| `create_tls_certificate` | Create a new TLS certificate | :white_check_mark: |
+| `modify_tls_certificate` | Modify an existing TLS certificate | :white_check_mark: |
+| `get_tls_certificates` | Retrieve TLS certificates | :white_check_mark: |
 | **Agent Management** | | |
-| `modify_agents` | Modify agents | :x: |
-| `get_agents` | Retrieve agents | :x: |
-| `delete_agents` | Delete agents | :x: |
+| `modify_agents` | Modify agents | :white_check_mark: |
+| `get_agents` | Retrieve agents | :white_check_mark: |
+| `delete_agents` | Delete agents | :white_check_mark: |
 | **NVT Management** | | |
-| `get_nvts` | Retrieve NVTs | :x: |
-| `get_nvt_families` | Retrieve NVT families | :x: |
+| `get_nvts` | Retrieve NVTs | :white_check_mark: |
+| `get_nvt_families` | Retrieve NVT families | :white_check_mark: |
 | **Feed Management** | | |
-| `get_feeds` | Retrieve feeds | :x: |
+| `get_feeds` | Retrieve feeds | :white_check_mark: |
 | **License Management** | | |
-| `modify_license` | Modify license | :x: |
-| `get_license` | Retrieve license | :x: |
+| `modify_license` | Modify license | :white_check_mark: |
+| `get_license` | Retrieve license | :white_check_mark: |
 | **Settings Management** | | |
-| `modify_setting` | Modify setting | :x: |
-| `get_settings` | Retrieve settings | :x: |
+| `modify_setting` | Modify setting | :white_check_mark: |
+| `get_settings` | Retrieve settings | :white_check_mark: |
 | **Resource Management** | | |
-| `get_resource_names` | Retrieve resource names | :x: |
+| `get_resource_names` | Retrieve resource names | :white_check_mark: |
 | **Aggregate Management** | | |
-| `get_aggregates` | Retrieve aggregates | :x: |
+| `get_aggregates` | Retrieve aggregates | :white_check_mark: |
 | **Features Management** | | |
-| `get_features` | Retrieve features | :x: |
+| `get_features` | Retrieve features | :white_check_mark: |
 | **Preferences Management** | | |
 | `get_preferences` | Retrieve configuration preferences | :white_check_mark: |
 | **Utility Commands** | | |
-| `empty_trashcan` | Empty trashcan | :x: |
-| `restore` | Restore from trashcan | :x: |
-| `run_wizard` | Run wizard | :x: |
+| `empty_trashcan` | Empty trashcan | :white_check_mark: |
+| `restore` | Restore from trashcan | :white_check_mark: |
+| `run_wizard` | Run wizard | :white_check_mark: |
 
 **Legend:**
 - :white_check_mark: Implemented and tested

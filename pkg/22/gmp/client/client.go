@@ -394,3 +394,159 @@ func (cli *client) DeletePortRange(cmd *gmp.DeletePortRangeCommand) (resp *gmp.D
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) DescribeAuth(cmd *gmp.DescribeAuthCommand) (resp *gmp.DescribeAuthResponse, err error) {
+	resp = new(gmp.DescribeAuthResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetInfo(cmd *gmp.GetInfoCommand) (resp *gmp.GetInfoResponse, err error) {
+	resp = new(gmp.GetInfoResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetVersion(cmd *gmp.GetVersionCommand) (resp *gmp.GetVersionResponse, err error) {
+	resp = new(gmp.GetVersionResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) Help(cmd *gmp.HelpCommand) (resp *gmp.HelpResponse, err error) {
+	resp = new(gmp.HelpResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) DeleteConfig(cmd *gmp.DeleteConfigCommand) (resp *gmp.DeleteConfigResponse, err error) {
+	resp = new(gmp.DeleteConfigResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) SyncConfig(cmd *gmp.SyncConfigCommand) (resp *gmp.SyncConfigResponse, err error) {
+	resp = new(gmp.SyncConfigResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) MoveTask(cmd *gmp.MoveTaskCommand) (resp *gmp.MoveTaskResponse, err error) {
+	resp = new(gmp.MoveTaskResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) CreateTLSCertificate(cmd *gmp.CreateTLSCertificateCommand) (resp *gmp.CreateTLSCertificateResponse, err error) {
+	resp = new(gmp.CreateTLSCertificateResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) ModifyTLSCertificate(cmd *gmp.ModifyTLSCertificateCommand) (resp *gmp.ModifyTLSCertificateResponse, err error) {
+	resp = new(gmp.ModifyTLSCertificateResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetTLSCertificates(cmd *gmp.GetTLSCertificatesCommand) (resp *gmp.GetTLSCertificatesResponse, err error) {
+	resp = new(gmp.GetTLSCertificatesResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) ModifyAgents(cmd *gmp.ModifyAgentsCommand) (resp *gmp.ModifyAgentsResponse, err error) {
+	resp = new(gmp.ModifyAgentsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetAgents(cmd *gmp.GetAgentsCommand) (resp *gmp.GetAgentsResponse, err error) {
+	resp = new(gmp.GetAgentsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) DeleteAgents(cmd *gmp.DeleteAgentsCommand) (resp *gmp.DeleteAgentsResponse, err error) {
+	resp = new(gmp.DeleteAgentsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetNvts(cmd *gmp.GetNvtsCommand) (resp *gmp.GetNvtsResponse, err error) {
+	resp = new(gmp.GetNvtsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetNvtFamilies(cmd *gmp.GetNvtFamiliesCommand) (resp *gmp.GetNvtFamiliesResponse, err error) {
+	resp = new(gmp.GetNvtFamiliesResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetFeeds(cmd *gmp.GetFeedsCommand) (resp *gmp.GetFeedsResponse, err error) {
+	resp = new(gmp.GetFeedsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) ModifyLicense(cmd *gmp.ModifyLicenseCommand) (resp *gmp.ModifyLicenseResponse, err error) {
+	resp = new(gmp.ModifyLicenseResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetLicense(cmd *gmp.GetLicenseCommand) (resp *gmp.GetLicenseResponse, err error) {
+	resp = new(gmp.GetLicenseResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) ModifySetting(cmd *gmp.ModifySettingCommand) (resp *gmp.ModifySettingResponse, err error) {
+	resp = new(gmp.ModifySettingResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetSettings(cmd *gmp.GetSettingsCommand) (resp *gmp.GetSettingsResponse, err error) {
+	resp = new(gmp.GetSettingsResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetResourceNames(cmd *gmp.GetResourceNamesCommand) (resp *gmp.GetResourceNamesResponse, err error) {
+	resp = new(gmp.GetResourceNamesResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetAggregates(cmd *gmp.GetAggregatesCommand) (resp *gmp.GetAggregatesResponse, err error) {
+	resp = new(gmp.GetAggregatesResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) GetFeatures(cmd *gmp.GetFeaturesCommand) (resp *gmp.GetFeaturesResponse, err error) {
+	resp = new(gmp.GetFeaturesResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) EmptyTrashcan(cmd *gmp.EmptyTrashcanCommand) (resp *gmp.EmptyTrashcanResponse, err error) {
+	resp = new(gmp.EmptyTrashcanResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) Restore(cmd *gmp.RestoreCommand) (resp *gmp.RestoreResponse, err error) {
+	resp = new(gmp.RestoreResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
+
+func (cli *client) RunWizard(cmd *gmp.RunWizardCommand) (resp *gmp.RunWizardResponse, err error) {
+	resp = new(gmp.RunWizardResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
