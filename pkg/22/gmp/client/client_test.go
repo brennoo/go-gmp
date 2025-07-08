@@ -1135,6 +1135,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.ModifyRoleCommand); ok {
+		if cmd.RoleID == "role-uuid" && cmd.Name == "Updated Role" && cmd.Comment == "Updated comment" && cmd.Users == "user1,user2" {
+			(*response.(*gmp.ModifyRoleResponse)).Status = "200"
+			(*response.(*gmp.ModifyRoleResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyRoleResponse)).Status = "400"
+			(*response.(*gmp.ModifyRoleResponse)).StatusText = "Bad request"
+		}
+	}
+
 	return nil
 }
 

@@ -96,4 +96,5 @@ type Client interface {
 	GetUsers(cmd *GetUsersCommand) (resp *GetUsersResponse, err error)
 	DeleteUser(cmd *DeleteUserCommand) (resp *DeleteUserResponse, err error)
 	CreateRole(cmd *CreateRoleCommand) (resp *CreateRoleResponse, err error)
+	ModifyRole(cmd *ModifyRoleCommand) (resp *ModifyRoleResponse, err error)
 }
