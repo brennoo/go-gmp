@@ -4,8 +4,6 @@ run:
   tests: true
   modules-download-mode: readonly
   go: '1.23'
-  skip-dirs:
-    - pkg/9/gmp
 
 issues:
   exclude-use-default: false # Use default excluded issues
