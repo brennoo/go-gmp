@@ -1196,6 +1196,23 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if _, ok := command.(*gmp.GetPermissionsCommand); ok {
+		(*response.(*gmp.GetPermissionsResponse)).Status = "200"
+		(*response.(*gmp.GetPermissionsResponse)).StatusText = "OK"
+		(*response.(*gmp.GetPermissionsResponse)).Permissions = []gmp.PermissionInfo{
+			{
+				ID:               "b493b7a8-7489-11df-a3ec-002264764cea",
+				Name:             "Management",
+				Comment:          "Managers",
+				CreationTime:     "2018-08-29T20:21:33Z",
+				ModificationTime: "2018-08-29T20:21:33Z",
+				Writable:         "1",
+				InUse:            "0",
+				Users:            "sarah, frank",
+			},
+		}
+	}
+
 	return nil
 }
 

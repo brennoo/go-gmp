@@ -86,3 +86,23 @@ func TestModifyPermission(t *testing.T) {
 		t.Errorf("Expected status 400, got %s", respFail.Status)
 	}
 }
+
+func TestGetPermissions(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case
+	cmd := &gmp.GetPermissionsCommand{}
+	resp, err := cli.GetPermissions(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetPermissions: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if len(resp.Permissions) != 1 || resp.Permissions[0].Name != "Management" {
+		t.Errorf("Expected permission 'Management', got %+v", resp.Permissions)
+	}
+}
