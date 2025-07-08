@@ -118,4 +118,5 @@ type Client interface {
 	CreateFilter(cmd *CreateFilterCommand) (resp *CreateFilterResponse, err error)
 	ModifyFilter(cmd *ModifyFilterCommand) (resp *ModifyFilterResponse, err error)
 	GetFilters(cmd *GetFiltersCommand) (resp *GetFiltersResponse, err error)
+	DeleteFilter(cmd *DeleteFilterCommand) (resp *DeleteFilterResponse, err error)
 }

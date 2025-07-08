@@ -92,3 +92,25 @@ func TestGetFilters(t *testing.T) {
 		t.Errorf("Expected filter type 'target', got %s", f.Type)
 	}
 }
+
+func TestDeleteFilter(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.DeleteFilterCommand{
+		FilterID: "b493b7a8-7489-11df-a3ec-001164764cea",
+		Ultimate: "0",
+	}
+	resp, err := cli.DeleteFilter(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeleteFilter: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Errorf("Expected status_text 'OK', got %s", resp.StatusText)
+	}
+}

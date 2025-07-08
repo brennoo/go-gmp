@@ -716,3 +716,9 @@ func (cli *client) GetFilters(cmd *gmp.GetFiltersCommand) (resp *gmp.GetFiltersR
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) DeleteFilter(cmd *gmp.DeleteFilterCommand) (resp *gmp.DeleteFilterResponse, err error) {
+	resp = new(gmp.DeleteFilterResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
