@@ -28,3 +28,23 @@ func TestCreateNote(t *testing.T) {
 		t.Errorf("Expected note ID '254cd3ef-bbe1-4d58-859d-21b8d0c046c6', got %s", resp.ID)
 	}
 }
+
+func TestModifyNote(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.ModifyNoteCommand{
+		NoteID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
+		Text:   "This issue should be resolved after the upgrade.",
+		Result: &gmp.ModifyNoteResult{ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"},
+	}
+	resp, err := cli.ModifyNote(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifyNote: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+}

@@ -1340,6 +1340,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.ModifyNoteCommand); ok {
+		if cmd.NoteID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" && cmd.Text == "This issue should be resolved after the upgrade." && cmd.Result != nil && cmd.Result.ID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+			(*response.(*gmp.ModifyNoteResponse)).Status = "200"
+			(*response.(*gmp.ModifyNoteResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifyNoteResponse)).Status = "400"
+			(*response.(*gmp.ModifyNoteResponse)).StatusText = "Bad request"
+		}
+	}
+
 	return nil
 }
 

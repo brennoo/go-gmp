@@ -680,3 +680,9 @@ func (cli *client) CreateNote(cmd *gmp.CreateNoteCommand) (resp *gmp.CreateNoteR
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) ModifyNote(cmd *gmp.ModifyNoteCommand) (resp *gmp.ModifyNoteResponse, err error) {
+	resp = new(gmp.ModifyNoteResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

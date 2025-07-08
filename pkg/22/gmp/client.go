@@ -112,4 +112,5 @@ type Client interface {
 	GetTags(cmd *GetTagsCommand) (resp *GetTagsResponse, err error)
 	DeleteTag(cmd *DeleteTagCommand) (resp *DeleteTagResponse, err error)
 	CreateNote(cmd *CreateNoteCommand) (resp *CreateNoteResponse, err error)
+	ModifyNote(cmd *ModifyNoteCommand) (resp *ModifyNoteResponse, err error)
 }
