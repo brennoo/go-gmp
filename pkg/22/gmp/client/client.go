@@ -532,3 +532,9 @@ func (cli *client) GetFeatures(cmd *gmp.GetFeaturesCommand) (resp *gmp.GetFeatur
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) EmptyTrashcan(cmd *gmp.EmptyTrashcanCommand) (resp *gmp.EmptyTrashcanResponse, err error) {
+	resp = new(gmp.EmptyTrashcanResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
