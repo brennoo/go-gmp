@@ -65,3 +65,22 @@ func TestGetGroups(t *testing.T) {
 		t.Errorf("Expected group 'Management', got %+v", resp.Groups)
 	}
 }
+
+func TestDeleteGroup(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.DeleteGroupCommand{
+		GroupID:  "d94211b6-ba40-11e3-bcb1-406186ea4fc5",
+		Ultimate: "1",
+	}
+	resp, err := cli.DeleteGroup(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeleteGroup: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+}

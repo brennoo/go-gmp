@@ -644,3 +644,9 @@ func (cli *client) GetGroups(cmd *gmp.GetGroupsCommand) (resp *gmp.GetGroupsResp
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) DeleteGroup(cmd *gmp.DeleteGroupCommand) (resp *gmp.DeleteGroupResponse, err error) {
+	resp = new(gmp.DeleteGroupResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

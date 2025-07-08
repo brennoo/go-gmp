@@ -1262,6 +1262,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.DeleteGroupCommand); ok {
+		if cmd.GroupID == "d94211b6-ba40-11e3-bcb1-406186ea4fc5" {
+			(*response.(*gmp.DeleteGroupResponse)).Status = "200"
+			(*response.(*gmp.DeleteGroupResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeleteGroupResponse)).Status = "400"
+			(*response.(*gmp.DeleteGroupResponse)).StatusText = "Bad request"
+		}
+	}
+
 	return nil
 }
 
