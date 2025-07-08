@@ -572,3 +572,9 @@ func (cli *client) GetUsers(cmd *gmp.GetUsersCommand) (resp *gmp.GetUsersRespons
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) DeleteUser(cmd *gmp.DeleteUserCommand) (resp *gmp.DeleteUserResponse, err error) {
+	resp = new(gmp.DeleteUserResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

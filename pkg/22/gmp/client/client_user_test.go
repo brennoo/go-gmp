@@ -113,3 +113,34 @@ func TestGetUsers(t *testing.T) {
 		t.Errorf("Expected status 200, got %s", respFail.Status)
 	}
 }
+
+func TestDeleteUser(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// Success case
+	cmd := &gmp.DeleteUserCommand{
+		Name: "foobar",
+	}
+	resp, err := cli.DeleteUser(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeleteUser: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+
+	// Failure case
+	cmdFail := &gmp.DeleteUserCommand{
+		Name: "",
+	}
+	respFail, err := cli.DeleteUser(cmdFail)
+	if err != nil {
+		t.Fatalf("Unexpected error during DeleteUser (fail): %s", err)
+	}
+	if respFail.Status != "400" {
+		t.Errorf("Expected status 400, got %s", respFail.Status)
+	}
+}

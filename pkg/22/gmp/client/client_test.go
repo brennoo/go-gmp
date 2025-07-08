@@ -1106,7 +1106,6 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 			(*response.(*gmp.ModifyUserResponse)).Status = "400"
 		}
 	}
-
 	if _, ok := command.(*gmp.GetUsersCommand); ok {
 		(*response.(*gmp.GetUsersResponse)).Status = "200"
 		(*response.(*gmp.GetUsersResponse)).StatusText = "OK"
@@ -1117,6 +1116,15 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 				Hosts:   &gmp.CreateUserHosts{Allow: "2"},
 				Sources: &gmp.CreateUserSources{Source: &gmp.CreateUserSource{Type: "file"}},
 			},
+		}
+	}
+
+	if cmd, ok := command.(*gmp.DeleteUserCommand); ok {
+		if cmd.Name == "foobar" {
+			(*response.(*gmp.DeleteUserResponse)).Status = "200"
+			(*response.(*gmp.DeleteUserResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.DeleteUserResponse)).Status = "400"
 		}
 	}
 

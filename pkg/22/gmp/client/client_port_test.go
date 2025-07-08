@@ -23,6 +23,7 @@ func TestGetPortLists(t *testing.T) {
 		t.Fatalf("Unexpected status. \nExpected: 200 \nGot: %s", resp.Status)
 	}
 }
+
 func TestCreatePortList(t *testing.T) {
 	cli := New(mockedConnection())
 	if cli == nil {
@@ -45,6 +46,7 @@ func TestCreatePortList(t *testing.T) {
 		t.Fatalf("Unexpected ID. Expected: 254cd3ef-bbe1-4d58-859d-21b8d0c046c6 Got: %s", resp.ID)
 	}
 }
+
 func TestModifyPortList(t *testing.T) {
 	cli := New(mockedConnection())
 	if cli == nil {
@@ -64,6 +66,7 @@ func TestModifyPortList(t *testing.T) {
 		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
 	}
 }
+
 func TestDeletePortList(t *testing.T) {
 	cli := New(mockedConnection())
 	if cli == nil {
@@ -82,6 +85,7 @@ func TestDeletePortList(t *testing.T) {
 		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
 	}
 }
+
 func TestCreatePortRange(t *testing.T) {
 	cli := New(mockedConnection())
 	if cli == nil {
@@ -105,6 +109,7 @@ func TestCreatePortRange(t *testing.T) {
 		t.Fatalf("Unexpected ID. Expected: 254cd3ef-bbe1-4d58-859d-21b8d0c046c6 Got: %s", resp.ID)
 	}
 }
+
 func TestDeletePortRange(t *testing.T) {
 	cli := New(mockedConnection())
 	if cli == nil {

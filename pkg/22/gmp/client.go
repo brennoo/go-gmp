@@ -94,4 +94,5 @@ type Client interface {
 	CreateUser(cmd *CreateUserCommand) (resp *CreateUserResponse, err error)
 	ModifyUser(cmd *ModifyUserCommand) (resp *ModifyUserResponse, err error)
 	GetUsers(cmd *GetUsersCommand) (resp *GetUsersResponse, err error)
+	DeleteUser(cmd *DeleteUserCommand) (resp *DeleteUserResponse, err error)
 }
