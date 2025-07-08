@@ -1125,6 +1125,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.CreateRoleCommand); ok {
+		if cmd.Name == "Test Role" && cmd.Comment == "A test role" {
+			(*response.(*gmp.CreateRoleResponse)).Status = "201"
+			(*response.(*gmp.CreateRoleResponse)).StatusText = "OK, resource created"
+			(*response.(*gmp.CreateRoleResponse)).ID = "created-role-id"
+		} else {
+			(*response.(*gmp.CreateRoleResponse)).Status = "400"
+		}
+	}
+
 	return nil
 }
 

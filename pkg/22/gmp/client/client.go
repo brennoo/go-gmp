@@ -578,3 +578,9 @@ func (cli *client) DeleteUser(cmd *gmp.DeleteUserCommand) (resp *gmp.DeleteUserR
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) CreateRole(cmd *gmp.CreateRoleCommand) (resp *gmp.CreateRoleResponse, err error) {
+	resp = new(gmp.CreateRoleResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
