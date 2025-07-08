@@ -526,3 +526,9 @@ func (cli *client) GetAggregates(cmd *gmp.GetAggregatesCommand) (resp *gmp.GetAg
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) GetFeatures(cmd *gmp.GetFeaturesCommand) (resp *gmp.GetFeaturesResponse, err error) {
+	resp = new(gmp.GetFeaturesResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

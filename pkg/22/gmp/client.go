@@ -86,4 +86,5 @@ type Client interface {
 	GetSettings(cmd *GetSettingsCommand) (resp *GetSettingsResponse, err error)
 	GetResourceNames(cmd *GetResourceNamesCommand) (resp *GetResourceNamesResponse, err error)
 	GetAggregates(cmd *GetAggregatesCommand) (resp *GetAggregatesResponse, err error)
+	GetFeatures(cmd *GetFeaturesCommand) (resp *GetFeaturesResponse, err error)
 }

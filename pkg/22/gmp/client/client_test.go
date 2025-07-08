@@ -1053,6 +1053,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if _, ok := command.(*gmp.GetFeaturesCommand); ok {
+		resp := response.(*gmp.GetFeaturesResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		resp.Features = []gmp.FeatureInfo{{
+			Enabled: "0",
+			Name:    "OPENVASD",
+		}}
+	}
+
 	return nil
 }
 
@@ -1523,4 +1533,32 @@ func TestGetAggregates(t *testing.T) {
 
 func contains(s, substr string) bool {
 	return strings.Contains(s, substr)
+}
+
+func TestGetFeatures(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetFeaturesCommand{}
+	resp, err := cli.GetFeatures(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetFeatures: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+	if len(resp.Features) != 1 {
+		t.Fatalf("Expected 1 feature, got %d", len(resp.Features))
+	}
+	if resp.Features[0].Enabled != "0" {
+		t.Fatalf("Unexpected feature enabled. Expected: 0 Got: %s", resp.Features[0].Enabled)
+	}
+	if resp.Features[0].Name != "OPENVASD" {
+		t.Fatalf("Unexpected feature name. Expected: OPENVASD Got: %s", resp.Features[0].Name)
+	}
 }

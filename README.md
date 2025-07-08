@@ -160,7 +160,7 @@ The following table shows the current implementation status of GMP commands in t
 | **Aggregate Management** | | |
 | `get_aggregates` | Retrieve aggregates | :white_check_mark: |
 | **Features Management** | | |
-| `get_features` | Retrieve features | :x: |
+| `get_features` | Retrieve features | :white_check_mark: |
 | **Preferences Management** | | |
 | `get_preferences` | Retrieve configuration preferences | :white_check_mark: |
 | **Utility Commands** | | |
