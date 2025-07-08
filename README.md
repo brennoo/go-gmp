@@ -153,7 +153,7 @@ The following table shows the current implementation status of GMP commands in t
 | `modify_license` | Modify license | :white_check_mark: |
 | `get_license` | Retrieve license | :white_check_mark: |
 | **Settings Management** | | |
-| `modify_setting` | Modify setting | :x: |
+| `modify_setting` | Modify setting | :white_check_mark: |
 | `get_settings` | Retrieve settings | :x: |
 | **Resource Management** | | |
 | `get_resource_names` | Retrieve resource names | :x: |

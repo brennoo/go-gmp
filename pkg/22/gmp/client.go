@@ -82,4 +82,5 @@ type Client interface {
 	GetFeeds(cmd *GetFeedsCommand) (resp *GetFeedsResponse, err error)
 	ModifyLicense(cmd *ModifyLicenseCommand) (resp *ModifyLicenseResponse, err error)
 	GetLicense(cmd *GetLicenseCommand) (resp *GetLicenseResponse, err error)
+	ModifySetting(cmd *ModifySettingCommand) (resp *ModifySettingResponse, err error)
 }

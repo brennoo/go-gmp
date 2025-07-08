@@ -1004,6 +1004,16 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.ModifySettingCommand); ok {
+		if cmd.Name == "Timezone" && cmd.Value == "QWZyaWNhL0pvaGFubmVzYnVyZw==" {
+			(*response.(*gmp.ModifySettingResponse)).Status = "200"
+			(*response.(*gmp.ModifySettingResponse)).StatusText = "OK"
+		} else {
+			(*response.(*gmp.ModifySettingResponse)).Status = "400"
+			(*response.(*gmp.ModifySettingResponse)).StatusText = "Bad request"
+		}
+	}
+
 	return nil
 }
 
@@ -1279,6 +1289,8 @@ func TestModifyLicense(t *testing.T) {
 	}
 }
 
+// nolint:gocyclo
+// gocyclo:ignore
 func TestGetLicense(t *testing.T) {
 	cli := New(mockedConnection())
 	if cli == nil {
@@ -1290,35 +1302,69 @@ func TestGetLicense(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unexpected error during GetLicense: %s", err)
 	}
+
+	hasErr := false
+	if resp == nil || resp.License == nil || resp.License.Content == nil || resp.License.Content.Meta == nil ||
+		resp.License.Content.Appliance == nil || resp.License.Content.Keys == nil || resp.License.Content.Signatures == nil {
+		t.Error("Missing required license fields")
+		hasErr = true
+	}
+	if resp.Status != "200" {
+		t.Error("Unexpected status:", resp.Status)
+		hasErr = true
+	}
+	if resp.StatusText != "OK" {
+		t.Error("Unexpected status text:", resp.StatusText)
+		hasErr = true
+	}
+	if resp.License.Status != "active" {
+		t.Error("Unexpected license status:", resp.License.Status)
+		hasErr = true
+	}
+	if resp.License.Content.Meta.ID != "4711" {
+		t.Error("Unexpected license id:", resp.License.Content.Meta.ID)
+		hasErr = true
+	}
+	if resp.License.Content.Meta.CustomerName != "Jane Doe" {
+		t.Error("Unexpected customer name:", resp.License.Content.Meta.CustomerName)
+		hasErr = true
+	}
+	if resp.License.Content.Appliance.Model != "trial" {
+		t.Error("Unexpected appliance model:", resp.License.Content.Appliance.Model)
+		hasErr = true
+	}
+	if len(resp.License.Content.Keys.Keys) != 1 || resp.License.Content.Keys.Keys[0].Name != "feed" {
+		t.Error("Unexpected keys:", resp.License.Content.Keys)
+		hasErr = true
+	}
+	if len(resp.License.Content.Signatures.Signatures) != 1 || resp.License.Content.Signatures.Signatures[0].Name != "license" {
+		t.Error("Unexpected signatures:", resp.License.Content.Signatures)
+		hasErr = true
+	}
+	if hasErr {
+		t.FailNow()
+	}
+}
+
+func TestModifySetting(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.ModifySettingCommand{
+		Name:  "Timezone",
+		Value: "QWZyaWNhL0pvaGFubmVzYnVyZw==", // "Africa/Johannesburg" in base64
+	}
+	resp, err := cli.ModifySetting(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during ModifySetting: %s", err)
+	}
 	if resp.Status != "200" {
 		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
 	}
 	if resp.StatusText != "OK" {
 		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
-	}
-	if resp.License == nil {
-		t.Fatalf("Expected license, got nil")
-	}
-	if resp.License.Status != "active" {
-		t.Fatalf("Unexpected license status. Expected: active Got: %s", resp.License.Status)
-	}
-	if resp.License.Content == nil || resp.License.Content.Meta == nil {
-		t.Fatalf("Expected license meta, got nil")
-	}
-	if resp.License.Content.Meta.ID != "4711" {
-		t.Fatalf("Unexpected license id. Expected: 4711 Got: %s", resp.License.Content.Meta.ID)
-	}
-	if resp.License.Content.Meta.CustomerName != "Jane Doe" {
-		t.Fatalf("Unexpected customer name. Expected: Jane Doe Got: %s", resp.License.Content.Meta.CustomerName)
-	}
-	if resp.License.Content.Appliance == nil || resp.License.Content.Appliance.Model != "trial" {
-		t.Fatalf("Unexpected appliance model. Expected: trial Got: %+v", resp.License.Content.Appliance)
-	}
-	if resp.License.Content.Keys == nil || len(resp.License.Content.Keys.Keys) != 1 || resp.License.Content.Keys.Keys[0].Name != "feed" {
-		t.Fatalf("Unexpected keys: %+v", resp.License.Content.Keys)
-	}
-	if resp.License.Content.Signatures == nil || len(resp.License.Content.Signatures.Signatures) != 1 || resp.License.Content.Signatures.Signatures[0].Name != "license" {
-		t.Fatalf("Unexpected signatures: %+v", resp.License.Content.Signatures)
 	}
 }
 

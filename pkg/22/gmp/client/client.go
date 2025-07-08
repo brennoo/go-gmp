@@ -502,3 +502,9 @@ func (cli *client) GetLicense(cmd *gmp.GetLicenseCommand) (resp *gmp.GetLicenseR
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) ModifySetting(cmd *gmp.ModifySettingCommand) (resp *gmp.ModifySettingResponse, err error) {
+	resp = new(gmp.ModifySettingResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}
