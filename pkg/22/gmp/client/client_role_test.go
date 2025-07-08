@@ -81,3 +81,22 @@ func TestModifyRole(t *testing.T) {
 		t.Errorf("Expected status text 'Bad request', got '%s'", respFail.StatusText)
 	}
 }
+
+func TestGetRoles(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetRolesCommand{}
+	resp, err := cli.GetRoles(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetRoles: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if len(resp.Roles) != 1 || resp.Roles[0].Name != "Management" {
+		t.Errorf("Expected role 'Management', got %+v", resp.Roles)
+	}
+}

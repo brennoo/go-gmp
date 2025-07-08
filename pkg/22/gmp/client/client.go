@@ -590,3 +590,9 @@ func (cli *client) ModifyRole(cmd *gmp.ModifyRoleCommand) (resp *gmp.ModifyRoleR
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) GetRoles(cmd *gmp.GetRolesCommand) (resp *gmp.GetRolesResponse, err error) {
+	resp = new(gmp.GetRolesResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

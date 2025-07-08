@@ -1145,6 +1145,29 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if cmd, ok := command.(*gmp.GetRolesCommand); ok {
+		if mockFail, ok := any(cmd).(interface{ Fail() bool }); ok && mockFail.Fail() {
+			(*response.(*gmp.GetRolesResponse)).Status = "400"
+			(*response.(*gmp.GetRolesResponse)).StatusText = "Bad request"
+			(*response.(*gmp.GetRolesResponse)).Roles = nil
+		} else {
+			(*response.(*gmp.GetRolesResponse)).Status = "200"
+			(*response.(*gmp.GetRolesResponse)).StatusText = "OK"
+			(*response.(*gmp.GetRolesResponse)).Roles = []gmp.Role{
+				{
+					ID:               "b493b7a8-7489-11df-a3ec-002264764cea",
+					Name:             "Management",
+					Comment:          "Managers",
+					CreationTime:     "2018-08-29T20:21:33Z",
+					ModificationTime: "2018-08-29T20:21:33Z",
+					Writable:         "1",
+					InUse:            "0",
+					Users:            "sarah, frank",
+				},
+			}
+		}
+	}
+
 	return nil
 }
 
