@@ -972,6 +972,38 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	if _, ok := command.(*gmp.GetLicenseCommand); ok {
+		resp := response.(*gmp.GetLicenseResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		resp.License = &gmp.License{
+			Status: "active",
+			Content: &gmp.LicenseContent{
+				Meta: &gmp.LicenseMeta{
+					ID:           "4711",
+					Version:      "1.0.0",
+					Comment:      "Test License",
+					Type:         "trial",
+					CustomerName: "Jane Doe",
+					Created:      "2021-08-27T06:05:21Z",
+					Begins:       "2021-08-27T07:05:21Z",
+					Expires:      "2021-09-04T07:05:21Z",
+				},
+				Appliance: &gmp.LicenseAppliance{
+					Model:     "trial",
+					ModelType: "virtual",
+					Sensor:    "0",
+				},
+				Keys: &gmp.LicenseKeys{
+					Keys: []gmp.LicenseKey{{Name: "feed", Value: "*base64 GSF key*"}},
+				},
+				Signatures: &gmp.LicenseSignatures{
+					Signatures: []gmp.LicenseSignature{{Name: "license", Value: "*base64 signature*"}},
+				},
+			},
+		}
+	}
+
 	return nil
 }
 
@@ -1244,6 +1276,49 @@ func TestModifyLicense(t *testing.T) {
 	}
 	if resp.StatusText != "OK" {
 		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+}
+
+func TestGetLicense(t *testing.T) {
+	cli := New(mockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	cmd := &gmp.GetLicenseCommand{}
+	resp, err := cli.GetLicense(cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetLicense: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+	if resp.StatusText != "OK" {
+		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+	if resp.License == nil {
+		t.Fatalf("Expected license, got nil")
+	}
+	if resp.License.Status != "active" {
+		t.Fatalf("Unexpected license status. Expected: active Got: %s", resp.License.Status)
+	}
+	if resp.License.Content == nil || resp.License.Content.Meta == nil {
+		t.Fatalf("Expected license meta, got nil")
+	}
+	if resp.License.Content.Meta.ID != "4711" {
+		t.Fatalf("Unexpected license id. Expected: 4711 Got: %s", resp.License.Content.Meta.ID)
+	}
+	if resp.License.Content.Meta.CustomerName != "Jane Doe" {
+		t.Fatalf("Unexpected customer name. Expected: Jane Doe Got: %s", resp.License.Content.Meta.CustomerName)
+	}
+	if resp.License.Content.Appliance == nil || resp.License.Content.Appliance.Model != "trial" {
+		t.Fatalf("Unexpected appliance model. Expected: trial Got: %+v", resp.License.Content.Appliance)
+	}
+	if resp.License.Content.Keys == nil || len(resp.License.Content.Keys.Keys) != 1 || resp.License.Content.Keys.Keys[0].Name != "feed" {
+		t.Fatalf("Unexpected keys: %+v", resp.License.Content.Keys)
+	}
+	if resp.License.Content.Signatures == nil || len(resp.License.Content.Signatures.Signatures) != 1 || resp.License.Content.Signatures.Signatures[0].Name != "license" {
+		t.Fatalf("Unexpected signatures: %+v", resp.License.Content.Signatures)
 	}
 }
 

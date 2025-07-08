@@ -496,3 +496,9 @@ func (cli *client) ModifyLicense(cmd *gmp.ModifyLicenseCommand) (resp *gmp.Modif
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
+
+func (cli *client) GetLicense(cmd *gmp.GetLicenseCommand) (resp *gmp.GetLicenseResponse, err error) {
+	resp = new(gmp.GetLicenseResponse)
+	err = cli.conn.Execute(cmd, resp)
+	return resp, err
+}

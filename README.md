@@ -151,7 +151,7 @@ The following table shows the current implementation status of GMP commands in t
 | `get_feeds` | Retrieve feeds | :white_check_mark: |
 | **License Management** | | |
 | `modify_license` | Modify license | :white_check_mark: |
-| `get_license` | Retrieve license | :x: |
+| `get_license` | Retrieve license | :white_check_mark: |
 | **Settings Management** | | |
 | `modify_setting` | Modify setting | :x: |
 | `get_settings` | Retrieve settings | :x: |
