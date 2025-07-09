@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// CreateOverrideCommand represents a create_override command request.
-type CreateOverrideCommand struct {
+// CreateOverride represents a create_override command request.
+type CreateOverride struct {
 	XMLName     xml.Name          `xml:"create_override"`
 	Text        string            `xml:"text"`
 	NVT         CreateOverrideNVT `xml:"nvt"`

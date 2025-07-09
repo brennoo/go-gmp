@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-// GetConfigsCommand represents a get_configs command request.
-type GetConfigsCommand struct {
+// GetConfigs represents a get_configs command request.
+type GetConfigs struct {
 	XMLName     xml.Name `xml:"get_configs"`
 	ConfigID    string   `xml:"config_id,attr,omitempty"`
 	Filter      string   `xml:"filter,attr,omitempty"`

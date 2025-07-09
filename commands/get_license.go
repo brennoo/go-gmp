@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetLicenseCommand represents a get_license command request.
-type GetLicenseCommand struct {
+// GetLicense represents a get_license command request.
+type GetLicense struct {
 	XMLName xml.Name `xml:"get_license"`
 }
 

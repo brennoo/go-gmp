@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// ModifyOverrideCommand represents a modify_override command request.
-type ModifyOverrideCommand struct {
+// ModifyOverride represents a modify_override command request.
+type ModifyOverride struct {
 	XMLName     xml.Name           `xml:"modify_override"`
 	OverrideID  string             `xml:"override_id,attr"`
 	Active      *int               `xml:"active,omitempty"`

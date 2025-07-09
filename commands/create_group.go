@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// CreateGroupCommand represents a create_group command request.
-type CreateGroupCommand struct {
+// CreateGroup represents a create_group command request.
+type CreateGroup struct {
 	XMLName  xml.Name  `xml:"create_group"`
 	Name     string    `xml:"name"`
 	Comment  string    `xml:"comment,omitempty"`

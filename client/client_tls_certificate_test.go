@@ -12,7 +12,7 @@ func TestCreateTLSCertificate(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.CreateTLSCertificateCommand{
+	cmd := &commands.CreateTLSCertificate{
 		Name:        "Example Certificate",
 		Certificate: "MIIDNjCCAp+gAwIBAgIBATANBgkqhkiG9w0BAQQFADCBqTELM[...]",
 	}
@@ -37,7 +37,7 @@ func TestModifyTLSCertificate(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.ModifyTLSCertificateCommand{
+	cmd := &commands.ModifyTLSCertificate{
 		TLSCertificateID: "8a925978-59d0-494b-a837-40b271569727",
 		Name:             "Renamed Example Certificate",
 	}
@@ -59,7 +59,7 @@ func TestGetTLSCertificates(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetTLSCertificatesCommand{}
+	cmd := &commands.GetTLSCertificates{}
 	resp, err := cli.GetTLSCertificates(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetTLSCertificates: %s", err)

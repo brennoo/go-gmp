@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetResourceNamesCommand represents a get_resource_names command request.
-type GetResourceNamesCommand struct {
+// GetResourceNames represents a get_resource_names command request.
+type GetResourceNames struct {
 	XMLName    xml.Name `xml:"get_resource_names"`
 	Type       string   `xml:"type,attr"`
 	ResourceID string   `xml:"resource_id,attr,omitempty"`

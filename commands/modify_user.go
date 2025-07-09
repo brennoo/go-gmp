@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// ModifyUserCommand represents a modify_user command request.
-type ModifyUserCommand struct {
+// ModifyUser represents a modify_user command request.
+type ModifyUser struct {
 	XMLName  xml.Name            `xml:"modify_user"`
 	UserID   string              `xml:"user_id,attr"`
 	Name     string              `xml:"name"`

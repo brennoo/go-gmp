@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// CreateReportConfigCommand represents a create_report_config command request.
-type CreateReportConfigCommand struct {
+// CreateReportConfig represents a create_report_config command request.
+type CreateReportConfig struct {
 	XMLName      xml.Name                  `xml:"create_report_config"`
 	Name         string                    `xml:"name"`
 	Comment      string                    `xml:"comment,omitempty"`

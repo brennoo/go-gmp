@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetSettingsCommand represents a get_settings command request.
-type GetSettingsCommand struct {
+// GetSettings represents a get_settings command request.
+type GetSettings struct {
 	XMLName   xml.Name `xml:"get_settings"`
 	SettingID string   `xml:"setting_id,attr,omitempty"`
 	Filter    string   `xml:"filter,attr,omitempty"`

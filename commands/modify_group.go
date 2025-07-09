@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// ModifyGroupCommand represents a modify_group command request.
-type ModifyGroupCommand struct {
+// ModifyGroup represents a modify_group command request.
+type ModifyGroup struct {
 	XMLName xml.Name `xml:"modify_group"`
 	GroupID string   `xml:"group_id,attr"`
 	Name    string   `xml:"name,omitempty"`

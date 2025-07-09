@@ -3,8 +3,8 @@ package commands
 
 import "encoding/xml"
 
-// CreateCredentialCommand represents a create_credential command request to GMP.
-type CreateCredentialCommand struct {
+// CreateCredential represents a create_credential command request to GMP.
+type CreateCredential struct {
 	XMLName       xml.Name                 `xml:"create_credential"`
 	Name          string                   `xml:"name"`
 	Comment       string                   `xml:"comment,omitempty"`

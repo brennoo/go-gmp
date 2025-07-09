@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// CreateTaskCommand represents a create_task command request.
-type CreateTaskCommand struct {
+// CreateTask represents a create_task command request.
+type CreateTask struct {
 	XMLName         xml.Name               `xml:"create_task"`
 	Name            string                 `xml:"name,omitempty"`
 	Comment         string                 `xml:"comment,omitempty"`

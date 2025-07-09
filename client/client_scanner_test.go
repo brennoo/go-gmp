@@ -12,7 +12,7 @@ func TestCreateScanner(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.CreateScannerCommand{
+	cmd := &commands.CreateScanner{
 		Name:  "Default Scanner",
 		Host:  "localhost",
 		Port:  "9391",
@@ -40,7 +40,7 @@ func TestGetScanners(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetScannersCommand{}
+	cmd := &commands.GetScanners{}
 	cmd.ScannerID = "ee0311e7-3247-4425-bb9c-866d59f1e0e9"
 	resp, err := cli.GetScanners(cmd)
 	if err != nil {
@@ -58,7 +58,7 @@ func TestCreateScannerFail(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.CreateScannerCommand{
+	cmd := &commands.CreateScanner{
 		Name:  "",
 		Host:  "localhost",
 		Port:  "9391",
@@ -83,7 +83,7 @@ func TestModifyScanner(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.ModifyScannerCommand{
+	cmd := &commands.ModifyScanner{
 		ScannerID: "scanner-uuid",
 		Name:      "Updated Scanner",
 	}
@@ -105,7 +105,7 @@ func TestModifyScannerFail(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.ModifyScannerCommand{
+	cmd := &commands.ModifyScanner{
 		ScannerID: "",
 		Name:      "",
 	}
@@ -127,7 +127,7 @@ func TestDeleteScanner(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.DeleteScannerCommand{ScannerID: "scanner-uuid", Ultimate: "1"}
+	cmd := &commands.DeleteScanner{ScannerID: "scanner-uuid", Ultimate: "1"}
 	resp, err := cli.DeleteScanner(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
@@ -146,7 +146,7 @@ func TestVerifyScanner(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.VerifyScannerCommand{ScannerID: "scanner-uuid"}
+	cmd := &commands.VerifyScanner{ScannerID: "scanner-uuid"}
 	resp, err := cli.VerifyScanner(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)

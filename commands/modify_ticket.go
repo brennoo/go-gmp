@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// ModifyTicketCommand represents a modify_ticket command request.
-type ModifyTicketCommand struct {
+// ModifyTicket represents a modify_ticket command request.
+type ModifyTicket struct {
 	XMLName    xml.Name                `xml:"modify_ticket"`
 	TicketID   string                  `xml:"ticket_id,attr"`
 	Comment    string                  `xml:"comment,omitempty"`

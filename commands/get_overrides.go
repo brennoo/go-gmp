@@ -4,8 +4,8 @@ import (
 	"encoding/xml"
 )
 
-// GetOverridesCommand represents a get_overrides command request.
-type GetOverridesCommand struct {
+// GetOverrides represents a get_overrides command request.
+type GetOverrides struct {
 	XMLName    xml.Name `xml:"get_overrides"`
 	OverrideID string   `xml:"override_id,attr,omitempty"`
 	Filter     string   `xml:"filter,attr,omitempty"`

@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// DeletePermissionCommand represents a delete_permission command request.
-type DeletePermissionCommand struct {
+// DeletePermission represents a delete_permission command request.
+type DeletePermission struct {
 	XMLName      xml.Name `xml:"delete_permission"`
 	PermissionID string   `xml:"permission_id,attr"`
 	Ultimate     string   `xml:"ultimate,attr"`

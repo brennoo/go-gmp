@@ -12,7 +12,7 @@ func TestModifyAgents(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.ModifyAgentsCommand{
+	cmd := &commands.ModifyAgents{
 		Agents: []commands.Agent{
 			{ID: "fb6451bf-ec5a-45a8-8bab-5cf4b862e51b"},
 		},
@@ -40,7 +40,7 @@ func TestGetAgents(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetAgentsCommand{}
+	cmd := &commands.GetAgents{}
 	resp, err := cli.GetAgents(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetAgents: %s", err)
@@ -69,7 +69,7 @@ func TestDeleteAgents(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.DeleteAgentsCommand{
+	cmd := &commands.DeleteAgents{
 		Agents: []commands.Agent{
 			{ID: "c6f1cdc3-8c2c-4b2e-9f43-139d23c7cfd4"},
 		},

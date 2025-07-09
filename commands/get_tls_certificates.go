@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetTLSCertificatesCommand represents a get_tls_certificates command request.
-type GetTLSCertificatesCommand struct {
+// GetTLSCertificates represents a get_tls_certificates command request.
+type GetTLSCertificates struct {
 	XMLName                xml.Name `xml:"get_tls_certificates"`
 	IncludeCertificateData string   `xml:"include_certificate_data,attr,omitempty"` // protocol: boolean as string
 }

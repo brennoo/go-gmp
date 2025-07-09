@@ -4,8 +4,8 @@ import (
 	"encoding/xml"
 )
 
-// GetSchedulesCommand represents a get_schedules command request.
-type GetSchedulesCommand struct {
+// GetSchedules represents a get_schedules command request.
+type GetSchedules struct {
 	XMLName    xml.Name `xml:"get_schedules"`
 	ScheduleID string   `xml:"schedule_id,attr,omitempty"`
 	Filter     string   `xml:"filter,attr,omitempty"`

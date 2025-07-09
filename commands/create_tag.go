@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// CreateTagCommand represents a create_tag command request.
-type CreateTagCommand struct {
+// CreateTag represents a create_tag command request.
+type CreateTag struct {
 	XMLName   xml.Name   `xml:"create_tag"`
 	Name      string     `xml:"name"`
 	Resources *Resources `xml:"resources,omitempty"`

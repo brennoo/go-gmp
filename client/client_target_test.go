@@ -12,7 +12,7 @@ func TestCreateTarget(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.CreateTargetCommand{}
+	cmd := &commands.CreateTarget{}
 	cmd.Name = "New Target"
 	resp, err := cli.CreateTarget(cmd)
 	if err != nil {
@@ -29,7 +29,7 @@ func TestModifyTarget(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.ModifyTargetCommand{}
+	cmd := &commands.ModifyTarget{}
 	cmd.TargetID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
 	cmd.Name = "Modified Target"
 	resp, err := cli.ModifyTarget(cmd)
@@ -47,7 +47,7 @@ func TestGetTargets(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetTargetsCommand{}
+	cmd := &commands.GetTargets{}
 	cmd.TargetID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
 	resp, err := cli.GetTargets(cmd)
 	if err != nil {
@@ -64,7 +64,7 @@ func TestDeleteTarget(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.DeleteTargetCommand{}
+	cmd := &commands.DeleteTarget{}
 	cmd.TargetID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
 	resp, err := cli.DeleteTarget(cmd)
 	if err != nil {

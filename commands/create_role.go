@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// CreateRoleCommand represents a create_role command request.
-type CreateRoleCommand struct {
+// CreateRole represents a create_role command request.
+type CreateRole struct {
 	XMLName xml.Name `xml:"create_role"`
 	Name    string   `xml:"name"`
 	Comment string   `xml:"comment,omitempty"`

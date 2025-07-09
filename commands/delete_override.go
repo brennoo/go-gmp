@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// DeleteOverrideCommand represents a delete_override command request.
-type DeleteOverrideCommand struct {
+// DeleteOverride represents a delete_override command request.
+type DeleteOverride struct {
 	XMLName    xml.Name `xml:"delete_override"`
 	OverrideID string   `xml:"override_id,attr"`
 	Ultimate   string   `xml:"ultimate,attr"`

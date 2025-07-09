@@ -12,7 +12,7 @@ func TestCreateTag(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.CreateTagCommand{
+	cmd := &commands.CreateTag{
 		Name: "geo:long",
 		Resources: &commands.Resources{
 			Resource: &commands.Resource{ID: "b493b7a8-7489-11df-a3ec-002264764cea"},
@@ -38,7 +38,7 @@ func TestModifyTag(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.ModifyTagCommand{
+	cmd := &commands.ModifyTag{
 		TagID:  "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 		Active: "0",
 	}
@@ -57,7 +57,7 @@ func TestGetTags(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetTagsCommand{}
+	cmd := &commands.GetTags{}
 	resp, err := cli.GetTags(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetTags: %s", err)
@@ -76,7 +76,7 @@ func TestDeleteTag(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.DeleteTagCommand{
+	cmd := &commands.DeleteTag{
 		TagID:    "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 		Ultimate: "1",
 	}

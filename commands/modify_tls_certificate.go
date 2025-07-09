@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// ModifyTLSCertificateCommand represents a modify_tls_certificate command request.
-type ModifyTLSCertificateCommand struct {
+// ModifyTLSCertificate represents a modify_tls_certificate command request.
+type ModifyTLSCertificate struct {
 	XMLName          xml.Name `xml:"modify_tls_certificate"`
 	TLSCertificateID string   `xml:"tls_certificate_id,attr"`
 	Comment          string   `xml:"comment,omitempty"`

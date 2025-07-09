@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetVulnsCommand represents a get_vulns command request.
-type GetVulnsCommand struct {
+// GetVulns represents a get_vulns command request.
+type GetVulns struct {
 	XMLName string `xml:"get_vulns"`
 	VulnID  string `xml:"vuln_id,attr,omitempty"`
 	Filter  string `xml:"filter,attr,omitempty"`

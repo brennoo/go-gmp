@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// ModifyNoteCommand represents a modify_note command request.
-type ModifyNoteCommand struct {
+// ModifyNote represents a modify_note command request.
+type ModifyNote struct {
 	XMLName  xml.Name          `xml:"modify_note"`
 	NoteID   string            `xml:"note_id,attr"`
 	Text     string            `xml:"text,omitempty"`

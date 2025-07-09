@@ -4,8 +4,8 @@ import (
 	"encoding/xml"
 )
 
-// StopTaskCommand represents a stop_task command request.
-type StopTaskCommand struct {
+// StopTask represents a stop_task command request.
+type StopTask struct {
 	XMLName xml.Name `xml:"stop_task"`
 	TaskID  string   `xml:"task_id,attr,omitempty"`
 }

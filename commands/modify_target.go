@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// ModifyTargetCommand represents a modify_target command request.
-type ModifyTargetCommand struct {
+// ModifyTarget represents a modify_target command request.
+type ModifyTarget struct {
 	XMLName              xml.Name                          `xml:"modify_target"`
 	TargetID             string                            `xml:"target_id,attr"`
 	Name                 string                            `xml:"name,omitempty"`

@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// CreateUserCommand represents a create_user command request.
-type CreateUserCommand struct {
+// CreateUser represents a create_user command request.
+type CreateUser struct {
 	XMLName  xml.Name           `xml:"create_user"`
 	Name     string             `xml:"name"`
 	Copy     string             `xml:"copy,omitempty"`

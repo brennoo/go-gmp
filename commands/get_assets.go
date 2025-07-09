@@ -4,8 +4,8 @@ import (
 	"encoding/xml"
 )
 
-// GetAssetsCommand represents a get_assets command request.
-type GetAssetsCommand struct {
+// GetAssets represents a get_assets command request.
+type GetAssets struct {
 	XMLName xml.Name `xml:"get_assets"`
 	AssetID string   `xml:"asset_id,attr,omitempty"`
 	Filter  string   `xml:"filter,attr,omitempty"`

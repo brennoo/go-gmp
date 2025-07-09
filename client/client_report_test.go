@@ -13,7 +13,7 @@ func TestCreateReport(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &commands.CreateReportCommand{
+	cmd := &commands.CreateReport{
 		Report: &commands.ReportWrapper{
 			ID:          "report-uuid",
 			FormatID:    "format-uuid",
@@ -40,7 +40,7 @@ func TestCreateReport(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &commands.CreateReportCommand{
+	cmdFail := &commands.CreateReport{
 		Report: &commands.ReportWrapper{
 			ID: "wrong-id",
 		},
@@ -67,7 +67,7 @@ func TestGetReports(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &commands.GetReportsCommand{
+	cmd := &commands.GetReports{
 		ReportID:    "report-uuid",
 		FormatID:    "format-uuid",
 		Extension:   "xml",
@@ -102,7 +102,7 @@ func TestGetReports(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &commands.GetReportsCommand{
+	cmdFail := &commands.GetReports{
 		ReportID: "wrong-id",
 	}
 	respFail, err := cli.GetReports(cmdFail)
@@ -123,7 +123,7 @@ func TestDeleteReport(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.DeleteReportCommand{ReportID: "report-uuid"}
+	cmd := &commands.DeleteReport{ReportID: "report-uuid"}
 	resp, err := cli.DeleteReport(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
@@ -143,7 +143,7 @@ func TestGetReportFormats(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &commands.GetReportFormatsCommand{ReportFormatID: "format-uuid"}
+	cmd := &commands.GetReportFormats{ReportFormatID: "format-uuid"}
 	resp, err := cli.GetReportFormats(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetReportFormats: %s", err)
@@ -159,7 +159,7 @@ func TestGetReportFormats(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &commands.GetReportFormatsCommand{ReportFormatID: "notfound"}
+	cmdFail := &commands.GetReportFormats{ReportFormatID: "notfound"}
 	respFail, err := cli.GetReportFormats(cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetReportFormats (fail): %s", err)
@@ -178,7 +178,7 @@ func TestDeleteReportFormat(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.DeleteReportFormatCommand{ReportFormatID: "format-uuid", Ultimate: "1"}
+	cmd := &commands.DeleteReportFormat{ReportFormatID: "format-uuid", Ultimate: "1"}
 	resp, err := cli.DeleteReportFormat(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
@@ -197,7 +197,7 @@ func TestVerifyReportFormat(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.VerifyReportFormatCommand{ReportFormatID: "format-uuid"}
+	cmd := &commands.VerifyReportFormat{ReportFormatID: "format-uuid"}
 	resp, err := cli.VerifyReportFormat(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
@@ -217,7 +217,7 @@ func TestCreateReportConfig(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &commands.CreateReportConfigCommand{
+	cmd := &commands.CreateReportConfig{
 		Name:         "Test config",
 		ReportFormat: commands.CreateReportConfigFormat{ID: "format-uuid"},
 	}
@@ -236,7 +236,7 @@ func TestCreateReportConfig(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &commands.CreateReportConfigCommand{
+	cmdFail := &commands.CreateReportConfig{
 		Name:         "Wrong config",
 		ReportFormat: commands.CreateReportConfigFormat{ID: "wrong-uuid"},
 	}
@@ -259,7 +259,7 @@ func TestModifyReportConfig(t *testing.T) {
 	}
 
 	// Success case: modify name
-	cmd := &commands.ModifyReportConfigCommand{
+	cmd := &commands.ModifyReportConfig{
 		Name: "Renamed config",
 	}
 	resp, err := cli.ModifyReportConfig(cmd)
@@ -277,7 +277,7 @@ func TestModifyReportConfig(t *testing.T) {
 	}
 
 	// Success case: modify param
-	cmdParam := &commands.ModifyReportConfigCommand{
+	cmdParam := &commands.ModifyReportConfig{
 		Params: []commands.ModifyReportConfigParam{{Name: "Node Distance", UseDefault: "1"}},
 	}
 	respParam, err := cli.ModifyReportConfig(cmdParam)
@@ -295,7 +295,7 @@ func TestModifyReportConfig(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &commands.ModifyReportConfigCommand{
+	cmdFail := &commands.ModifyReportConfig{
 		Name: "Invalid",
 	}
 	respFail, err := cli.ModifyReportConfig(cmdFail)
@@ -317,7 +317,7 @@ func TestCreateReportFormat(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &commands.CreateReportFormatCommand{
+	cmd := &commands.CreateReportFormat{
 		Name: "Test Format",
 		Copy: "copy-uuid",
 	}
@@ -336,7 +336,7 @@ func TestCreateReportFormat(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &commands.CreateReportFormatCommand{
+	cmdFail := &commands.CreateReportFormat{
 		Name: "Wrong Format",
 		Copy: "wrong-copy",
 	}
@@ -359,7 +359,7 @@ func TestModifyReportFormat(t *testing.T) {
 	}
 
 	// Success case: modify name
-	cmd := &commands.ModifyReportFormatCommand{
+	cmd := &commands.ModifyReportFormat{
 		ReportFormatID: "format-uuid",
 		Name:           "New Name",
 	}
@@ -375,7 +375,7 @@ func TestModifyReportFormat(t *testing.T) {
 	}
 
 	// Success case: modify param
-	cmdParam := &commands.ModifyReportFormatCommand{
+	cmdParam := &commands.ModifyReportFormat{
 		ReportFormatID: "format-uuid",
 		Param: &commands.ModifyReportFormatParam{
 			Name:  "Background Colour",
@@ -394,7 +394,7 @@ func TestModifyReportFormat(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &commands.ModifyReportFormatCommand{
+	cmdFail := &commands.ModifyReportFormat{
 		ReportFormatID: "wrong-uuid",
 		Name:           "Invalid",
 	}
@@ -417,7 +417,7 @@ func TestGetReportConfigs(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &commands.GetReportConfigsCommand{
+	cmd := &commands.GetReportConfigs{
 		ReportConfigID: "config-uuid",
 	}
 	resp, err := cli.GetReportConfigs(cmd)
@@ -432,7 +432,7 @@ func TestGetReportConfigs(t *testing.T) {
 	}
 
 	// Failure case
-	cmd = &commands.GetReportConfigsCommand{
+	cmd = &commands.GetReportConfigs{
 		ReportConfigID: "notfound",
 	}
 	resp, err = cli.GetReportConfigs(cmd)
@@ -451,7 +451,7 @@ func TestDeleteReportConfig(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &commands.DeleteReportConfigCommand{
+	cmd := &commands.DeleteReportConfig{
 		ReportConfigID: "config-uuid",
 		Ultimate:       "1",
 	}
@@ -464,7 +464,7 @@ func TestDeleteReportConfig(t *testing.T) {
 	}
 
 	// Failure case
-	cmd = &commands.DeleteReportConfigCommand{
+	cmd = &commands.DeleteReportConfig{
 		ReportConfigID: "notfound",
 		Ultimate:       "1",
 	}

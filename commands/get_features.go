@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetFeaturesCommand represents a get_features command request.
-type GetFeaturesCommand struct {
+// GetFeatures represents a get_features command request.
+type GetFeatures struct {
 	XMLName xml.Name `xml:"get_features"`
 }
 

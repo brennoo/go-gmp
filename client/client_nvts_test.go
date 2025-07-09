@@ -12,7 +12,7 @@ func TestGetNvtsWithDetails(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetNvtsCommand{
+	cmd := &commands.GetNvts{
 		Details: "1",
 	}
 	resp, err := cli.GetNvts(cmd)
@@ -42,7 +42,7 @@ func TestGetNvtsSingle(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetNvtsCommand{
+	cmd := &commands.GetNvts{
 		NvtOID: "1.3.6.1.4.1.25623.1.0.10330",
 	}
 	resp, err := cli.GetNvts(cmd)
@@ -72,7 +72,7 @@ func TestGetNvtFamilies(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetNvtFamiliesCommand{}
+	cmd := &commands.GetNvtFamilies{}
 	resp, err := cli.GetNvtFamilies(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetNvtFamilies: %s", err)

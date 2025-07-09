@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetNotesCommand represents a get_notes command request.
-type GetNotesCommand struct {
+// GetNotes represents a get_notes command request.
+type GetNotes struct {
 	XMLName xml.Name `xml:"get_notes"`
 }
 

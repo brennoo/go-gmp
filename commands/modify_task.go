@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// ModifyTaskCommand represents a modify_task command request.
-type ModifyTaskCommand struct {
+// ModifyTask represents a modify_task command request.
+type ModifyTask struct {
 	XMLName         xml.Name               `xml:"modify_task"`
 	TaskID          string                 `xml:"task_id,attr"`
 	Name            string                 `xml:"name,omitempty"`

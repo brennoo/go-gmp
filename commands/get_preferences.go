@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetPreferencesCommand represents a get_preferences command request.
-type GetPreferencesCommand struct {
+// GetPreferences represents a get_preferences command request.
+type GetPreferences struct {
 	XMLName    xml.Name `xml:"get_preferences"`
 	NVTOID     string   `xml:"nvt_oid,attr,omitempty"`
 	ConfigID   string   `xml:"config_id,attr,omitempty"`

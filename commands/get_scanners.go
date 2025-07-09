@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-// GetScannersCommand represents a get_scanners command request.
-type GetScannersCommand struct {
+// GetScanners represents a get_scanners command request.
+type GetScanners struct {
 	XMLName   xml.Name `xml:"get_scanners"`
 	ScannerID string   `xml:"scanner_id,attr,omitempty"`
 	Filter    string   `xml:"filter,attr,omitempty"`

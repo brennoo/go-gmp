@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// CreateTicketCommand represents a create_ticket command request.
-type CreateTicketCommand struct {
+// CreateTicket represents a create_ticket command request.
+type CreateTicket struct {
 	XMLName  xml.Name               `xml:"create_ticket"`
 	Comment  string                 `xml:"comment,omitempty"`
 	Copy     string                 `xml:"copy,omitempty"`

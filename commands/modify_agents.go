@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// ModifyAgentsCommand represents a modify_agents command request.
-type ModifyAgentsCommand struct {
+// ModifyAgents represents a modify_agents command request.
+type ModifyAgents struct {
 	XMLName           xml.Name `xml:"modify_agents"`
 	Agents            []Agent  `xml:"agents>agent"`
 	Authorized        string   `xml:"authorized,omitempty"`

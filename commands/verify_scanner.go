@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// VerifyScannerCommand represents a verify_scanner command request.
-type VerifyScannerCommand struct {
+// VerifyScanner represents a verify_scanner command request.
+type VerifyScanner struct {
 	XMLName   xml.Name `xml:"verify_scanner"`
 	ScannerID string   `xml:"scanner_id,attr"`
 }

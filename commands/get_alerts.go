@@ -4,8 +4,8 @@ import (
 	"encoding/xml"
 )
 
-// GetAlertsCommand represents a get_alerts command request.
-type GetAlertsCommand struct {
+// GetAlerts represents a get_alerts command request.
+type GetAlerts struct {
 	XMLName xml.Name `xml:"get_alerts"`
 	AlertID string   `xml:"alert_id,attr,omitempty"`
 	Filter  string   `xml:"filter,attr,omitempty"`

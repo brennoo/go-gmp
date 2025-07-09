@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// DeleteReportConfigCommand represents a delete_report_config command request.
-type DeleteReportConfigCommand struct {
+// DeleteReportConfig represents a delete_report_config command request.
+type DeleteReportConfig struct {
 	XMLName        xml.Name `xml:"delete_report_config"`
 	ReportConfigID string   `xml:"report_config_id,attr"`
 	Ultimate       string   `xml:"ultimate,attr"`

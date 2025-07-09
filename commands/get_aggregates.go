@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetAggregatesCommand represents a get_aggregates command request.
-type GetAggregatesCommand struct {
+// GetAggregates represents a get_aggregates command request.
+type GetAggregates struct {
 	XMLName        xml.Name `xml:"get_aggregates"`
 	Type           string   `xml:"type,attr"`
 	Filter         string   `xml:"filter,attr,omitempty"`

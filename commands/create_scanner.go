@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// CreateScannerCommand is a request to create a scanner.
-type CreateScannerCommand struct {
+// CreateScanner is a request to create a scanner.
+type CreateScanner struct {
 	XMLName    xml.Name                 `xml:"create_scanner"`
 	Name       string                   `xml:"name"`
 	Comment    string                   `xml:"comment,omitempty"`

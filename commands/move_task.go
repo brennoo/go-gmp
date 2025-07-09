@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// MoveTaskCommand represents a move_task command request.
-type MoveTaskCommand struct {
+// MoveTask represents a move_task command request.
+type MoveTask struct {
 	XMLName xml.Name `xml:"move_task"`
 	TaskID  string   `xml:"task_id,attr"`
 	SlaveID string   `xml:"slave_id,attr"`

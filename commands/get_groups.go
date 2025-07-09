@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetGroupsCommand represents a get_groups command request.
-type GetGroupsCommand struct {
+// GetGroups represents a get_groups command request.
+type GetGroups struct {
 	XMLName xml.Name `xml:"get_groups"`
 }
 

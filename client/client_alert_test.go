@@ -57,7 +57,7 @@ func TestGetAlerts(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetAlertsCommand{}
+	cmd := &commands.GetAlerts{}
 	resp, err := cli.GetAlerts(cmd)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -78,7 +78,7 @@ func TestModifyAlert(t *testing.T) {
 	name := "Updated Alert Name"
 	comment := "Updated comment"
 	filter := &commands.ModifyAlertFilter{ID: "7a06bd00-7e4a-4669-b7d7-8fe65ec64a41"}
-	cmd := &commands.ModifyAlertCommand{
+	cmd := &commands.ModifyAlert{
 		AlertID: alertID,
 		Name:    &name,
 		Comment: &comment,
@@ -100,7 +100,7 @@ func TestDeleteAlert(t *testing.T) {
 	}
 
 	alertID := "267a3405-e84a-47da-97b2-5fa0d2e8995e"
-	cmd := &commands.DeleteAlertCommand{
+	cmd := &commands.DeleteAlert{
 		AlertID:  alertID,
 		Ultimate: true,
 	}
@@ -120,7 +120,7 @@ func TestTestAlert(t *testing.T) {
 	}
 
 	alertID := "97390ade-e075-11df-9973-002264764cea"
-	cmd := &commands.TestAlertCommand{
+	cmd := &commands.TestAlert{
 		AlertID: alertID,
 	}
 	resp, err := cli.TestAlert(cmd)

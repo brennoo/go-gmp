@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetSystemReportsCommand represents a get_system_reports command request.
-type GetSystemReportsCommand struct {
+// GetSystemReports represents a get_system_reports command request.
+type GetSystemReports struct {
 	XMLName   xml.Name `xml:"get_system_reports"`
 	Name      string   `xml:"name,attr,omitempty"`
 	Duration  string   `xml:"duration,attr,omitempty"`

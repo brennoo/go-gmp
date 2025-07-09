@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetRolesCommand represents a get_roles command request.
-type GetRolesCommand struct {
+// GetRoles represents a get_roles command request.
+type GetRoles struct {
 	XMLName xml.Name `xml:"get_roles"`
 }
 

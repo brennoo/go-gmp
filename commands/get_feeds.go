@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetFeedsCommand represents a get_feeds command request.
-type GetFeedsCommand struct {
+// GetFeeds represents a get_feeds command request.
+type GetFeeds struct {
 	XMLName xml.Name `xml:"get_feeds"`
 	Type    string   `xml:"type,attr,omitempty"`
 }

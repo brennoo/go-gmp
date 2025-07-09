@@ -4,8 +4,8 @@ import (
 	"encoding/xml"
 )
 
-// RunWizardCommand represents a run_wizard command request.
-type RunWizardCommand struct {
+// RunWizard represents a run_wizard command request.
+type RunWizard struct {
 	XMLName  xml.Name      `xml:"run_wizard"`
 	Mode     string        `xml:"mode,omitempty"`
 	Name     string        `xml:"name"`

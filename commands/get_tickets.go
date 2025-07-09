@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetTicketsCommand represents a get_tickets command request.
-type GetTicketsCommand struct {
+// GetTickets represents a get_tickets command request.
+type GetTickets struct {
 	XMLName xml.Name `xml:"get_tickets"`
 }
 

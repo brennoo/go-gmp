@@ -12,7 +12,7 @@ func TestGetPortLists(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetPortListsCommand{}
+	cmd := &commands.GetPortLists{}
 	cmd.PortListID = "33d0cd82-57c6-11e1-8ed1-406186ea4fc5"
 	resp, err := cli.GetPortLists(cmd)
 	if err != nil {
@@ -30,7 +30,7 @@ func TestCreatePortList(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.CreatePortListCommand{
+	cmd := &commands.CreatePortList{
 		Name:      "All TCP",
 		Comment:   "All possible TCP ports",
 		PortRange: "T:1-65535",
@@ -53,7 +53,7 @@ func TestModifyPortList(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.ModifyPortListCommand{
+	cmd := &commands.ModifyPortList{
 		PortListID: "27140836-05ae-4e8b-9abf-f725ddc2888f",
 		Name:       "PL-WS1",
 		Comment:    "Port List for Web Server 1",
@@ -73,7 +73,7 @@ func TestDeletePortList(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.DeletePortListCommand{
+	cmd := &commands.DeletePortList{
 		PortListID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
 		Ultimate:   "1",
 	}
@@ -92,7 +92,7 @@ func TestCreatePortRange(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.CreatePortRangeCommand{
+	cmd := &commands.CreatePortRange{
 		PortList: commands.CreatePortRangePortList{ID: "354cd3ef-bbe1-4d58-859d-21b8d0c046c4"},
 		Start:    "777",
 		End:      "779",
@@ -116,7 +116,7 @@ func TestDeletePortRange(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.DeletePortRangeCommand{
+	cmd := &commands.DeletePortRange{
 		PortRangeID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
 	}
 	resp, err := cli.DeletePortRange(cmd)

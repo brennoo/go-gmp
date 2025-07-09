@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// DeleteFilterCommand represents a delete_filter command request.
-type DeleteFilterCommand struct {
+// DeleteFilter represents a delete_filter command request.
+type DeleteFilter struct {
 	XMLName  xml.Name `xml:"delete_filter"`
 	FilterID string   `xml:"filter_id,attr"`
 	Ultimate string   `xml:"ultimate,attr"`

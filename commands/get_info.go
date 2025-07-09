@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetInfoCommand represents a get_info command request.
-type GetInfoCommand struct {
+// GetInfo represents a get_info command request.
+type GetInfo struct {
 	XMLName xml.Name `xml:"get_info"`
 	Name    string   `xml:"name,attr,omitempty"`
 	Type    string   `xml:"type,attr,omitempty"`

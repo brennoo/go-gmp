@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetTagsCommand represents a get_tags command request.
-type GetTagsCommand struct {
+// GetTags represents a get_tags command request.
+type GetTags struct {
 	XMLName xml.Name `xml:"get_tags"`
 }
 

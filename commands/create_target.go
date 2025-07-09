@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// CreateTargetCommand represents a create_target command request.
-type CreateTargetCommand struct {
+// CreateTarget represents a create_target command request.
+type CreateTarget struct {
 	XMLName              xml.Name                          `xml:"create_target"`
 	Name                 string                            `xml:"name,omitempty"`
 	Comment              string                            `xml:"comment,omitempty"`

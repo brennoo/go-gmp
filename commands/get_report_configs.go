@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetReportConfigsCommand represents a get_report_configs command request.
-type GetReportConfigsCommand struct {
+// GetReportConfigs represents a get_report_configs command request.
+type GetReportConfigs struct {
 	XMLName        xml.Name `xml:"get_report_configs"`
 	ReportConfigID string   `xml:"report_config_id,attr,omitempty"`
 }

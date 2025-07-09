@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// CreatePermissionCommand represents a create_permission command request.
-type CreatePermissionCommand struct {
+// CreatePermission represents a create_permission command request.
+type CreatePermission struct {
 	XMLName  xml.Name                  `xml:"create_permission"`
 	Name     string                    `xml:"name"`
 	Subject  *CreatePermissionSubject  `xml:"subject"`

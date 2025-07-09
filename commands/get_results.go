@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-// GetResultsCommand represents a get_results command request.
-type GetResultsCommand struct {
+// GetResults represents a get_results command request.
+type GetResults struct {
 	XMLName          xml.Name `xml:"get_results"`
 	ResultID         string   `xml:"result_id,attr,omitempty"`
 	Filter           string   `xml:"filter,attr,omitempty"`

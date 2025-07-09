@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// DeleteScheduleCommand represents a delete_schedule command request.
-type DeleteScheduleCommand struct {
+// DeleteSchedule represents a delete_schedule command request.
+type DeleteSchedule struct {
 	XMLName    xml.Name `xml:"delete_schedule"`
 	ScheduleID string   `xml:"schedule_id,attr"`
 	Ultimate   string   `xml:"ultimate,attr"`

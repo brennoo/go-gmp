@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// ModifyTagCommand represents a modify_tag command request.
-type ModifyTagCommand struct {
+// ModifyTag represents a modify_tag command request.
+type ModifyTag struct {
 	XMLName   xml.Name   `xml:"modify_tag"`
 	TagID     string     `xml:"tag_id,attr"`
 	Name      string     `xml:"name,omitempty"`

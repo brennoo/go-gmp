@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// ModifyPermissionCommand represents a modify_permission command request.
-type ModifyPermissionCommand struct {
+// ModifyPermission represents a modify_permission command request.
+type ModifyPermission struct {
 	XMLName      xml.Name                  `xml:"modify_permission"`
 	PermissionID string                    `xml:"permission_id,attr"`
 	Name         string                    `xml:"name,omitempty"`

@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// CreateNoteCommand represents a create_note command request.
-type CreateNoteCommand struct {
+// CreateNote represents a create_note command request.
+type CreateNote struct {
 	XMLName  xml.Name          `xml:"create_note"`
 	Text     string            `xml:"text"`
 	NVT      *CreateNoteNVT    `xml:"nvt"`

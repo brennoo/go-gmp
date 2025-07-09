@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// CreateAssetCommand represents a create_asset command request.
-type CreateAssetCommand struct {
+// CreateAsset represents a create_asset command request.
+type CreateAsset struct {
 	XMLName xml.Name           `xml:"create_asset"`
 	Asset   *CreateAssetAsset  `xml:"asset,omitempty"`
 	Report  *CreateAssetReport `xml:"report,omitempty"`

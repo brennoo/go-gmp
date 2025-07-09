@@ -20,7 +20,7 @@ func TestGetPreferences(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetPreferencesCommand{}
+	cmd := &commands.GetPreferences{}
 	cmd.ConfigID = "4b49617e-d1d8-44b8-af81-f4675b56f837"
 	resp, err := cli.GetPreferences(cmd)
 	if err != nil {
@@ -41,7 +41,7 @@ func TestGetSystemReports(t *testing.T) {
 	}
 
 	// Success case: get a specific report
-	cmd := &commands.GetSystemReportsCommand{
+	cmd := &commands.GetSystemReports{
 		Name: "proc",
 	}
 	resp, err := cli.GetSystemReports(cmd)
@@ -59,7 +59,7 @@ func TestGetSystemReports(t *testing.T) {
 	}
 
 	// Success case: get brief listing
-	cmd = &commands.GetSystemReportsCommand{
+	cmd = &commands.GetSystemReports{
 		Brief: "1",
 	}
 	resp, err = cli.GetSystemReports(cmd)
@@ -71,7 +71,7 @@ func TestGetSystemReports(t *testing.T) {
 	}
 
 	// Failure case
-	cmd = &commands.GetSystemReportsCommand{
+	cmd = &commands.GetSystemReports{
 		Name: "notfound",
 	}
 	resp, err = cli.GetSystemReports(cmd)
@@ -89,7 +89,7 @@ func TestGetInfo(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetInfoCommand{
+	cmd := &commands.GetInfo{
 		Name: "CVE-2011-0018",
 		Type: "cve",
 	}
@@ -118,7 +118,7 @@ func TestGetVersion(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetVersionCommand{}
+	cmd := &commands.GetVersion{}
 	resp, err := cli.GetVersion(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetVersion: %s", err)
@@ -140,7 +140,7 @@ func TestHelp(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.HelpCommand{}
+	cmd := &commands.Help{}
 	resp, err := cli.Help(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during Help: %s", err)
@@ -162,7 +162,7 @@ func TestGetFeeds(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetFeedsCommand{}
+	cmd := &commands.GetFeeds{}
 	resp, err := cli.GetFeeds(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetFeeds: %s", err)
@@ -202,7 +202,7 @@ func TestModifyLicense(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.ModifyLicenseCommand{
+	cmd := &commands.ModifyLicense{
 		File: "YmFzZTY0bGljZW5zZQ==", // "baselicenses" in base64
 	}
 	resp, err := cli.ModifyLicense(cmd)
@@ -225,7 +225,7 @@ func TestGetLicense(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetLicenseCommand{}
+	cmd := &commands.GetLicense{}
 	resp, err := cli.GetLicense(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetLicense: %s", err)
@@ -280,7 +280,7 @@ func TestModifySetting(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.ModifySettingCommand{
+	cmd := &commands.ModifySetting{
 		Name:  "Timezone",
 		Value: "QWZyaWNhL0pvaGFubmVzYnVyZw==", // "Africa/Johannesburg" in base64
 	}
@@ -302,7 +302,7 @@ func TestGetSettings(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetSettingsCommand{}
+	cmd := &commands.GetSettings{}
 	resp, err := cli.GetSettings(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetSettings: %s", err)
@@ -333,7 +333,7 @@ func TestGetResourceNames(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetResourceNamesCommand{Type: "os"}
+	cmd := &commands.GetResourceNames{Type: "os"}
 	resp, err := cli.GetResourceNames(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetResourceNames: %s", err)
@@ -370,7 +370,7 @@ func TestGetAggregates(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetAggregatesCommand{Type: "nvt", GroupColumn: "family", DataColumn: "severity"}
+	cmd := &commands.GetAggregates{Type: "nvt", GroupColumn: "family", DataColumn: "severity"}
 	resp, err := cli.GetAggregates(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetAggregates: %s", err)
@@ -416,7 +416,7 @@ func TestGetFeatures(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetFeaturesCommand{}
+	cmd := &commands.GetFeatures{}
 	resp, err := cli.GetFeatures(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetFeatures: %s", err)
@@ -444,7 +444,7 @@ func TestEmptyTrashcan(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.EmptyTrashcanCommand{}
+	cmd := &commands.EmptyTrashcan{}
 	resp, err := cli.EmptyTrashcan(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during EmptyTrashcan: %s", err)
@@ -463,7 +463,7 @@ func TestRestore(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.RestoreCommand{ID: "97390ade-e075-11df-9973-002264764cea"}
+	cmd := &commands.Restore{ID: "97390ade-e075-11df-9973-002264764cea"}
 	resp, err := cli.Restore(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during Restore: %s", err)
@@ -482,7 +482,7 @@ func TestRunWizard(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.RunWizardCommand{
+	cmd := &commands.RunWizard{
 		Name: "quick_first_scan",
 		Params: &commands.WizardParams{
 			Params: []commands.WizardParam{{

@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetNvtsCommand represents a get_nvts command request.
-type GetNvtsCommand struct {
+// GetNvts represents a get_nvts command request.
+type GetNvts struct {
 	XMLName             xml.Name `xml:"get_nvts"`
 	NvtOID              string   `xml:"nvt_oid,attr,omitempty"`
 	Details             string   `xml:"details,attr,omitempty"`

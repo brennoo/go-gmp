@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// ModifyScannerCommand is a request to modify a scanner.
-type ModifyScannerCommand struct {
+// ModifyScanner is a request to modify a scanner.
+type ModifyScanner struct {
 	XMLName    xml.Name                 `xml:"modify_scanner"`
 	ScannerID  string                   `xml:"scanner_id,attr"`
 	Comment    string                   `xml:"comment,omitempty"`

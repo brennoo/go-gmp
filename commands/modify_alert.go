@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// ModifyAlertCommand represents a modify_alert command request.
-type ModifyAlertCommand struct {
+// ModifyAlert represents a modify_alert command request.
+type ModifyAlert struct {
 	XMLName   xml.Name           `xml:"modify_alert"`
 	AlertID   string             `xml:"alert_id,attr"`
 	Name      *string            `xml:"name,omitempty"`

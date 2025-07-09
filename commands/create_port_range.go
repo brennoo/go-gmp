@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// CreatePortRangeCommand represents a create_port_range command request.
-type CreatePortRangeCommand struct {
+// CreatePortRange represents a create_port_range command request.
+type CreatePortRange struct {
 	XMLName  xml.Name                `xml:"create_port_range"`
 	Comment  string                  `xml:"comment,omitempty"`
 	PortList CreatePortRangePortList `xml:"port_list"`

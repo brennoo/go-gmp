@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// CreateFilterCommand represents a create_filter command request.
-type CreateFilterCommand struct {
+// CreateFilter represents a create_filter command request.
+type CreateFilter struct {
 	XMLName xml.Name `xml:"create_filter"`
 	Name    string   `xml:"name"`
 	Comment string   `xml:"comment,omitempty"`

@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// CreateConfigCommand represents a create_config command request.
-type CreateConfigCommand struct {
+// CreateConfig represents a create_config command request.
+type CreateConfig struct {
 	XMLName            xml.Name            `xml:"create_config"`
 	Comment            string              `xml:"comment,omitempty"`
 	Copy               string              `xml:"copy,omitempty"`

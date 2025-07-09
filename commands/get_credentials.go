@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetCredentialsCommand represents a get_credentials command request to GMP.
-type GetCredentialsCommand struct {
+// GetCredentials represents a get_credentials command request to GMP.
+type GetCredentials struct {
 	XMLName      xml.Name `xml:"get_credentials"`
 	CredentialID string   `xml:"credential_id,attr,omitempty"`
 	Format       string   `xml:"format,attr,omitempty"`

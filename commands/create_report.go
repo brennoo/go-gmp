@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// CreateReportCommand represents a create_report command request.
-type CreateReportCommand struct {
+// CreateReport represents a create_report command request.
+type CreateReport struct {
 	XMLName  xml.Name          `xml:"create_report"`
 	Report   *ReportWrapper    `xml:"report"`
 	Task     *CreateReportTask `xml:"task,omitempty"`

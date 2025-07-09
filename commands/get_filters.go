@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetFiltersCommand represents a get_filters command request.
-type GetFiltersCommand struct {
+// GetFilters represents a get_filters command request.
+type GetFilters struct {
 	XMLName  xml.Name `xml:"get_filters"`
 	FilterID string   `xml:"filter_id,attr,omitempty"`
 }

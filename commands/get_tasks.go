@@ -4,8 +4,8 @@ import (
 	"encoding/xml"
 )
 
-// GetTasksCommand represents a get_tasks command request.
-type GetTasksCommand struct {
+// GetTasks represents a get_tasks command request.
+type GetTasks struct {
 	XMLName          xml.Name `xml:"get_tasks"`
 	TaskID           string   `xml:"task_id,attr,omitempty"`
 	Filter           string   `xml:"filter,attr,omitempty"`

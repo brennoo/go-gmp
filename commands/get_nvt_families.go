@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetNvtFamiliesCommand represents a get_nvt_families command request.
-type GetNvtFamiliesCommand struct {
+// GetNvtFamilies represents a get_nvt_families command request.
+type GetNvtFamilies struct {
 	XMLName   xml.Name `xml:"get_nvt_families"`
 	SortOrder string   `xml:"sort_order,attr,omitempty"`
 }

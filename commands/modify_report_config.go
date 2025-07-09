@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// ModifyReportConfigCommand represents a modify_report_config command request.
-type ModifyReportConfigCommand struct {
+// ModifyReportConfig represents a modify_report_config command request.
+type ModifyReportConfig struct {
 	XMLName xml.Name                  `xml:"modify_report_config"`
 	Name    string                    `xml:"name,omitempty"`
 	Comment string                    `xml:"comment,omitempty"`

@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// ModifyScheduleCommand represents a modify_schedule command request.
-type ModifyScheduleCommand struct {
+// ModifySchedule represents a modify_schedule command request.
+type ModifySchedule struct {
 	XMLName    xml.Name `xml:"modify_schedule"`
 	ScheduleID string   `xml:"schedule_id,attr"`
 	Comment    string   `xml:"comment,omitempty"`

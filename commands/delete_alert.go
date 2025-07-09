@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// DeleteAlertCommand represents a delete_alert command request.
-type DeleteAlertCommand struct {
+// DeleteAlert represents a delete_alert command request.
+type DeleteAlert struct {
 	XMLName  xml.Name `xml:"delete_alert"`
 	AlertID  string   `xml:"alert_id,attr"`
 	Ultimate bool     `xml:"ultimate,attr"`

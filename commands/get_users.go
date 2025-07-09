@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetUsersCommand represents a get_users command request.
-type GetUsersCommand struct {
+// GetUsers represents a get_users command request.
+type GetUsers struct {
 	XMLName xml.Name `xml:"get_users"`
 }
 

@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// DeleteCredentialCommand is a request to delete a credential.
-type DeleteCredentialCommand struct {
+// DeleteCredential is a request to delete a credential.
+type DeleteCredential struct {
 	XMLName      xml.Name `xml:"delete_credential"`
 	CredentialID string   `xml:"credential_id,attr"`
 	Ultimate     string   `xml:"ultimate,attr"`

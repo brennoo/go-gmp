@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// ModifyAssetCommand represents a modify_asset command request.
-type ModifyAssetCommand struct {
+// ModifyAsset represents a modify_asset command request.
+type ModifyAsset struct {
 	XMLName xml.Name `xml:"modify_asset"`
 	AssetID string   `xml:"asset_id,attr"`
 	Comment string   `xml:"comment,omitempty"`

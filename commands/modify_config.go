@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// ModifyConfigCommand represents a modify_config command request.
-type ModifyConfigCommand struct {
+// ModifyConfig represents a modify_config command request.
+type ModifyConfig struct {
 	XMLName         xml.Name                     `xml:"modify_config"`
 	ConfigID        string                       `xml:"config_id,attr,omitempty"`
 	Name            string                       `xml:"name,omitempty"`

@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// DescribeAuthCommand represents a describe_auth command request.
-type DescribeAuthCommand struct {
+// DescribeAuth represents a describe_auth command request.
+type DescribeAuth struct {
 	XMLName xml.Name `xml:"describe_auth"`
 }
 

@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-// GetPortListsCommand represents a get_port_lists command request.
-type GetPortListsCommand struct {
+// GetPortLists represents a get_port_lists command request.
+type GetPortLists struct {
 	XMLName    xml.Name `xml:"get_port_lists"`
 	PortListID string   `xml:"port_list_id,attr,omitempty"`
 	Filter     string   `xml:"filter,attr,omitempty"`

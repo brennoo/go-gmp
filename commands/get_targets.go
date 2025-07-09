@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-// GetTargetsCommand represents a get_targets command request.
-type GetTargetsCommand struct {
+// GetTargets represents a get_targets command request.
+type GetTargets struct {
 	XMLName  xml.Name `xml:"get_targets"`
 	TargetID string   `xml:"target_id,attr,omitempty"`
 	Filter   string   `xml:"filter,attr,omitempty"`

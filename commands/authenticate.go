@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// AuthenticateCommand represents an authenticate command request.
-type AuthenticateCommand struct {
+// Authenticate represents an authenticate command request.
+type Authenticate struct {
 	XMLName     xml.Name                `xml:"authenticate"`
 	Credentials AuthenticateCredentials `xml:"credentials"`
 }
