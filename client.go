@@ -61,7 +61,7 @@ type Client interface {
 	DeleteSchedule(cmd *commands.DeleteSchedule) (resp *commands.DeleteScheduleResponse, err error)
 
 	// Alert Management
-	CreateAlert(cmd *commands.CreateAlertRequest) (resp *commands.CreateAlertResponse, err error)
+	CreateAlert(cmd *commands.CreateAlert) (resp *commands.CreateAlertResponse, err error)
 	GetAlerts(cmd *commands.GetAlerts) (resp *commands.GetAlertsResponse, err error)
 	ModifyAlert(cmd *commands.ModifyAlert) (resp *commands.ModifyAlertResponse, err error)
 	DeleteAlert(cmd *commands.DeleteAlert) (resp *commands.DeleteAlertResponse, err error)

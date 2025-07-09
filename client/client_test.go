@@ -162,7 +162,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
-	if cmd, ok := command.(*commands.CreateAlertRequest); ok {
+	if cmd, ok := command.(*commands.CreateAlert); ok {
 		if cmd.Name == "Test Alert" {
 			(*response.(*commands.CreateAlertResponse)).Status = "201"
 			(*response.(*commands.CreateAlertResponse)).StatusText = "OK, resource created"

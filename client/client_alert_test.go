@@ -12,27 +12,27 @@ func TestCreateAlert(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.CreateAlertRequest{}
-	cmd.Name = "Test Alert"
-	cmd.Condition = commands.AlertCondition{
-		Text: "Severity at least",
-		Data: []commands.AlertData{
-			{Name: "severity", Text: "5.5"},
-		},
+	condData := []commands.AlertData{
+		commands.NewAlertData("severity", "5.5"),
 	}
-	cmd.Event = commands.AlertEvent{
-		Text: "Task run status changed",
-		Data: []commands.AlertData{
-			{Name: "status", Text: "Done"},
-		},
+	evtData := []commands.AlertData{
+		commands.NewAlertData("status", "Done"),
 	}
-	cmd.Method = commands.AlertMethod{
-		Text: "Email",
-		Data: []commands.AlertData{
-			{Name: "to_address", Text: "test@example.org"},
-			{Name: "from_address", Text: "alert@example.org"},
-		},
+	methData := []commands.AlertData{
+		commands.NewAlertData("to_address", "test@example.org"),
+		commands.NewAlertData("from_address", "alert@example.org"),
 	}
+
+	cmd := commands.NewCreateAlert(
+		"Test Alert",
+		"",
+		"",
+		commands.NewAlertCondition("Severity at least", condData),
+		commands.NewAlertEvent("Task run status changed", evtData),
+		commands.NewAlertMethod("Email", methData),
+		nil, // filter
+		nil, // active
+	)
 	resp, err := cli.CreateAlert(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateAlert: %s", err)

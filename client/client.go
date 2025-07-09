@@ -132,7 +132,7 @@ func (cli *client) GetVulns(cmd *commands.GetVulns) (resp *commands.GetVulnsResp
 	return resp, err
 }
 
-func (cli *client) CreateAlert(cmd *commands.CreateAlertRequest) (resp *commands.CreateAlertResponse, err error) {
+func (cli *client) CreateAlert(cmd *commands.CreateAlert) (resp *commands.CreateAlertResponse, err error) {
 	resp = new(commands.CreateAlertResponse)
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err

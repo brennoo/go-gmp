@@ -9,9 +9,9 @@ type ModifyAlert struct {
 	Name      *string            `xml:"name,omitempty"`
 	Comment   *string            `xml:"comment,omitempty"`
 	Filter    *ModifyAlertFilter `xml:"filter,omitempty"`
-	Event     *AlertEvent        `xml:"event,omitempty"`
-	Condition *AlertCondition    `xml:"condition,omitempty"`
-	Method    *AlertMethod       `xml:"method,omitempty"`
+	Event     *event             `xml:"event,omitempty"`
+	Condition *condition         `xml:"condition,omitempty"`
+	Method    *method            `xml:"method,omitempty"`
 }
 
 // ModifyAlertFilter represents the filter element for modify_alert.

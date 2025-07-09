@@ -65,9 +65,9 @@ type Alert struct {
 	Writable         *bool             `xml:"writable"`
 	Permissions      []AlertPermission `xml:"permissions>permission,omitempty"`
 	UserTags         *AlertUserTags    `xml:"user_tags,omitempty"`
-	Condition        AlertCondition    `xml:"condition"`
-	Event            AlertEvent        `xml:"event"`
-	Method           AlertMethod       `xml:"method"`
+	Condition        condition         `xml:"condition"`
+	Event            event             `xml:"event"`
+	Method           method            `xml:"method"`
 	Filter           AlertFilterInfo   `xml:"filter"`
 	Tasks            []AlertTask       `xml:"tasks>task,omitempty"`
 	Active           *bool             `xml:"active"`
