@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/commands"
 )
 
 func TestGetNvtsWithDetails(t *testing.T) {
@@ -12,7 +12,7 @@ func TestGetNvtsWithDetails(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetNvtsCommand{
+	cmd := &commands.GetNvtsCommand{
 		Details: "1",
 	}
 	resp, err := cli.GetNvts(cmd)
@@ -42,7 +42,7 @@ func TestGetNvtsSingle(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetNvtsCommand{
+	cmd := &commands.GetNvtsCommand{
 		NvtOID: "1.3.6.1.4.1.25623.1.0.10330",
 	}
 	resp, err := cli.GetNvts(cmd)
@@ -72,7 +72,7 @@ func TestGetNvtFamilies(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetNvtFamiliesCommand{}
+	cmd := &commands.GetNvtFamiliesCommand{}
 	resp, err := cli.GetNvtFamilies(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetNvtFamilies: %s", err)

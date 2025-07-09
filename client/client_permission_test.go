@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/commands"
 )
 
 func TestCreatePermission(t *testing.T) {
@@ -13,13 +13,13 @@ func TestCreatePermission(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &gmp.CreatePermissionCommand{
+	cmd := &commands.CreatePermissionCommand{
 		Name: "get_targets",
-		Subject: &gmp.CreatePermissionSubject{
+		Subject: &commands.CreatePermissionSubject{
 			ID:   "66abe5ce-c011-11e3-b96e-406186ea4fc5",
 			Type: "user",
 		},
-		Resource: &gmp.CreatePermissionResource{
+		Resource: &commands.CreatePermissionResource{
 			ID: "b493b7a8-7489-11df-a3ec-002264764cea",
 		},
 	}
@@ -35,9 +35,9 @@ func TestCreatePermission(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &gmp.CreatePermissionCommand{
+	cmdFail := &commands.CreatePermissionCommand{
 		Name:    "",
-		Subject: &gmp.CreatePermissionSubject{},
+		Subject: &commands.CreatePermissionSubject{},
 	}
 	respFail, err := cli.CreatePermission(cmdFail)
 	if err != nil {
@@ -55,9 +55,9 @@ func TestModifyPermission(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &gmp.ModifyPermissionCommand{
+	cmd := &commands.ModifyPermissionCommand{
 		PermissionID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
-		Subject: &gmp.CreatePermissionSubject{
+		Subject: &commands.CreatePermissionSubject{
 			ID:   "76e47468-c095-11e3-9285-406186ea4fc5",
 			Type: "user",
 		},
@@ -74,9 +74,9 @@ func TestModifyPermission(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &gmp.ModifyPermissionCommand{
+	cmdFail := &commands.ModifyPermissionCommand{
 		PermissionID: "",
-		Subject:      &gmp.CreatePermissionSubject{},
+		Subject:      &commands.CreatePermissionSubject{},
 	}
 	respFail, err := cli.ModifyPermission(cmdFail)
 	if err != nil {
@@ -94,7 +94,7 @@ func TestGetPermissions(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &gmp.GetPermissionsCommand{}
+	cmd := &commands.GetPermissionsCommand{}
 	resp, err := cli.GetPermissions(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetPermissions: %s", err)
@@ -113,7 +113,7 @@ func TestDeletePermission(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.DeletePermissionCommand{
+	cmd := &commands.DeletePermissionCommand{
 		PermissionID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
 		Ultimate:     "1",
 	}

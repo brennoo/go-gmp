@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/commands"
 )
 
 func TestCreateTag(t *testing.T) {
@@ -12,10 +12,10 @@ func TestCreateTag(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.CreateTagCommand{
+	cmd := &commands.CreateTagCommand{
 		Name: "geo:long",
-		Resources: &gmp.Resources{
-			Resource: &gmp.Resource{ID: "b493b7a8-7489-11df-a3ec-002264764cea"},
+		Resources: &commands.Resources{
+			Resource: &commands.Resource{ID: "b493b7a8-7489-11df-a3ec-002264764cea"},
 			Type:     "target",
 		},
 		Value: "52.2788",
@@ -38,7 +38,7 @@ func TestModifyTag(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.ModifyTagCommand{
+	cmd := &commands.ModifyTagCommand{
 		TagID:  "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 		Active: "0",
 	}
@@ -57,7 +57,7 @@ func TestGetTags(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetTagsCommand{}
+	cmd := &commands.GetTagsCommand{}
 	resp, err := cli.GetTags(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetTags: %s", err)
@@ -76,7 +76,7 @@ func TestDeleteTag(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.DeleteTagCommand{
+	cmd := &commands.DeleteTagCommand{
 		TagID:    "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 		Ultimate: "1",
 	}

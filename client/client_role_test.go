@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/commands"
 )
 
 func TestCreateRole(t *testing.T) {
@@ -13,7 +13,7 @@ func TestCreateRole(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &gmp.CreateRoleCommand{
+	cmd := &commands.CreateRoleCommand{
 		Name:    "Test Role",
 		Comment: "A test role",
 	}
@@ -29,7 +29,7 @@ func TestCreateRole(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &gmp.CreateRoleCommand{
+	cmdFail := &commands.CreateRoleCommand{
 		Name: "",
 	}
 	respFail, err := cli.CreateRole(cmdFail)
@@ -48,7 +48,7 @@ func TestModifyRole(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &gmp.ModifyRoleCommand{
+	cmd := &commands.ModifyRoleCommand{
 		RoleID:  "role-uuid",
 		Name:    "Updated Role",
 		Comment: "Updated comment",
@@ -66,7 +66,7 @@ func TestModifyRole(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &gmp.ModifyRoleCommand{
+	cmdFail := &commands.ModifyRoleCommand{
 		RoleID: "",
 		Name:   "",
 	}
@@ -88,7 +88,7 @@ func TestGetRoles(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetRolesCommand{}
+	cmd := &commands.GetRolesCommand{}
 	resp, err := cli.GetRoles(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetRoles: %s", err)
@@ -108,7 +108,7 @@ func TestDeleteRole(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &gmp.DeleteRoleCommand{
+	cmd := &commands.DeleteRoleCommand{
 		RoleID:   "b64c81b2-b9de-11e3-a2e9-406186ea4fc5",
 		Ultimate: "1",
 	}
@@ -124,7 +124,7 @@ func TestDeleteRole(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &gmp.DeleteRoleCommand{
+	cmdFail := &commands.DeleteRoleCommand{
 		RoleID:   "",
 		Ultimate: "1",
 	}

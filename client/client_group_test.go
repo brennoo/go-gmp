@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/commands"
 )
 
 func TestCreateGroup(t *testing.T) {
@@ -12,7 +12,7 @@ func TestCreateGroup(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.CreateGroupCommand{
+	cmd := &commands.CreateGroupCommand{
 		Name:  "Managers",
 		Users: "sarah, bob",
 	}
@@ -34,7 +34,7 @@ func TestModifyGroup(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.ModifyGroupCommand{
+	cmd := &commands.ModifyGroupCommand{
 		GroupID: "d94211b6-ba40-11e3-bcb1-406186ea4fc5",
 		Name:    "Line Managers",
 	}
@@ -53,7 +53,7 @@ func TestGetGroups(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetGroupsCommand{}
+	cmd := &commands.GetGroupsCommand{}
 	resp, err := cli.GetGroups(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetGroups: %s", err)
@@ -72,7 +72,7 @@ func TestDeleteGroup(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.DeleteGroupCommand{
+	cmd := &commands.DeleteGroupCommand{
 		GroupID:  "d94211b6-ba40-11e3-bcb1-406186ea4fc5",
 		Ultimate: "1",
 	}

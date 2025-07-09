@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/commands"
 )
 
 func TestCreateCredential(t *testing.T) {
@@ -13,7 +13,7 @@ func TestCreateCredential(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &gmp.CreateCredentialCommand{
+	cmd := &commands.CreateCredentialCommand{
 		Name: "Test Credential",
 	}
 	resp, err := cli.CreateCredential(cmd)
@@ -28,7 +28,7 @@ func TestCreateCredential(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &gmp.CreateCredentialCommand{
+	cmdFail := &commands.CreateCredentialCommand{
 		Name: "",
 	}
 	respFail, err := cli.CreateCredential(cmdFail)
@@ -47,7 +47,7 @@ func TestModifyCredential(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &gmp.ModifyCredentialCommand{
+	cmd := &commands.ModifyCredentialCommand{
 		CredentialID: "cred-uuid",
 		Name:         "Updated Credential",
 	}
@@ -63,7 +63,7 @@ func TestModifyCredential(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &gmp.ModifyCredentialCommand{
+	cmdFail := &commands.ModifyCredentialCommand{
 		CredentialID: "",
 	}
 	respFail, err := cli.ModifyCredential(cmdFail)
@@ -85,7 +85,7 @@ func TestGetCredentials(t *testing.T) {
 	}
 
 	// List all credentials
-	cmd := &gmp.GetCredentialsCommand{}
+	cmd := &commands.GetCredentialsCommand{}
 	resp, err := cli.GetCredentials(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetCredentials: %s", err)
@@ -101,7 +101,7 @@ func TestGetCredentials(t *testing.T) {
 	}
 
 	// Fetch single credential
-	cmdSingle := &gmp.GetCredentialsCommand{CredentialID: "cred-uuid-1"}
+	cmdSingle := &commands.GetCredentialsCommand{CredentialID: "cred-uuid-1"}
 	respSingle, err := cli.GetCredentials(cmdSingle)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetCredentials (single): %s", err)
@@ -114,7 +114,7 @@ func TestGetCredentials(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &gmp.GetCredentialsCommand{CredentialID: "notfound"}
+	cmdFail := &commands.GetCredentialsCommand{CredentialID: "notfound"}
 	respFail, err := cli.GetCredentials(cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetCredentials (fail): %s", err)
@@ -130,7 +130,7 @@ func TestDeleteCredential(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.DeleteCredentialCommand{CredentialID: "cred-uuid-1", Ultimate: "1"}
+	cmd := &commands.DeleteCredentialCommand{CredentialID: "cred-uuid-1", Ultimate: "1"}
 	resp, err := cli.DeleteCredential(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)

@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/commands"
 )
 
 func TestGetResults(t *testing.T) {
@@ -12,7 +12,7 @@ func TestGetResults(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetResultsCommand{TaskID: "e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31"}
+	cmd := &commands.GetResultsCommand{TaskID: "e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31"}
 	resp, err := cli.GetResults(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
@@ -28,7 +28,7 @@ func TestGetVulns(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetVulnsCommand{VulnID: "1.3.6.1.4.1.25623.1.0.808160"}
+	cmd := &commands.GetVulnsCommand{VulnID: "1.3.6.1.4.1.25623.1.0.808160"}
 	resp, err := cli.GetVulns(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)

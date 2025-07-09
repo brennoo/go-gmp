@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/commands"
 )
 
 func TestCreateTarget(t *testing.T) {
@@ -12,7 +12,7 @@ func TestCreateTarget(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.CreateTargetCommand{}
+	cmd := &commands.CreateTargetCommand{}
 	cmd.Name = "New Target"
 	resp, err := cli.CreateTarget(cmd)
 	if err != nil {
@@ -29,7 +29,7 @@ func TestModifyTarget(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.ModifyTargetCommand{}
+	cmd := &commands.ModifyTargetCommand{}
 	cmd.TargetID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
 	cmd.Name = "Modified Target"
 	resp, err := cli.ModifyTarget(cmd)
@@ -47,7 +47,7 @@ func TestGetTargets(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetTargetsCommand{}
+	cmd := &commands.GetTargetsCommand{}
 	cmd.TargetID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
 	resp, err := cli.GetTargets(cmd)
 	if err != nil {
@@ -64,7 +64,7 @@ func TestDeleteTarget(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.DeleteTargetCommand{}
+	cmd := &commands.DeleteTargetCommand{}
 	cmd.TargetID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
 	resp, err := cli.DeleteTarget(cmd)
 	if err != nil {

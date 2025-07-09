@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/commands"
 )
 
 func TestCreateReport(t *testing.T) {
@@ -13,14 +13,14 @@ func TestCreateReport(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &gmp.CreateReportCommand{
-		Report: &gmp.ReportWrapper{
+	cmd := &commands.CreateReportCommand{
+		Report: &commands.ReportWrapper{
 			ID:          "report-uuid",
 			FormatID:    "format-uuid",
 			Extension:   "xml",
 			ContentType: "text/xml",
 		},
-		Task: &gmp.CreateReportTask{
+		Task: &commands.CreateReportTask{
 			ID: "task-uuid",
 		},
 		InAssets: nil,
@@ -40,11 +40,11 @@ func TestCreateReport(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &gmp.CreateReportCommand{
-		Report: &gmp.ReportWrapper{
+	cmdFail := &commands.CreateReportCommand{
+		Report: &commands.ReportWrapper{
 			ID: "wrong-id",
 		},
-		Task: &gmp.CreateReportTask{
+		Task: &commands.CreateReportTask{
 			ID: "wrong-task",
 		},
 	}
@@ -67,7 +67,7 @@ func TestGetReports(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &gmp.GetReportsCommand{
+	cmd := &commands.GetReportsCommand{
 		ReportID:    "report-uuid",
 		FormatID:    "format-uuid",
 		Extension:   "xml",
@@ -102,7 +102,7 @@ func TestGetReports(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &gmp.GetReportsCommand{
+	cmdFail := &commands.GetReportsCommand{
 		ReportID: "wrong-id",
 	}
 	respFail, err := cli.GetReports(cmdFail)
@@ -123,7 +123,7 @@ func TestDeleteReport(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.DeleteReportCommand{ReportID: "report-uuid"}
+	cmd := &commands.DeleteReportCommand{ReportID: "report-uuid"}
 	resp, err := cli.DeleteReport(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
@@ -143,7 +143,7 @@ func TestGetReportFormats(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &gmp.GetReportFormatsCommand{ReportFormatID: "format-uuid"}
+	cmd := &commands.GetReportFormatsCommand{ReportFormatID: "format-uuid"}
 	resp, err := cli.GetReportFormats(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetReportFormats: %s", err)
@@ -159,7 +159,7 @@ func TestGetReportFormats(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &gmp.GetReportFormatsCommand{ReportFormatID: "notfound"}
+	cmdFail := &commands.GetReportFormatsCommand{ReportFormatID: "notfound"}
 	respFail, err := cli.GetReportFormats(cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetReportFormats (fail): %s", err)
@@ -178,7 +178,7 @@ func TestDeleteReportFormat(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.DeleteReportFormatCommand{ReportFormatID: "format-uuid", Ultimate: "1"}
+	cmd := &commands.DeleteReportFormatCommand{ReportFormatID: "format-uuid", Ultimate: "1"}
 	resp, err := cli.DeleteReportFormat(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
@@ -197,7 +197,7 @@ func TestVerifyReportFormat(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.VerifyReportFormatCommand{ReportFormatID: "format-uuid"}
+	cmd := &commands.VerifyReportFormatCommand{ReportFormatID: "format-uuid"}
 	resp, err := cli.VerifyReportFormat(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
@@ -217,9 +217,9 @@ func TestCreateReportConfig(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &gmp.CreateReportConfigCommand{
+	cmd := &commands.CreateReportConfigCommand{
 		Name:         "Test config",
-		ReportFormat: gmp.CreateReportConfigFormat{ID: "format-uuid"},
+		ReportFormat: commands.CreateReportConfigFormat{ID: "format-uuid"},
 	}
 	resp, err := cli.CreateReportConfig(cmd)
 	if err != nil {
@@ -236,9 +236,9 @@ func TestCreateReportConfig(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &gmp.CreateReportConfigCommand{
+	cmdFail := &commands.CreateReportConfigCommand{
 		Name:         "Wrong config",
-		ReportFormat: gmp.CreateReportConfigFormat{ID: "wrong-uuid"},
+		ReportFormat: commands.CreateReportConfigFormat{ID: "wrong-uuid"},
 	}
 	respFail, err := cli.CreateReportConfig(cmdFail)
 	if err != nil {
@@ -259,7 +259,7 @@ func TestModifyReportConfig(t *testing.T) {
 	}
 
 	// Success case: modify name
-	cmd := &gmp.ModifyReportConfigCommand{
+	cmd := &commands.ModifyReportConfigCommand{
 		Name: "Renamed config",
 	}
 	resp, err := cli.ModifyReportConfig(cmd)
@@ -277,8 +277,8 @@ func TestModifyReportConfig(t *testing.T) {
 	}
 
 	// Success case: modify param
-	cmdParam := &gmp.ModifyReportConfigCommand{
-		Params: []gmp.ModifyReportConfigParam{{Name: "Node Distance", UseDefault: "1"}},
+	cmdParam := &commands.ModifyReportConfigCommand{
+		Params: []commands.ModifyReportConfigParam{{Name: "Node Distance", UseDefault: "1"}},
 	}
 	respParam, err := cli.ModifyReportConfig(cmdParam)
 	if err != nil {
@@ -295,7 +295,7 @@ func TestModifyReportConfig(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &gmp.ModifyReportConfigCommand{
+	cmdFail := &commands.ModifyReportConfigCommand{
 		Name: "Invalid",
 	}
 	respFail, err := cli.ModifyReportConfig(cmdFail)
@@ -317,7 +317,7 @@ func TestCreateReportFormat(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &gmp.CreateReportFormatCommand{
+	cmd := &commands.CreateReportFormatCommand{
 		Name: "Test Format",
 		Copy: "copy-uuid",
 	}
@@ -336,7 +336,7 @@ func TestCreateReportFormat(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &gmp.CreateReportFormatCommand{
+	cmdFail := &commands.CreateReportFormatCommand{
 		Name: "Wrong Format",
 		Copy: "wrong-copy",
 	}
@@ -359,7 +359,7 @@ func TestModifyReportFormat(t *testing.T) {
 	}
 
 	// Success case: modify name
-	cmd := &gmp.ModifyReportFormatCommand{
+	cmd := &commands.ModifyReportFormatCommand{
 		ReportFormatID: "format-uuid",
 		Name:           "New Name",
 	}
@@ -375,9 +375,9 @@ func TestModifyReportFormat(t *testing.T) {
 	}
 
 	// Success case: modify param
-	cmdParam := &gmp.ModifyReportFormatCommand{
+	cmdParam := &commands.ModifyReportFormatCommand{
 		ReportFormatID: "format-uuid",
-		Param: &gmp.ModifyReportFormatParam{
+		Param: &commands.ModifyReportFormatParam{
 			Name:  "Background Colour",
 			Value: "red",
 		},
@@ -394,7 +394,7 @@ func TestModifyReportFormat(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &gmp.ModifyReportFormatCommand{
+	cmdFail := &commands.ModifyReportFormatCommand{
 		ReportFormatID: "wrong-uuid",
 		Name:           "Invalid",
 	}
@@ -417,7 +417,7 @@ func TestGetReportConfigs(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &gmp.GetReportConfigsCommand{
+	cmd := &commands.GetReportConfigsCommand{
 		ReportConfigID: "config-uuid",
 	}
 	resp, err := cli.GetReportConfigs(cmd)
@@ -432,7 +432,7 @@ func TestGetReportConfigs(t *testing.T) {
 	}
 
 	// Failure case
-	cmd = &gmp.GetReportConfigsCommand{
+	cmd = &commands.GetReportConfigsCommand{
 		ReportConfigID: "notfound",
 	}
 	resp, err = cli.GetReportConfigs(cmd)
@@ -451,7 +451,7 @@ func TestDeleteReportConfig(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &gmp.DeleteReportConfigCommand{
+	cmd := &commands.DeleteReportConfigCommand{
 		ReportConfigID: "config-uuid",
 		Ultimate:       "1",
 	}
@@ -464,7 +464,7 @@ func TestDeleteReportConfig(t *testing.T) {
 	}
 
 	// Failure case
-	cmd = &gmp.DeleteReportConfigCommand{
+	cmd = &commands.DeleteReportConfigCommand{
 		ReportConfigID: "notfound",
 		Ultimate:       "1",
 	}

@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/commands"
 )
 
 func TestCreateNote(t *testing.T) {
@@ -12,10 +12,10 @@ func TestCreateNote(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.CreateNoteCommand{
+	cmd := &commands.CreateNoteCommand{
 		Text:   "This issue should be resolved after the upgrade.",
-		NVT:    &gmp.CreateNoteNVT{OID: "1.3.6.1.4.1.25623.1.0.10330"},
-		Result: &gmp.CreateNoteResult{ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"},
+		NVT:    &commands.CreateNoteNVT{OID: "1.3.6.1.4.1.25623.1.0.10330"},
+		Result: &commands.CreateNoteResult{ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"},
 	}
 	resp, err := cli.CreateNote(cmd)
 	if err != nil {
@@ -35,10 +35,10 @@ func TestModifyNote(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.ModifyNoteCommand{
+	cmd := &commands.ModifyNoteCommand{
 		NoteID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 		Text:   "This issue should be resolved after the upgrade.",
-		Result: &gmp.ModifyNoteResult{ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"},
+		Result: &commands.ModifyNoteResult{ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"},
 	}
 	resp, err := cli.ModifyNote(cmd)
 	if err != nil {
@@ -55,7 +55,7 @@ func TestGetNotes(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetNotesCommand{}
+	cmd := &commands.GetNotesCommand{}
 	resp, err := cli.GetNotes(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetNotes: %s", err)
@@ -74,7 +74,7 @@ func TestDeleteNote(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.DeleteNoteCommand{
+	cmd := &commands.DeleteNoteCommand{
 		NoteID:   "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 		Ultimate: "0",
 	}

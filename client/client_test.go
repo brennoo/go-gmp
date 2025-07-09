@@ -2,6 +2,7 @@ package client
 
 import (
 	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/commands"
 )
 
 type mockConn struct{}
@@ -9,222 +10,222 @@ type mockConn struct{}
 // nolint:gocyclo // This mock handles all GMP commands
 // gocyclo:ignore
 func (m *mockConn) Execute(command interface{}, response interface{}) error {
-	if cmd, ok := command.(*gmp.AuthenticateCommand); ok {
+	if cmd, ok := command.(*commands.AuthenticateCommand); ok {
 		if cmd.Credentials.Username == "openvas" && cmd.Credentials.Password == "123" {
-			(*response.(*gmp.AuthenticateResponse)).Status = "200"
+			(*response.(*commands.AuthenticateResponse)).Status = "200"
 		} else {
-			(*response.(*gmp.AuthenticateResponse)).Status = "400"
+			(*response.(*commands.AuthenticateResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.GetConfigsCommand); ok {
+	if cmd, ok := command.(*commands.GetConfigsCommand); ok {
 		if cmd.ConfigID == "bde773f3-2b3d-4fe6-81cb-6321ae2cc629" {
-			(*response.(*gmp.GetConfigsResponse)).Status = "200"
+			(*response.(*commands.GetConfigsResponse)).Status = "200"
 		} else {
-			(*response.(*gmp.GetConfigsResponse)).Status = "400"
+			(*response.(*commands.GetConfigsResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.GetScannersCommand); ok {
+	if cmd, ok := command.(*commands.GetScannersCommand); ok {
 		if cmd.ScannerID == "ee0311e7-3247-4425-bb9c-866d59f1e0e9" {
-			(*response.(*gmp.GetScannersResponse)).Status = "200"
+			(*response.(*commands.GetScannersResponse)).Status = "200"
 		} else {
-			(*response.(*gmp.GetScannersResponse)).Status = "400"
+			(*response.(*commands.GetScannersResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.GetPreferencesCommand); ok {
+	if cmd, ok := command.(*commands.GetPreferencesCommand); ok {
 		if cmd.ConfigID == "4b49617e-d1d8-44b8-af81-f4675b56f837" {
-			(*response.(*gmp.GetPreferencesResponse)).Status = "200"
+			(*response.(*commands.GetPreferencesResponse)).Status = "200"
 		} else {
-			(*response.(*gmp.GetPreferencesResponse)).Status = "400"
+			(*response.(*commands.GetPreferencesResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.CreateConfigCommand); ok {
+	if cmd, ok := command.(*commands.CreateConfigCommand); ok {
 		if cmd.Name == "New Config" {
-			(*response.(*gmp.CreateConfigResponse)).Status = "200"
+			(*response.(*commands.CreateConfigResponse)).Status = "200"
 		} else {
-			(*response.(*gmp.CreateConfigResponse)).Status = "400"
+			(*response.(*commands.CreateConfigResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.ModifyConfigCommand); ok {
+	if cmd, ok := command.(*commands.ModifyConfigCommand); ok {
 		if cmd.Name == "Modified Config" {
-			(*response.(*gmp.ModifyConfigResponse)).Status = "200"
+			(*response.(*commands.ModifyConfigResponse)).Status = "200"
 		} else {
-			(*response.(*gmp.ModifyConfigResponse)).Status = "400"
+			(*response.(*commands.ModifyConfigResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.CreateTaskCommand); ok {
+	if cmd, ok := command.(*commands.CreateTaskCommand); ok {
 		if cmd.Name == "New Task" {
-			(*response.(*gmp.CreateTaskResponse)).Status = "200"
+			(*response.(*commands.CreateTaskResponse)).Status = "200"
 		} else {
-			(*response.(*gmp.CreateTaskResponse)).Status = "400"
+			(*response.(*commands.CreateTaskResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.ModifyTaskCommand); ok {
+	if cmd, ok := command.(*commands.ModifyTaskCommand); ok {
 		if cmd.Comment == "Modified Task Comment" {
-			(*response.(*gmp.ModifyTaskResponse)).Status = "200"
+			(*response.(*commands.ModifyTaskResponse)).Status = "200"
 		} else {
-			(*response.(*gmp.ModifyTaskResponse)).Status = "400"
+			(*response.(*commands.ModifyTaskResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.CreateTargetCommand); ok {
+	if cmd, ok := command.(*commands.CreateTargetCommand); ok {
 		if cmd.Name == "New Target" {
-			(*response.(*gmp.CreateTargetResponse)).Status = "200"
+			(*response.(*commands.CreateTargetResponse)).Status = "200"
 		} else {
-			(*response.(*gmp.CreateTargetResponse)).Status = "400"
+			(*response.(*commands.CreateTargetResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.ModifyTargetCommand); ok {
+	if cmd, ok := command.(*commands.ModifyTargetCommand); ok {
 		if cmd.Name == "Modified Target" {
-			(*response.(*gmp.ModifyTargetResponse)).Status = "200"
+			(*response.(*commands.ModifyTargetResponse)).Status = "200"
 		} else {
-			(*response.(*gmp.ModifyTargetResponse)).Status = "400"
+			(*response.(*commands.ModifyTargetResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.GetTargetsCommand); ok {
+	if cmd, ok := command.(*commands.GetTargetsCommand); ok {
 		if cmd.TargetID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
-			(*response.(*gmp.GetTargetsResponse)).Status = "200"
+			(*response.(*commands.GetTargetsResponse)).Status = "200"
 		} else {
-			(*response.(*gmp.GetTargetsResponse)).Status = "400"
+			(*response.(*commands.GetTargetsResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.DeleteTargetCommand); ok {
+	if cmd, ok := command.(*commands.DeleteTargetCommand); ok {
 		if cmd.TargetID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
-			(*response.(*gmp.DeleteTargetResponse)).Status = "200"
+			(*response.(*commands.DeleteTargetResponse)).Status = "200"
 		} else {
-			(*response.(*gmp.DeleteTargetResponse)).Status = "400"
+			(*response.(*commands.DeleteTargetResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.GetPortListsCommand); ok {
+	if cmd, ok := command.(*commands.GetPortListsCommand); ok {
 		if cmd.PortListID == "33d0cd82-57c6-11e1-8ed1-406186ea4fc5" {
-			(*response.(*gmp.GetPortListsResponse)).Status = "200"
+			(*response.(*commands.GetPortListsResponse)).Status = "200"
 		} else {
-			(*response.(*gmp.GetPortListsResponse)).Status = "400"
+			(*response.(*commands.GetPortListsResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.StartTaskCommand); ok {
+	if cmd, ok := command.(*commands.StartTaskCommand); ok {
 		if cmd.TaskID == "e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31" {
-			(*response.(*gmp.StartTaskResponse)).Status = "200"
+			(*response.(*commands.StartTaskResponse)).Status = "200"
 		} else {
-			(*response.(*gmp.StartTaskResponse)).Status = "400"
+			(*response.(*commands.StartTaskResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.GetTasksCommand); ok {
+	if cmd, ok := command.(*commands.GetTasksCommand); ok {
 		if cmd.TaskID == "e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31" {
-			(*response.(*gmp.GetTasksResponse)).Status = "200"
+			(*response.(*commands.GetTasksResponse)).Status = "200"
 		} else {
-			(*response.(*gmp.GetTasksResponse)).Status = "400"
+			(*response.(*commands.GetTasksResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.StopTaskCommand); ok {
+	if cmd, ok := command.(*commands.StopTaskCommand); ok {
 		if cmd.TaskID == "e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31" {
-			(*response.(*gmp.StopTaskResponse)).Status = "200"
+			(*response.(*commands.StopTaskResponse)).Status = "200"
 		} else {
-			(*response.(*gmp.StopTaskResponse)).Status = "400"
+			(*response.(*commands.StopTaskResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.DeleteTaskCommand); ok {
+	if cmd, ok := command.(*commands.DeleteTaskCommand); ok {
 		if cmd.TaskID == "e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31" {
-			(*response.(*gmp.DeleteTaskResponse)).Status = "200"
+			(*response.(*commands.DeleteTaskResponse)).Status = "200"
 		} else {
-			(*response.(*gmp.DeleteTaskResponse)).Status = "400"
+			(*response.(*commands.DeleteTaskResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.GetResultsCommand); ok {
+	if cmd, ok := command.(*commands.GetResultsCommand); ok {
 		if cmd.TaskID == "e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31" {
-			(*response.(*gmp.GetResultsResponse)).Status = "200"
+			(*response.(*commands.GetResultsResponse)).Status = "200"
 		} else {
-			(*response.(*gmp.GetResultsResponse)).Status = "400"
+			(*response.(*commands.GetResultsResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.GetVulnsCommand); ok {
+	if cmd, ok := command.(*commands.GetVulnsCommand); ok {
 		if cmd.VulnID == "1.3.6.1.4.1.25623.1.0.808160" {
-			(*response.(*gmp.GetVulnsResponse)).Status = "200"
+			(*response.(*commands.GetVulnsResponse)).Status = "200"
 		} else {
-			(*response.(*gmp.GetVulnsResponse)).Status = "400"
+			(*response.(*commands.GetVulnsResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.CreateAlertRequest); ok {
+	if cmd, ok := command.(*commands.CreateAlertRequest); ok {
 		if cmd.Name == "Test Alert" {
-			(*response.(*gmp.CreateAlertResponse)).Status = "201"
-			(*response.(*gmp.CreateAlertResponse)).StatusText = "OK, resource created"
-			(*response.(*gmp.CreateAlertResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+			(*response.(*commands.CreateAlertResponse)).Status = "201"
+			(*response.(*commands.CreateAlertResponse)).StatusText = "OK, resource created"
+			(*response.(*commands.CreateAlertResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
 		} else {
-			(*response.(*gmp.CreateAlertResponse)).Status = "400"
+			(*response.(*commands.CreateAlertResponse)).Status = "400"
 		}
 	}
 
-	if _, ok := command.(*gmp.GetAlertsCommand); ok {
-		(*response.(*gmp.GetAlertsResponse)).Status = "200"
-		(*response.(*gmp.GetAlertsResponse)).StatusText = "OK"
+	if _, ok := command.(*commands.GetAlertsCommand); ok {
+		(*response.(*commands.GetAlertsResponse)).Status = "200"
+		(*response.(*commands.GetAlertsResponse)).StatusText = "OK"
 	}
 
-	if _, ok := command.(*gmp.ModifyAlertCommand); ok {
-		(*response.(*gmp.ModifyAlertResponse)).Status = "200"
-		(*response.(*gmp.ModifyAlertResponse)).StatusText = "OK"
+	if _, ok := command.(*commands.ModifyAlertCommand); ok {
+		(*response.(*commands.ModifyAlertResponse)).Status = "200"
+		(*response.(*commands.ModifyAlertResponse)).StatusText = "OK"
 	}
 
-	if _, ok := command.(*gmp.DeleteAlertCommand); ok {
-		(*response.(*gmp.DeleteAlertResponse)).Status = "200"
-		(*response.(*gmp.DeleteAlertResponse)).StatusText = "OK"
+	if _, ok := command.(*commands.DeleteAlertCommand); ok {
+		(*response.(*commands.DeleteAlertResponse)).Status = "200"
+		(*response.(*commands.DeleteAlertResponse)).StatusText = "OK"
 	}
 
-	if _, ok := command.(*gmp.TestAlertCommand); ok {
-		(*response.(*gmp.TestAlertResponse)).Status = "200"
-		(*response.(*gmp.TestAlertResponse)).StatusText = "OK"
+	if _, ok := command.(*commands.TestAlertCommand); ok {
+		(*response.(*commands.TestAlertResponse)).Status = "200"
+		(*response.(*commands.TestAlertResponse)).StatusText = "OK"
 	}
 
-	if _, ok := command.(*gmp.ResumeTaskCommand); ok {
-		(*response.(*gmp.ResumeTaskResponse)).Status = "200"
-		(*response.(*gmp.ResumeTaskResponse)).StatusText = "OK"
-		(*response.(*gmp.ResumeTaskResponse)).ReportID = "330ee785-c2c0-4d4c-ab96-725142c9b789"
+	if _, ok := command.(*commands.ResumeTaskCommand); ok {
+		(*response.(*commands.ResumeTaskResponse)).Status = "200"
+		(*response.(*commands.ResumeTaskResponse)).StatusText = "OK"
+		(*response.(*commands.ResumeTaskResponse)).ReportID = "330ee785-c2c0-4d4c-ab96-725142c9b789"
 	}
 
-	if cmd, ok := command.(*gmp.CreateAssetCommand); ok {
+	if cmd, ok := command.(*commands.CreateAssetCommand); ok {
 		if cmd.Asset != nil && cmd.Asset.Name == "Localhost" && cmd.Asset.Type == "host" {
-			(*response.(*gmp.CreateAssetResponse)).Status = "201"
-			(*response.(*gmp.CreateAssetResponse)).StatusText = "OK, resource created"
-			(*response.(*gmp.CreateAssetResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+			(*response.(*commands.CreateAssetResponse)).Status = "201"
+			(*response.(*commands.CreateAssetResponse)).StatusText = "OK, resource created"
+			(*response.(*commands.CreateAssetResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
 		} else if cmd.Report != nil && cmd.Report.ID == "report-uuid" && cmd.Report.Filter != nil && cmd.Report.Filter.Term == "min_qod=70" {
-			(*response.(*gmp.CreateAssetResponse)).Status = "201"
-			(*response.(*gmp.CreateAssetResponse)).StatusText = "OK, resource created"
-			(*response.(*gmp.CreateAssetResponse)).ID = "report-asset-uuid"
+			(*response.(*commands.CreateAssetResponse)).Status = "201"
+			(*response.(*commands.CreateAssetResponse)).StatusText = "OK, resource created"
+			(*response.(*commands.CreateAssetResponse)).ID = "report-asset-uuid"
 		} else {
-			(*response.(*gmp.CreateAssetResponse)).Status = "400"
+			(*response.(*commands.CreateAssetResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.ModifyAssetCommand); ok {
+	if cmd, ok := command.(*commands.ModifyAssetCommand); ok {
 		if cmd.AssetID == "914b59f8-25f5-4c8f-832c-2379cd625236" && cmd.Comment == "New comment" {
-			(*response.(*gmp.ModifyAssetResponse)).Status = "200"
-			(*response.(*gmp.ModifyAssetResponse)).StatusText = "OK"
+			(*response.(*commands.ModifyAssetResponse)).Status = "200"
+			(*response.(*commands.ModifyAssetResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.ModifyAssetResponse)).Status = "400"
+			(*response.(*commands.ModifyAssetResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.GetAssetsCommand); ok {
+	if cmd, ok := command.(*commands.GetAssetsCommand); ok {
 		if cmd.AssetID == "b493b7a8-7489-11df-a3ec-002264764cea" {
-			(*response.(*gmp.GetAssetsResponse)).Status = "200"
-			(*response.(*gmp.GetAssetsResponse)).StatusText = "OK"
-			(*response.(*gmp.GetAssetsResponse)).Assets = []gmp.Asset{
+			(*response.(*commands.GetAssetsResponse)).Status = "200"
+			(*response.(*commands.GetAssetsResponse)).StatusText = "OK"
+			(*response.(*commands.GetAssetsResponse)).Assets = []commands.Asset{
 				{
 					ID:               "b493b7a8-7489-11df-a3ec-002264764cea",
 					Name:             "Localhost",
@@ -235,43 +236,43 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 				},
 			}
 		} else {
-			(*response.(*gmp.GetAssetsResponse)).Status = "400"
+			(*response.(*commands.GetAssetsResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.DeleteAssetCommand); ok {
+	if cmd, ok := command.(*commands.DeleteAssetCommand); ok {
 		if cmd.AssetID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" {
-			(*response.(*gmp.DeleteAssetResponse)).Status = "200"
-			(*response.(*gmp.DeleteAssetResponse)).StatusText = "OK"
+			(*response.(*commands.DeleteAssetResponse)).Status = "200"
+			(*response.(*commands.DeleteAssetResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.DeleteAssetResponse)).Status = "400"
+			(*response.(*commands.DeleteAssetResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.CreateScheduleCommand); ok {
+	if cmd, ok := command.(*commands.CreateScheduleCommand); ok {
 		if cmd.Name == "Monthly Scan" && cmd.Timezone == "America/New_York" && cmd.ICalendar != "" {
-			(*response.(*gmp.CreateScheduleResponse)).Status = "201"
-			(*response.(*gmp.CreateScheduleResponse)).StatusText = "OK, resource created"
-			(*response.(*gmp.CreateScheduleResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+			(*response.(*commands.CreateScheduleResponse)).Status = "201"
+			(*response.(*commands.CreateScheduleResponse)).StatusText = "OK, resource created"
+			(*response.(*commands.CreateScheduleResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
 		} else {
-			(*response.(*gmp.CreateScheduleResponse)).Status = "400"
+			(*response.(*commands.CreateScheduleResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.ModifyScheduleCommand); ok {
+	if cmd, ok := command.(*commands.ModifyScheduleCommand); ok {
 		if cmd.ScheduleID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" && cmd.Name == "Weekly Scan" {
-			(*response.(*gmp.ModifyScheduleResponse)).Status = "200"
-			(*response.(*gmp.ModifyScheduleResponse)).StatusText = "OK"
+			(*response.(*commands.ModifyScheduleResponse)).Status = "200"
+			(*response.(*commands.ModifyScheduleResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.ModifyScheduleResponse)).Status = "400"
+			(*response.(*commands.ModifyScheduleResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.GetSchedulesCommand); ok {
+	if cmd, ok := command.(*commands.GetSchedulesCommand); ok {
 		if cmd.ScheduleID == "ddda859a-45be-4c58-85b3-517c66230232" {
-			(*response.(*gmp.GetSchedulesResponse)).Status = "200"
-			(*response.(*gmp.GetSchedulesResponse)).StatusText = "OK"
-			(*response.(*gmp.GetSchedulesResponse)).Schedules = []gmp.Schedule{
+			(*response.(*commands.GetSchedulesResponse)).Status = "200"
+			(*response.(*commands.GetSchedulesResponse)).StatusText = "OK"
+			(*response.(*commands.GetSchedulesResponse)).Schedules = []commands.Schedule{
 				{
 					ID:               "ddda859a-45be-4c58-85b3-517c66230232",
 					Name:             "Every day",
@@ -285,83 +286,83 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 				},
 			}
 		} else {
-			(*response.(*gmp.GetSchedulesResponse)).Status = "400"
+			(*response.(*commands.GetSchedulesResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.DeleteScheduleCommand); ok {
+	if cmd, ok := command.(*commands.DeleteScheduleCommand); ok {
 		if cmd.ScheduleID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" {
-			(*response.(*gmp.DeleteScheduleResponse)).Status = "200"
-			(*response.(*gmp.DeleteScheduleResponse)).StatusText = "OK"
+			(*response.(*commands.DeleteScheduleResponse)).Status = "200"
+			(*response.(*commands.DeleteScheduleResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.DeleteScheduleResponse)).Status = "400"
+			(*response.(*commands.DeleteScheduleResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.CreateOverrideCommand); ok {
+	if cmd, ok := command.(*commands.CreateOverrideCommand); ok {
 		if cmd.Text == "This is actually of little concern." && cmd.NVT.OID == "1.3.6.1.4.1.25623.1.0.10330" && cmd.NewThreat == "Low" && cmd.Result == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
-			(*response.(*gmp.CreateOverrideResponse)).Status = "201"
-			(*response.(*gmp.CreateOverrideResponse)).StatusText = "OK, resource created"
-			(*response.(*gmp.CreateOverrideResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+			(*response.(*commands.CreateOverrideResponse)).Status = "201"
+			(*response.(*commands.CreateOverrideResponse)).StatusText = "OK, resource created"
+			(*response.(*commands.CreateOverrideResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
 		} else {
-			(*response.(*gmp.CreateOverrideResponse)).Status = "400"
+			(*response.(*commands.CreateOverrideResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.DeleteOverrideCommand); ok {
+	if cmd, ok := command.(*commands.DeleteOverrideCommand); ok {
 		if cmd.OverrideID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" {
-			(*response.(*gmp.DeleteOverrideResponse)).Status = "200"
-			(*response.(*gmp.DeleteOverrideResponse)).StatusText = "OK"
+			(*response.(*commands.DeleteOverrideResponse)).Status = "200"
+			(*response.(*commands.DeleteOverrideResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.DeleteOverrideResponse)).Status = "400"
+			(*response.(*commands.DeleteOverrideResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.GetOverridesCommand); ok {
+	if cmd, ok := command.(*commands.GetOverridesCommand); ok {
 		if cmd.OverrideID == "b76b81a7-9df8-42df-afff-baa9d4620128" {
-			(*response.(*gmp.GetOverridesResponse)).Status = "200"
-			(*response.(*gmp.GetOverridesResponse)).StatusText = "OK"
-			(*response.(*gmp.GetOverridesResponse)).Overrides = []gmp.Override{
+			(*response.(*commands.GetOverridesResponse)).Status = "200"
+			(*response.(*commands.GetOverridesResponse)).StatusText = "OK"
+			(*response.(*commands.GetOverridesResponse)).Overrides = []commands.Override{
 				{
 					ID:          "b76b81a7-9df8-42df-afff-baa9d4620128",
-					Text:        gmp.OverrideText{Text: "This is the full text of the override."},
+					Text:        commands.OverrideText{Text: "This is the full text of the override."},
 					NewThreat:   "Log",
 					NewSeverity: "0.0",
 					Orphan:      true,
 					Active:      true,
-					NVT:         gmp.OverrideNVT{OID: "1.3.6.1.4.1.25623.1.0.75", Name: "Test NVT: long lines"},
+					NVT:         commands.OverrideNVT{OID: "1.3.6.1.4.1.25623.1.0.75", Name: "Test NVT: long lines"},
 				},
 			}
 		} else {
-			(*response.(*gmp.GetOverridesResponse)).Status = "400"
+			(*response.(*commands.GetOverridesResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.ModifyOverrideCommand); ok {
+	if cmd, ok := command.(*commands.ModifyOverrideCommand); ok {
 		if cmd.OverrideID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" && cmd.Text == "This issue is less important in our setup." && cmd.NewThreat == "Low" {
-			(*response.(*gmp.ModifyOverrideResponse)).Status = "200"
-			(*response.(*gmp.ModifyOverrideResponse)).StatusText = "OK"
+			(*response.(*commands.ModifyOverrideResponse)).Status = "200"
+			(*response.(*commands.ModifyOverrideResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.ModifyOverrideResponse)).Status = "400"
+			(*response.(*commands.ModifyOverrideResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.CreateReportCommand); ok {
+	if cmd, ok := command.(*commands.CreateReportCommand); ok {
 		if cmd.Report != nil && cmd.Report.ID == "report-uuid" && cmd.Task != nil && cmd.Task.ID == "task-uuid" {
-			(*response.(*gmp.CreateReportResponse)).Status = "201"
-			(*response.(*gmp.CreateReportResponse)).StatusText = "OK, resource created"
-			(*response.(*gmp.CreateReportResponse)).ID = "created-report-id"
+			(*response.(*commands.CreateReportResponse)).Status = "201"
+			(*response.(*commands.CreateReportResponse)).StatusText = "OK, resource created"
+			(*response.(*commands.CreateReportResponse)).ID = "created-report-id"
 		} else {
-			(*response.(*gmp.CreateReportResponse)).Status = "400"
-			(*response.(*gmp.CreateReportResponse)).StatusText = "Bad request"
+			(*response.(*commands.CreateReportResponse)).Status = "400"
+			(*response.(*commands.CreateReportResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.GetReportsCommand); ok {
+	if cmd, ok := command.(*commands.GetReportsCommand); ok {
 		if cmd.ReportID == "report-uuid" && cmd.FormatID == "format-uuid" {
-			(*response.(*gmp.GetReportsResponse)).Status = "200"
-			(*response.(*gmp.GetReportsResponse)).StatusText = "OK"
-			(*response.(*gmp.GetReportsResponse)).Reports = []gmp.ReportWrapper{
+			(*response.(*commands.GetReportsResponse)).Status = "200"
+			(*response.(*commands.GetReportsResponse)).StatusText = "OK"
+			(*response.(*commands.GetReportsResponse)).Reports = []commands.ReportWrapper{
 				{
 					ID:          "report-uuid",
 					FormatID:    "format-uuid",
@@ -370,50 +371,50 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 				},
 			}
 		} else {
-			(*response.(*gmp.GetReportsResponse)).Status = "404"
-			(*response.(*gmp.GetReportsResponse)).StatusText = "Not found"
+			(*response.(*commands.GetReportsResponse)).Status = "404"
+			(*response.(*commands.GetReportsResponse)).StatusText = "Not found"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.DeleteReportCommand); ok {
+	if cmd, ok := command.(*commands.DeleteReportCommand); ok {
 		if cmd.ReportID == "report-uuid" {
-			(*response.(*gmp.DeleteReportResponse)).Status = "200"
-			(*response.(*gmp.DeleteReportResponse)).StatusText = "OK"
+			(*response.(*commands.DeleteReportResponse)).Status = "200"
+			(*response.(*commands.DeleteReportResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.DeleteReportResponse)).Status = "404"
-			(*response.(*gmp.DeleteReportResponse)).StatusText = "Not found"
+			(*response.(*commands.DeleteReportResponse)).Status = "404"
+			(*response.(*commands.DeleteReportResponse)).StatusText = "Not found"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.CreateReportFormatCommand); ok {
+	if cmd, ok := command.(*commands.CreateReportFormatCommand); ok {
 		if cmd.Name == "Test Format" && cmd.Copy == "copy-uuid" {
-			(*response.(*gmp.CreateReportFormatResponse)).Status = "201"
-			(*response.(*gmp.CreateReportFormatResponse)).StatusText = "OK, resource created"
-			(*response.(*gmp.CreateReportFormatResponse)).ID = "created-format-id"
+			(*response.(*commands.CreateReportFormatResponse)).Status = "201"
+			(*response.(*commands.CreateReportFormatResponse)).StatusText = "OK, resource created"
+			(*response.(*commands.CreateReportFormatResponse)).ID = "created-format-id"
 		} else {
-			(*response.(*gmp.CreateReportFormatResponse)).Status = "400"
-			(*response.(*gmp.CreateReportFormatResponse)).StatusText = "Bad request"
+			(*response.(*commands.CreateReportFormatResponse)).Status = "400"
+			(*response.(*commands.CreateReportFormatResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.ModifyReportFormatCommand); ok {
+	if cmd, ok := command.(*commands.ModifyReportFormatCommand); ok {
 		if cmd.ReportFormatID == "format-uuid" && cmd.Name == "New Name" {
-			(*response.(*gmp.ModifyReportFormatResponse)).Status = "200"
-			(*response.(*gmp.ModifyReportFormatResponse)).StatusText = "OK"
+			(*response.(*commands.ModifyReportFormatResponse)).Status = "200"
+			(*response.(*commands.ModifyReportFormatResponse)).StatusText = "OK"
 		} else if cmd.ReportFormatID == "format-uuid" && cmd.Param != nil && cmd.Param.Name == "Background Colour" && cmd.Param.Value == "red" {
-			(*response.(*gmp.ModifyReportFormatResponse)).Status = "200"
-			(*response.(*gmp.ModifyReportFormatResponse)).StatusText = "OK"
+			(*response.(*commands.ModifyReportFormatResponse)).Status = "200"
+			(*response.(*commands.ModifyReportFormatResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.ModifyReportFormatResponse)).Status = "400"
-			(*response.(*gmp.ModifyReportFormatResponse)).StatusText = "Bad request"
+			(*response.(*commands.ModifyReportFormatResponse)).Status = "400"
+			(*response.(*commands.ModifyReportFormatResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.GetReportFormatsCommand); ok {
+	if cmd, ok := command.(*commands.GetReportFormatsCommand); ok {
 		if cmd.ReportFormatID == "format-uuid" {
-			(*response.(*gmp.GetReportFormatsResponse)).Status = "200"
-			(*response.(*gmp.GetReportFormatsResponse)).StatusText = "OK"
-			(*response.(*gmp.GetReportFormatsResponse)).ReportFormats = []gmp.ReportFormatWrapper{
+			(*response.(*commands.GetReportFormatsResponse)).Status = "200"
+			(*response.(*commands.GetReportFormatsResponse)).StatusText = "OK"
+			(*response.(*commands.GetReportFormatsResponse)).ReportFormats = []commands.ReportFormatWrapper{
 				{
 					ID:               "format-uuid",
 					Name:             "HTML",
@@ -429,79 +430,79 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 				},
 			}
 		} else {
-			(*response.(*gmp.GetReportFormatsResponse)).Status = "404"
-			(*response.(*gmp.GetReportFormatsResponse)).StatusText = "Not found"
+			(*response.(*commands.GetReportFormatsResponse)).Status = "404"
+			(*response.(*commands.GetReportFormatsResponse)).StatusText = "Not found"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.DeleteReportFormatCommand); ok {
+	if cmd, ok := command.(*commands.DeleteReportFormatCommand); ok {
 		if cmd.ReportFormatID == "format-uuid" && cmd.Ultimate == "1" {
-			(*response.(*gmp.DeleteReportFormatResponse)).Status = "200"
-			(*response.(*gmp.DeleteReportFormatResponse)).StatusText = "OK"
+			(*response.(*commands.DeleteReportFormatResponse)).Status = "200"
+			(*response.(*commands.DeleteReportFormatResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.DeleteReportFormatResponse)).Status = "404"
-			(*response.(*gmp.DeleteReportFormatResponse)).StatusText = "Not found"
+			(*response.(*commands.DeleteReportFormatResponse)).Status = "404"
+			(*response.(*commands.DeleteReportFormatResponse)).StatusText = "Not found"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.VerifyReportFormatCommand); ok {
+	if cmd, ok := command.(*commands.VerifyReportFormatCommand); ok {
 		if cmd.ReportFormatID == "format-uuid" {
-			(*response.(*gmp.VerifyReportFormatResponse)).Status = "200"
-			(*response.(*gmp.VerifyReportFormatResponse)).StatusText = "OK"
+			(*response.(*commands.VerifyReportFormatResponse)).Status = "200"
+			(*response.(*commands.VerifyReportFormatResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.VerifyReportFormatResponse)).Status = "404"
-			(*response.(*gmp.VerifyReportFormatResponse)).StatusText = "Not found"
+			(*response.(*commands.VerifyReportFormatResponse)).Status = "404"
+			(*response.(*commands.VerifyReportFormatResponse)).StatusText = "Not found"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.CreateReportConfigCommand); ok {
+	if cmd, ok := command.(*commands.CreateReportConfigCommand); ok {
 		if cmd.Name == "Test config" && cmd.ReportFormat.ID == "format-uuid" {
-			(*response.(*gmp.CreateReportConfigResponse)).Status = "201"
-			(*response.(*gmp.CreateReportConfigResponse)).StatusText = "OK, resource created"
-			(*response.(*gmp.CreateReportConfigResponse)).ID = "created-config-id"
+			(*response.(*commands.CreateReportConfigResponse)).Status = "201"
+			(*response.(*commands.CreateReportConfigResponse)).StatusText = "OK, resource created"
+			(*response.(*commands.CreateReportConfigResponse)).ID = "created-config-id"
 		} else {
-			(*response.(*gmp.CreateReportConfigResponse)).Status = "400"
-			(*response.(*gmp.CreateReportConfigResponse)).StatusText = "Bad request"
+			(*response.(*commands.CreateReportConfigResponse)).Status = "400"
+			(*response.(*commands.CreateReportConfigResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.ModifyReportConfigCommand); ok {
+	if cmd, ok := command.(*commands.ModifyReportConfigCommand); ok {
 		if len(cmd.Params) > 0 && cmd.Params[0].Name == "Node Distance" && cmd.Params[0].UseDefault == "1" {
-			(*response.(*gmp.ModifyReportConfigResponse)).Status = "200"
-			(*response.(*gmp.ModifyReportConfigResponse)).StatusText = "OK"
-			(*response.(*gmp.ModifyReportConfigResponse)).ID = "modified-config-id"
+			(*response.(*commands.ModifyReportConfigResponse)).Status = "200"
+			(*response.(*commands.ModifyReportConfigResponse)).StatusText = "OK"
+			(*response.(*commands.ModifyReportConfigResponse)).ID = "modified-config-id"
 		} else if cmd.Name == "Renamed config" {
-			(*response.(*gmp.ModifyReportConfigResponse)).Status = "200"
-			(*response.(*gmp.ModifyReportConfigResponse)).StatusText = "OK"
-			(*response.(*gmp.ModifyReportConfigResponse)).ID = "modified-config-id"
+			(*response.(*commands.ModifyReportConfigResponse)).Status = "200"
+			(*response.(*commands.ModifyReportConfigResponse)).StatusText = "OK"
+			(*response.(*commands.ModifyReportConfigResponse)).ID = "modified-config-id"
 		} else {
-			(*response.(*gmp.ModifyReportConfigResponse)).Status = "400"
-			(*response.(*gmp.ModifyReportConfigResponse)).StatusText = "Bad request"
+			(*response.(*commands.ModifyReportConfigResponse)).Status = "400"
+			(*response.(*commands.ModifyReportConfigResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.GetReportConfigsCommand); ok {
+	if cmd, ok := command.(*commands.GetReportConfigsCommand); ok {
 		if cmd.ReportConfigID == "config-uuid" {
-			(*response.(*gmp.GetReportConfigsResponse)).Status = "200"
-			(*response.(*gmp.GetReportConfigsResponse)).StatusText = "OK"
-			(*response.(*gmp.GetReportConfigsResponse)).ReportConfigs = []gmp.ReportConfigWrapper{
+			(*response.(*commands.GetReportConfigsResponse)).Status = "200"
+			(*response.(*commands.GetReportConfigsResponse)).StatusText = "OK"
+			(*response.(*commands.GetReportConfigsResponse)).ReportConfigs = []commands.ReportConfigWrapper{
 				{
 					ID:               "config-uuid",
 					Name:             "Test config",
-					Owner:            &gmp.ReportConfigOwner{Name: "admin"},
+					Owner:            &commands.ReportConfigOwner{Name: "admin"},
 					Comment:          "Test comment",
 					CreationTime:     "2024-01-23T09:43:03Z",
 					ModificationTime: "2024-01-26T14:11:54Z",
 					Writable:         "1",
 					InUse:            "0",
-					Permissions: &gmp.ReportConfigPermissions{
-						Permissions: []gmp.ReportConfigPermission{{Name: "Everything"}},
+					Permissions: &commands.ReportConfigPermissions{
+						Permissions: []commands.ReportConfigPermission{{Name: "Everything"}},
 					},
-					ReportFormat: &gmp.ReportConfigFormat{
+					ReportFormat: &commands.ReportConfigFormat{
 						ID:   "format-uuid",
 						Name: "Topology SVG",
 					},
-					Params: []gmp.ReportConfigParam{
+					Params: []commands.ReportConfigParam{
 						{
 							UsingDefault: "0",
 							Name:         "Graph Type",
@@ -521,30 +522,30 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 				},
 			}
 		} else {
-			(*response.(*gmp.GetReportConfigsResponse)).Status = "404"
-			(*response.(*gmp.GetReportConfigsResponse)).StatusText = "Not found"
+			(*response.(*commands.GetReportConfigsResponse)).Status = "404"
+			(*response.(*commands.GetReportConfigsResponse)).StatusText = "Not found"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.DeleteReportConfigCommand); ok {
+	if cmd, ok := command.(*commands.DeleteReportConfigCommand); ok {
 		if cmd.ReportConfigID == "config-uuid" && cmd.Ultimate == "1" {
-			(*response.(*gmp.DeleteReportConfigResponse)).Status = "200"
-			(*response.(*gmp.DeleteReportConfigResponse)).StatusText = "OK"
+			(*response.(*commands.DeleteReportConfigResponse)).Status = "200"
+			(*response.(*commands.DeleteReportConfigResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.DeleteReportConfigResponse)).Status = "404"
-			(*response.(*gmp.DeleteReportConfigResponse)).StatusText = "Not found"
+			(*response.(*commands.DeleteReportConfigResponse)).Status = "404"
+			(*response.(*commands.DeleteReportConfigResponse)).StatusText = "Not found"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.GetSystemReportsCommand); ok {
+	if cmd, ok := command.(*commands.GetSystemReportsCommand); ok {
 		if cmd.Name == "proc" {
-			(*response.(*gmp.GetSystemReportsResponse)).Status = "200"
-			(*response.(*gmp.GetSystemReportsResponse)).StatusText = "OK"
-			(*response.(*gmp.GetSystemReportsResponse)).SystemReports = []gmp.SystemReportWrapper{
+			(*response.(*commands.GetSystemReportsResponse)).Status = "200"
+			(*response.(*commands.GetSystemReportsResponse)).StatusText = "OK"
+			(*response.(*commands.GetSystemReportsResponse)).SystemReports = []commands.SystemReportWrapper{
 				{
 					Name:  "proc",
 					Title: "Processes",
-					Report: &gmp.SystemReportContent{
+					Report: &commands.SystemReportContent{
 						Format:   "png",
 						Duration: "86400",
 						Value:    "iVBORw0KGgoAAAANSUhEUgAAArkAAAE...2bEdAAAAAElFTkSuQmCC",
@@ -552,44 +553,44 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 				},
 			}
 		} else if cmd.Brief == "1" {
-			(*response.(*gmp.GetSystemReportsResponse)).Status = "200"
-			(*response.(*gmp.GetSystemReportsResponse)).StatusText = "OK"
-			(*response.(*gmp.GetSystemReportsResponse)).SystemReports = []gmp.SystemReportWrapper{
+			(*response.(*commands.GetSystemReportsResponse)).Status = "200"
+			(*response.(*commands.GetSystemReportsResponse)).StatusText = "OK"
+			(*response.(*commands.GetSystemReportsResponse)).SystemReports = []commands.SystemReportWrapper{
 				{Name: "proc", Title: "Processes"},
 				{Name: "load", Title: "System Load"},
 			}
 		} else {
-			(*response.(*gmp.GetSystemReportsResponse)).Status = "404"
-			(*response.(*gmp.GetSystemReportsResponse)).StatusText = "Not found"
+			(*response.(*commands.GetSystemReportsResponse)).Status = "404"
+			(*response.(*commands.GetSystemReportsResponse)).StatusText = "Not found"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.CreateCredentialCommand); ok {
+	if cmd, ok := command.(*commands.CreateCredentialCommand); ok {
 		if cmd.Name == "Test Credential" {
-			(*response.(*gmp.CreateCredentialResponse)).Status = "201"
-			(*response.(*gmp.CreateCredentialResponse)).StatusText = "OK, resource created"
-			(*response.(*gmp.CreateCredentialResponse)).ID = "created-credential-id"
+			(*response.(*commands.CreateCredentialResponse)).Status = "201"
+			(*response.(*commands.CreateCredentialResponse)).StatusText = "OK, resource created"
+			(*response.(*commands.CreateCredentialResponse)).ID = "created-credential-id"
 		} else {
-			(*response.(*gmp.CreateCredentialResponse)).Status = "400"
-			(*response.(*gmp.CreateCredentialResponse)).StatusText = "Bad request"
+			(*response.(*commands.CreateCredentialResponse)).Status = "400"
+			(*response.(*commands.CreateCredentialResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.ModifyCredentialCommand); ok {
+	if cmd, ok := command.(*commands.ModifyCredentialCommand); ok {
 		if cmd.CredentialID == "cred-uuid" {
-			(*response.(*gmp.ModifyCredentialResponse)).Status = "200"
-			(*response.(*gmp.ModifyCredentialResponse)).StatusText = "OK"
+			(*response.(*commands.ModifyCredentialResponse)).Status = "200"
+			(*response.(*commands.ModifyCredentialResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.ModifyCredentialResponse)).Status = "400"
-			(*response.(*gmp.ModifyCredentialResponse)).StatusText = "Bad request"
+			(*response.(*commands.ModifyCredentialResponse)).Status = "400"
+			(*response.(*commands.ModifyCredentialResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.GetCredentialsCommand); ok {
+	if cmd, ok := command.(*commands.GetCredentialsCommand); ok {
 		if cmd.CredentialID == "" {
-			(*response.(*gmp.GetCredentialsResponse)).Status = "200"
-			(*response.(*gmp.GetCredentialsResponse)).StatusText = "OK"
-			(*response.(*gmp.GetCredentialsResponse)).Credentials = []gmp.CredentialWrapper{
+			(*response.(*commands.GetCredentialsResponse)).Status = "200"
+			(*response.(*commands.GetCredentialsResponse)).StatusText = "OK"
+			(*response.(*commands.GetCredentialsResponse)).Credentials = []commands.CredentialWrapper{
 				{
 					ID:       "cred-uuid-1",
 					Name:     "sally",
@@ -598,7 +599,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 					InUse:    "0",
 					Type:     "usk",
 					FullType: "username + SSH key",
-					Formats:  &gmp.CredentialFormats{Formats: []string{"key", "rpm", "deb"}},
+					Formats:  &commands.CredentialFormats{Formats: []string{"key", "rpm", "deb"}},
 				},
 				{
 					ID:       "cred-uuid-2",
@@ -608,13 +609,13 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 					InUse:    "1",
 					Type:     "up",
 					FullType: "username + password",
-					Formats:  &gmp.CredentialFormats{Formats: []string{"exe"}},
+					Formats:  &commands.CredentialFormats{Formats: []string{"exe"}},
 				},
 			}
 		} else if cmd.CredentialID == "cred-uuid-1" {
-			(*response.(*gmp.GetCredentialsResponse)).Status = "200"
-			(*response.(*gmp.GetCredentialsResponse)).StatusText = "OK"
-			(*response.(*gmp.GetCredentialsResponse)).Credentials = []gmp.CredentialWrapper{
+			(*response.(*commands.GetCredentialsResponse)).Status = "200"
+			(*response.(*commands.GetCredentialsResponse)).StatusText = "OK"
+			(*response.(*commands.GetCredentialsResponse)).Credentials = []commands.CredentialWrapper{
 				{
 					ID:       "cred-uuid-1",
 					Name:     "sally",
@@ -623,127 +624,127 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 					InUse:    "0",
 					Type:     "usk",
 					FullType: "username + SSH key",
-					Formats:  &gmp.CredentialFormats{Formats: []string{"key", "rpm", "deb"}},
+					Formats:  &commands.CredentialFormats{Formats: []string{"key", "rpm", "deb"}},
 				},
 			}
 		} else {
-			(*response.(*gmp.GetCredentialsResponse)).Status = "404"
-			(*response.(*gmp.GetCredentialsResponse)).StatusText = "Not found"
+			(*response.(*commands.GetCredentialsResponse)).Status = "404"
+			(*response.(*commands.GetCredentialsResponse)).StatusText = "Not found"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.DeleteCredentialCommand); ok {
+	if cmd, ok := command.(*commands.DeleteCredentialCommand); ok {
 		if cmd.CredentialID == "cred-uuid-1" && cmd.Ultimate == "1" {
-			(*response.(*gmp.DeleteCredentialResponse)).Status = "200"
-			(*response.(*gmp.DeleteCredentialResponse)).StatusText = "OK"
+			(*response.(*commands.DeleteCredentialResponse)).Status = "200"
+			(*response.(*commands.DeleteCredentialResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.DeleteCredentialResponse)).Status = "404"
-			(*response.(*gmp.DeleteCredentialResponse)).StatusText = "Not found"
+			(*response.(*commands.DeleteCredentialResponse)).Status = "404"
+			(*response.(*commands.DeleteCredentialResponse)).StatusText = "Not found"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.CreateScannerCommand); ok {
+	if cmd, ok := command.(*commands.CreateScannerCommand); ok {
 		if cmd.Name == "Default Scanner" && cmd.Host == "localhost" && cmd.Port == "9391" && cmd.Type == "2" && cmd.CAPub != "" && cmd.Credential != nil && cmd.Credential.ID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
-			(*response.(*gmp.CreateScannerResponse)).Status = "201"
-			(*response.(*gmp.CreateScannerResponse)).StatusText = "OK, resource created"
-			(*response.(*gmp.CreateScannerResponse)).ID = "814cd30f-dee1-4d58-851d-21b8d0c048e3"
+			(*response.(*commands.CreateScannerResponse)).Status = "201"
+			(*response.(*commands.CreateScannerResponse)).StatusText = "OK, resource created"
+			(*response.(*commands.CreateScannerResponse)).ID = "814cd30f-dee1-4d58-851d-21b8d0c048e3"
 		} else {
-			(*response.(*gmp.CreateScannerResponse)).Status = "400"
-			(*response.(*gmp.CreateScannerResponse)).StatusText = "Bad request"
+			(*response.(*commands.CreateScannerResponse)).Status = "400"
+			(*response.(*commands.CreateScannerResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.ModifyScannerCommand); ok {
+	if cmd, ok := command.(*commands.ModifyScannerCommand); ok {
 		if cmd.ScannerID == "scanner-uuid" && cmd.Name == "Updated Scanner" {
-			(*response.(*gmp.ModifyScannerResponse)).Status = "200"
-			(*response.(*gmp.ModifyScannerResponse)).StatusText = "OK"
+			(*response.(*commands.ModifyScannerResponse)).Status = "200"
+			(*response.(*commands.ModifyScannerResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.ModifyScannerResponse)).Status = "400"
-			(*response.(*gmp.ModifyScannerResponse)).StatusText = "Bad request"
+			(*response.(*commands.ModifyScannerResponse)).Status = "400"
+			(*response.(*commands.ModifyScannerResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.DeleteScannerCommand); ok {
+	if cmd, ok := command.(*commands.DeleteScannerCommand); ok {
 		if cmd.ScannerID == "scanner-uuid" && cmd.Ultimate == "1" {
-			(*response.(*gmp.DeleteScannerResponse)).Status = "200"
-			(*response.(*gmp.DeleteScannerResponse)).StatusText = "OK"
+			(*response.(*commands.DeleteScannerResponse)).Status = "200"
+			(*response.(*commands.DeleteScannerResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.DeleteScannerResponse)).Status = "404"
-			(*response.(*gmp.DeleteScannerResponse)).StatusText = "Not found"
+			(*response.(*commands.DeleteScannerResponse)).Status = "404"
+			(*response.(*commands.DeleteScannerResponse)).StatusText = "Not found"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.VerifyScannerCommand); ok {
+	if cmd, ok := command.(*commands.VerifyScannerCommand); ok {
 		if cmd.ScannerID == "scanner-uuid" {
-			(*response.(*gmp.VerifyScannerResponse)).Status = "200"
-			(*response.(*gmp.VerifyScannerResponse)).StatusText = "OK"
-			(*response.(*gmp.VerifyScannerResponse)).Version = "OTP/2.0"
+			(*response.(*commands.VerifyScannerResponse)).Status = "200"
+			(*response.(*commands.VerifyScannerResponse)).StatusText = "OK"
+			(*response.(*commands.VerifyScannerResponse)).Version = "OTP/2.0"
 		} else {
-			(*response.(*gmp.VerifyScannerResponse)).Status = "404"
-			(*response.(*gmp.VerifyScannerResponse)).StatusText = "Not found"
+			(*response.(*commands.VerifyScannerResponse)).Status = "404"
+			(*response.(*commands.VerifyScannerResponse)).StatusText = "Not found"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.CreatePortListCommand); ok {
+	if cmd, ok := command.(*commands.CreatePortListCommand); ok {
 		if cmd.Name == "All TCP" && cmd.PortRange == "T:1-65535" {
-			(*response.(*gmp.CreatePortListResponse)).Status = "201"
-			(*response.(*gmp.CreatePortListResponse)).StatusText = "OK, resource created"
-			(*response.(*gmp.CreatePortListResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+			(*response.(*commands.CreatePortListResponse)).Status = "201"
+			(*response.(*commands.CreatePortListResponse)).StatusText = "OK, resource created"
+			(*response.(*commands.CreatePortListResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
 		} else {
-			(*response.(*gmp.CreatePortListResponse)).Status = "400"
-			(*response.(*gmp.CreatePortListResponse)).StatusText = "Bad request"
+			(*response.(*commands.CreatePortListResponse)).Status = "400"
+			(*response.(*commands.CreatePortListResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.ModifyPortListCommand); ok {
+	if cmd, ok := command.(*commands.ModifyPortListCommand); ok {
 		if cmd.PortListID == "27140836-05ae-4e8b-9abf-f725ddc2888f" {
-			(*response.(*gmp.ModifyPortListResponse)).Status = "200"
-			(*response.(*gmp.ModifyPortListResponse)).StatusText = "OK"
+			(*response.(*commands.ModifyPortListResponse)).Status = "200"
+			(*response.(*commands.ModifyPortListResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.ModifyPortListResponse)).Status = "400"
-			(*response.(*gmp.ModifyPortListResponse)).StatusText = "Bad request"
+			(*response.(*commands.ModifyPortListResponse)).Status = "400"
+			(*response.(*commands.ModifyPortListResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.DeletePortListCommand); ok {
+	if cmd, ok := command.(*commands.DeletePortListCommand); ok {
 		if cmd.PortListID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" && cmd.Ultimate == "1" {
-			(*response.(*gmp.DeletePortListResponse)).Status = "200"
-			(*response.(*gmp.DeletePortListResponse)).StatusText = "OK"
+			(*response.(*commands.DeletePortListResponse)).Status = "200"
+			(*response.(*commands.DeletePortListResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.DeletePortListResponse)).Status = "404"
-			(*response.(*gmp.DeletePortListResponse)).StatusText = "Not found"
+			(*response.(*commands.DeletePortListResponse)).Status = "404"
+			(*response.(*commands.DeletePortListResponse)).StatusText = "Not found"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.CreatePortRangeCommand); ok {
+	if cmd, ok := command.(*commands.CreatePortRangeCommand); ok {
 		if cmd.PortList.ID == "354cd3ef-bbe1-4d58-859d-21b8d0c046c4" && cmd.Start == "777" && cmd.End == "779" && cmd.Type == "TCP" {
-			(*response.(*gmp.CreatePortRangeResponse)).Status = "201"
-			(*response.(*gmp.CreatePortRangeResponse)).StatusText = "OK, resource created"
-			(*response.(*gmp.CreatePortRangeResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+			(*response.(*commands.CreatePortRangeResponse)).Status = "201"
+			(*response.(*commands.CreatePortRangeResponse)).StatusText = "OK, resource created"
+			(*response.(*commands.CreatePortRangeResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
 		} else {
-			(*response.(*gmp.CreatePortRangeResponse)).Status = "400"
-			(*response.(*gmp.CreatePortRangeResponse)).StatusText = "Bad request"
+			(*response.(*commands.CreatePortRangeResponse)).Status = "400"
+			(*response.(*commands.CreatePortRangeResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.DeletePortRangeCommand); ok {
+	if cmd, ok := command.(*commands.DeletePortRangeCommand); ok {
 		if cmd.PortRangeID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" {
-			(*response.(*gmp.DeletePortRangeResponse)).Status = "200"
-			(*response.(*gmp.DeletePortRangeResponse)).StatusText = "OK"
+			(*response.(*commands.DeletePortRangeResponse)).Status = "200"
+			(*response.(*commands.DeletePortRangeResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.DeletePortRangeResponse)).Status = "404"
-			(*response.(*gmp.DeletePortRangeResponse)).StatusText = "Not found"
+			(*response.(*commands.DeletePortRangeResponse)).Status = "404"
+			(*response.(*commands.DeletePortRangeResponse)).StatusText = "Not found"
 		}
 	}
 
-	if _, ok := command.(*gmp.DescribeAuthCommand); ok {
-		resp := response.(*gmp.DescribeAuthResponse)
+	if _, ok := command.(*commands.DescribeAuthCommand); ok {
+		resp := response.(*commands.DescribeAuthResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.Groups = []gmp.DescribeAuthGroup{
+		resp.Groups = []commands.DescribeAuthGroup{
 			{
 				Name: "method:file",
-				Settings: []gmp.DescribeAuthSetting{
+				Settings: []commands.DescribeAuthSetting{
 					{Key: "enable", Value: "true"},
 					{Key: "order", Value: "1"},
 				},
@@ -751,110 +752,110 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
-	if _, ok := command.(*gmp.GetVersionCommand); ok {
-		resp := response.(*gmp.GetVersionResponse)
+	if _, ok := command.(*commands.GetVersionCommand); ok {
+		resp := response.(*commands.GetVersionResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
 		resp.Version = "1.0"
 	}
 
-	if _, ok := command.(*gmp.HelpCommand); ok {
-		resp := response.(*gmp.HelpResponse)
+	if _, ok := command.(*commands.HelpCommand); ok {
+		resp := response.(*commands.HelpResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
 		resp.Text = "AUTHENTICATE           Authenticate with the manager.\nCREATE_ALERT           Create an alert.\n...\nVERIFY_SCANNER         Verify a scanner."
 	}
 
-	if cmd, ok := command.(*gmp.GetInfoCommand); ok {
+	if cmd, ok := command.(*commands.GetInfoCommand); ok {
 		if cmd.Name == "CVE-2011-0018" && cmd.Type == "cve" {
-			resp := response.(*gmp.GetInfoResponse)
+			resp := response.(*commands.GetInfoResponse)
 			resp.Status = "200"
 			resp.StatusText = "OK"
-			resp.Infos = []gmp.GetInfoInfo{{ID: "CVE-2011-0018", Name: "CVE-2011-0018"}}
+			resp.Infos = []commands.GetInfoInfo{{ID: "CVE-2011-0018", Name: "CVE-2011-0018"}}
 		} else {
-			resp := response.(*gmp.GetInfoResponse)
+			resp := response.(*commands.GetInfoResponse)
 			resp.Status = "404"
 			resp.StatusText = "Not found"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.DeleteConfigCommand); ok {
+	if cmd, ok := command.(*commands.DeleteConfigCommand); ok {
 		if cmd.ConfigID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" && cmd.Ultimate == "1" {
-			(*response.(*gmp.DeleteConfigResponse)).Status = "200"
-			(*response.(*gmp.DeleteConfigResponse)).StatusText = "OK"
+			(*response.(*commands.DeleteConfigResponse)).Status = "200"
+			(*response.(*commands.DeleteConfigResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.DeleteConfigResponse)).Status = "404"
-			(*response.(*gmp.DeleteConfigResponse)).StatusText = "Not found"
+			(*response.(*commands.DeleteConfigResponse)).Status = "404"
+			(*response.(*commands.DeleteConfigResponse)).StatusText = "Not found"
 		}
 	}
 
-	if _, ok := command.(*gmp.SyncConfigCommand); ok {
-		(*response.(*gmp.SyncConfigResponse)).Status = "202"
-		(*response.(*gmp.SyncConfigResponse)).StatusText = "OK, request submitted"
+	if _, ok := command.(*commands.SyncConfigCommand); ok {
+		(*response.(*commands.SyncConfigResponse)).Status = "202"
+		(*response.(*commands.SyncConfigResponse)).StatusText = "OK, request submitted"
 	}
 
-	if cmd, ok := command.(*gmp.MoveTaskCommand); ok {
+	if cmd, ok := command.(*commands.MoveTaskCommand); ok {
 		if cmd.TaskID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" && cmd.SlaveID == "97390ade-e075-11df-9973-002264764cea" {
-			(*response.(*gmp.MoveTaskResponse)).Status = "200"
-			(*response.(*gmp.MoveTaskResponse)).StatusText = "OK"
+			(*response.(*commands.MoveTaskResponse)).Status = "200"
+			(*response.(*commands.MoveTaskResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.MoveTaskResponse)).Status = "404"
-			(*response.(*gmp.MoveTaskResponse)).StatusText = "Not found"
+			(*response.(*commands.MoveTaskResponse)).Status = "404"
+			(*response.(*commands.MoveTaskResponse)).StatusText = "Not found"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.CreateTLSCertificateCommand); ok {
+	if cmd, ok := command.(*commands.CreateTLSCertificateCommand); ok {
 		if cmd.Name == "Example Certificate" && cmd.Certificate == "MIIDNjCCAp+gAwIBAgIBATANBgkqhkiG9w0BAQQFADCBqTELM[...]" {
-			(*response.(*gmp.CreateTLSCertificateResponse)).Status = "201"
-			(*response.(*gmp.CreateTLSCertificateResponse)).StatusText = "OK, resource created"
-			(*response.(*gmp.CreateTLSCertificateResponse)).ID = "8a925978-59d0-494b-a837-40b271569727"
+			(*response.(*commands.CreateTLSCertificateResponse)).Status = "201"
+			(*response.(*commands.CreateTLSCertificateResponse)).StatusText = "OK, resource created"
+			(*response.(*commands.CreateTLSCertificateResponse)).ID = "8a925978-59d0-494b-a837-40b271569727"
 		} else {
-			(*response.(*gmp.CreateTLSCertificateResponse)).Status = "400"
-			(*response.(*gmp.CreateTLSCertificateResponse)).StatusText = "Bad request"
-			(*response.(*gmp.CreateTLSCertificateResponse)).ID = ""
+			(*response.(*commands.CreateTLSCertificateResponse)).Status = "400"
+			(*response.(*commands.CreateTLSCertificateResponse)).StatusText = "Bad request"
+			(*response.(*commands.CreateTLSCertificateResponse)).ID = ""
 		}
 	}
 
-	if cmd, ok := command.(*gmp.ModifyTLSCertificateCommand); ok {
+	if cmd, ok := command.(*commands.ModifyTLSCertificateCommand); ok {
 		if cmd.TLSCertificateID == "8a925978-59d0-494b-a837-40b271569727" && cmd.Name == "Renamed Example Certificate" {
-			(*response.(*gmp.ModifyTLSCertificateResponse)).Status = "200"
-			(*response.(*gmp.ModifyTLSCertificateResponse)).StatusText = "OK"
+			(*response.(*commands.ModifyTLSCertificateResponse)).Status = "200"
+			(*response.(*commands.ModifyTLSCertificateResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.ModifyTLSCertificateResponse)).Status = "404"
-			(*response.(*gmp.ModifyTLSCertificateResponse)).StatusText = "Not found"
+			(*response.(*commands.ModifyTLSCertificateResponse)).Status = "404"
+			(*response.(*commands.ModifyTLSCertificateResponse)).StatusText = "Not found"
 		}
 	}
 
-	if _, ok := command.(*gmp.GetTLSCertificatesCommand); ok {
-		resp := response.(*gmp.GetTLSCertificatesResponse)
+	if _, ok := command.(*commands.GetTLSCertificatesCommand); ok {
+		resp := response.(*commands.GetTLSCertificatesResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.TLSCertificates = []gmp.TLSCertificate{
+		resp.TLSCertificates = []commands.TLSCertificate{
 			{
 				ID:    "ba36ed15-92fa-4ae0-af53-bad8ce472f18",
-				Owner: &gmp.Owner{Name: "admin"},
+				Owner: &commands.Owner{Name: "admin"},
 				Name:  "Example Certificate",
 			},
 		}
 	}
 
-	if cmd, ok := command.(*gmp.ModifyAgentsCommand); ok {
+	if cmd, ok := command.(*commands.ModifyAgentsCommand); ok {
 		if len(cmd.Agents) == 1 && cmd.Agents[0].ID == "fb6451bf-ec5a-45a8-8bab-5cf4b862e51b" &&
 			cmd.Authorized == "1" && cmd.MinInterval == "1000" && cmd.HeartbeatInterval == "0" &&
 			cmd.Schedule == "@every 12h" && cmd.Comment == "example update" {
-			(*response.(*gmp.ModifyAgentsResponse)).Status = "200"
-			(*response.(*gmp.ModifyAgentsResponse)).StatusText = "OK"
+			(*response.(*commands.ModifyAgentsResponse)).Status = "200"
+			(*response.(*commands.ModifyAgentsResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.ModifyAgentsResponse)).Status = "400"
-			(*response.(*gmp.ModifyAgentsResponse)).StatusText = "Bad request"
+			(*response.(*commands.ModifyAgentsResponse)).Status = "400"
+			(*response.(*commands.ModifyAgentsResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if _, ok := command.(*gmp.GetAgentsCommand); ok {
-		resp := response.(*gmp.GetAgentsResponse)
+	if _, ok := command.(*commands.GetAgentsCommand); ok {
+		resp := response.(*commands.GetAgentsResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.Agents = []gmp.Agent{
+		resp.Agents = []commands.Agent{
 			{
 				ID:      "62462fe0-5834-4630-afc2-0d040c63487c",
 				AgentID: "GAT-29-p0MPX0FT",
@@ -862,21 +863,21 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
-	if cmd, ok := command.(*gmp.DeleteAgentsCommand); ok {
+	if cmd, ok := command.(*commands.DeleteAgentsCommand); ok {
 		if len(cmd.Agents) == 1 && cmd.Agents[0].ID == "c6f1cdc3-8c2c-4b2e-9f43-139d23c7cfd4" {
-			(*response.(*gmp.DeleteAgentsResponse)).Status = "200"
-			(*response.(*gmp.DeleteAgentsResponse)).StatusText = "OK"
+			(*response.(*commands.DeleteAgentsResponse)).Status = "200"
+			(*response.(*commands.DeleteAgentsResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.DeleteAgentsResponse)).Status = "404"
-			(*response.(*gmp.DeleteAgentsResponse)).StatusText = "Not found"
+			(*response.(*commands.DeleteAgentsResponse)).Status = "404"
+			(*response.(*commands.DeleteAgentsResponse)).StatusText = "Not found"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.GetNvtsCommand); ok {
+	if cmd, ok := command.(*commands.GetNvtsCommand); ok {
 		if cmd.Details == "1" {
-			(*response.(*gmp.GetNvtsResponse)).Status = "200"
-			(*response.(*gmp.GetNvtsResponse)).StatusText = "OK"
-			(*response.(*gmp.GetNvtsResponse)).Nvts = []gmp.NVT{
+			(*response.(*commands.GetNvtsResponse)).Status = "200"
+			(*response.(*commands.GetNvtsResponse)).StatusText = "OK"
+			(*response.(*commands.GetNvtsResponse)).Nvts = []commands.NVT{
 				{
 					OID:              "1.3.6.1.4.1.25623.1.7.13005",
 					Name:             "Services",
@@ -901,24 +902,24 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 				},
 			}
 		} else if cmd.NvtOID == "1.3.6.1.4.1.25623.1.0.10330" {
-			(*response.(*gmp.GetNvtsResponse)).Status = "200"
-			(*response.(*gmp.GetNvtsResponse)).StatusText = "OK"
-			(*response.(*gmp.GetNvtsResponse)).Nvts = []gmp.NVT{
+			(*response.(*commands.GetNvtsResponse)).Status = "200"
+			(*response.(*commands.GetNvtsResponse)).StatusText = "OK"
+			(*response.(*commands.GetNvtsResponse)).Nvts = []commands.NVT{
 				{
 					OID:  "1.3.6.1.4.1.25623.1.0.10330",
 					Name: "Services",
 				},
 			}
 		} else {
-			(*response.(*gmp.GetNvtsResponse)).Status = "404"
-			(*response.(*gmp.GetNvtsResponse)).StatusText = "Not found"
+			(*response.(*commands.GetNvtsResponse)).Status = "404"
+			(*response.(*commands.GetNvtsResponse)).StatusText = "Not found"
 		}
 	}
 
-	if _, ok := command.(*gmp.GetNvtFamiliesCommand); ok {
-		(*response.(*gmp.GetNvtFamiliesResponse)).Status = "200"
-		(*response.(*gmp.GetNvtFamiliesResponse)).StatusText = "OK"
-		(*response.(*gmp.GetNvtFamiliesResponse)).Families = []gmp.Family{
+	if _, ok := command.(*commands.GetNvtFamiliesCommand); ok {
+		(*response.(*commands.GetNvtFamiliesResponse)).Status = "200"
+		(*response.(*commands.GetNvtFamiliesResponse)).StatusText = "OK"
+		(*response.(*commands.GetNvtFamiliesResponse)).Families = []commands.Family{
 			{
 				Name:        "Credentials",
 				MaxNvtCount: 8,
@@ -930,14 +931,14 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
-	if _, ok := command.(*gmp.GetFeedsCommand); ok {
-		resp := response.(*gmp.GetFeedsResponse)
+	if _, ok := command.(*commands.GetFeedsCommand); ok {
+		resp := response.(*commands.GetFeedsResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
 		resp.FeedOwnerSet = "1"
 		resp.FeedRolesSet = "1"
 		resp.FeedResourcesAccess = "1"
-		resp.Feeds = []gmp.Feed{
+		resp.Feeds = []commands.Feed{
 			{
 				Type:        "NVT",
 				Name:        "Greenbone Security Feed",
@@ -959,24 +960,24 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
-	if cmd, ok := command.(*gmp.ModifyLicenseCommand); ok {
+	if cmd, ok := command.(*commands.ModifyLicenseCommand); ok {
 		if cmd.File != "" {
-			(*response.(*gmp.ModifyLicenseResponse)).Status = "200"
-			(*response.(*gmp.ModifyLicenseResponse)).StatusText = "OK"
+			(*response.(*commands.ModifyLicenseResponse)).Status = "200"
+			(*response.(*commands.ModifyLicenseResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.ModifyLicenseResponse)).Status = "400"
-			(*response.(*gmp.ModifyLicenseResponse)).StatusText = "Missing file"
+			(*response.(*commands.ModifyLicenseResponse)).Status = "400"
+			(*response.(*commands.ModifyLicenseResponse)).StatusText = "Missing file"
 		}
 	}
 
-	if _, ok := command.(*gmp.GetLicenseCommand); ok {
-		resp := response.(*gmp.GetLicenseResponse)
+	if _, ok := command.(*commands.GetLicenseCommand); ok {
+		resp := response.(*commands.GetLicenseResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.License = &gmp.License{
+		resp.License = &commands.License{
 			Status: "active",
-			Content: &gmp.LicenseContent{
-				Meta: &gmp.LicenseMeta{
+			Content: &commands.LicenseContent{
+				Meta: &commands.LicenseMeta{
 					ID:           "4711",
 					Version:      "1.0.0",
 					Comment:      "Test License",
@@ -986,37 +987,37 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 					Begins:       "2021-08-27T07:05:21Z",
 					Expires:      "2021-09-04T07:05:21Z",
 				},
-				Appliance: &gmp.LicenseAppliance{
+				Appliance: &commands.LicenseAppliance{
 					Model:     "trial",
 					ModelType: "virtual",
 					Sensor:    "0",
 				},
-				Keys: &gmp.LicenseKeys{
-					Keys: []gmp.LicenseKey{{Name: "feed", Value: "*base64 GSF key*"}},
+				Keys: &commands.LicenseKeys{
+					Keys: []commands.LicenseKey{{Name: "feed", Value: "*base64 GSF key*"}},
 				},
-				Signatures: &gmp.LicenseSignatures{
-					Signatures: []gmp.LicenseSignature{{Name: "license", Value: "*base64 signature*"}},
+				Signatures: &commands.LicenseSignatures{
+					Signatures: []commands.LicenseSignature{{Name: "license", Value: "*base64 signature*"}},
 				},
 			},
 		}
 	}
 
-	if cmd, ok := command.(*gmp.ModifySettingCommand); ok {
+	if cmd, ok := command.(*commands.ModifySettingCommand); ok {
 		if cmd.Name == "Timezone" && cmd.Value == "QWZyaWNhL0pvaGFubmVzYnVyZw==" {
-			(*response.(*gmp.ModifySettingResponse)).Status = "200"
-			(*response.(*gmp.ModifySettingResponse)).StatusText = "OK"
+			(*response.(*commands.ModifySettingResponse)).Status = "200"
+			(*response.(*commands.ModifySettingResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.ModifySettingResponse)).Status = "400"
-			(*response.(*gmp.ModifySettingResponse)).StatusText = "Bad request"
+			(*response.(*commands.ModifySettingResponse)).Status = "400"
+			(*response.(*commands.ModifySettingResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if _, ok := command.(*gmp.GetSettingsCommand); ok {
-		resp := response.(*gmp.GetSettingsResponse)
+	if _, ok := command.(*commands.GetSettingsCommand); ok {
+		resp := response.(*commands.GetSettingsResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.Settings = &gmp.SettingsBlock{
-			Setting: []gmp.Setting{{
+		resp.Settings = &commands.SettingsBlock{
+			Setting: []commands.Setting{{
 				ID:    "5f5a8712-8017-11e1-8556-406186ea4fc5",
 				Name:  "Rows Per Page",
 				Value: "15",
@@ -1024,60 +1025,60 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
-	if _, ok := command.(*gmp.GetResourceNamesCommand); ok {
-		resp := response.(*gmp.GetResourceNamesResponse)
+	if _, ok := command.(*commands.GetResourceNamesCommand); ok {
+		resp := response.(*commands.GetResourceNamesResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
 		resp.Type = "os"
-		resp.Resources = []gmp.ResourceName{
+		resp.Resources = []commands.ResourceName{
 			{ID: "5b6b6aef-b320-42ca-899f-3161ee2a4195", Name: "cpe:/h:hp:jetdirect"},
 			{ID: "5be25864-9249-431e-8a91-039e334371ad", Name: "cpe:/o:canonical:ubuntu_linux:18.04"},
 		}
 	}
 
-	if _, ok := command.(*gmp.GetAggregatesCommand); ok {
-		resp := response.(*gmp.GetAggregatesResponse)
+	if _, ok := command.(*commands.GetAggregatesCommand); ok {
+		resp := response.(*commands.GetAggregatesResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.Aggregate = &gmp.AggregateBlock{
+		resp.Aggregate = &commands.AggregateBlock{
 			DataType:    "nvt",
 			DataColumn:  "severity",
 			GroupColumn: "family",
-			Groups: []gmp.AggregateGroup{
+			Groups: []commands.AggregateGroup{
 				{Value: "AIX Local Security Checks", Count: 1, CCount: 1, Min: 3.3, Max: 3.3, Mean: 3.3, Sum: 3.3, CSum: 3.3},
 				{Value: "Brute force attacks", Count: 8, CCount: 9, Min: 0, Max: 7.8, Mean: 6.275, Sum: 50.2, CSum: 53.5},
 			},
 		}
 	}
 
-	if _, ok := command.(*gmp.GetFeaturesCommand); ok {
-		resp := response.(*gmp.GetFeaturesResponse)
+	if _, ok := command.(*commands.GetFeaturesCommand); ok {
+		resp := response.(*commands.GetFeaturesResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.Features = []gmp.FeatureInfo{{
+		resp.Features = []commands.FeatureInfo{{
 			Enabled: "0",
 			Name:    "OPENVASD",
 		}}
 	}
 
-	if _, ok := command.(*gmp.EmptyTrashcanCommand); ok {
-		resp := response.(*gmp.EmptyTrashcanResponse)
+	if _, ok := command.(*commands.EmptyTrashcanCommand); ok {
+		resp := response.(*commands.EmptyTrashcanResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
 	}
 
-	if _, ok := command.(*gmp.RestoreCommand); ok {
-		resp := response.(*gmp.RestoreResponse)
+	if _, ok := command.(*commands.RestoreCommand); ok {
+		resp := response.(*commands.RestoreResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
 	}
 
-	if _, ok := command.(*gmp.RunWizardCommand); ok {
-		resp := response.(*gmp.RunWizardResponse)
+	if _, ok := command.(*commands.RunWizardCommand); ok {
+		resp := response.(*commands.RunWizardResponse)
 		resp.Status = "202"
 		resp.StatusText = "OK, request submitted"
-		resp.Response = &gmp.WizardResponse{
-			StartTaskResponse: &gmp.StartTaskResponse{
+		resp.Response = &commands.WizardResponse{
+			StartTaskResponse: &commands.StartTaskResponse{
 				Status:     "202",
 				StatusText: "OK, request submitted",
 				ReportID:   "a06d21f7-8e2f-4d7f-bceb-1df852d8b37d",
@@ -1085,87 +1086,87 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
-	if cmd, ok := command.(*gmp.CreateUserCommand); ok {
+	if cmd, ok := command.(*commands.CreateUserCommand); ok {
 		if cmd.Name == "testuser" && cmd.Password == "testpass" && len(cmd.Roles) > 0 && cmd.Roles[0].ID == "role-uuid" {
-			(*response.(*gmp.CreateUserResponse)).Status = "201"
-			(*response.(*gmp.CreateUserResponse)).StatusText = "OK, resource created"
-			(*response.(*gmp.CreateUserResponse)).ID = "created-user-id"
+			(*response.(*commands.CreateUserResponse)).Status = "201"
+			(*response.(*commands.CreateUserResponse)).StatusText = "OK, resource created"
+			(*response.(*commands.CreateUserResponse)).ID = "created-user-id"
 		} else {
-			(*response.(*gmp.CreateUserResponse)).Status = "400"
+			(*response.(*commands.CreateUserResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.ModifyUserCommand); ok {
+	if cmd, ok := command.(*commands.ModifyUserCommand); ok {
 		if cmd.UserID == "user-uuid" && cmd.Name == "testuser" && cmd.NewName == "newuser" && cmd.Comment == "Updated user" && cmd.Password != nil && cmd.Password.Modify == "1" && cmd.Password.Text == "newpass" && len(cmd.Roles) > 0 && cmd.Roles[0].ID == "role-uuid" {
-			(*response.(*gmp.ModifyUserResponse)).Status = "200"
-			(*response.(*gmp.ModifyUserResponse)).StatusText = "OK"
+			(*response.(*commands.ModifyUserResponse)).Status = "200"
+			(*response.(*commands.ModifyUserResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.ModifyUserResponse)).Status = "400"
+			(*response.(*commands.ModifyUserResponse)).Status = "400"
 		}
 	}
-	if _, ok := command.(*gmp.GetUsersCommand); ok {
-		(*response.(*gmp.GetUsersResponse)).Status = "200"
-		(*response.(*gmp.GetUsersResponse)).StatusText = "OK"
-		(*response.(*gmp.GetUsersResponse)).Users = []gmp.UserWrapper{
+	if _, ok := command.(*commands.GetUsersCommand); ok {
+		(*response.(*commands.GetUsersResponse)).Status = "200"
+		(*response.(*commands.GetUsersResponse)).StatusText = "OK"
+		(*response.(*commands.GetUsersResponse)).Users = []commands.UserWrapper{
 			{
 				Name:    "foobar",
-				Role:    &gmp.UserRole{ID: "8d453140-b74d-11e2-b0be-406186ea4fc5", Name: "User"},
-				Hosts:   &gmp.CreateUserHosts{Allow: "2"},
-				Sources: &gmp.CreateUserSources{Source: &gmp.CreateUserSource{Type: "file"}},
+				Role:    &commands.UserRole{ID: "8d453140-b74d-11e2-b0be-406186ea4fc5", Name: "User"},
+				Hosts:   &commands.CreateUserHosts{Allow: "2"},
+				Sources: &commands.CreateUserSources{Source: &commands.CreateUserSource{Type: "file"}},
 			},
 		}
 	}
 
-	if cmd, ok := command.(*gmp.DeleteUserCommand); ok {
+	if cmd, ok := command.(*commands.DeleteUserCommand); ok {
 		if cmd.Name == "foobar" {
-			(*response.(*gmp.DeleteUserResponse)).Status = "200"
-			(*response.(*gmp.DeleteUserResponse)).StatusText = "OK"
+			(*response.(*commands.DeleteUserResponse)).Status = "200"
+			(*response.(*commands.DeleteUserResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.DeleteUserResponse)).Status = "400"
+			(*response.(*commands.DeleteUserResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.CreateGroupCommand); ok {
+	if cmd, ok := command.(*commands.CreateGroupCommand); ok {
 		if cmd.Name == "Managers" {
-			(*response.(*gmp.CreateGroupResponse)).Status = "201"
-			(*response.(*gmp.CreateGroupResponse)).StatusText = "OK, resource created"
-			(*response.(*gmp.CreateGroupResponse)).ID = "d94211b6-ba40-11e3-bcb1-406186ea4fc5"
+			(*response.(*commands.CreateGroupResponse)).Status = "201"
+			(*response.(*commands.CreateGroupResponse)).StatusText = "OK, resource created"
+			(*response.(*commands.CreateGroupResponse)).ID = "d94211b6-ba40-11e3-bcb1-406186ea4fc5"
 		} else {
-			(*response.(*gmp.CreateGroupResponse)).Status = "400"
-			(*response.(*gmp.CreateGroupResponse)).StatusText = "Bad request"
+			(*response.(*commands.CreateGroupResponse)).Status = "400"
+			(*response.(*commands.CreateGroupResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.CreateRoleCommand); ok {
+	if cmd, ok := command.(*commands.CreateRoleCommand); ok {
 		if cmd.Name == "Test Role" && cmd.Comment == "A test role" {
-			(*response.(*gmp.CreateRoleResponse)).Status = "201"
-			(*response.(*gmp.CreateRoleResponse)).StatusText = "OK, resource created"
-			(*response.(*gmp.CreateRoleResponse)).ID = "created-role-id"
+			(*response.(*commands.CreateRoleResponse)).Status = "201"
+			(*response.(*commands.CreateRoleResponse)).StatusText = "OK, resource created"
+			(*response.(*commands.CreateRoleResponse)).ID = "created-role-id"
 		} else {
-			(*response.(*gmp.CreateRoleResponse)).Status = "400"
-			(*response.(*gmp.CreateRoleResponse)).StatusText = "Bad request"
+			(*response.(*commands.CreateRoleResponse)).Status = "400"
+			(*response.(*commands.CreateRoleResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.ModifyRoleCommand); ok {
+	if cmd, ok := command.(*commands.ModifyRoleCommand); ok {
 		if cmd.RoleID == "role-uuid" && cmd.Name == "Updated Role" && cmd.Comment == "Updated comment" && cmd.Users == "user1,user2" {
-			(*response.(*gmp.ModifyRoleResponse)).Status = "200"
-			(*response.(*gmp.ModifyRoleResponse)).StatusText = "OK"
+			(*response.(*commands.ModifyRoleResponse)).Status = "200"
+			(*response.(*commands.ModifyRoleResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.ModifyRoleResponse)).Status = "400"
-			(*response.(*gmp.ModifyRoleResponse)).StatusText = "Bad request"
+			(*response.(*commands.ModifyRoleResponse)).Status = "400"
+			(*response.(*commands.ModifyRoleResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.GetRolesCommand); ok {
+	if cmd, ok := command.(*commands.GetRolesCommand); ok {
 		if mockFail, ok := any(cmd).(interface{ Fail() bool }); ok && mockFail.Fail() {
-			(*response.(*gmp.GetRolesResponse)).Status = "400"
-			(*response.(*gmp.GetRolesResponse)).StatusText = "Bad request"
-			(*response.(*gmp.GetRolesResponse)).Roles = nil
+			(*response.(*commands.GetRolesResponse)).Status = "400"
+			(*response.(*commands.GetRolesResponse)).StatusText = "Bad request"
+			(*response.(*commands.GetRolesResponse)).Roles = nil
 		} else {
-			(*response.(*gmp.GetRolesResponse)).Status = "200"
-			(*response.(*gmp.GetRolesResponse)).StatusText = "OK"
-			(*response.(*gmp.GetRolesResponse)).Roles = []gmp.Role{
+			(*response.(*commands.GetRolesResponse)).Status = "200"
+			(*response.(*commands.GetRolesResponse)).StatusText = "OK"
+			(*response.(*commands.GetRolesResponse)).Roles = []commands.Role{
 				{
 					ID:               "b493b7a8-7489-11df-a3ec-002264764cea",
 					Name:             "Management",
@@ -1180,38 +1181,38 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
-	if cmd, ok := command.(*gmp.DeleteRoleCommand); ok {
+	if cmd, ok := command.(*commands.DeleteRoleCommand); ok {
 		if cmd.RoleID == "b64c81b2-b9de-11e3-a2e9-406186ea4fc5" && cmd.Ultimate == "1" {
-			(*response.(*gmp.DeleteRoleResponse)).Status = "200"
-			(*response.(*gmp.DeleteRoleResponse)).StatusText = "OK"
+			(*response.(*commands.DeleteRoleResponse)).Status = "200"
+			(*response.(*commands.DeleteRoleResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.DeleteRoleResponse)).Status = "400"
+			(*response.(*commands.DeleteRoleResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.CreatePermissionCommand); ok {
+	if cmd, ok := command.(*commands.CreatePermissionCommand); ok {
 		if cmd.Name == "get_targets" && cmd.Subject != nil && cmd.Subject.ID == "66abe5ce-c011-11e3-b96e-406186ea4fc5" && cmd.Subject.Type == "user" && cmd.Resource != nil && cmd.Resource.ID == "b493b7a8-7489-11df-a3ec-002264764cea" {
-			(*response.(*gmp.CreatePermissionResponse)).Status = "201"
-			(*response.(*gmp.CreatePermissionResponse)).StatusText = "OK, resource created"
-			(*response.(*gmp.CreatePermissionResponse)).ID = "created-permission-id"
+			(*response.(*commands.CreatePermissionResponse)).Status = "201"
+			(*response.(*commands.CreatePermissionResponse)).StatusText = "OK, resource created"
+			(*response.(*commands.CreatePermissionResponse)).ID = "created-permission-id"
 		} else {
-			(*response.(*gmp.CreatePermissionResponse)).Status = "400"
+			(*response.(*commands.CreatePermissionResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.ModifyPermissionCommand); ok {
+	if cmd, ok := command.(*commands.ModifyPermissionCommand); ok {
 		if cmd.PermissionID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" && cmd.Subject != nil && cmd.Subject.ID == "76e47468-c095-11e3-9285-406186ea4fc5" && cmd.Subject.Type == "user" {
-			(*response.(*gmp.ModifyPermissionResponse)).Status = "200"
-			(*response.(*gmp.ModifyPermissionResponse)).StatusText = "OK"
+			(*response.(*commands.ModifyPermissionResponse)).Status = "200"
+			(*response.(*commands.ModifyPermissionResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.ModifyPermissionResponse)).Status = "400"
+			(*response.(*commands.ModifyPermissionResponse)).Status = "400"
 		}
 	}
 
-	if _, ok := command.(*gmp.GetPermissionsCommand); ok {
-		(*response.(*gmp.GetPermissionsResponse)).Status = "200"
-		(*response.(*gmp.GetPermissionsResponse)).StatusText = "OK"
-		(*response.(*gmp.GetPermissionsResponse)).Permissions = []gmp.PermissionInfo{
+	if _, ok := command.(*commands.GetPermissionsCommand); ok {
+		(*response.(*commands.GetPermissionsResponse)).Status = "200"
+		(*response.(*commands.GetPermissionsResponse)).StatusText = "OK"
+		(*response.(*commands.GetPermissionsResponse)).Permissions = []commands.PermissionInfo{
 			{
 				ID:               "b493b7a8-7489-11df-a3ec-002264764cea",
 				Name:             "Management",
@@ -1225,30 +1226,30 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
-	if cmd, ok := command.(*gmp.DeletePermissionCommand); ok {
+	if cmd, ok := command.(*commands.DeletePermissionCommand); ok {
 		if cmd.PermissionID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" {
-			(*response.(*gmp.DeletePermissionResponse)).Status = "200"
-			(*response.(*gmp.DeletePermissionResponse)).StatusText = "OK"
+			(*response.(*commands.DeletePermissionResponse)).Status = "200"
+			(*response.(*commands.DeletePermissionResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.DeletePermissionResponse)).Status = "400"
-			(*response.(*gmp.DeletePermissionResponse)).StatusText = "Bad request"
+			(*response.(*commands.DeletePermissionResponse)).Status = "400"
+			(*response.(*commands.DeletePermissionResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.ModifyGroupCommand); ok {
+	if cmd, ok := command.(*commands.ModifyGroupCommand); ok {
 		if cmd.GroupID == "d94211b6-ba40-11e3-bcb1-406186ea4fc5" && cmd.Name == "Line Managers" {
-			(*response.(*gmp.ModifyGroupResponse)).Status = "200"
-			(*response.(*gmp.ModifyGroupResponse)).StatusText = "OK"
+			(*response.(*commands.ModifyGroupResponse)).Status = "200"
+			(*response.(*commands.ModifyGroupResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.ModifyGroupResponse)).Status = "400"
-			(*response.(*gmp.ModifyGroupResponse)).StatusText = "Bad request"
+			(*response.(*commands.ModifyGroupResponse)).Status = "400"
+			(*response.(*commands.ModifyGroupResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if _, ok := command.(*gmp.GetGroupsCommand); ok {
-		(*response.(*gmp.GetGroupsResponse)).Status = "200"
-		(*response.(*gmp.GetGroupsResponse)).StatusText = "OK"
-		(*response.(*gmp.GetGroupsResponse)).Groups = []gmp.GroupInfo{
+	if _, ok := command.(*commands.GetGroupsCommand); ok {
+		(*response.(*commands.GetGroupsResponse)).Status = "200"
+		(*response.(*commands.GetGroupsResponse)).StatusText = "OK"
+		(*response.(*commands.GetGroupsResponse)).Groups = []commands.GroupInfo{
 			{
 				ID:               "b493b7a8-7489-11df-a3ec-002264764cea",
 				Name:             "Management",
@@ -1262,41 +1263,41 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
-	if cmd, ok := command.(*gmp.DeleteGroupCommand); ok {
+	if cmd, ok := command.(*commands.DeleteGroupCommand); ok {
 		if cmd.GroupID == "d94211b6-ba40-11e3-bcb1-406186ea4fc5" {
-			(*response.(*gmp.DeleteGroupResponse)).Status = "200"
-			(*response.(*gmp.DeleteGroupResponse)).StatusText = "OK"
+			(*response.(*commands.DeleteGroupResponse)).Status = "200"
+			(*response.(*commands.DeleteGroupResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.DeleteGroupResponse)).Status = "400"
-			(*response.(*gmp.DeleteGroupResponse)).StatusText = "Bad request"
+			(*response.(*commands.DeleteGroupResponse)).Status = "400"
+			(*response.(*commands.DeleteGroupResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.CreateTagCommand); ok {
+	if cmd, ok := command.(*commands.CreateTagCommand); ok {
 		if cmd.Name == "geo:long" && cmd.Resources != nil && cmd.Resources.Resource != nil && cmd.Resources.Resource.ID == "b493b7a8-7489-11df-a3ec-002264764cea" {
-			(*response.(*gmp.CreateTagResponse)).Status = "201"
-			(*response.(*gmp.CreateTagResponse)).StatusText = "OK, resource created"
-			(*response.(*gmp.CreateTagResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+			(*response.(*commands.CreateTagResponse)).Status = "201"
+			(*response.(*commands.CreateTagResponse)).StatusText = "OK, resource created"
+			(*response.(*commands.CreateTagResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
 		} else {
-			(*response.(*gmp.CreateTagResponse)).Status = "400"
-			(*response.(*gmp.CreateTagResponse)).StatusText = "Bad request"
+			(*response.(*commands.CreateTagResponse)).Status = "400"
+			(*response.(*commands.CreateTagResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.ModifyTagCommand); ok {
+	if cmd, ok := command.(*commands.ModifyTagCommand); ok {
 		if cmd.TagID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" && cmd.Active == "0" {
-			(*response.(*gmp.ModifyTagResponse)).Status = "200"
-			(*response.(*gmp.ModifyTagResponse)).StatusText = "OK"
+			(*response.(*commands.ModifyTagResponse)).Status = "200"
+			(*response.(*commands.ModifyTagResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.ModifyTagResponse)).Status = "400"
-			(*response.(*gmp.ModifyTagResponse)).StatusText = "Bad request"
+			(*response.(*commands.ModifyTagResponse)).Status = "400"
+			(*response.(*commands.ModifyTagResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if _, ok := command.(*gmp.GetTagsCommand); ok {
-		(*response.(*gmp.GetTagsResponse)).Status = "200"
-		(*response.(*gmp.GetTagsResponse)).StatusText = "OK"
-		(*response.(*gmp.GetTagsResponse)).Tags = []gmp.TagInfo{
+	if _, ok := command.(*commands.GetTagsCommand); ok {
+		(*response.(*commands.GetTagsResponse)).Status = "200"
+		(*response.(*commands.GetTagsResponse)).StatusText = "OK"
+		(*response.(*commands.GetTagsResponse)).Tags = []commands.TagInfo{
 			{
 				ID:               "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 				Name:             "geo:long",
@@ -1307,7 +1308,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 				InUse:            "0",
 				Value:            "52.2788",
 				Active:           "1",
-				Resources: []gmp.TagResource{
+				Resources: []commands.TagResource{
 					{
 						ID:    "b493b7a8-7489-11df-a3ec-002264764cea",
 						Type:  "target",
@@ -1319,44 +1320,44 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
-	if cmd, ok := command.(*gmp.DeleteTagCommand); ok {
+	if cmd, ok := command.(*commands.DeleteTagCommand); ok {
 		if cmd.TagID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
-			(*response.(*gmp.DeleteTagResponse)).Status = "200"
-			(*response.(*gmp.DeleteTagResponse)).StatusText = "OK"
+			(*response.(*commands.DeleteTagResponse)).Status = "200"
+			(*response.(*commands.DeleteTagResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.DeleteTagResponse)).Status = "400"
-			(*response.(*gmp.DeleteTagResponse)).StatusText = "Bad request"
+			(*response.(*commands.DeleteTagResponse)).Status = "400"
+			(*response.(*commands.DeleteTagResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.CreateNoteCommand); ok {
+	if cmd, ok := command.(*commands.CreateNoteCommand); ok {
 		if cmd.Text == "This issue should be resolved after the upgrade." && cmd.NVT != nil && cmd.NVT.OID == "1.3.6.1.4.1.25623.1.0.10330" && cmd.Result != nil && cmd.Result.ID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
-			(*response.(*gmp.CreateNoteResponse)).Status = "202"
-			(*response.(*gmp.CreateNoteResponse)).StatusText = "OK, resource created"
-			(*response.(*gmp.CreateNoteResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+			(*response.(*commands.CreateNoteResponse)).Status = "202"
+			(*response.(*commands.CreateNoteResponse)).StatusText = "OK, resource created"
+			(*response.(*commands.CreateNoteResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
 		} else {
-			(*response.(*gmp.CreateNoteResponse)).Status = "400"
-			(*response.(*gmp.CreateNoteResponse)).StatusText = "Bad request"
+			(*response.(*commands.CreateNoteResponse)).Status = "400"
+			(*response.(*commands.CreateNoteResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.ModifyNoteCommand); ok {
+	if cmd, ok := command.(*commands.ModifyNoteCommand); ok {
 		if cmd.NoteID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" && cmd.Text == "This issue should be resolved after the upgrade." && cmd.Result != nil && cmd.Result.ID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
-			(*response.(*gmp.ModifyNoteResponse)).Status = "200"
-			(*response.(*gmp.ModifyNoteResponse)).StatusText = "OK"
+			(*response.(*commands.ModifyNoteResponse)).Status = "200"
+			(*response.(*commands.ModifyNoteResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.ModifyNoteResponse)).Status = "400"
-			(*response.(*gmp.ModifyNoteResponse)).StatusText = "Bad request"
+			(*response.(*commands.ModifyNoteResponse)).Status = "400"
+			(*response.(*commands.ModifyNoteResponse)).StatusText = "Bad request"
 		}
 	}
 
-	if _, ok := command.(*gmp.GetNotesCommand); ok {
-		(*response.(*gmp.GetNotesResponse)).Status = "200"
-		(*response.(*gmp.GetNotesResponse)).StatusText = "OK"
-		(*response.(*gmp.GetNotesResponse)).Notes = []gmp.NoteInfo{
+	if _, ok := command.(*commands.GetNotesCommand); ok {
+		(*response.(*commands.GetNotesResponse)).Status = "200"
+		(*response.(*commands.GetNotesResponse)).StatusText = "OK"
+		(*response.(*commands.GetNotesResponse)).Notes = []commands.NoteInfo{
 			{
 				ID:               "b76b81a7-9df8-42df-afff-baa9d4620128",
-				NVT:              &gmp.GetNoteNVT{OID: "1.3.6.1.4.1.25623.1.0.75", Name: "Test NVT: long lines"},
+				NVT:              &commands.GetNoteNVT{OID: "1.3.6.1.4.1.25623.1.0.75", Name: "Test NVT: long lines"},
 				CreationTime:     "2013-01-09T09:47:41+01:00",
 				ModificationTime: "2013-01-09T09:47:41+01:00",
 				Writable:         "1",
@@ -1368,41 +1369,41 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
-	if cmd, ok := command.(*gmp.DeleteNoteCommand); ok {
+	if cmd, ok := command.(*commands.DeleteNoteCommand); ok {
 		if cmd.NoteID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
-			(*response.(*gmp.DeleteNoteResponse)).Status = "200"
-			(*response.(*gmp.DeleteNoteResponse)).StatusText = "OK"
+			(*response.(*commands.DeleteNoteResponse)).Status = "200"
+			(*response.(*commands.DeleteNoteResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.DeleteNoteResponse)).Status = "400"
-			(*response.(*gmp.DeleteNoteResponse)).StatusText = "Not Found"
+			(*response.(*commands.DeleteNoteResponse)).Status = "400"
+			(*response.(*commands.DeleteNoteResponse)).StatusText = "Not Found"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.CreateFilterCommand); ok {
+	if cmd, ok := command.(*commands.CreateFilterCommand); ok {
 		if cmd.Name == "Single Targets" {
-			(*response.(*gmp.CreateFilterResponse)).Status = "201"
-			(*response.(*gmp.CreateFilterResponse)).StatusText = "OK, resource created"
-			(*response.(*gmp.CreateFilterResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c7"
+			(*response.(*commands.CreateFilterResponse)).Status = "201"
+			(*response.(*commands.CreateFilterResponse)).StatusText = "OK, resource created"
+			(*response.(*commands.CreateFilterResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c7"
 		} else {
-			(*response.(*gmp.CreateFilterResponse)).Status = "400"
+			(*response.(*commands.CreateFilterResponse)).Status = "400"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.ModifyFilterCommand); ok {
+	if cmd, ok := command.(*commands.ModifyFilterCommand); ok {
 		if cmd.FilterID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c7" {
-			(*response.(*gmp.ModifyFilterResponse)).Status = "200"
-			(*response.(*gmp.ModifyFilterResponse)).StatusText = "OK"
+			(*response.(*commands.ModifyFilterResponse)).Status = "200"
+			(*response.(*commands.ModifyFilterResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.ModifyFilterResponse)).Status = "400"
-			(*response.(*gmp.ModifyFilterResponse)).StatusText = "Not Found"
+			(*response.(*commands.ModifyFilterResponse)).Status = "400"
+			(*response.(*commands.ModifyFilterResponse)).StatusText = "Not Found"
 		}
 	}
 
-	if _, ok := command.(*gmp.GetFiltersCommand); ok {
-		resp := response.(*gmp.GetFiltersResponse)
+	if _, ok := command.(*commands.GetFiltersCommand); ok {
+		resp := response.(*commands.GetFiltersResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.Filters = []gmp.FilterEntry{
+		resp.Filters = []commands.FilterEntry{
 			{
 				ID:               "b493b7a8-7489-11df-a3ec-001164764cea",
 				Name:             "Single Targets",
@@ -1417,31 +1418,31 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
-	if cmd, ok := command.(*gmp.DeleteFilterCommand); ok {
+	if cmd, ok := command.(*commands.DeleteFilterCommand); ok {
 		if cmd.FilterID == "b493b7a8-7489-11df-a3ec-001164764cea" {
-			(*response.(*gmp.DeleteFilterResponse)).Status = "200"
-			(*response.(*gmp.DeleteFilterResponse)).StatusText = "OK"
+			(*response.(*commands.DeleteFilterResponse)).Status = "200"
+			(*response.(*commands.DeleteFilterResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.DeleteFilterResponse)).Status = "400"
-			(*response.(*gmp.DeleteFilterResponse)).StatusText = "Not Found"
+			(*response.(*commands.DeleteFilterResponse)).Status = "400"
+			(*response.(*commands.DeleteFilterResponse)).StatusText = "Not Found"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.CreateTicketCommand); ok {
+	if cmd, ok := command.(*commands.CreateTicketCommand); ok {
 		if cmd.Result.ID == "138c1216-4acb-4ded-bef3-7fab80eac8c7" && cmd.Assigned.User.ID == "33e92d3e-a379-4c46-a4cf-88c8201ab710" {
-			(*response.(*gmp.CreateTicketResponse)).Status = "201"
-			(*response.(*gmp.CreateTicketResponse)).StatusText = "OK, resource created"
-			(*response.(*gmp.CreateTicketResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
+			(*response.(*commands.CreateTicketResponse)).Status = "201"
+			(*response.(*commands.CreateTicketResponse)).StatusText = "OK, resource created"
+			(*response.(*commands.CreateTicketResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
 		} else {
-			(*response.(*gmp.CreateTicketResponse)).Status = "400"
+			(*response.(*commands.CreateTicketResponse)).Status = "400"
 		}
 	}
 
-	if _, ok := command.(*gmp.GetTicketsCommand); ok {
-		resp := response.(*gmp.GetTicketsResponse)
+	if _, ok := command.(*commands.GetTicketsCommand); ok {
+		resp := response.(*commands.GetTicketsResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.Tickets = []gmp.TicketEntry{
+		resp.Tickets = []commands.TicketEntry{
 			{
 				ID:               "93cd2f71-48c3-4cf2-b542-5b256f59cae0",
 				Name:             "OpenSSH Denial of Service Vulnerability - Jan16",
@@ -1456,22 +1457,32 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
-	if cmd, ok := command.(*gmp.ModifyTicketCommand); ok {
+	if cmd, ok := command.(*commands.ModifyTicketCommand); ok {
 		if cmd.TicketID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
-			(*response.(*gmp.ModifyTicketResponse)).Status = "200"
-			(*response.(*gmp.ModifyTicketResponse)).StatusText = "OK"
+			(*response.(*commands.ModifyTicketResponse)).Status = "200"
+			(*response.(*commands.ModifyTicketResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.ModifyTicketResponse)).Status = "400"
-			(*response.(*gmp.ModifyTicketResponse)).StatusText = "Not Found"
+			(*response.(*commands.ModifyTicketResponse)).Status = "400"
+			(*response.(*commands.ModifyTicketResponse)).StatusText = "Not Found"
 		}
 	}
 
-	if cmd, ok := command.(*gmp.DeleteTicketCommand); ok {
+	if cmd, ok := command.(*commands.DeleteTicketCommand); ok {
 		if cmd.TicketID == "ticket-uuid" && cmd.Ultimate == "1" {
-			(*response.(*gmp.DeleteTicketResponse)).Status = "200"
-			(*response.(*gmp.DeleteTicketResponse)).StatusText = "OK"
+			(*response.(*commands.DeleteTicketResponse)).Status = "200"
+			(*response.(*commands.DeleteTicketResponse)).StatusText = "OK"
 		} else {
-			(*response.(*gmp.DeleteTicketResponse)).Status = "400"
+			(*response.(*commands.DeleteTicketResponse)).Status = "400"
+		}
+	}
+
+	if cmd, ok := command.(*commands.ModifyAuthCommand); ok {
+		if cmd.Group.Name == "method:file" && len(cmd.Group.Settings) > 0 && cmd.Group.Settings[0].Key == "enable" {
+			(*response.(*commands.ModifyAuthResponse)).Status = "200"
+			(*response.(*commands.ModifyAuthResponse)).StatusText = "OK"
+		} else {
+			(*response.(*commands.ModifyAuthResponse)).Status = "400"
+			(*response.(*commands.ModifyAuthResponse)).StatusText = "Bad request"
 		}
 	}
 

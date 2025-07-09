@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/commands"
 )
 
 func TestGetConfigs(t *testing.T) {
@@ -12,7 +12,7 @@ func TestGetConfigs(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetConfigsCommand{}
+	cmd := &commands.GetConfigsCommand{}
 	cmd.ConfigID = "bde773f3-2b3d-4fe6-81cb-6321ae2cc629"
 	resp, err := cli.GetConfigs(cmd)
 	if err != nil {
@@ -30,7 +30,7 @@ func TestCreateConfig(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.CreateConfigCommand{}
+	cmd := &commands.CreateConfigCommand{}
 	cmd.Name = "New Config"
 	resp, err := cli.CreateConfig(cmd)
 	if err != nil {
@@ -48,7 +48,7 @@ func TestModifyConfig(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.ModifyConfigCommand{}
+	cmd := &commands.ModifyConfigCommand{}
 	cmd.Name = "Modified Config"
 	resp, err := cli.ModifyConfig(cmd)
 	if err != nil {
@@ -66,7 +66,7 @@ func TestDeleteConfig(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.DeleteConfigCommand{
+	cmd := &commands.DeleteConfigCommand{
 		ConfigID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
 		Ultimate: "1",
 	}
@@ -88,7 +88,7 @@ func TestSyncConfig(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.SyncConfigCommand{}
+	cmd := &commands.SyncConfigCommand{}
 	resp, err := cli.SyncConfig(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during SyncConfig: %s", err)

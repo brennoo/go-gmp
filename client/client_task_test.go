@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/commands"
 )
 
 func TestCreateTask(t *testing.T) {
@@ -12,7 +12,7 @@ func TestCreateTask(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.CreateTaskCommand{}
+	cmd := &commands.CreateTaskCommand{}
 	cmd.Name = "New Task"
 	resp, err := cli.CreateTask(cmd)
 	if err != nil {
@@ -29,7 +29,7 @@ func TestModifyTask(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.ModifyTaskCommand{}
+	cmd := &commands.ModifyTaskCommand{}
 	cmd.TaskID = "e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31"
 	cmd.Comment = "Modified Task Comment"
 	resp, err := cli.ModifyTask(cmd)
@@ -47,7 +47,7 @@ func TestGetTasks(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetTasksCommand{}
+	cmd := &commands.GetTasksCommand{}
 	cmd.TaskID = "e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31"
 	resp, err := cli.GetTasks(cmd)
 	if err != nil {
@@ -64,7 +64,7 @@ func TestStartTask(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.StartTaskCommand{}
+	cmd := &commands.StartTaskCommand{}
 	cmd.TaskID = "e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31"
 	resp, err := cli.StartTask(cmd)
 	if err != nil {
@@ -81,7 +81,7 @@ func TestStopTask(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.StopTaskCommand{}
+	cmd := &commands.StopTaskCommand{}
 	cmd.TaskID = "e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31"
 	resp, err := cli.StopTask(cmd)
 	if err != nil {
@@ -98,7 +98,7 @@ func TestDeleteTask(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.DeleteTaskCommand{}
+	cmd := &commands.DeleteTaskCommand{}
 	cmd.TaskID = "e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31"
 	resp, err := cli.DeleteTask(cmd)
 	if err != nil {
@@ -116,7 +116,7 @@ func TestResumeTask(t *testing.T) {
 	}
 
 	taskID := "267a3405-e84a-47da-97b2-5fa0d2e8995e"
-	cmd := &gmp.ResumeTaskCommand{
+	cmd := &commands.ResumeTaskCommand{
 		TaskID: taskID,
 	}
 	resp, err := cli.ResumeTask(cmd)
@@ -137,7 +137,7 @@ func TestMoveTask(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.MoveTaskCommand{
+	cmd := &commands.MoveTaskCommand{
 		TaskID:  "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 		SlaveID: "97390ade-e075-11df-9973-002264764cea",
 	}
