@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/commands"
 )
 
 func TestNew(t *testing.T) {
@@ -14,32 +14,13 @@ func TestNew(t *testing.T) {
 	}
 }
 
-func TestAuthenticate(t *testing.T) {
-	cli := New(mockedConnection())
-	if cli == nil {
-		t.Fatalf("Client is nil")
-	}
-
-	cmd := &gmp.AuthenticateCommand{}
-	cmd.Credentials.Username = "openvas"
-	cmd.Credentials.Password = "123"
-	resp, err := cli.Authenticate(cmd)
-	if err != nil {
-		t.Fatalf("Unexpected error during Authenticate: %s", err)
-	}
-
-	if resp.Status != "200" {
-		t.Fatalf("Unexpected status. \nExpected: 200 \nGot: %s", resp.Status)
-	}
-}
-
 func TestGetPreferences(t *testing.T) {
 	cli := New(mockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetPreferencesCommand{}
+	cmd := &commands.GetPreferencesCommand{}
 	cmd.ConfigID = "4b49617e-d1d8-44b8-af81-f4675b56f837"
 	resp, err := cli.GetPreferences(cmd)
 	if err != nil {
@@ -60,7 +41,7 @@ func TestGetSystemReports(t *testing.T) {
 	}
 
 	// Success case: get a specific report
-	cmd := &gmp.GetSystemReportsCommand{
+	cmd := &commands.GetSystemReportsCommand{
 		Name: "proc",
 	}
 	resp, err := cli.GetSystemReports(cmd)
@@ -78,7 +59,7 @@ func TestGetSystemReports(t *testing.T) {
 	}
 
 	// Success case: get brief listing
-	cmd = &gmp.GetSystemReportsCommand{
+	cmd = &commands.GetSystemReportsCommand{
 		Brief: "1",
 	}
 	resp, err = cli.GetSystemReports(cmd)
@@ -90,7 +71,7 @@ func TestGetSystemReports(t *testing.T) {
 	}
 
 	// Failure case
-	cmd = &gmp.GetSystemReportsCommand{
+	cmd = &commands.GetSystemReportsCommand{
 		Name: "notfound",
 	}
 	resp, err = cli.GetSystemReports(cmd)
@@ -102,48 +83,13 @@ func TestGetSystemReports(t *testing.T) {
 	}
 }
 
-func TestDescribeAuth(t *testing.T) {
-	cli := New(mockedConnection())
-	if cli == nil {
-		t.Fatalf("Client is nil")
-	}
-
-	cmd := &gmp.DescribeAuthCommand{}
-	resp, err := cli.DescribeAuth(cmd)
-	if err != nil {
-		t.Fatalf("Unexpected error during DescribeAuth: %s", err)
-	}
-	if resp.Status != "200" {
-		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
-	}
-	if resp.StatusText != "OK" {
-		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
-	}
-	if len(resp.Groups) != 1 {
-		t.Fatalf("Expected 1 group, got %d", len(resp.Groups))
-	}
-	group := resp.Groups[0]
-	if group.Name != "method:file" {
-		t.Fatalf("Unexpected group name. Expected: method:file Got: %s", group.Name)
-	}
-	if len(group.Settings) != 2 {
-		t.Fatalf("Expected 2 auth_conf_setting, got %d", len(group.Settings))
-	}
-	if group.Settings[0].Key != "enable" || group.Settings[0].Value != "true" {
-		t.Fatalf("Unexpected first setting: %+v", group.Settings[0])
-	}
-	if group.Settings[1].Key != "order" || group.Settings[1].Value != "1" {
-		t.Fatalf("Unexpected second setting: %+v", group.Settings[1])
-	}
-}
-
 func TestGetInfo(t *testing.T) {
 	cli := New(mockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetInfoCommand{
+	cmd := &commands.GetInfoCommand{
 		Name: "CVE-2011-0018",
 		Type: "cve",
 	}
@@ -172,7 +118,7 @@ func TestGetVersion(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetVersionCommand{}
+	cmd := &commands.GetVersionCommand{}
 	resp, err := cli.GetVersion(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetVersion: %s", err)
@@ -194,7 +140,7 @@ func TestHelp(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.HelpCommand{}
+	cmd := &commands.HelpCommand{}
 	resp, err := cli.Help(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during Help: %s", err)
@@ -216,7 +162,7 @@ func TestGetFeeds(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetFeedsCommand{}
+	cmd := &commands.GetFeedsCommand{}
 	resp, err := cli.GetFeeds(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetFeeds: %s", err)
@@ -256,7 +202,7 @@ func TestModifyLicense(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.ModifyLicenseCommand{
+	cmd := &commands.ModifyLicenseCommand{
 		File: "YmFzZTY0bGljZW5zZQ==", // "baselicenses" in base64
 	}
 	resp, err := cli.ModifyLicense(cmd)
@@ -279,7 +225,7 @@ func TestGetLicense(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetLicenseCommand{}
+	cmd := &commands.GetLicenseCommand{}
 	resp, err := cli.GetLicense(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetLicense: %s", err)
@@ -334,7 +280,7 @@ func TestModifySetting(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.ModifySettingCommand{
+	cmd := &commands.ModifySettingCommand{
 		Name:  "Timezone",
 		Value: "QWZyaWNhL0pvaGFubmVzYnVyZw==", // "Africa/Johannesburg" in base64
 	}
@@ -356,7 +302,7 @@ func TestGetSettings(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetSettingsCommand{}
+	cmd := &commands.GetSettingsCommand{}
 	resp, err := cli.GetSettings(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetSettings: %s", err)
@@ -387,7 +333,7 @@ func TestGetResourceNames(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetResourceNamesCommand{Type: "os"}
+	cmd := &commands.GetResourceNamesCommand{Type: "os"}
 	resp, err := cli.GetResourceNames(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetResourceNames: %s", err)
@@ -424,7 +370,7 @@ func TestGetAggregates(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetAggregatesCommand{Type: "nvt", GroupColumn: "family", DataColumn: "severity"}
+	cmd := &commands.GetAggregatesCommand{Type: "nvt", GroupColumn: "family", DataColumn: "severity"}
 	resp, err := cli.GetAggregates(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetAggregates: %s", err)
@@ -470,7 +416,7 @@ func TestGetFeatures(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetFeaturesCommand{}
+	cmd := &commands.GetFeaturesCommand{}
 	resp, err := cli.GetFeatures(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetFeatures: %s", err)
@@ -498,7 +444,7 @@ func TestEmptyTrashcan(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.EmptyTrashcanCommand{}
+	cmd := &commands.EmptyTrashcanCommand{}
 	resp, err := cli.EmptyTrashcan(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during EmptyTrashcan: %s", err)
@@ -517,7 +463,7 @@ func TestRestore(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.RestoreCommand{ID: "97390ade-e075-11df-9973-002264764cea"}
+	cmd := &commands.RestoreCommand{ID: "97390ade-e075-11df-9973-002264764cea"}
 	resp, err := cli.Restore(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during Restore: %s", err)
@@ -536,10 +482,10 @@ func TestRunWizard(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.RunWizardCommand{
+	cmd := &commands.RunWizardCommand{
 		Name: "quick_first_scan",
-		Params: &gmp.WizardParams{
-			Params: []gmp.WizardParam{{
+		Params: &commands.WizardParams{
+			Params: []commands.WizardParam{{
 				Name:  "hosts",
 				Value: "localhost",
 			}},

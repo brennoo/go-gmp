@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/commands"
 )
 
 func TestCreateFilter(t *testing.T) {
@@ -12,7 +12,7 @@ func TestCreateFilter(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.CreateFilterCommand{
+	cmd := &commands.CreateFilterCommand{
 		Name:    "Single Targets",
 		Comment: "Targets with only one host",
 		Term:    "ips=1 first=1 rows=-2",
@@ -39,7 +39,7 @@ func TestModifyFilter(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.ModifyFilterCommand{
+	cmd := &commands.ModifyFilterCommand{
 		FilterID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c7",
 		Term:     "name=local",
 	}
@@ -61,7 +61,7 @@ func TestGetFilters(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetFiltersCommand{}
+	cmd := &commands.GetFiltersCommand{}
 	resp, err := cli.GetFilters(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetFilters: %s", err)
@@ -99,7 +99,7 @@ func TestDeleteFilter(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.DeleteFilterCommand{
+	cmd := &commands.DeleteFilterCommand{
 		FilterID: "b493b7a8-7489-11df-a3ec-001164764cea",
 		Ultimate: "0",
 	}

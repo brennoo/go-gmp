@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/commands"
 )
 
 func TestCreateAsset(t *testing.T) {
@@ -12,8 +12,8 @@ func TestCreateAsset(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.CreateAssetCommand{
-		Asset: &gmp.CreateAssetAsset{
+	cmd := &commands.CreateAssetCommand{
+		Asset: &commands.CreateAssetAsset{
 			Name:    "Localhost",
 			Type:    "host",
 			Comment: "Test asset",
@@ -40,10 +40,10 @@ func TestCreateAssetWithReport(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.CreateAssetCommand{
-		Report: &gmp.CreateAssetReport{
+	cmd := &commands.CreateAssetCommand{
+		Report: &commands.CreateAssetReport{
 			ID: "report-uuid",
-			Filter: &gmp.CreateAssetReportFilter{
+			Filter: &commands.CreateAssetReportFilter{
 				Term: "min_qod=70",
 			},
 		},
@@ -69,7 +69,7 @@ func TestModifyAsset(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.ModifyAssetCommand{
+	cmd := &commands.ModifyAssetCommand{
 		AssetID: "914b59f8-25f5-4c8f-832c-2379cd625236",
 		Comment: "New comment",
 	}
@@ -91,7 +91,7 @@ func TestGetAssets(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetAssetsCommand{
+	cmd := &commands.GetAssetsCommand{
 		AssetID: "b493b7a8-7489-11df-a3ec-002264764cea",
 	}
 	resp, err := cli.GetAssets(cmd)
@@ -122,7 +122,7 @@ func TestDeleteAsset(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.DeleteAssetCommand{
+	cmd := &commands.DeleteAssetCommand{
 		AssetID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
 	}
 	resp, err := cli.DeleteAsset(cmd)

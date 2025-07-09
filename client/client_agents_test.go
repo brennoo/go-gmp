@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/commands"
 )
 
 func TestModifyAgents(t *testing.T) {
@@ -12,8 +12,8 @@ func TestModifyAgents(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.ModifyAgentsCommand{
-		Agents: []gmp.Agent{
+	cmd := &commands.ModifyAgentsCommand{
+		Agents: []commands.Agent{
 			{ID: "fb6451bf-ec5a-45a8-8bab-5cf4b862e51b"},
 		},
 		Authorized:        "1",
@@ -40,7 +40,7 @@ func TestGetAgents(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetAgentsCommand{}
+	cmd := &commands.GetAgentsCommand{}
 	resp, err := cli.GetAgents(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetAgents: %s", err)
@@ -69,8 +69,8 @@ func TestDeleteAgents(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.DeleteAgentsCommand{
-		Agents: []gmp.Agent{
+	cmd := &commands.DeleteAgentsCommand{
+		Agents: []commands.Agent{
 			{ID: "c6f1cdc3-8c2c-4b2e-9f43-139d23c7cfd4"},
 		},
 	}

@@ -1,0 +1,17 @@
+package commands
+
+import "encoding/xml"
+
+// DeleteGroupCommand represents a delete_group command request.
+type DeleteGroupCommand struct {
+	XMLName  xml.Name `xml:"delete_group"`
+	GroupID  string   `xml:"group_id,attr"`
+	Ultimate string   `xml:"ultimate,attr"`
+}
+
+// DeleteGroupResponse represents a delete_group command response.
+type DeleteGroupResponse struct {
+	XMLName    xml.Name `xml:"delete_group_response"`
+	Status     string   `xml:"status,attr"`
+	StatusText string   `xml:"status_text,attr"`
+}

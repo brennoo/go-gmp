@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/commands"
 )
 
 func TestGetPortLists(t *testing.T) {
@@ -12,7 +12,7 @@ func TestGetPortLists(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetPortListsCommand{}
+	cmd := &commands.GetPortListsCommand{}
 	cmd.PortListID = "33d0cd82-57c6-11e1-8ed1-406186ea4fc5"
 	resp, err := cli.GetPortLists(cmd)
 	if err != nil {
@@ -30,7 +30,7 @@ func TestCreatePortList(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.CreatePortListCommand{
+	cmd := &commands.CreatePortListCommand{
 		Name:      "All TCP",
 		Comment:   "All possible TCP ports",
 		PortRange: "T:1-65535",
@@ -53,7 +53,7 @@ func TestModifyPortList(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.ModifyPortListCommand{
+	cmd := &commands.ModifyPortListCommand{
 		PortListID: "27140836-05ae-4e8b-9abf-f725ddc2888f",
 		Name:       "PL-WS1",
 		Comment:    "Port List for Web Server 1",
@@ -73,7 +73,7 @@ func TestDeletePortList(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.DeletePortListCommand{
+	cmd := &commands.DeletePortListCommand{
 		PortListID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
 		Ultimate:   "1",
 	}
@@ -92,8 +92,8 @@ func TestCreatePortRange(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.CreatePortRangeCommand{
-		PortList: gmp.CreatePortRangePortList{ID: "354cd3ef-bbe1-4d58-859d-21b8d0c046c4"},
+	cmd := &commands.CreatePortRangeCommand{
+		PortList: commands.CreatePortRangePortList{ID: "354cd3ef-bbe1-4d58-859d-21b8d0c046c4"},
 		Start:    "777",
 		End:      "779",
 		Type:     "TCP",
@@ -116,7 +116,7 @@ func TestDeletePortRange(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.DeletePortRangeCommand{
+	cmd := &commands.DeletePortRangeCommand{
 		PortRangeID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
 	}
 	resp, err := cli.DeletePortRange(cmd)

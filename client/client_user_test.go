@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/commands"
 )
 
 func TestCreateUser(t *testing.T) {
@@ -13,10 +13,10 @@ func TestCreateUser(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &gmp.CreateUserCommand{
+	cmd := &commands.CreateUserCommand{
 		Name:     "testuser",
 		Password: "testpass",
-		Roles:    []gmp.CreateUserRole{{ID: "role-uuid"}},
+		Roles:    []commands.CreateUserRole{{ID: "role-uuid"}},
 	}
 	resp, err := cli.CreateUser(cmd)
 	if err != nil {
@@ -30,7 +30,7 @@ func TestCreateUser(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &gmp.CreateUserCommand{
+	cmdFail := &commands.CreateUserCommand{
 		Name:     "",
 		Password: "",
 	}
@@ -50,16 +50,16 @@ func TestModifyUser(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &gmp.ModifyUserCommand{
+	cmd := &commands.ModifyUserCommand{
 		UserID:  "user-uuid",
 		Name:    "testuser",
 		NewName: "newuser",
 		Comment: "Updated user",
-		Password: &gmp.ModifyUserPassword{
+		Password: &commands.ModifyUserPassword{
 			Modify: "1",
 			Text:   "newpass",
 		},
-		Roles: []gmp.CreateUserRole{{ID: "role-uuid"}},
+		Roles: []commands.CreateUserRole{{ID: "role-uuid"}},
 	}
 	resp, err := cli.ModifyUser(cmd)
 	if err != nil {
@@ -70,7 +70,7 @@ func TestModifyUser(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &gmp.ModifyUserCommand{
+	cmdFail := &commands.ModifyUserCommand{
 		UserID: "",
 		Name:   "",
 	}
@@ -90,7 +90,7 @@ func TestGetUsers(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &gmp.GetUsersCommand{}
+	cmd := &commands.GetUsersCommand{}
 	resp, err := cli.GetUsers(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetUsers: %s", err)
@@ -103,7 +103,7 @@ func TestGetUsers(t *testing.T) {
 	}
 
 	// Failure case (simulate by using a special test flag)
-	cmdFail := &gmp.GetUsersCommand{}
+	cmdFail := &commands.GetUsersCommand{}
 	respFail, err := cli.GetUsers(cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetUsers (fail): %s", err)
@@ -121,7 +121,7 @@ func TestDeleteUser(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &gmp.DeleteUserCommand{
+	cmd := &commands.DeleteUserCommand{
 		Name: "foobar",
 	}
 	resp, err := cli.DeleteUser(cmd)
@@ -133,7 +133,7 @@ func TestDeleteUser(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &gmp.DeleteUserCommand{
+	cmdFail := &commands.DeleteUserCommand{
 		Name: "",
 	}
 	respFail, err := cli.DeleteUser(cmdFail)

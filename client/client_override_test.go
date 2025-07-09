@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/commands"
 )
 
 func TestCreateOverride(t *testing.T) {
@@ -12,9 +12,9 @@ func TestCreateOverride(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.CreateOverrideCommand{
+	cmd := &commands.CreateOverrideCommand{
 		Text:      "This is actually of little concern.",
-		NVT:       gmp.CreateOverrideNVT{OID: "1.3.6.1.4.1.25623.1.0.10330"},
+		NVT:       commands.CreateOverrideNVT{OID: "1.3.6.1.4.1.25623.1.0.10330"},
 		NewThreat: "Low",
 		Result:    "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 	}
@@ -39,7 +39,7 @@ func TestDeleteOverride(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.DeleteOverrideCommand{
+	cmd := &commands.DeleteOverrideCommand{
 		OverrideID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
 		Ultimate:   "0",
 	}
@@ -61,7 +61,7 @@ func TestGetOverrides(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetOverridesCommand{
+	cmd := &commands.GetOverridesCommand{
 		OverrideID: "b76b81a7-9df8-42df-afff-baa9d4620128",
 	}
 	resp, err := cli.GetOverrides(cmd)
@@ -88,7 +88,7 @@ func TestModifyOverride(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.ModifyOverrideCommand{
+	cmd := &commands.ModifyOverrideCommand{
 		OverrideID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 		Text:       "This issue is less important in our setup.",
 		NewThreat:  "Low",

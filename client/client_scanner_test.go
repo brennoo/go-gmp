@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/commands"
 )
 
 func TestCreateScanner(t *testing.T) {
@@ -12,13 +12,13 @@ func TestCreateScanner(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.CreateScannerCommand{
+	cmd := &commands.CreateScannerCommand{
 		Name:  "Default Scanner",
 		Host:  "localhost",
 		Port:  "9391",
 		Type:  "2",
 		CAPub: "dummy-ca-pub",
-		Credential: &gmp.CreateScannerCredential{
+		Credential: &commands.CreateScannerCredential{
 			ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 		},
 	}
@@ -40,7 +40,7 @@ func TestGetScanners(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.GetScannersCommand{}
+	cmd := &commands.GetScannersCommand{}
 	cmd.ScannerID = "ee0311e7-3247-4425-bb9c-866d59f1e0e9"
 	resp, err := cli.GetScanners(cmd)
 	if err != nil {
@@ -58,13 +58,13 @@ func TestCreateScannerFail(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.CreateScannerCommand{
+	cmd := &commands.CreateScannerCommand{
 		Name:  "",
 		Host:  "localhost",
 		Port:  "9391",
 		Type:  "2",
 		CAPub: "dummy-ca-pub",
-		Credential: &gmp.CreateScannerCredential{
+		Credential: &commands.CreateScannerCredential{
 			ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 		},
 	}
@@ -83,7 +83,7 @@ func TestModifyScanner(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.ModifyScannerCommand{
+	cmd := &commands.ModifyScannerCommand{
 		ScannerID: "scanner-uuid",
 		Name:      "Updated Scanner",
 	}
@@ -105,7 +105,7 @@ func TestModifyScannerFail(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.ModifyScannerCommand{
+	cmd := &commands.ModifyScannerCommand{
 		ScannerID: "",
 		Name:      "",
 	}
@@ -127,7 +127,7 @@ func TestDeleteScanner(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.DeleteScannerCommand{ScannerID: "scanner-uuid", Ultimate: "1"}
+	cmd := &commands.DeleteScannerCommand{ScannerID: "scanner-uuid", Ultimate: "1"}
 	resp, err := cli.DeleteScanner(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
@@ -146,7 +146,7 @@ func TestVerifyScanner(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &gmp.VerifyScannerCommand{ScannerID: "scanner-uuid"}
+	cmd := &commands.VerifyScannerCommand{ScannerID: "scanner-uuid"}
 	resp, err := cli.VerifyScanner(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
