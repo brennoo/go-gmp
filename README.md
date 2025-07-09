@@ -5,6 +5,9 @@
 
 A modern (Go) client for the Greenbone Management Protocol (GMP), used to interact with Greenbone/OpenVAS vulnerability management servers.
 
+> [!CAUTION]
+> I'm still figuring out the best structure, naming so expect some breaking changes/refactors
+
 ## Features
 
 - Full GMP protocol coverage (commands for tasks, targets, reports, assets, credentials, etc.)
@@ -35,8 +38,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/brennoo/go-gmp"
 	"github.com/brennoo/go-gmp/client"
+	"github.com/brennoo/go-gmp/commands"
 	"github.com/brennoo/go-gmp/connections"
 )
 
@@ -52,8 +55,8 @@ func main() {
 	cli := client.New(conn)
 
 	// Authenticate
-	authResp, err := cli.Authenticate(&gmp.AuthenticateCommand{
-		Credentials: gmp.AuthenticateCredentials{
+	authResp, err := cli.Authenticate(&commands.AuthenticateCommand{
+		Credentials: commands.AuthenticateCredentials{
 			Username: "admin",
 			Password: "secret",
 		},
@@ -67,7 +70,7 @@ func main() {
 	fmt.Printf("Authenticated! Role: %s, Timezone: %s\n", authResp.Role, authResp.Timezone)
 
 	// Basic query: get tasks
-	tasksResp, err := cli.GetTasks(&gmp.GetTasksCommand{})
+	tasksResp, err := cli.GetTasks(&commands.GetTasksCommand{})
 	if err != nil {
 		log.Fatalf("get tasks failed: %v", err)
 	}
@@ -94,7 +97,7 @@ GMP supports powerful filtering for most list/get commands. You can use the `Fil
 
 ```go
 // Get only running tasks, sorted by name
-tasksResp, err := cli.GetTasks(&gmp.GetTasksCommand{
+tasksResp, err := cli.GetTasks(&commands.GetTasksCommand{
 	Filter: "status=running sort=name",
 })
 if err != nil {
@@ -117,7 +120,7 @@ For large result sets, use `Filter` with `rows` and `first`:
 
 ```go
 // Get the first 10 results for a task
-resultsResp, err := cli.GetResults(&gmp.GetResultsCommand{
+resultsResp, err := cli.GetResults(&commands.GetResultsCommand{
 	TaskID: "<task-id>",
 	Filter: "rows=10 first=1",
 })
@@ -137,7 +140,7 @@ for _, result := range resultsResp.Result {
 All client methods return a response and an error. If the server returns a protocol error, it is mapped to a Go error:
 
 ```go
-resp, err := cli.DeleteTask(&gmp.DeleteTaskCommand{TaskID: "bad-id"})
+resp, err := cli.DeleteTask(&commands.DeleteTaskCommand{TaskID: "bad-id"})
 if err != nil {
 	log.Printf("delete failed: %v", err)
 }
