@@ -3,7 +3,7 @@ package commands
 
 import "encoding/xml"
 
-// CreateCredential represents a create_credential command request to GMP.
+// CreateCredential represents a GMP create_credential command request.
 type CreateCredential struct {
 	XMLName       xml.Name                 `xml:"create_credential"`
 	Name          string                   `xml:"name"`
@@ -28,11 +28,21 @@ type CreateCredentialKDCs struct {
 	KDC []string `xml:"kdc"`
 }
 
+// NewCredentialKDCs creates a new CreateCredentialKDCs with the given KDCs.
+func NewCredentialKDCs(kdcs ...string) *CreateCredentialKDCs {
+	return &CreateCredentialKDCs{KDC: kdcs}
+}
+
 // CreateCredentialKey represents the <key> element for key-based credentials in the GMP protocol.
 type CreateCredentialKey struct {
 	Phrase  string `xml:"phrase,omitempty"`
 	Private string `xml:"private,omitempty"`
 	Public  string `xml:"public,omitempty"`
+}
+
+// NewCredentialKey creates a new CreateCredentialKey.
+func NewCredentialKey(phrase, private, public string) *CreateCredentialKey {
+	return &CreateCredentialKey{Phrase: phrase, Private: private, Public: public}
 }
 
 // CreateCredentialPrivacy represents SNMP privacy settings (<privacy> element) in the GMP protocol.
@@ -41,7 +51,12 @@ type CreateCredentialPrivacy struct {
 	Password  string `xml:"password,omitempty"`
 }
 
-// CreateCredentialResponse represents a create_credential command response from GMP.
+// NewCredentialPrivacy creates a new CreateCredentialPrivacy.
+func NewCredentialPrivacy(algorithm, password string) *CreateCredentialPrivacy {
+	return &CreateCredentialPrivacy{Algorithm: algorithm, Password: password}
+}
+
+// CreateCredentialResponse represents a GMP create_credential command response.
 type CreateCredentialResponse struct {
 	XMLName    xml.Name `xml:"create_credential_response"`
 	Status     string   `xml:"status,attr"`
