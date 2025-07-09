@@ -417,3 +417,9 @@ type GetResultsCount struct {
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }
+
+type result struct {
+	ID string `xml:"id,attr"`
+}
+
+func NewResultID(id string) *result { return &result{ID: id} }

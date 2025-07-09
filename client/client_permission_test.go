@@ -15,13 +15,14 @@ func TestCreatePermission(t *testing.T) {
 	// Success case
 	cmd := &commands.CreatePermission{
 		Name: "get_targets",
-		Subject: &commands.CreatePermissionSubject{
-			ID:   "66abe5ce-c011-11e3-b96e-406186ea4fc5",
-			Type: "user",
-		},
-		Resource: &commands.CreatePermissionResource{
-			ID: "b493b7a8-7489-11df-a3ec-002264764cea",
-		},
+		Subject: commands.NewPermissionSubject(
+			"66abe5ce-c011-11e3-b96e-406186ea4fc5",
+			"user",
+		),
+		Resource: commands.NewPermissionResource(
+			"b493b7a8-7489-11df-a3ec-002264764cea",
+			"target",
+		),
 	}
 	resp, err := cli.CreatePermission(cmd)
 	if err != nil {
@@ -36,8 +37,9 @@ func TestCreatePermission(t *testing.T) {
 
 	// Failure case
 	cmdFail := &commands.CreatePermission{
-		Name:    "",
-		Subject: &commands.CreatePermissionSubject{},
+		Name:     "",
+		Subject:  commands.NewPermissionSubject("", ""),
+		Resource: commands.NewPermissionResource("", ""),
 	}
 	respFail, err := cli.CreatePermission(cmdFail)
 	if err != nil {
@@ -57,10 +59,10 @@ func TestModifyPermission(t *testing.T) {
 	// Success case
 	cmd := &commands.ModifyPermission{
 		PermissionID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
-		Subject: &commands.CreatePermissionSubject{
-			ID:   "76e47468-c095-11e3-9285-406186ea4fc5",
-			Type: "user",
-		},
+		Subject: commands.NewPermissionSubject(
+			"76e47468-c095-11e3-9285-406186ea4fc5",
+			"user",
+		),
 	}
 	resp, err := cli.ModifyPermission(cmd)
 	if err != nil {
@@ -76,7 +78,7 @@ func TestModifyPermission(t *testing.T) {
 	// Failure case
 	cmdFail := &commands.ModifyPermission{
 		PermissionID: "",
-		Subject:      &commands.CreatePermissionSubject{},
+		Subject:      commands.NewPermissionSubject("", ""),
 	}
 	respFail, err := cli.ModifyPermission(cmdFail)
 	if err != nil {

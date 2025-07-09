@@ -14,7 +14,7 @@ func TestCreateOverride(t *testing.T) {
 
 	cmd := &commands.CreateOverride{
 		Text:      "This is actually of little concern.",
-		NVT:       commands.CreateOverrideNVT{OID: "1.3.6.1.4.1.25623.1.0.10330"},
+		NVT:       commands.NewNVTOID("1.3.6.1.4.1.25623.1.0.10330"),
 		NewThreat: "Low",
 		Result:    "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 	}

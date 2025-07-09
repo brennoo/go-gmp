@@ -49,3 +49,9 @@ type NVT struct {
 	Epss             string `xml:"epss,omitempty"`
 	Preferences      string `xml:"preferences,omitempty"`
 }
+
+type nvt struct {
+	OID string `xml:"oid,attr"`
+}
+
+func NewNVTOID(oid string) *nvt { return &nvt{OID: oid} }
