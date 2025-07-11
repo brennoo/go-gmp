@@ -180,9 +180,3 @@ type TaskReport struct {
 	ScanRunStatus string `xml:"scan_run_status,omitempty"`
 	Severity      string `xml:"severity,omitempty"`
 }
-
-type task struct {
-	ID string `xml:"id,attr"`
-}
-
-func NewTaskID(id string) *task { return &task{ID: id} }
