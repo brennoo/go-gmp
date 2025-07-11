@@ -22,7 +22,7 @@ type CreateTarget struct {
 	ReverseLookupOnly    bool              `xml:"reverse_lookup_only,omitempty"`
 	ReverseLookupUnify   bool              `xml:"reverse_lookup_unify,omitempty"`
 	PortRange            string            `xml:"port_range,omitempty"`
-	PortList             *TargetPortList `xml:"port_list,omitempty"`
+	PortList             *TargetPortList   `xml:"port_list,omitempty"`
 	Krb5Credential       *TargetCredential `xml:"krb5_credential,omitempty"`
 	SSHElevateCredential *TargetCredential `xml:"ssh_elevate_credential,omitempty"`
 	AllowSimultaneousIPs bool              `xml:"allow_simultaneous_ips,omitempty"`

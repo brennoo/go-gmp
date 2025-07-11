@@ -1,0 +1,9 @@
+release:
+  github:
+    owner: brennoo
+    name: go-gmp
+
+builds: []
+
+changelog:
+  use: github 
