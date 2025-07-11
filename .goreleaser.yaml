@@ -1,9 +1,12 @@
+version: 2
+
 release:
   github:
     owner: brennoo
     name: go-gmp
 
-builds: []
+builds:
+  - skip: true
 
 changelog:
   use: github 
