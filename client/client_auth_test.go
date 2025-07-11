@@ -12,9 +12,12 @@ func TestAuthenticate(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.AuthenticateCommand{}
-	cmd.Credentials.Username = "openvas"
-	cmd.Credentials.Password = "123"
+	cmd := &commands.Authenticate{
+		Credentials: &commands.AuthenticateCredentials{
+			Username: "openvas",
+			Password: "123",
+		},
+	}
 	resp, err := cli.Authenticate(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during Authenticate: %s", err)
@@ -31,7 +34,7 @@ func TestDescribeAuth(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.DescribeAuthCommand{}
+	cmd := &commands.DescribeAuth{}
 	resp, err := cli.DescribeAuth(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during DescribeAuth: %s", err)
@@ -66,10 +69,10 @@ func TestModifyAuth(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.ModifyAuthCommand{
-		Group: commands.ModifyAuthGroup{
+	cmd := &commands.ModifyAuth{
+		Group: commands.AuthGroup{
 			Name: "method:file",
-			Settings: []commands.AuthConfSetting{
+			Settings: []commands.AuthSetting{
 				{Key: "enable", Value: "true"},
 				{Key: "order", Value: "1"},
 			},

@@ -17,7 +17,7 @@ func main() {
 	defer conn.Close()
 
 	cli := client.New(conn)
-	resp, err := cli.GetVersion(&commands.GetVersionCommand{})
+	resp, err := cli.GetVersion(&commands.GetVersion{})
 	if err != nil {
 		log.Fatalf("get version failed: %v", err)
 	}

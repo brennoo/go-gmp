@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// ResumeTaskCommand represents a resume_task command request.
-type ResumeTaskCommand struct {
+// ResumeTask represents a resume_task command request.
+type ResumeTask struct {
 	XMLName xml.Name `xml:"resume_task"`
 	TaskID  string   `xml:"task_id,attr"`
 }

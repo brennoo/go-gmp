@@ -4,8 +4,8 @@ import (
 	"encoding/xml"
 )
 
-// DeleteTargetCommand represents a delete_target command request.
-type DeleteTargetCommand struct {
+// DeleteTarget represents a delete_target command request.
+type DeleteTarget struct {
 	XMLName  xml.Name `xml:"delete_target"`
 	TargetID string   `xml:"target_id,attr,omitempty"`
 	Ultimate bool     `xml:"ultimate,attr,omitempty"`

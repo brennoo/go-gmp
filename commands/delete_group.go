@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// DeleteGroupCommand represents a delete_group command request.
-type DeleteGroupCommand struct {
+// DeleteGroup represents a delete_group command request.
+type DeleteGroup struct {
 	XMLName  xml.Name `xml:"delete_group"`
 	GroupID  string   `xml:"group_id,attr"`
 	Ultimate string   `xml:"ultimate,attr"`

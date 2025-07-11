@@ -12,11 +12,11 @@ func TestCreateAsset(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.CreateAssetCommand{
-		Asset: &commands.CreateAssetAsset{
-			Name:    "Localhost",
+	cmd := &commands.CreateAsset{
+		Asset: &commands.AssetInput{
+			Name:    "Test Asset",
+			Comment: "A test asset",
 			Type:    "host",
-			Comment: "Test asset",
 		},
 	}
 	resp, err := cli.CreateAsset(cmd)
@@ -40,15 +40,13 @@ func TestCreateAssetWithReport(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.CreateAssetCommand{
-		Report: &commands.CreateAssetReport{
-			ID: "report-uuid",
-			Filter: &commands.CreateAssetReportFilter{
-				Term: "min_qod=70",
-			},
+	cmdWithReport := &commands.CreateAsset{
+		Report: &commands.AssetReport{
+			ID:     "report-id",
+			Filter: &commands.AssetFilter{Term: "term"},
 		},
 	}
-	resp, err := cli.CreateAsset(cmd)
+	resp, err := cli.CreateAsset(cmdWithReport)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateAsset (report): %s", err)
 	}
@@ -69,7 +67,7 @@ func TestModifyAsset(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.ModifyAssetCommand{
+	cmd := &commands.ModifyAsset{
 		AssetID: "914b59f8-25f5-4c8f-832c-2379cd625236",
 		Comment: "New comment",
 	}
@@ -91,7 +89,7 @@ func TestGetAssets(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetAssetsCommand{
+	cmd := &commands.GetAssets{
 		AssetID: "b493b7a8-7489-11df-a3ec-002264764cea",
 	}
 	resp, err := cli.GetAssets(cmd)
@@ -122,7 +120,7 @@ func TestDeleteAsset(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.DeleteAssetCommand{
+	cmd := &commands.DeleteAsset{
 		AssetID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
 	}
 	resp, err := cli.DeleteAsset(cmd)

@@ -2,20 +2,14 @@ package commands
 
 import "encoding/xml"
 
-// ModifyReportFormatCommand represents a modify_report_format command request.
-type ModifyReportFormatCommand struct {
-	XMLName        xml.Name                 `xml:"modify_report_format"`
-	ReportFormatID string                   `xml:"report_format_id,attr"`
-	Active         *bool                    `xml:"active,omitempty"`
-	Name           string                   `xml:"name,omitempty"`
-	Summary        string                   `xml:"summary,omitempty"`
-	Param          *ModifyReportFormatParam `xml:"param,omitempty"`
-}
-
-// ModifyReportFormatParam represents the <param> element for modify_report_format.
-type ModifyReportFormatParam struct {
-	Name  string `xml:"name"`
-	Value string `xml:"value,omitempty"`
+// ModifyReportFormat represents a modify_report_format command request.
+type ModifyReportFormat struct {
+	XMLName        xml.Name           `xml:"modify_report_format"`
+	ReportFormatID string             `xml:"report_format_id,attr"`
+	Active         *bool              `xml:"active,omitempty"`
+	Name           string             `xml:"name,omitempty"`
+	Summary        string             `xml:"summary,omitempty"`
+	Param          *ReportFormatParam `xml:"param,omitempty"`
 }
 
 // ModifyReportFormatResponse represents a modify_report_format command response.

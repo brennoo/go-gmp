@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// ModifySettingCommand represents a modify_setting command request.
-type ModifySettingCommand struct {
+// ModifySetting represents a modify_setting command request.
+type ModifySetting struct {
 	XMLName   xml.Name `xml:"modify_setting"`
 	SettingID string   `xml:"setting_id,attr,omitempty"`
 	Name      string   `xml:"name"`

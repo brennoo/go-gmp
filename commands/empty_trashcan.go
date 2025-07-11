@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// EmptyTrashcanCommand represents an empty_trashcan command request.
-type EmptyTrashcanCommand struct {
+// EmptyTrashcan represents an empty_trashcan command request.
+type EmptyTrashcan struct {
 	XMLName xml.Name `xml:"empty_trashcan"`
 }
 

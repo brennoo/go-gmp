@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// DeleteTicketCommand represents a delete_ticket command request.
-type DeleteTicketCommand struct {
+// DeleteTicket represents a delete_ticket command request.
+type DeleteTicket struct {
 	XMLName  xml.Name `xml:"delete_ticket"`
 	TicketID string   `xml:"ticket_id,attr"`
 	Ultimate string   `xml:"ultimate,attr"`

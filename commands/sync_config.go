@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// SyncConfigCommand represents a sync_config command request.
-type SyncConfigCommand struct {
+// SyncConfig represents a sync_config command request.
+type SyncConfig struct {
 	XMLName xml.Name `xml:"sync_config"`
 }
 

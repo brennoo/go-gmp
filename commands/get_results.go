@@ -2,11 +2,10 @@ package commands
 
 import (
 	"encoding/xml"
-	"time"
 )
 
-// GetResultsCommand represents a get_results command request.
-type GetResultsCommand struct {
+// GetResults represents a get_results command request.
+type GetResults struct {
 	XMLName          xml.Name `xml:"get_results"`
 	ResultID         string   `xml:"result_id,attr,omitempty"`
 	Filter           string   `xml:"filter,attr,omitempty"`
@@ -20,26 +19,27 @@ type GetResultsCommand struct {
 
 // GetResultsResponse represents a get_results command response.
 type GetResultsResponse struct {
-	XMLName     xml.Name          `xml:"get_results_response"`
-	Status      string            `xml:"status,attr"`
-	StatusText  string            `xml:"status_text,attr"`
-	Results     []Result          `xml:"result"`
-	Filters     GetResultsFilters `xml:"filters"`
-	Sort        GetResultsSort    `xml:"sort"`
-	ResultsMeta GetResultsMeta    `xml:"results"`
-	ResultCount *GetResultsCount  `xml:"result_count,omitempty"`
+	XMLName    xml.Name       `xml:"get_results_response"`
+	Status     string         `xml:"status,attr"`
+	StatusText string         `xml:"status_text,attr"`
+	Results    []Result       `xml:"result"`
+	Filters    ResultsFilters `xml:"filters"`
+	Sort       ResultsSort    `xml:"sort"`
+	Meta       ResultsMeta    `xml:"results"`
+	Count      *ResultsCount  `xml:"result_count,omitempty"`
 }
 
+// Result represents a single result element in the get_results response.
 type Result struct {
 	ID               string           `xml:"id,attr"`
 	Name             string           `xml:"name"`
 	Owner            ResultOwner      `xml:"owner"`
 	Comment          string           `xml:"comment"`
-	CreationTime     time.Time        `xml:"creation_time"`
-	ModificationTime time.Time        `xml:"modification_time"`
+	CreationTime     string           `xml:"creation_time"`
+	ModificationTime string           `xml:"modification_time"`
 	UserTags         *ResultUserTags  `xml:"user_tags,omitempty"`
-	Report           *ResultReport    `xml:"report,omitempty"`
-	Task             *ResultTask      `xml:"task,omitempty"`
+	Report           *ResultReportRef `xml:"report,omitempty"`
+	Task             *ResultTaskRef   `xml:"task,omitempty"`
 	Host             ResultHost       `xml:"host"`
 	Port             string           `xml:"port"`
 	Path             *string          `xml:"path,omitempty"`
@@ -59,45 +59,49 @@ type Result struct {
 	Tickets          *ResultTickets   `xml:"tickets,omitempty"`
 }
 
+// ResultOwner represents the owner of a result.
 type ResultOwner struct {
 	Name string `xml:"name"`
 }
 
+// ResultUserTags represents user tags attached to a result.
 type ResultUserTags struct {
-	Count int                 `xml:"count"`
-	Tag   []ResultUserTagsTag `xml:"tag"`
+	Count int         `xml:"count"`
+	Tag   []ResultTag `xml:"tag"`
 }
 
-type ResultUserTagsTag struct {
+// ResultTag represents a single user tag.
+type ResultTag struct {
 	ID      string `xml:"id,attr"`
 	Name    string `xml:"name"`
 	Value   string `xml:"value"`
 	Comment string `xml:"comment"`
 }
 
-type ResultReport struct {
+// ResultReportRef represents a reference to a report.
+type ResultReportRef struct {
 	ID string `xml:"id,attr"`
 }
 
-type ResultTask struct {
+// ResultTaskRef represents a reference to a task.
+type ResultTaskRef struct {
 	ID   string `xml:"id,attr"`
 	Name string `xml:"name"`
 }
 
+// ResultHost represents a host element in a result.
 type ResultHost struct {
 	Value    string          `xml:",chardata"`
 	Asset    ResultHostAsset `xml:"asset"`
 	Hostname string          `xml:"hostname"`
 }
 
+// ResultHostAsset represents an asset attached to a host.
 type ResultHostAsset struct {
 	AssetID string `xml:"asset_id,attr"`
 }
 
-type ResultNVTSeverities struct {
-	Score float32 `xml:"score,attr"`
-}
-
+// ResultNVT represents a network vulnerability test (NVT) in a result.
 type ResultNVT struct {
 	OID        string              `xml:"oid,attr"`
 	Name       string              `xml:"name"`
@@ -111,36 +115,48 @@ type ResultNVT struct {
 	Refs       ResultNVTRefs       `xml:"refs"`
 }
 
+// ResultNVTSeverities represents severity information for an NVT.
+type ResultNVTSeverities struct {
+	Score float32 `xml:"score,attr"`
+}
+
+// ResultNVTEPSS represents EPSS information for an NVT.
 type ResultNVTEPSS struct {
 	MaxSeverity ResultNVTEPSSInfo `xml:"max_severity"`
 	MaxEPSS     ResultNVTEPSSInfo `xml:"max_epss"`
 }
 
+// ResultNVTEPSSInfo represents detailed EPSS info for an NVT.
 type ResultNVTEPSSInfo struct {
 	Score      float32          `xml:"score"`
 	Percentile float32          `xml:"percentile"`
 	CVE        ResultNVTEPSSCVE `xml:"cve"`
 }
 
+// ResultNVTEPSSCVE represents a CVE reference in EPSS info.
 type ResultNVTEPSSCVE struct {
 	ID       string   `xml:"id,attr"`
 	Severity *float32 `xml:"severity,omitempty"`
 }
 
+// ResultNVTRefs represents references for an NVT.
 type ResultNVTRefs struct {
-	Ref []ResultNVTRefsRef `xml:"ref"`
+	Ref []ResultNVTRef `xml:"ref"`
 }
 
-type ResultNVTRefsRef struct {
+// ResultNVTRef represents a single reference for an NVT.
+type ResultNVTRef struct {
 	ID   string `xml:"id,attr"`
 	Type string `xml:"type,attr"`
 }
 
+// ResultQOD represents Quality of Detection information.
 type ResultQOD struct {
 	Value int    `xml:"value"`
 	Type  string `xml:"type"`
 }
 
+// ResultDelta represents a delta element in a result.
 type ResultDelta struct {
 	Value     string               `xml:",chardata"`
 	Result    *Result              `xml:"result"`
@@ -149,271 +165,295 @@ type ResultDelta struct {
 	Overrides ResultDeltaOverrides `xml:"overrides"`
 }
 
+// ResultDeltaNotes represents notes in a delta.
 type ResultDeltaNotes struct {
-	Note []Note `xml:"note"`
+	Note []ResultNote `xml:"note"`
 }
 
-type Note struct {
-	ID               string          `xml:"id,attr"`
-	Permissions      NotePermissions `xml:"permissions"`
-	Owner            NoteOwner       `xml:"owner"`
-	NVT              NoteNVT         `xml:"nvt"`
-	Text             NoteText        `xml:"text"`
-	CreationTime     time.Time       `xml:"creation_time"`
-	ModificationTime time.Time       `xml:"modification_time"`
-	Writable         bool            `xml:"writable"`
-	InUse            bool            `xml:"in_use"`
-	Active           bool            `xml:"active"`
-	Orphan           bool            `xml:"orphan"`
-	UserTags         NoteUserTags    `xml:"user_tags"`
-	Hosts            string          `xml:"hosts"`
-	Port             string          `xml:"port"`
-	Severity         string          `xml:"severity"`
-	Task             NoteTask        `xml:"task"`
-	EndTime          string          `xml:"end_time"`
-	Result           NoteResult      `xml:"result"`
+// ResultNote represents a note attached to a result or delta.
+type ResultNote struct {
+	ID               string             `xml:"id,attr"`
+	Permissions      ResultNotePerms    `xml:"permissions"`
+	Owner            ResultNoteOwner    `xml:"owner"`
+	NVT              ResultNoteNVT      `xml:"nvt"`
+	Text             ResultNoteText     `xml:"text"`
+	CreationTime     string             `xml:"creation_time"`
+	ModificationTime string             `xml:"modification_time"`
+	Writable         string             `xml:"writable"`
+	InUse            string             `xml:"in_use"`
+	Active           string             `xml:"active"`
+	Orphan           string             `xml:"orphan"`
+	UserTags         ResultNoteUserTags `xml:"user_tags"`
+	Hosts            string             `xml:"hosts"`
+	Port             string             `xml:"port"`
+	Severity         string             `xml:"severity"`
+	Task             ResultNoteTask     `xml:"task"`
+	EndTime          string             `xml:"end_time"`
+	Result           ResultNoteResult   `xml:"result"`
 }
 
-type NotePermissions struct {
-	Permission []NotePermissionsPermission `xml:"permission"`
+// ResultNotePerms represents permissions for a note.
+type ResultNotePerms struct {
+	Permission []ResultNotePerm `xml:"permission"`
 }
 
-type NotePermissionsPermission struct {
+// ResultNotePerm represents a single permission for a note.
+type ResultNotePerm struct {
 	Name string `xml:"name"`
 }
 
-type NoteOwner struct {
+// ResultNoteOwner represents the owner of a note.
+type ResultNoteOwner struct {
 	Name string `xml:"name"`
 }
 
-type NoteNVT struct {
+// ResultNoteNVT represents an NVT in a note.
+type ResultNoteNVT struct {
 	OID  string `xml:"oid,attr"`
 	Name string `xml:"name"`
 	Type string `xml:"type"`
 }
 
-type NoteText struct {
+// ResultNoteText represents the text of a note.
+type ResultNoteText struct {
 	Value   string `xml:",chardata"`
-	Excerpt bool   `xml:"excerpt,attr"`
+	Excerpt string `xml:"excerpt,attr"`
 }
 
-type NoteUserTags struct {
-	Count int               `xml:"count"`
-	Tag   []NoteUserTagsTag `xml:"tag"`
+// ResultNoteUserTags represents user tags in a note.
+type ResultNoteUserTags struct {
+	Count int             `xml:"count"`
+	Tag   []ResultNoteTag `xml:"tag"`
 }
 
-type NoteUserTagsTag struct {
+// ResultNoteTag represents a single tag in a note.
+type ResultNoteTag struct {
 	ID      string `xml:"id,attr"`
 	Name    string `xml:"name"`
 	Value   string `xml:"value"`
 	Comment string `xml:"comment"`
 }
 
-type NoteTask struct {
+// ResultNoteTask represents a task in a note.
+type ResultNoteTask struct {
 	ID    string `xml:"id,attr"`
 	Name  string `xml:"name"`
-	Trash bool   `xml:"trash"`
+	Trash string `xml:"trash"`
 }
 
-type NoteResult struct {
+// ResultNoteResult represents a result reference in a note.
+type ResultNoteResult struct {
 	ID          string         `xml:"id,attr"`
-	Host        NoteResultHost `xml:"host"`
+	Host        ResultNoteHost `xml:"host"`
 	Port        string         `xml:"port"`
-	NVT         NoteResultNVT  `xml:"nvt"`
+	NVT         ResultNoteNVT  `xml:"nvt"`
 	Severity    string         `xml:"severity"`
 	Threat      string         `xml:"threat"`
-	QOD         NoteResultQOD  `xml:"qod"`
+	QOD         ResultNoteQOD  `xml:"qod"`
 	Description string         `xml:"description"`
 }
 
-type NoteResultHost struct {
-	Value string              `xml:",chardata"`
-	Asset NoteResultHostAsset `xml:"asset"`
+// ResultNoteHost represents a host in a note result.
+type ResultNoteHost struct {
+	Value string          `xml:",chardata"`
+	Asset ResultNoteAsset `xml:"asset"`
 }
 
-type NoteResultHostAsset struct {
+// ResultNoteAsset represents an asset in a note host.
+type ResultNoteAsset struct {
 	AssetID string `xml:"asset_id,attr"`
 }
 
-type NoteResultNVT struct {
-	OID      string `xml:"oid,attr"`
-	Name     string `xml:"name"`
-	Type     string `xml:"type"`
-	CVSSBase string `xml:"cvss_base"`
-	CVE      string `xml:"cve"`
-	BID      int    `xml:"bid"`
-}
-
-type NoteResultQOD struct {
+// ResultNoteQOD represents QOD in a note result.
+type ResultNoteQOD struct {
 	Value int    `xml:"value"`
 	Type  string `xml:"type"`
 }
 
+// ResultDeltaOverrides represents overrides in a delta.
 type ResultDeltaOverrides struct {
-	Override []Override `xml:"override"`
+	Override []ResultOverride `xml:"override"`
 }
 
-type Override struct {
-	ID               string              `xml:"id,attr"`
-	Permissions      OverridePermissions `xml:"permissions"`
-	Owner            OverrideOwner       `xml:"owner"`
-	NVT              OverrideNVT         `xml:"nvt"`
-	CreationTime     time.Time           `xml:"creation_time"`
-	ModificationTime time.Time           `xml:"modification_time"`
-	Writable         bool                `xml:"writable"`
-	InUse            bool                `xml:"in_use"`
-	Active           bool                `xml:"active"`
-	Text             OverrideText        `xml:"text"`
-	Threat           string              `xml:"threat"`
-	Severity         string              `xml:"severity"`
-	NewThreat        string              `xml:"new_threat"`
-	NewSeverity      string              `xml:"new_severity"`
-	Orphan           bool                `xml:"orphan"`
-	UserTags         OverrideUserTags    `xml:"user_tags"`
-	Hosts            string              `xml:"hosts"`
-	Port             string              `xml:"port"`
-	Task             OverrideTask        `xml:"task"`
-	EndTime          string              `xml:"end_time"`
-	Result           OverrideResult      `xml:"result"`
+// ResultOverride represents an override in a result or delta.
+type ResultOverride struct {
+	ID               string                 `xml:"id,attr"`
+	Permissions      ResultOverridePerms    `xml:"permissions"`
+	Owner            ResultOverrideOwner    `xml:"owner"`
+	NVT              ResultOverrideNVT      `xml:"nvt"`
+	CreationTime     string                 `xml:"creation_time"`
+	ModificationTime string                 `xml:"modification_time"`
+	Writable         string                 `xml:"writable"`
+	InUse            string                 `xml:"in_use"`
+	Active           string                 `xml:"active"`
+	Text             ResultOverrideText     `xml:"text"`
+	Threat           string                 `xml:"threat"`
+	Severity         string                 `xml:"severity"`
+	NewThreat        string                 `xml:"new_threat"`
+	NewSeverity      string                 `xml:"new_severity"`
+	Orphan           string                 `xml:"orphan"`
+	UserTags         ResultOverrideUserTags `xml:"user_tags"`
+	Hosts            string                 `xml:"hosts"`
+	Port             string                 `xml:"port"`
+	Task             ResultOverrideTask     `xml:"task"`
+	EndTime          string                 `xml:"end_time"`
+	Result           ResultOverrideResult   `xml:"result"`
 }
 
-type OverridePermissions struct {
-	Permission []OverridePermissionsPermission `xml:"permission"`
+// ResultOverridePerms represents permissions for an override.
+type ResultOverridePerms struct {
+	Permission []ResultOverridePerm `xml:"permission"`
 }
 
-type OverridePermissionsPermission struct {
+// ResultOverridePerm represents a single permission for an override.
+type ResultOverridePerm struct {
 	Name string `xml:"name"`
 }
 
-type OverrideOwner struct {
+// ResultOverrideOwner represents the owner of an override.
+type ResultOverrideOwner struct {
 	Name string `xml:"name"`
 }
 
-type OverrideNVT struct {
+// ResultOverrideNVT represents an NVT in an override.
+type ResultOverrideNVT struct {
 	OID  string `xml:"oid,attr"`
 	Name string `xml:"name"`
 	Type string `xml:"type"`
 }
 
-type OverrideText struct {
+// ResultOverrideText represents the text of an override.
+type ResultOverrideText struct {
 	Text    string `xml:",chardata"`
-	Excerpt bool   `xml:"excerpt,attr"`
+	Excerpt string `xml:"excerpt,attr"`
 }
 
-type OverrideUserTags struct {
-	Count int                   `xml:"count"`
-	Tag   []OverrideUserTagsTag `xml:"tag"`
+// ResultOverrideUserTags represents user tags in an override.
+type ResultOverrideUserTags struct {
+	Count int                 `xml:"count"`
+	Tag   []ResultOverrideTag `xml:"tag"`
 }
 
-type OverrideUserTagsTag struct {
+// ResultOverrideTag represents a single tag in an override.
+type ResultOverrideTag struct {
 	ID      string `xml:"id,attr"`
 	Name    string `xml:"name"`
 	Value   string `xml:"value"`
 	Comment string `xml:"comment"`
 }
 
-type OverrideTask struct {
+// ResultOverrideTask represents a task in an override.
+type ResultOverrideTask struct {
 	ID    string `xml:"id,attr"`
 	Name  string `xml:"name"`
-	Trash bool   `xml:"trash"`
+	Trash string `xml:"trash"`
 }
 
-type OverrideResult struct {
+// ResultOverrideResult represents a result reference in an override.
+type ResultOverrideResult struct {
 	ID          string             `xml:"id,attr"`
-	Host        OverrideResultHost `xml:"host"`
+	Host        ResultOverrideHost `xml:"host"`
 	Port        string             `xml:"port"`
-	NVT         OverrideResultNVT  `xml:"nvt"`
+	NVT         ResultOverrideNVT  `xml:"nvt"`
 	Threat      string             `xml:"threat"`
 	Severity    string             `xml:"severity"`
-	QOD         OverrideResultQOD  `xml:"qod"`
+	QOD         ResultOverrideQOD  `xml:"qod"`
 	Description string             `xml:"description"`
 }
 
-type OverrideResultHost struct {
-	Value string                  `xml:",chardata"`
-	Asset OverrideResultHostAsset `xml:"asset"`
+// ResultOverrideHost represents a host in an override result.
+type ResultOverrideHost struct {
+	Value string              `xml:",chardata"`
+	Asset ResultOverrideAsset `xml:"asset"`
 }
 
-type OverrideResultHostAsset struct {
+// ResultOverrideAsset represents an asset in an override host.
+type ResultOverrideAsset struct {
 	AssetID string `xml:"asset_id,attr"`
 }
 
-type OverrideResultNVT struct {
-	OID      string `xml:"oid,attr"`
-	Name     string `xml:"name"`
-	Type     string `xml:"type"`
-	CVSSBase string `xml:"cvss_base"`
-	CVE      string `xml:"cve"`
-	BID      int    `xml:"bid"`
-}
-
-type OverrideResultQOD struct {
+// ResultOverrideQOD represents QOD in an override result.
+type ResultOverrideQOD struct {
 	Value int    `xml:"value"`
 	Type  string `xml:"type"`
 }
 
+// ResultDetection represents detection information in a result.
 type ResultDetection struct {
 	Result ResultDetectionResult `xml:"result"`
 }
 
+// ResultDetectionResult represents a detection result.
 type ResultDetectionResult struct {
-	ID      string                       `xml:"id,attr"`
-	Details ResultDetectionResultDetails `xml:"details"`
+	ID      string                 `xml:"id,attr"`
+	Details ResultDetectionDetails `xml:"details"`
 }
 
-type ResultDetectionResultDetails struct {
-	Detail []ResultDetectionResultDetailsDetail `xml:"detail"`
+// ResultDetectionDetails represents details in a detection result.
+type ResultDetectionDetails struct {
+	Detail []ResultDetectionDetail `xml:"detail"`
 }
 
-type ResultDetectionResultDetailsDetail struct {
+// ResultDetectionDetail represents a single detail in detection.
+type ResultDetectionDetail struct {
 	Name  string `xml:"name"`
 	Value string `xml:"value"`
 }
 
+// ResultNotes represents notes in a result.
 type ResultNotes struct {
-	Note []Note `xml:"note"`
+	Note []ResultNote `xml:"note"`
 }
 
+// ResultOverrides represents overrides in a result.
 type ResultOverrides struct {
-	Override []Override `xml:"override"`
+	Override []ResultOverride `xml:"override"`
 }
 
+// ResultTickets represents tickets in a result.
 type ResultTickets struct {
-	Ticket []ResultTicketsTicket `xml:"ticket"`
+	Ticket []ResultTicketRef `xml:"ticket"`
 }
 
-type ResultTicketsTicket struct {
+// ResultTicketRef represents a ticket reference in a result.
+type ResultTicketRef struct {
 	ID string `xml:"id,attr"`
 }
 
-type GetResultsFilters struct {
-	ID       string                     `xml:"id,attr"`
-	Term     string                     `xml:"term"`
-	Name     *string                    `xml:"name,omitempty"`
-	Keywords []GetResultsFiltersKeyword `xml:"keywords>keyword"`
+// ResultsFilters represents filters in a get_results response.
+type ResultsFilters struct {
+	ID       string                 `xml:"id,attr"`
+	Term     string                 `xml:"term"`
+	Name     *string                `xml:"name,omitempty"`
+	Keywords []ResultsFilterKeyword `xml:"keywords>keyword"`
 }
 
-type GetResultsFiltersKeyword struct {
+// ResultsFilterKeyword represents a filter keyword in filters.
+type ResultsFilterKeyword struct {
 	Column   string `xml:"column"`
 	Relation string `xml:"relation"`
 	Value    string `xml:"value"`
 }
 
-type GetResultsSort struct {
-	Value string              `xml:",chardata"`
-	Field GetResultsSortField `xml:"field"`
+// ResultsSort represents sorting information in a get_results response.
+type ResultsSort struct {
+	Value string           `xml:",chardata"`
+	Field ResultsSortField `xml:"field"`
 }
 
-type GetResultsSortField struct {
+// ResultsSortField represents a sort field in sorting information.
+type ResultsSortField struct {
 	Order string `xml:"order"`
 }
 
-type GetResultsMeta struct {
+// ResultsMeta represents meta information (pagination) in a get_results response.
+type ResultsMeta struct {
 	Start int `xml:"start,attr"`
 	Max   int `xml:"max,attr"`
 }
 
-type GetResultsCount struct {
+// ResultsCount represents the result count in a get_results response.
+type ResultsCount struct {
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

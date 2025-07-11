@@ -2,11 +2,11 @@ package commands
 
 import "encoding/xml"
 
-// CreateNoteCommand represents a create_note command request.
-type CreateNoteCommand struct {
+// CreateNote is a create_note command request.
+type CreateNote struct {
 	XMLName  xml.Name          `xml:"create_note"`
 	Text     string            `xml:"text"`
-	NVT      *CreateNoteNVT    `xml:"nvt"`
+	NVT      *NoteNVT          `xml:"nvt"`
 	Result   *CreateNoteResult `xml:"result,omitempty"`
 	Active   string            `xml:"active,omitempty"`
 	Copy     string            `xml:"copy,omitempty"`
@@ -17,22 +17,20 @@ type CreateNoteCommand struct {
 	Threat   string            `xml:"threat,omitempty"`
 }
 
-type CreateNoteNVT struct {
-	OID string `xml:"oid,attr"`
-}
-
-type CreateNoteResult struct {
-	ID string `xml:"id,attr"`
-}
-
-type CreateNoteTask struct {
-	ID string `xml:"id,attr"`
-}
-
-// CreateNoteResponse represents a create_note command response.
+// CreateNoteResponse is a create_note command response.
 type CreateNoteResponse struct {
 	XMLName    xml.Name `xml:"create_note_response"`
 	Status     string   `xml:"status,attr"`
 	StatusText string   `xml:"status_text,attr"`
 	ID         string   `xml:"id,attr"`
+}
+
+// CreateNoteResult is the <result> element for create_note.
+type CreateNoteResult struct {
+	ID string `xml:"id,attr"`
+}
+
+// CreateNoteTask is the <task> element for create_note.
+type CreateNoteTask struct {
+	ID string `xml:"id,attr"`
 }

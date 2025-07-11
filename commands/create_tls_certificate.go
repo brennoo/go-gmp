@@ -2,13 +2,13 @@ package commands
 
 import "encoding/xml"
 
-// CreateTLSCertificateCommand represents a create_tls_certificate command request.
-type CreateTLSCertificateCommand struct {
+// CreateTLSCertificate represents a create_tls_certificate command request.
+type CreateTLSCertificate struct {
 	XMLName     xml.Name `xml:"create_tls_certificate"`
 	Comment     string   `xml:"comment,omitempty"`
 	Copy        string   `xml:"copy,omitempty"`
 	Name        string   `xml:"name,omitempty"`
-	Trust       string   `xml:"trust,omitempty"` // protocol: boolean as string
+	Trust       string   `xml:"trust,omitempty"`
 	Certificate string   `xml:"certificate"`
 }
 

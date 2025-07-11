@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// DeletePortRangeCommand represents a delete_port_range command request.
-type DeletePortRangeCommand struct {
+// DeletePortRange represents a delete_port_range command request.
+type DeletePortRange struct {
 	XMLName     xml.Name `xml:"delete_port_range"`
 	PortRangeID string   `xml:"port_range_id,attr"`
 }

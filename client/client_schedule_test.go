@@ -12,7 +12,7 @@ func TestCreateSchedule(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.CreateScheduleCommand{
+	cmd := &commands.CreateSchedule{
 		Name:      "Monthly Scan",
 		Timezone:  "America/New_York",
 		ICalendar: "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//XXX//NONSGML//EN\nBEGIN:VEVENT\nDTSTART;TZID=\"America/New_York\":20221214T000100\nRRULE:FREQ=MONTHLY;BYDAY=3WE;\nEND:VEVENT\nEND:VCALENDAR",
@@ -38,7 +38,7 @@ func TestModifySchedule(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.ModifyScheduleCommand{
+	cmd := &commands.ModifySchedule{
 		ScheduleID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 		Name:       "Weekly Scan",
 	}
@@ -60,7 +60,7 @@ func TestGetSchedules(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetSchedulesCommand{
+	cmd := &commands.GetSchedules{
 		ScheduleID: "ddda859a-45be-4c58-85b3-517c66230232",
 	}
 	resp, err := cli.GetSchedules(cmd)
@@ -90,7 +90,7 @@ func TestDeleteSchedule(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.DeleteScheduleCommand{
+	cmd := &commands.DeleteSchedule{
 		ScheduleID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
 		Ultimate:   "0",
 	}

@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// ModifyRoleCommand represents a modify_role command request.
-type ModifyRoleCommand struct {
+// ModifyRole represents a modify_role command request.
+type ModifyRole struct {
 	XMLName xml.Name `xml:"modify_role"`
 	RoleID  string   `xml:"role_id,attr"`
 	Name    string   `xml:"name,omitempty"`

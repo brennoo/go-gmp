@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// HelpCommand represents a help command request.
-type HelpCommand struct {
+// Help represents a help command request.
+type Help struct {
 	XMLName xml.Name `xml:"help"`
 	Format  string   `xml:"format,attr,omitempty"`
 	Type    string   `xml:"type,attr,omitempty"`

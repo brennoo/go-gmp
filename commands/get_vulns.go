@@ -2,83 +2,93 @@ package commands
 
 import "encoding/xml"
 
-// GetVulnsCommand represents a get_vulns command request.
-type GetVulnsCommand struct {
-	XMLName string `xml:"get_vulns"`
-	VulnID  string `xml:"vuln_id,attr,omitempty"`
-	Filter  string `xml:"filter,attr,omitempty"`
-	FiltID  string `xml:"filt_id,attr,omitempty"`
-	Trash   bool   `xml:"trash,attr,omitempty"`
+// GetVulns represents a get_vulns command request.
+type GetVulns struct {
+	XMLName xml.Name `xml:"get_vulns"`
+	VulnID  string   `xml:"vuln_id,attr,omitempty"`
+	Filter  string   `xml:"filter,attr,omitempty"`
+	FiltID  string   `xml:"filt_id,attr,omitempty"`
+	Trash   string   `xml:"trash,attr,omitempty"`
 }
 
 // GetVulnsResponse represents a get_vulns command response.
 type GetVulnsResponse struct {
-	XMLName    xml.Name           `xml:"get_vulns_response"`
-	Status     string             `xml:"status,attr"`
-	StatusText string             `xml:"status_text,attr"`
-	Vuln       []*GetVulnsVuln    `xml:"vuln,omitempty"`
-	Filters    *GetVulnsFilters   `xml:"filters,omitempty"`
-	Sort       *GetVulnsSort      `xml:"sort,omitempty"`
-	Vulns      *GetVulnsVulns     `xml:"vulns,omitempty"`
-	VulnCount  *GetVulnsVulnCount `xml:"vuln_count,omitempty"`
+	XMLName    xml.Name      `xml:"get_vulns_response"`
+	Status     string        `xml:"status,attr"`
+	StatusText string        `xml:"status_text,attr"`
+	Vulns      []Vuln        `xml:"vuln,omitempty"`
+	Filters    *VulnsFilters `xml:"filters,omitempty"`
+	Sort       *VulnsSort    `xml:"sort,omitempty"`
+	VulnsMeta  *VulnsMeta    `xml:"vulns,omitempty"`
+	VulnCount  *VulnCount    `xml:"vuln_count,omitempty"`
 }
 
-type GetVulnsVuln struct {
-	XMLName          xml.Name             `xml:"vuln"`
-	ID               string               `xml:"id,attr,omitempty"`
-	Name             string               `xml:"name,omitempty"`
-	Type             string               `xml:"type,omitempty"`
-	CreationTime     string               `xml:"creation_time,omitempty"`
-	ModificationTime string               `xml:"modification_time,omitempty"`
-	Severity         string               `xml:"severity,omitempty"`
-	QoD              int                  `xml:"qod,omitempty"`
-	Results          *GetVulnsVulnResults `xml:"results,omitempty"`
-	Hosts            *GetVulnsVulnHosts   `xml:"hosts,omitempty"`
+// Vuln represents a <vuln> element in the get_vulns response.
+type Vuln struct {
+	XMLName          xml.Name     `xml:"vuln"`
+	ID               string       `xml:"id,attr"`
+	Name             string       `xml:"name"`
+	Type             string       `xml:"type"`
+	CreationTime     string       `xml:"creation_time"`
+	ModificationTime string       `xml:"modification_time"`
+	Severity         string       `xml:"severity"`
+	QoD              int          `xml:"qod"`
+	Results          *VulnResults `xml:"results,omitempty"`
+	Hosts            *VulnHosts   `xml:"hosts,omitempty"`
 }
 
-type GetVulnsVulnResults struct {
-	Count  int    `xml:"count,omitempty"`
-	Oldest string `xml:"oldest,omitempty"`
-	Newest string `xml:"newest,omitempty"`
+// VulnResults represents the <results> element in a vuln.
+type VulnResults struct {
+	Count  int    `xml:"count"`
+	Oldest string `xml:"oldest"`
+	Newest string `xml:"newest"`
 }
 
-type GetVulnsVulnHosts struct {
-	Count int `xml:"count,omitempty"`
+// VulnHosts represents the <hosts> element in a vuln.
+type VulnHosts struct {
+	Count int `xml:"count"`
 }
 
-type GetVulnsFilters struct {
-	XMLName  xml.Name                 `xml:"filters"`
-	ID       string                   `xml:"id,attr,omitempty"`
-	Term     string                   `xml:"term,omitempty"`
-	Name     string                   `xml:"name,omitempty"`
-	Keywords *GetVulnsFiltersKeywords `xml:"keywords,omitempty"`
+// VulnsFilters represents the <filters> element in the response.
+type VulnsFilters struct {
+	XMLName  xml.Name       `xml:"filters"`
+	ID       string         `xml:"id,attr"`
+	Term     string         `xml:"term"`
+	Name     string         `xml:"name,omitempty"`
+	Keywords *VulnsKeywords `xml:"keywords,omitempty"`
 }
 
-type GetVulnsFiltersKeywords struct {
-	Keyword []*GetVulnsFiltersKeyword `xml:"keyword,omitempty"`
+// VulnsKeywords represents the <keywords> element in filters.
+type VulnsKeywords struct {
+	Keyword []VulnsKeyword `xml:"keyword"`
 }
 
-type GetVulnsFiltersKeyword struct {
-	Column   string `xml:"column,omitempty"`
-	Relation string `xml:"relation,omitempty"`
-	Value    string `xml:"value,omitempty"`
+// VulnsKeyword represents a <keyword> element in filters keywords.
+type VulnsKeyword struct {
+	Column   string `xml:"column"`
+	Relation string `xml:"relation"`
+	Value    string `xml:"value"`
 }
 
-type GetVulnsSort struct {
-	Field *GetVulnsSortField `xml:"field,omitempty"`
+// VulnsSort represents the <sort> element in the response.
+type VulnsSort struct {
+	Field *VulnsSortField `xml:"field,omitempty"`
 }
 
-type GetVulnsSortField struct {
-	Order string `xml:"order,omitempty"`
+// VulnsSortField represents the <field> element in sort.
+type VulnsSortField struct {
+	Order string `xml:"order"`
 }
 
-type GetVulnsVulns struct {
+// VulnsMeta represents the <vulns> meta element in the response.
+type VulnsMeta struct {
 	XMLName xml.Name `xml:"vulns"`
-	Start   int      `xml:"start,attr,omitempty"`
-	Max     int      `xml:"max,attr,omitempty"`
+	Start   int      `xml:"start,attr"`
+	Max     int      `xml:"max,attr"`
 }
 
-type GetVulnsVulnCount struct {
-	Filtered int `xml:"filtered,omitempty"`
-	Page     int `xml:"page,omitempty"`
+// VulnCount represents the <vuln_count> element in the response.
+type VulnCount struct {
+	Filtered int `xml:"filtered"`
+	Page     int `xml:"page"`
 }

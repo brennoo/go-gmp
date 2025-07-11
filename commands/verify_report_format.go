@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// VerifyReportFormatCommand represents a verify_report_format command request.
-type VerifyReportFormatCommand struct {
+// VerifyReportFormat represents a verify_report_format command request.
+type VerifyReportFormat struct {
 	XMLName        xml.Name `xml:"verify_report_format"`
 	ReportFormatID string   `xml:"report_format_id,attr"`
 }

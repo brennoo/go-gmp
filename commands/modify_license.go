@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// ModifyLicenseCommand represents a modify_license command request.
-type ModifyLicenseCommand struct {
+// ModifyLicense represents a modify_license command request.
+type ModifyLicense struct {
 	XMLName    xml.Name `xml:"modify_license"`
 	AllowEmpty string   `xml:"allow_empty,attr,omitempty"`
 	File       string   `xml:"file"`

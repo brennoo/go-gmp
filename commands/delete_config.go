@@ -2,11 +2,11 @@ package commands
 
 import "encoding/xml"
 
-// DeleteConfigCommand represents a delete_config command request.
-type DeleteConfigCommand struct {
+// DeleteConfig represents a delete_config command request.
+type DeleteConfig struct {
 	XMLName  xml.Name `xml:"delete_config"`
 	ConfigID string   `xml:"config_id,attr"`
-	Ultimate string   `xml:"ultimate,attr"` // "1" to remove entirely, "0" to move to trashcan
+	Ultimate string   `xml:"ultimate,attr"`
 }
 
 // DeleteConfigResponse represents a delete_config command response.

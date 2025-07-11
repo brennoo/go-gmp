@@ -2,180 +2,200 @@ package commands
 
 import (
 	"encoding/xml"
-	"time"
 )
 
-// GetConfigsCommand represents a get_configs command request.
-type GetConfigsCommand struct {
+// GetConfigs represents a get_configs command request.
+type GetConfigs struct {
 	XMLName     xml.Name `xml:"get_configs"`
 	ConfigID    string   `xml:"config_id,attr,omitempty"`
 	Filter      string   `xml:"filter,attr,omitempty"`
 	FiltID      string   `xml:"filt_id,attr,omitempty"`
-	Trash       bool     `xml:"trash,attr,omitempty"`
-	Details     bool     `xml:"details,attr,omitempty"`
-	Families    bool     `xml:"families,attr,omitempty"`
-	Preferences bool     `xml:"preferences,attr,omitempty"`
-	Tasks       bool     `xml:"tasks,attr,omitempty"`
+	Trash       string   `xml:"trash,attr,omitempty"`
+	Details     string   `xml:"details,attr,omitempty"`
+	Families    string   `xml:"families,attr,omitempty"`
+	Preferences string   `xml:"preferences,attr,omitempty"`
+	Tasks       string   `xml:"tasks,attr,omitempty"`
 	UsageType   string   `xml:"usage_type,attr,omitempty"`
 }
 
 // GetConfigsResponse represents a get_configs command response.
 type GetConfigsResponse struct {
-	XMLName     xml.Name                      `xml:"get_configs_response"`
-	Status      string                        `xml:"status,attr"`
-	StatusText  string                        `xml:"status_text,attr"`
-	Config      []getConfigsResponseConfig    `xml:"config"`
-	Filters     getConfigsResponseFilters     `xml:"filters"`
-	Sort        getConfigsResponseSort        `xml:"sort"`
-	Configs     getConfigsResponseConfigs     `xml:"configs"`
-	ConfigCount getConfigsResponseConfigCount `xml:"config_count"`
+	XMLName     xml.Name      `xml:"get_configs_response"`
+	Status      string        `xml:"status,attr"`
+	StatusText  string        `xml:"status_text,attr"`
+	Config      []Config      `xml:"config"`
+	Filters     ConfigFilters `xml:"filters"`
+	Sort        ConfigSort    `xml:"sort"`
+	Configs     ConfigConfigs `xml:"configs"`
+	ConfigCount ConfigCount   `xml:"config_count"`
 }
 
-// getConfigsResponseConfig represents a config element in the get_configs response.
-type getConfigsResponseConfig struct {
-	ID               string                                `xml:"id,attr"`
-	Owner            getConfigsResponseConfigOwner         `xml:"owner"`
-	Name             string                                `xml:"name"`
-	Comment          string                                `xml:"comment"`
-	CreationTime     time.Time                             `xml:"creation_time"`
-	ModificationTime time.Time                             `xml:"modification_time"`
-	FamilyCount      getConfigsResponseConfigFamilyCount   `xml:"family_count"`
-	NVTCount         getConfigsResponseConfigNVTCount      `xml:"nvt_count"`
-	Type             string                                `xml:"type"`
-	UsageType        string                                `xml:"usage_type"`
-	MaxNVTCount      int                                   `xml:"max_nvt_count"`
-	KnownNVTCount    int                                   `xml:"known_nvt_count"`
-	Scanner          *getConfigsResponseConfigScanner      `xml:"scanner,omitempty"`
-	InUse            bool                                  `xml:"in_use"`
-	Writable         bool                                  `xml:"writable"`
-	Permissions      getConfigsResponseConfigPermissions   `xml:"permissions"`
-	UserTags         getConfigsResponseConfigUserTags      `xml:"user_tags"`
-	Tasks            *getConfigsResponseConfigTasks        `xml:"tasks,omitempty"`
-	Families         *getConfigsResponseConfigFamilies     `xml:"families,omitempty"`
-	Preferences      *getConfigsResponseConfigPreferences  `xml:"preferences,omitempty"`
-	NVTSelectors     *getConfigsResponseConfigNVTSelectors `xml:"nvt_selectors,omitempty"`
-	Predefined       bool                                  `xml:"predefined"`
-	Deprecated       *bool                                 `xml:"deprecated,omitempty"`
+// Config represents a config element in the get_configs response.
+type Config struct {
+	ID               string              `xml:"id,attr"`
+	Owner            ConfigOwner         `xml:"owner"`
+	Name             string              `xml:"name"`
+	Comment          string              `xml:"comment"`
+	CreationTime     string              `xml:"creation_time"`
+	ModificationTime string              `xml:"modification_time"`
+	FamilyCount      ConfigFamilyCount   `xml:"family_count"`
+	NVTCount         ConfigNVTCount      `xml:"nvt_count"`
+	Type             string              `xml:"type"`
+	UsageType        string              `xml:"usage_type"`
+	MaxNVTCount      int                 `xml:"max_nvt_count"`
+	KnownNVTCount    int                 `xml:"known_nvt_count"`
+	Scanner          *ConfigScanner      `xml:"scanner,omitempty"`
+	InUse            string              `xml:"in_use"`
+	Writable         string              `xml:"writable"`
+	Permissions      ConfigPermissions   `xml:"permissions"`
+	UserTags         ConfigUserTags      `xml:"user_tags"`
+	Tasks            *ConfigTasks        `xml:"tasks,omitempty"`
+	Families         *ConfigFamilies     `xml:"families,omitempty"`
+	Preferences      *ConfigPreferences  `xml:"preferences,omitempty"`
+	NVTSelectors     *ConfigNVTSelectors `xml:"nvt_selectors,omitempty"`
+	Predefined       string              `xml:"predefined"`
+	Deprecated       *string             `xml:"deprecated,omitempty"`
 }
 
-type getConfigsResponseConfigScanner struct {
+// ConfigScanner represents the scanner element in a config.
+type ConfigScanner struct {
 	ID    string `xml:"id,attr"`
-	Trash bool   `xml:"trash"`
+	Trash string `xml:"trash"`
 }
 
-type getConfigsResponseConfigTasks struct {
-	Task []getConfigsResponseConfigTask `xml:"task"`
+// ConfigTasks represents the tasks element in a config.
+type ConfigTasks struct {
+	Task []ConfigTask `xml:"task"`
 }
 
-type getConfigsResponseConfigTask struct {
+// ConfigTask represents a task element in config tasks.
+type ConfigTask struct {
 	ID          string `xml:"id,attr"`
 	Name        string `xml:"name"`
 	Permissions string `xml:"permissions,omitempty"`
 }
 
-type getConfigsResponseConfigFamilies struct {
-	Family []getConfigsResponseConfigFamily `xml:"family"`
+// ConfigFamilies represents the families element in a config.
+type ConfigFamilies struct {
+	Family []ConfigFamily `xml:"family"`
 }
 
-type getConfigsResponseConfigFamily struct {
+// ConfigFamily represents a family element in config families.
+type ConfigFamily struct {
 	Name        string `xml:"name"`
 	Type        int    `xml:"type"`
 	NVTCount    int    `xml:"nvt_count"`
 	MaxNVTCount int    `xml:"max_nvt_count"`
-	Growing     bool   `xml:"growing"`
+	Growing     string `xml:"growing"`
 }
 
-type getConfigsResponseConfigPreferences struct {
-	Preference []getConfigsResponseConfigPreference `xml:"preference"`
+// ConfigPreferences represents the preferences element in a config.
+type ConfigPreferences struct {
+	Preference []ConfigPreference `xml:"preference"`
 }
 
-type getConfigsResponseConfigPreference struct {
-	NVT     getConfigsResponseConfigPreferenceNVT `xml:"nvt"`
-	Name    string                                `xml:"name"`
-	HRName  string                                `xml:"hr_name,omitempty"`
-	ID      string                                `xml:"id"`
-	Type    string                                `xml:"type"`
-	Value   string                                `xml:"value"`
-	Default string                                `xml:"default,omitempty"`
-	Alt     []string                              `xml:"alt,omitempty"`
+// ConfigPreference represents a preference element in config preferences.
+type ConfigPreference struct {
+	NVT     ConfigPreferenceNVT `xml:"nvt"`
+	Name    string              `xml:"name"`
+	HRName  string              `xml:"hr_name,omitempty"`
+	ID      string              `xml:"id"`
+	Type    string              `xml:"type"`
+	Value   string              `xml:"value"`
+	Default string              `xml:"default,omitempty"`
+	Alt     []string            `xml:"alt,omitempty"`
 }
 
-type getConfigsResponseConfigPreferenceNVT struct {
+// ConfigPreferenceNVT represents the NVT element in a config preference.
+type ConfigPreferenceNVT struct {
 	OID  string `xml:"oid,attr"`
 	Name string `xml:"name"`
 }
 
-type getConfigsResponseConfigNVTSelectors struct {
-	NVTSelector []getConfigsResponseConfigNVTSelector `xml:"nvt_selector"`
+// ConfigNVTSelectors represents the NVT selectors element in a config.
+type ConfigNVTSelectors struct {
+	NVTSelector []ConfigNVTSelector `xml:"nvt_selector"`
 }
 
-type getConfigsResponseConfigNVTSelector struct {
+// ConfigNVTSelector represents an NVT selector element in config NVT selectors.
+type ConfigNVTSelector struct {
 	Name        string `xml:"name"`
-	Include     bool   `xml:"include"`
+	Include     string `xml:"include"`
 	Type        int    `xml:"type"`
 	FamilyOrNVT string `xml:"family_or_nvt"`
 }
 
-type getConfigsResponseConfigOwner struct {
+// ConfigOwner represents the owner element in a config.
+type ConfigOwner struct {
 	Name string `xml:"name"`
 }
 
-type getConfigsResponseConfigFamilyCount struct {
+// ConfigFamilyCount represents the family count element in a config.
+type ConfigFamilyCount struct {
 	Value   string `xml:",chardata"`
 	Growing string `xml:"growing"`
 }
 
-type getConfigsResponseConfigNVTCount struct {
+// ConfigNVTCount represents the NVT count element in a config.
+type ConfigNVTCount struct {
 	Value   string `xml:",chardata"`
 	Growing string `xml:"growing"`
 }
 
-type getConfigsResponseConfigPermissions struct {
-	Permission []getConfigsResponseConfigPermissionsPermission `xml:"permission"`
+// ConfigPermissions represents the permissions element in a config.
+type ConfigPermissions struct {
+	Permission []ConfigPermission `xml:"permission"`
 }
 
-type getConfigsResponseConfigPermissionsPermission struct {
+// ConfigPermission represents a permission element in config permissions.
+type ConfigPermission struct {
 	Name string `xml:"name"`
 }
 
-type getConfigsResponseConfigUserTags struct {
+// ConfigUserTags represents the user tags element in a config.
+type ConfigUserTags struct {
 	Count int `xml:"count"`
 }
 
-type getConfigsResponseFilters struct {
-	ID       string                            `xml:"id,attr"`
-	Term     string                            `xml:"term"`
-	Name     string                            `xml:"name"`
-	Keywords getConfigsResponseFiltersKeywords `xml:"keywords"`
+// ConfigFilters represents the filters element in the response.
+type ConfigFilters struct {
+	ID       string         `xml:"id,attr"`
+	Term     string         `xml:"term"`
+	Name     string         `xml:"name"`
+	Keywords ConfigKeywords `xml:"keywords"`
 }
 
-type getConfigsResponseFiltersKeywords struct {
-	Keyword []getConfigsResponseFiltersKeywordsKeyword `xml:"keyword"`
+// ConfigKeywords represents the keywords element in filters.
+type ConfigKeywords struct {
+	Keyword []ConfigKeyword `xml:"keyword"`
 }
 
-type getConfigsResponseFiltersKeywordsKeyword struct {
+// ConfigKeyword represents a keyword element in filters keywords.
+type ConfigKeyword struct {
 	Column   string `xml:"column"`
 	Relation string `xml:"relation"`
 	Value    string `xml:"value"`
 }
 
-type getConfigsResponseSort struct {
-	Value string                      `xml:",chardata"`
-	Field getConfigsResponseSortField `xml:"field"`
+// ConfigSort represents the sort element in the response.
+type ConfigSort struct {
+	Value string          `xml:",chardata"`
+	Field ConfigSortField `xml:"field"`
 }
 
-type getConfigsResponseSortField struct {
-	Value string `xml:",chardata"`
+// ConfigSortField represents the field element in sort.
+type ConfigSortField struct {
 	Order string `xml:"order"`
 }
 
-type getConfigsResponseConfigs struct {
+// Configs represents the configs element in the response.
+type ConfigConfigs struct {
 	Start int `xml:"start,attr"`
 	Max   int `xml:"max,attr"`
 }
 
-type getConfigsResponseConfigCount struct {
-	Value    string `xml:",chardata"`
-	Filtered int    `xml:"filtered"`
-	Page     int    `xml:"page"`
+// ConfigCount represents the config count element in the response.
+type ConfigCount struct {
+	Value string `xml:",chardata"`
+	Page  int    `xml:"page"`
 }

@@ -12,10 +12,10 @@ func TestCreateTicket(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.CreateTicketCommand{
-		Result: commands.CreateTicketResult{ID: "138c1216-4acb-4ded-bef3-7fab80eac8c7"},
-		Assigned: commands.CreateTicketAssignedTo{
-			User: commands.CreateTicketUser{ID: "33e92d3e-a379-4c46-a4cf-88c8201ab710"},
+	cmd := &commands.CreateTicket{
+		Result: commands.TicketResult{ID: "138c1216-4acb-4ded-bef3-7fab80eac8c7"},
+		Assigned: commands.TicketAssignedTo{
+			User: &commands.TicketUser{ID: "33e92d3e-a379-4c46-a4cf-88c8201ab710"},
 		},
 		OpenNote: "Please fix today.",
 	}
@@ -40,7 +40,7 @@ func TestGetTickets(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetTicketsCommand{}
+	cmd := &commands.GetTickets{}
 	resp, err := cli.GetTickets(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetTickets: %s", err)
@@ -75,7 +75,7 @@ func TestModifyTicket(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.ModifyTicketCommand{
+	cmd := &commands.ModifyTicket{
 		TicketID:   "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 		Status:     "Closed",
 		ClosedNote: "Resolved with January update",
@@ -94,7 +94,7 @@ func TestModifyTicket(t *testing.T) {
 
 func TestDeleteTicket(t *testing.T) {
 	cli := New(mockedConnection())
-	cmd := &commands.DeleteTicketCommand{
+	cmd := &commands.DeleteTicket{
 		TicketID: "ticket-uuid",
 		Ultimate: "1",
 	}

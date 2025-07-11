@@ -4,8 +4,8 @@ import (
 	"encoding/xml"
 )
 
-// DeleteTaskCommand represents a delete_task command request.
-type DeleteTaskCommand struct {
+// DeleteTask represents a delete_task command request.
+type DeleteTask struct {
 	XMLName  xml.Name `xml:"delete_task"`
 	TaskID   string   `xml:"task_id,attr,omitempty"`
 	Ultimate bool     `xml:"ultimate,attr,omitempty"`

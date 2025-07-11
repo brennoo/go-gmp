@@ -12,9 +12,9 @@ func TestCreateNote(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.CreateNoteCommand{
+	cmd := &commands.CreateNote{
 		Text:   "This issue should be resolved after the upgrade.",
-		NVT:    &commands.CreateNoteNVT{OID: "1.3.6.1.4.1.25623.1.0.10330"},
+		NVT:    &commands.NoteNVT{OID: "1.3.6.1.4.1.25623.1.0.10330"},
 		Result: &commands.CreateNoteResult{ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"},
 	}
 	resp, err := cli.CreateNote(cmd)
@@ -35,7 +35,7 @@ func TestModifyNote(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.ModifyNoteCommand{
+	cmd := &commands.ModifyNote{
 		NoteID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 		Text:   "This issue should be resolved after the upgrade.",
 		Result: &commands.ModifyNoteResult{ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"},
@@ -55,7 +55,7 @@ func TestGetNotes(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetNotesCommand{}
+	cmd := &commands.GetNotes{}
 	resp, err := cli.GetNotes(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetNotes: %s", err)
@@ -74,7 +74,7 @@ func TestDeleteNote(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.DeleteNoteCommand{
+	cmd := &commands.DeleteNote{
 		NoteID:   "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 		Ultimate: "0",
 	}

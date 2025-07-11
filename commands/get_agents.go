@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetAgentsCommand represents a get_agents command request.
-type GetAgentsCommand struct {
+// GetAgents represents a get_agents command request.
+type GetAgents struct {
 	XMLName xml.Name `xml:"get_agents"`
 }
 

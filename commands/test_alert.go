@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// TestAlertCommand represents a test_alert command request.
-type TestAlertCommand struct {
+// TestAlert represents a test_alert command request.
+type TestAlert struct {
 	XMLName xml.Name `xml:"test_alert"`
 	AlertID string   `xml:"alert_id,attr"`
 }

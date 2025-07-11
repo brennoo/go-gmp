@@ -2,18 +2,12 @@ package commands
 
 import "encoding/xml"
 
-// ModifyReportConfigCommand represents a modify_report_config command request.
-type ModifyReportConfigCommand struct {
-	XMLName xml.Name                  `xml:"modify_report_config"`
-	Name    string                    `xml:"name,omitempty"`
-	Comment string                    `xml:"comment,omitempty"`
-	Params  []ModifyReportConfigParam `xml:"param,omitempty"`
-}
-
-type ModifyReportConfigParam struct {
-	Name       string `xml:"name"`
-	Value      string `xml:"value"`
-	UseDefault string `xml:"use_default,attr,omitempty"`
+// ModifyReportConfig represents a modify_report_config command request.
+type ModifyReportConfig struct {
+	XMLName xml.Name            `xml:"modify_report_config"`
+	Name    string              `xml:"name,omitempty"`
+	Comment string              `xml:"comment,omitempty"`
+	Params  []ReportConfigParam `xml:"param,omitempty"`
 }
 
 // ModifyReportConfigResponse represents a modify_report_config command response.

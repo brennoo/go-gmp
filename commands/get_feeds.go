@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetFeedsCommand represents a get_feeds command request.
-type GetFeedsCommand struct {
+// GetFeeds represents a get_feeds command request.
+type GetFeeds struct {
 	XMLName xml.Name `xml:"get_feeds"`
 	Type    string   `xml:"type,attr,omitempty"`
 }
@@ -19,20 +19,22 @@ type GetFeedsResponse struct {
 	Feeds               []Feed   `xml:"feed,omitempty"`
 }
 
-// Feed represents a feed entry in the get_feeds response.
+// Feed represents a <feed> element in the get_feeds response.
 type Feed struct {
-	Type             string            `xml:"type,omitempty"`
-	Name             string            `xml:"name,omitempty"`
-	Version          string            `xml:"version,omitempty"`
-	Description      string            `xml:"description,omitempty"`
-	SyncNotAvailable *SyncNotAvailable `xml:"sync_not_available,omitempty"`
-	CurrentlySyncing *CurrentlySyncing `xml:"currently_syncing,omitempty"`
+	Type             string                `xml:"type,omitempty"`
+	Name             string                `xml:"name,omitempty"`
+	Version          string                `xml:"version,omitempty"`
+	Description      string                `xml:"description,omitempty"`
+	SyncNotAvailable *FeedSyncNotAvailable `xml:"sync_not_available,omitempty"`
+	CurrentlySyncing *FeedCurrentlySyncing `xml:"currently_syncing,omitempty"`
 }
 
-type SyncNotAvailable struct {
-	Error string `xml:"error,omitempty"`
+// FeedSyncNotAvailable represents the <sync_not_available> element in a feed.
+type FeedSyncNotAvailable struct {
+	Error string `xml:"error"`
 }
 
-type CurrentlySyncing struct {
-	Timestamp string `xml:"timestamp,omitempty"`
+// FeedCurrentlySyncing represents the <currently_syncing> element in a feed.
+type FeedCurrentlySyncing struct {
+	Timestamp string `xml:"timestamp"`
 }

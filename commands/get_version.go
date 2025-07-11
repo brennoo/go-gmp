@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetVersionCommand represents a get_version command request.
-type GetVersionCommand struct {
+// GetVersion represents a get_version command request.
+type GetVersion struct {
 	XMLName xml.Name `xml:"get_version"`
 }
 

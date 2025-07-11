@@ -12,26 +12,26 @@ func TestCreateAlert(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.CreateAlertRequest{}
-	cmd.Name = "Test Alert"
-	cmd.Condition = commands.AlertCondition{
-		Text: "Severity at least",
-		Data: []commands.AlertData{
-			{Name: "severity", Text: "5.5"},
-		},
+	condData := []commands.AlertData{
+		{Name: "severity", Text: "5.5"},
 	}
-	cmd.Event = commands.AlertEvent{
-		Text: "Task run status changed",
-		Data: []commands.AlertData{
-			{Name: "status", Text: "Done"},
-		},
+	evtData := []commands.AlertData{
+		{Name: "status", Text: "Done"},
 	}
-	cmd.Method = commands.AlertMethod{
-		Text: "Email",
-		Data: []commands.AlertData{
-			{Name: "to_address", Text: "test@example.org"},
-			{Name: "from_address", Text: "alert@example.org"},
-		},
+	methData := []commands.AlertData{
+		{Name: "to_address", Text: "test@example.org"},
+		{Name: "from_address", Text: "alert@example.org"},
+	}
+
+	cmd := &commands.CreateAlert{
+		Name:      "Test Alert",
+		Comment:   "",
+		Copy:      "",
+		Condition: commands.AlertCondition{Text: "Severity at least", Data: condData},
+		Event:     commands.AlertEvent{Text: "Task run status changed", Data: evtData},
+		Method:    commands.AlertMethod{Text: "Email", Data: methData},
+		Filter:    nil, // filter
+		Active:    "",  // active
 	}
 	resp, err := cli.CreateAlert(cmd)
 	if err != nil {
@@ -57,7 +57,7 @@ func TestGetAlerts(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetAlertsCommand{}
+	cmd := &commands.GetAlerts{}
 	resp, err := cli.GetAlerts(cmd)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -77,8 +77,8 @@ func TestModifyAlert(t *testing.T) {
 	alertID := "914b59f8-25f5-4c8f-832c-2379cd625236"
 	name := "Updated Alert Name"
 	comment := "Updated comment"
-	filter := &commands.ModifyAlertFilter{ID: "7a06bd00-7e4a-4669-b7d7-8fe65ec64a41"}
-	cmd := &commands.ModifyAlertCommand{
+	filter := &commands.AlertFilter{ID: "7a06bd00-7e4a-4669-b7d7-8fe65ec64a41"}
+	cmd := &commands.ModifyAlert{
 		AlertID: alertID,
 		Name:    &name,
 		Comment: &comment,
@@ -100,9 +100,9 @@ func TestDeleteAlert(t *testing.T) {
 	}
 
 	alertID := "267a3405-e84a-47da-97b2-5fa0d2e8995e"
-	cmd := &commands.DeleteAlertCommand{
+	cmd := &commands.DeleteAlert{
 		AlertID:  alertID,
-		Ultimate: true,
+		Ultimate: "1",
 	}
 	resp, err := cli.DeleteAlert(cmd)
 	if err != nil {
@@ -120,7 +120,7 @@ func TestTestAlert(t *testing.T) {
 	}
 
 	alertID := "97390ade-e075-11df-9973-002264764cea"
-	cmd := &commands.TestAlertCommand{
+	cmd := &commands.TestAlert{
 		AlertID: alertID,
 	}
 	resp, err := cli.TestAlert(cmd)

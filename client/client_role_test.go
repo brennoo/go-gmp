@@ -13,7 +13,7 @@ func TestCreateRole(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &commands.CreateRoleCommand{
+	cmd := &commands.CreateRole{
 		Name:    "Test Role",
 		Comment: "A test role",
 	}
@@ -29,7 +29,7 @@ func TestCreateRole(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &commands.CreateRoleCommand{
+	cmdFail := &commands.CreateRole{
 		Name: "",
 	}
 	respFail, err := cli.CreateRole(cmdFail)
@@ -48,7 +48,7 @@ func TestModifyRole(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &commands.ModifyRoleCommand{
+	cmd := &commands.ModifyRole{
 		RoleID:  "role-uuid",
 		Name:    "Updated Role",
 		Comment: "Updated comment",
@@ -66,7 +66,7 @@ func TestModifyRole(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &commands.ModifyRoleCommand{
+	cmdFail := &commands.ModifyRole{
 		RoleID: "",
 		Name:   "",
 	}
@@ -88,7 +88,7 @@ func TestGetRoles(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetRolesCommand{}
+	cmd := &commands.GetRoles{}
 	resp, err := cli.GetRoles(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetRoles: %s", err)
@@ -108,7 +108,7 @@ func TestDeleteRole(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &commands.DeleteRoleCommand{
+	cmd := &commands.DeleteRole{
 		RoleID:   "b64c81b2-b9de-11e3-a2e9-406186ea4fc5",
 		Ultimate: "1",
 	}
@@ -124,7 +124,7 @@ func TestDeleteRole(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &commands.DeleteRoleCommand{
+	cmdFail := &commands.DeleteRole{
 		RoleID:   "",
 		Ultimate: "1",
 	}

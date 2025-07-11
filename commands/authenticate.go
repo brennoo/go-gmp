@@ -2,16 +2,10 @@ package commands
 
 import "encoding/xml"
 
-// AuthenticateCommand represents an authenticate command request.
-type AuthenticateCommand struct {
-	XMLName     xml.Name                `xml:"authenticate"`
-	Credentials AuthenticateCredentials `xml:"credentials"`
-}
-
-// AuthenticateCredentials contains the username and password for authentication.
-type AuthenticateCredentials struct {
-	Username string `xml:"username"`
-	Password string `xml:"password"`
+// Authenticate represents an authenticate command request.
+type Authenticate struct {
+	XMLName     xml.Name                 `xml:"authenticate"`
+	Credentials *AuthenticateCredentials `xml:"credentials"`
 }
 
 // AuthenticateResponse represents an authenticate command response.
@@ -21,4 +15,10 @@ type AuthenticateResponse struct {
 	StatusText string   `xml:"status_text,attr"`
 	Role       string   `xml:"role,omitempty"`
 	Timezone   string   `xml:"timezone,omitempty"`
+}
+
+// AuthenticateCredentials contains the username and password for authentication.
+type AuthenticateCredentials struct {
+	Username string `xml:"username"`
+	Password string `xml:"password"`
 }

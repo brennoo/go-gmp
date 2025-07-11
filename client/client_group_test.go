@@ -12,7 +12,7 @@ func TestCreateGroup(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.CreateGroupCommand{
+	cmd := &commands.CreateGroup{
 		Name:  "Managers",
 		Users: "sarah, bob",
 	}
@@ -34,7 +34,7 @@ func TestModifyGroup(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.ModifyGroupCommand{
+	cmd := &commands.ModifyGroup{
 		GroupID: "d94211b6-ba40-11e3-bcb1-406186ea4fc5",
 		Name:    "Line Managers",
 	}
@@ -53,7 +53,7 @@ func TestGetGroups(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetGroupsCommand{}
+	cmd := &commands.GetGroups{}
 	resp, err := cli.GetGroups(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetGroups: %s", err)
@@ -72,7 +72,7 @@ func TestDeleteGroup(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.DeleteGroupCommand{
+	cmd := &commands.DeleteGroup{
 		GroupID:  "d94211b6-ba40-11e3-bcb1-406186ea4fc5",
 		Ultimate: "1",
 	}

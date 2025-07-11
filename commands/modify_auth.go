@@ -2,20 +2,10 @@ package commands
 
 import "encoding/xml"
 
-// ModifyAuthCommand represents a modify_auth command request.
-type ModifyAuthCommand struct {
-	XMLName xml.Name        `xml:"modify_auth"`
-	Group   ModifyAuthGroup `xml:"group"`
-}
-
-type ModifyAuthGroup struct {
-	Name     string            `xml:"name,attr"`
-	Settings []AuthConfSetting `xml:"auth_conf_setting"`
-}
-
-type AuthConfSetting struct {
-	Key   string `xml:"key"`
-	Value string `xml:"value"`
+// ModifyAuth represents a modify_auth command request.
+type ModifyAuth struct {
+	XMLName xml.Name  `xml:"modify_auth"`
+	Group   AuthGroup `xml:"group"`
 }
 
 // ModifyAuthResponse represents a modify_auth command response.

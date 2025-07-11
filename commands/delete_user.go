@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// DeleteUserCommand represents a delete_user command request.
-type DeleteUserCommand struct {
+// DeleteUser represents a delete_user command request.
+type DeleteUser struct {
 	XMLName       xml.Name `xml:"delete_user"`
 	UserID        string   `xml:"user_id,attr,omitempty"`
 	Name          string   `xml:"name,attr,omitempty"`

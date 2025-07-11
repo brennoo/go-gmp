@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// DeleteAssetCommand represents a delete_asset command request.
-type DeleteAssetCommand struct {
+// DeleteAsset represents a delete_asset command request.
+type DeleteAsset struct {
 	XMLName  xml.Name `xml:"delete_asset"`
 	AssetID  string   `xml:"asset_id,attr,omitempty"`
 	ReportID string   `xml:"report_id,attr,omitempty"`

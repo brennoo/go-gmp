@@ -60,12 +60,7 @@ func (g *GMPClient) Close() error {
 func (g *GMPClient) Authenticate(ctx context.Context, username, password string) error {
 	log.Printf("Authenticating as user: %s", username)
 
-	auth := &commands.AuthenticateCommand{
-		Credentials: commands.AuthenticateCredentials{
-			Username: username,
-			Password: password,
-		},
-	}
+	auth := &commands.Authenticate{Credentials: &commands.AuthenticateCredentials{Username: username, Password: password}}
 
 	resp, err := g.client.Authenticate(auth)
 	if err != nil {
@@ -81,10 +76,10 @@ func (g *GMPClient) Authenticate(ctx context.Context, username, password string)
 }
 
 // GetScanner retrieves a scanner by name
-func (g *GMPClient) GetScanner(ctx context.Context, name string) (*commands.GetScannersResponseScanner, error) {
+func (g *GMPClient) GetScanner(ctx context.Context, name string) (*commands.Scanner, error) {
 	log.Printf("Getting scanner: %s", name)
 
-	cmd := &commands.GetScannersCommand{
+	cmd := &commands.GetScanners{
 		Filter: fmt.Sprintf(`name="%s"`, name),
 	}
 
@@ -109,7 +104,7 @@ func (g *GMPClient) GetScanner(ctx context.Context, name string) (*commands.GetS
 func (g *GMPClient) GetConfig(ctx context.Context, name string) (string, error) {
 	log.Printf("Getting configuration: %s", name)
 
-	cmd := &commands.GetConfigsCommand{
+	cmd := &commands.GetConfigs{
 		Filter: fmt.Sprintf(`name="%s"`, name),
 	}
 
@@ -134,7 +129,7 @@ func (g *GMPClient) GetConfig(ctx context.Context, name string) (string, error) 
 func (g *GMPClient) GetPortList(ctx context.Context, name string) (string, error) {
 	log.Printf("Getting port list: %s", name)
 
-	cmd := &commands.GetPortListsCommand{
+	cmd := &commands.GetPortLists{
 		Filter: fmt.Sprintf(`name="%s"`, name),
 	}
 
@@ -147,19 +142,19 @@ func (g *GMPClient) GetPortList(ctx context.Context, name string) (string, error
 		return "", fmt.Errorf("get port lists failed with status %s: %s", resp.Status, resp.StatusText)
 	}
 
-	if len(resp.PortList) == 0 {
+	if len(resp.PortLists) == 0 {
 		return "", fmt.Errorf("port list '%s' not found", name)
 	}
 
-	log.Printf("Found port list: %s (ID: %s)", resp.PortList[0].Name, resp.PortList[0].ID)
-	return resp.PortList[0].ID, nil
+	log.Printf("Found port list: %s (ID: %s)", resp.PortLists[0].Name, resp.PortLists[0].ID)
+	return resp.PortLists[0].ID, nil
 }
 
 // GetTarget retrieves a target by name
-func (g *GMPClient) GetTarget(ctx context.Context, name string) (*commands.GetTargetsResponseTarget, error) {
+func (g *GMPClient) GetTarget(ctx context.Context, name string) (*commands.Target, error) {
 	log.Printf("Getting target: %s", name)
 
-	cmd := &commands.GetTargetsCommand{
+	cmd := &commands.GetTargets{
 		Filter: fmt.Sprintf(`name="%s"`, name),
 	}
 
@@ -184,7 +179,7 @@ func (g *GMPClient) GetTarget(ctx context.Context, name string) (*commands.GetTa
 func (g *GMPClient) DeleteTarget(ctx context.Context, targetID string) error {
 	log.Printf("Deleting target: %s", targetID)
 
-	cmd := &commands.DeleteTargetCommand{
+	cmd := &commands.DeleteTarget{
 		TargetID: targetID,
 		Ultimate: true, // Delete permanently, not just to trash
 	}
@@ -228,12 +223,11 @@ func (g *GMPClient) DeleteTargetWithDependencies(ctx context.Context, targetID s
 }
 
 // GetTargetByID retrieves a target by ID
-func (g *GMPClient) GetTargetByID(ctx context.Context, targetID string) (*commands.GetTargetsResponseTarget, error) {
+func (g *GMPClient) GetTargetByID(ctx context.Context, targetID string) (*commands.Target, error) {
 	log.Printf("Getting target by ID: %s", targetID)
 
-	cmd := &commands.GetTargetsCommand{
+	cmd := &commands.GetTargets{
 		TargetID: targetID,
-		Tasks:    true, // Include tasks that use this target
 	}
 
 	resp, err := g.client.GetTargets(cmd)
@@ -257,7 +251,7 @@ func (g *GMPClient) GetTargetByID(ctx context.Context, targetID string) (*comman
 func (g *GMPClient) GetTask(ctx context.Context, name string) (*commands.GetTasksResponseTask, error) {
 	log.Printf("Getting task: %s", name)
 
-	cmd := &commands.GetTasksCommand{
+	cmd := &commands.GetTasks{
 		Filter: fmt.Sprintf(`name="%s"`, name),
 	}
 
@@ -282,7 +276,7 @@ func (g *GMPClient) GetTask(ctx context.Context, name string) (*commands.GetTask
 func (g *GMPClient) DeleteTask(ctx context.Context, taskID string) error {
 	log.Printf("Deleting task: %s", taskID)
 
-	cmd := &commands.DeleteTaskCommand{
+	cmd := &commands.DeleteTask{
 		TaskID:   taskID,
 		Ultimate: true,
 	}
@@ -312,10 +306,10 @@ func (g *GMPClient) CreateTarget(ctx context.Context, name, hosts, portListID st
 		}
 	}
 
-	cmd := &commands.CreateTargetCommand{
-		Name:     name,
-		Hosts:    hosts,
-		PortList: &commands.CreateTargetPortList{ID: portListID},
+	cmd := &commands.CreateTarget{
+		Name:      name,
+		Hosts:     hosts,
+		PortList:  &commands.TargetPortList{ID: portListID},
 	}
 
 	resp, err := g.client.CreateTarget(cmd)
@@ -343,15 +337,15 @@ func (g *GMPClient) CreateTask(ctx context.Context, name, configID, targetID, sc
 		}
 	}
 
-	cmd := &commands.CreateTaskCommand{
+	cmd := &commands.CreateTask{
 		Name: name,
-		Config: &commands.CreateTaskConfig{
+		Config: &commands.TaskConfig{
 			ID: configID,
 		},
-		Target: &commands.CreateTaskTarget{
+		Target: &commands.TaskTarget{
 			ID: targetID,
 		},
-		Scanner: &commands.CreateTaskScanner{
+		Scanner: &commands.TaskScanner{
 			ID: scannerID,
 		},
 	}
@@ -373,7 +367,7 @@ func (g *GMPClient) CreateTask(ctx context.Context, name, configID, targetID, sc
 func (g *GMPClient) StartTask(ctx context.Context, taskID string) error {
 	log.Printf("Starting task: %s", taskID)
 
-	cmd := &commands.StartTaskCommand{
+	cmd := &commands.StartTask{
 		TaskID: taskID,
 	}
 
@@ -425,7 +419,7 @@ func (g *GMPClient) WaitForTaskCompletion(ctx context.Context, taskID string) er
 
 // getTaskProgress gets the current progress of a task
 func (g *GMPClient) getTaskProgress(ctx context.Context, taskID string) (int, error) {
-	cmd := &commands.GetTasksCommand{
+	cmd := &commands.GetTasks{
 		TaskID: taskID,
 	}
 
@@ -458,7 +452,7 @@ func (g *GMPClient) getTaskProgress(ctx context.Context, taskID string) (int, er
 func (g *GMPClient) GetResults(ctx context.Context, taskID string) ([]commands.Result, error) {
 	log.Printf("Getting results for task: %s", taskID)
 
-	cmd := &commands.GetResultsCommand{
+	cmd := &commands.GetResults{
 		TaskID: taskID,
 		Filter: "min_qod=0 rows=1000",
 	}

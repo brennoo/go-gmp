@@ -2,11 +2,11 @@ package commands
 
 import "encoding/xml"
 
-// DeletePortListCommand represents a delete_port_list command request.
-type DeletePortListCommand struct {
+// DeletePortList represents a delete_port_list command request.
+type DeletePortList struct {
 	XMLName    xml.Name `xml:"delete_port_list"`
 	PortListID string   `xml:"port_list_id,attr"`
-	Ultimate   string   `xml:"ultimate,attr"` // "1" to remove entirely, "0" to move to trashcan
+	Ultimate   string   `xml:"ultimate,attr"`
 }
 
 // DeletePortListResponse represents a delete_port_list command response.

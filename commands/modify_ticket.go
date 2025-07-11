@@ -2,24 +2,16 @@ package commands
 
 import "encoding/xml"
 
-// ModifyTicketCommand represents a modify_ticket command request.
-type ModifyTicketCommand struct {
-	XMLName    xml.Name                `xml:"modify_ticket"`
-	TicketID   string                  `xml:"ticket_id,attr"`
-	Comment    string                  `xml:"comment,omitempty"`
-	Status     string                  `xml:"status,omitempty"`
-	OpenNote   string                  `xml:"open_note,omitempty"`
-	FixedNote  string                  `xml:"fixed_note,omitempty"`
-	ClosedNote string                  `xml:"closed_note,omitempty"`
-	Assigned   *ModifyTicketAssignedTo `xml:"assigned_to,omitempty"`
-}
-
-type ModifyTicketAssignedTo struct {
-	User ModifyTicketUser `xml:"user"`
-}
-
-type ModifyTicketUser struct {
-	ID string `xml:"id,attr"`
+// ModifyTicket represents a modify_ticket command request.
+type ModifyTicket struct {
+	XMLName    xml.Name          `xml:"modify_ticket"`
+	TicketID   string            `xml:"ticket_id,attr"`
+	Comment    string            `xml:"comment,omitempty"`
+	Status     string            `xml:"status,omitempty"`
+	OpenNote   string            `xml:"open_note,omitempty"`
+	FixedNote  string            `xml:"fixed_note,omitempty"`
+	ClosedNote string            `xml:"closed_note,omitempty"`
+	Assigned   *TicketAssignedTo `xml:"assigned_to,omitempty"`
 }
 
 // ModifyTicketResponse represents a modify_ticket command response.

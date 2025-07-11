@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// ModifyCredentialCommand represents a modify_credential command request to GMP.
-type ModifyCredentialCommand struct {
+// ModifyCredential represents a modify_credential command request to GMP.
+type ModifyCredential struct {
 	XMLName       xml.Name                 `xml:"modify_credential"`
 	CredentialID  string                   `xml:"credential_id,attr"`
 	Comment       string                   `xml:"comment,omitempty"`

@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// DeleteNoteCommand represents a delete_note command request.
-type DeleteNoteCommand struct {
+// DeleteNote represents a delete_note command request.
+type DeleteNote struct {
 	XMLName  xml.Name `xml:"delete_note"`
 	NoteID   string   `xml:"note_id,attr"`
 	Ultimate string   `xml:"ultimate,attr"`

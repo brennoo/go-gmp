@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetSystemReportsCommand represents a get_system_reports command request.
-type GetSystemReportsCommand struct {
+// GetSystemReports represents a get_system_reports command request.
+type GetSystemReports struct {
 	XMLName   xml.Name `xml:"get_system_reports"`
 	Name      string   `xml:"name,attr,omitempty"`
 	Duration  string   `xml:"duration,attr,omitempty"`
@@ -15,19 +15,21 @@ type GetSystemReportsCommand struct {
 
 // GetSystemReportsResponse represents a get_system_reports command response.
 type GetSystemReportsResponse struct {
-	XMLName       xml.Name              `xml:"get_system_reports_response"`
-	Status        string                `xml:"status,attr"`
-	StatusText    string                `xml:"status_text,attr"`
-	SystemReports []SystemReportWrapper `xml:"system_report"`
+	XMLName       xml.Name       `xml:"get_system_reports_response"`
+	Status        string         `xml:"status,attr"`
+	StatusText    string         `xml:"status_text,attr"`
+	SystemReports []SystemReport `xml:"system_report"`
 }
 
-type SystemReportWrapper struct {
-	Name   string               `xml:"name"`
-	Title  string               `xml:"title"`
-	Report *SystemReportContent `xml:"report,omitempty"`
+// SystemReport represents a <system_report> element in the get_system_reports response.
+type SystemReport struct {
+	Name   string              `xml:"name"`
+	Title  string              `xml:"title"`
+	Report *SystemReportReport `xml:"report,omitempty"`
 }
 
-type SystemReportContent struct {
+// SystemReportReport represents the content of a system report.
+type SystemReportReport struct {
 	Format   string `xml:"format,attr"`
 	Duration string `xml:"duration,attr"`
 	Value    string `xml:",chardata"`

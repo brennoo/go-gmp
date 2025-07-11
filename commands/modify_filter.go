@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// ModifyFilterCommand represents a modify_filter command request.
-type ModifyFilterCommand struct {
+// ModifyFilter represents a modify_filter command request.
+type ModifyFilter struct {
 	XMLName  xml.Name `xml:"modify_filter"`
 	FilterID string   `xml:"filter_id,attr"`
 	Comment  string   `xml:"comment,omitempty"`

@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// StartTaskCommand represents a start_task command request.
-type StartTaskCommand struct {
+// StartTask represents a start_task command request.
+type StartTask struct {
 	XMLName xml.Name `xml:"start_task"`
 	TaskID  string   `xml:"task_id,attr,omitempty"`
 }

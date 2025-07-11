@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// CreateReportFormatCommand represents a create_report_format command request.
-type CreateReportFormatCommand struct {
+// CreateReportFormat represents a create_report_format command request.
+type CreateReportFormat struct {
 	XMLName xml.Name `xml:"create_report_format"`
 	Name    string   `xml:"name,omitempty"`
 	Copy    string   `xml:"copy,omitempty"`

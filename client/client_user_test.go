@@ -13,10 +13,10 @@ func TestCreateUser(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &commands.CreateUserCommand{
+	cmd := &commands.CreateUser{
 		Name:     "testuser",
 		Password: "testpass",
-		Roles:    []commands.CreateUserRole{{ID: "role-uuid"}},
+		Roles:    []*commands.UserRole{{ID: "role-uuid"}},
 	}
 	resp, err := cli.CreateUser(cmd)
 	if err != nil {
@@ -30,7 +30,7 @@ func TestCreateUser(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &commands.CreateUserCommand{
+	cmdFail := &commands.CreateUser{
 		Name:     "",
 		Password: "",
 	}
@@ -50,16 +50,16 @@ func TestModifyUser(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &commands.ModifyUserCommand{
+	cmd := &commands.ModifyUser{
 		UserID:  "user-uuid",
 		Name:    "testuser",
 		NewName: "newuser",
 		Comment: "Updated user",
-		Password: &commands.ModifyUserPassword{
+		Password: &commands.UserPassword{
 			Modify: "1",
 			Text:   "newpass",
 		},
-		Roles: []commands.CreateUserRole{{ID: "role-uuid"}},
+		Roles: []*commands.UserRole{{ID: "role-uuid"}},
 	}
 	resp, err := cli.ModifyUser(cmd)
 	if err != nil {
@@ -70,7 +70,7 @@ func TestModifyUser(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &commands.ModifyUserCommand{
+	cmdFail := &commands.ModifyUser{
 		UserID: "",
 		Name:   "",
 	}
@@ -90,7 +90,7 @@ func TestGetUsers(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &commands.GetUsersCommand{}
+	cmd := &commands.GetUsers{}
 	resp, err := cli.GetUsers(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetUsers: %s", err)
@@ -103,7 +103,7 @@ func TestGetUsers(t *testing.T) {
 	}
 
 	// Failure case (simulate by using a special test flag)
-	cmdFail := &commands.GetUsersCommand{}
+	cmdFail := &commands.GetUsers{}
 	respFail, err := cli.GetUsers(cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetUsers (fail): %s", err)
@@ -121,7 +121,7 @@ func TestDeleteUser(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &commands.DeleteUserCommand{
+	cmd := &commands.DeleteUser{
 		Name: "foobar",
 	}
 	resp, err := cli.DeleteUser(cmd)
@@ -133,7 +133,7 @@ func TestDeleteUser(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &commands.DeleteUserCommand{
+	cmdFail := &commands.DeleteUser{
 		Name: "",
 	}
 	respFail, err := cli.DeleteUser(cmdFail)

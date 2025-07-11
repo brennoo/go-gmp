@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// DeleteRoleCommand represents a delete_role command request.
-type DeleteRoleCommand struct {
+// DeleteRole represents a delete_role command request.
+type DeleteRole struct {
 	XMLName  xml.Name `xml:"delete_role"`
 	RoleID   string   `xml:"role_id,attr"`
 	Ultimate string   `xml:"ultimate,attr"`

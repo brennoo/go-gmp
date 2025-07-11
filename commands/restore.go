@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// RestoreCommand represents a restore command request.
-type RestoreCommand struct {
+// Restore represents a restore command request.
+type Restore struct {
 	XMLName xml.Name `xml:"restore"`
 	ID      string   `xml:"id,attr"`
 }

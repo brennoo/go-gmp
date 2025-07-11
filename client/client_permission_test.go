@@ -13,14 +13,15 @@ func TestCreatePermission(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &commands.CreatePermissionCommand{
+	cmd := &commands.CreatePermission{
 		Name: "get_targets",
-		Subject: &commands.CreatePermissionSubject{
+		Subject: &commands.PermissionSubject{
 			ID:   "66abe5ce-c011-11e3-b96e-406186ea4fc5",
 			Type: "user",
 		},
-		Resource: &commands.CreatePermissionResource{
-			ID: "b493b7a8-7489-11df-a3ec-002264764cea",
+		Resource: &commands.PermissionResource{
+			ID:   "b493b7a8-7489-11df-a3ec-002264764cea",
+			Type: "target",
 		},
 	}
 	resp, err := cli.CreatePermission(cmd)
@@ -35,9 +36,10 @@ func TestCreatePermission(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &commands.CreatePermissionCommand{
-		Name:    "",
-		Subject: &commands.CreatePermissionSubject{},
+	cmdFail := &commands.CreatePermission{
+		Name:     "",
+		Subject:  &commands.PermissionSubject{},
+		Resource: &commands.PermissionResource{},
 	}
 	respFail, err := cli.CreatePermission(cmdFail)
 	if err != nil {
@@ -55,9 +57,9 @@ func TestModifyPermission(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &commands.ModifyPermissionCommand{
+	cmd := &commands.ModifyPermission{
 		PermissionID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
-		Subject: &commands.CreatePermissionSubject{
+		Subject: &commands.PermissionSubject{
 			ID:   "76e47468-c095-11e3-9285-406186ea4fc5",
 			Type: "user",
 		},
@@ -74,9 +76,9 @@ func TestModifyPermission(t *testing.T) {
 	}
 
 	// Failure case
-	cmdFail := &commands.ModifyPermissionCommand{
+	cmdFail := &commands.ModifyPermission{
 		PermissionID: "",
-		Subject:      &commands.CreatePermissionSubject{},
+		Subject:      &commands.PermissionSubject{},
 	}
 	respFail, err := cli.ModifyPermission(cmdFail)
 	if err != nil {
@@ -94,7 +96,7 @@ func TestGetPermissions(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &commands.GetPermissionsCommand{}
+	cmd := &commands.GetPermissions{}
 	resp, err := cli.GetPermissions(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetPermissions: %s", err)
@@ -113,7 +115,7 @@ func TestDeletePermission(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.DeletePermissionCommand{
+	cmd := &commands.DeletePermission{
 		PermissionID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
 		Ultimate:     "1",
 	}

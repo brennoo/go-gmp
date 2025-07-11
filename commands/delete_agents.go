@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// DeleteAgentsCommand represents a delete_agents command request.
-type DeleteAgentsCommand struct {
+// DeleteAgents represents a delete_agents command request.
+type DeleteAgents struct {
 	XMLName xml.Name `xml:"delete_agents"`
 	Agents  []Agent  `xml:"agents>agent"`
 }

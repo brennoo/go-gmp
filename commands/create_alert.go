@@ -1,8 +1,27 @@
 package commands
 
-import (
-	"encoding/xml"
-)
+import "encoding/xml"
+
+// CreateAlert represents a create_alert command request.
+type CreateAlert struct {
+	XMLName   xml.Name       `xml:"create_alert"`
+	Name      string         `xml:"name"`
+	Comment   string         `xml:"comment,omitempty"`
+	Copy      string         `xml:"copy,omitempty"`
+	Condition AlertCondition `xml:"condition"`
+	Event     AlertEvent     `xml:"event"`
+	Method    AlertMethod    `xml:"method"`
+	Filter    *AlertFilter   `xml:"filter,omitempty"`
+	Active    string         `xml:"active,omitempty"`
+}
+
+// CreateAlertResponse represents a create_alert command response.
+type CreateAlertResponse struct {
+	XMLName    xml.Name `xml:"create_alert_response"`
+	Status     string   `xml:"status,attr"`
+	StatusText string   `xml:"status_text,attr"`
+	ID         string   `xml:"id,attr"`
+}
 
 // AlertData represents data for alert condition, event, or method.
 type AlertData struct {
@@ -31,25 +50,4 @@ type AlertMethod struct {
 // AlertFilter represents a filter to apply when executing alert.
 type AlertFilter struct {
 	ID string `xml:"id,attr"`
-}
-
-// CreateAlertRequest represents a create_alert command request.
-type CreateAlertRequest struct {
-	XMLName   xml.Name       `xml:"create_alert"`
-	Name      string         `xml:"name"`
-	Comment   string         `xml:"comment,omitempty"`
-	Copy      string         `xml:"copy,omitempty"`
-	Condition AlertCondition `xml:"condition"`
-	Event     AlertEvent     `xml:"event"`
-	Method    AlertMethod    `xml:"method"`
-	Filter    *AlertFilter   `xml:"filter,omitempty"`
-	Active    *bool          `xml:"active,omitempty"`
-}
-
-// CreateAlertResponse represents a create_alert command response.
-type CreateAlertResponse struct {
-	XMLName    xml.Name `xml:"create_alert_response"`
-	Status     string   `xml:"status,attr"`
-	StatusText string   `xml:"status_text,attr"`
-	ID         string   `xml:"id,attr"`
 }
