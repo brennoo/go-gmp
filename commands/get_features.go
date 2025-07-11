@@ -9,13 +9,14 @@ type GetFeatures struct {
 
 // GetFeaturesResponse represents a get_features command response.
 type GetFeaturesResponse struct {
-	XMLName    xml.Name      `xml:"get_features_response"`
-	Status     string        `xml:"status,attr"`
-	StatusText string        `xml:"status_text,attr"`
-	Features   []FeatureInfo `xml:"feature"`
+	XMLName    xml.Name  `xml:"get_features_response"`
+	Status     string    `xml:"status,attr"`
+	StatusText string    `xml:"status_text,attr"`
+	Features   []Feature `xml:"feature"`
 }
 
-type FeatureInfo struct {
+// Feature represents a <feature> element in the get_features response.
+type Feature struct {
 	Enabled string `xml:"enabled,attr"`
 	Name    string `xml:"name"`
 }

@@ -12,8 +12,13 @@ func TestCreateAsset(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	asset := commands.NewAsset("Localhost", "Test asset", "host")
-	cmd := commands.NewCreateAsset(asset, nil)
+	cmd := &commands.CreateAsset{
+		Asset: &commands.AssetInput{
+			Name:    "Test Asset",
+			Comment: "A test asset",
+			Type:    "host",
+		},
+	}
 	resp, err := cli.CreateAsset(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateAsset: %s", err)
@@ -35,10 +40,13 @@ func TestCreateAssetWithReport(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	filter := commands.NewFilter("min_qod=70")
-	report := commands.NewAssetReport("report-uuid", filter)
-	cmd := commands.NewCreateAsset(nil, report)
-	resp, err := cli.CreateAsset(cmd)
+	cmdWithReport := &commands.CreateAsset{
+		Report: &commands.AssetReport{
+			ID:     "report-id",
+			Filter: &commands.AssetFilter{Term: "term"},
+		},
+	}
+	resp, err := cli.CreateAsset(cmdWithReport)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateAsset (report): %s", err)
 	}

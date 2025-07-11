@@ -8,7 +8,7 @@ type CreateTLSCertificate struct {
 	Comment     string   `xml:"comment,omitempty"`
 	Copy        string   `xml:"copy,omitempty"`
 	Name        string   `xml:"name,omitempty"`
-	Trust       string   `xml:"trust,omitempty"` // protocol: boolean as string
+	Trust       string   `xml:"trust,omitempty"`
 	Certificate string   `xml:"certificate"`
 }
 

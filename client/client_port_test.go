@@ -93,10 +93,10 @@ func TestCreatePortRange(t *testing.T) {
 	}
 
 	cmd := &commands.CreatePortRange{
-		PortList: commands.CreatePortRangePortList{ID: "354cd3ef-bbe1-4d58-859d-21b8d0c046c4"},
-		Start:    "777",
-		End:      "779",
-		Type:     "TCP",
+		PortListID: "354cd3ef-bbe1-4d58-859d-21b8d0c046c4",
+		Start:      "777",
+		End:        "779",
+		Type:       "TCP",
 	}
 	resp, err := cli.CreatePortRange(cmd)
 	if err != nil {

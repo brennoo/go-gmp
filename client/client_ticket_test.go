@@ -13,9 +13,9 @@ func TestCreateTicket(t *testing.T) {
 	}
 
 	cmd := &commands.CreateTicket{
-		Result: commands.CreateTicketResult{ID: "138c1216-4acb-4ded-bef3-7fab80eac8c7"},
-		Assigned: commands.CreateTicketAssignedTo{
-			User: commands.CreateTicketUser{ID: "33e92d3e-a379-4c46-a4cf-88c8201ab710"},
+		Result: commands.TicketResult{ID: "138c1216-4acb-4ded-bef3-7fab80eac8c7"},
+		Assigned: commands.TicketAssignedTo{
+			User: &commands.TicketUser{ID: "33e92d3e-a379-4c46-a4cf-88c8201ab710"},
 		},
 		OpenNote: "Please fix today.",
 	}

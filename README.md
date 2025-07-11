@@ -6,7 +6,7 @@
 A modern (Go) client for the Greenbone Management Protocol (GMP), used to interact with Greenbone/OpenVAS vulnerability management servers.
 
 > [!CAUTION]
-> I'm still figuring out the best structure, naming so expect some breaking changes/refactors
+> Expect some breaking changes/refactors as the library matures.
 
 ## Features
 
@@ -18,7 +18,7 @@ A modern (Go) client for the Greenbone Management Protocol (GMP), used to intera
 
 ## Requirements
 
-- Go 1.23
+- Go 1.23+
 - Access to a running Greenbone/OpenVAS server with GMP enabled
 - Access to the GMP server (typically via TLS or Unix socket)
 
@@ -55,12 +55,13 @@ func main() {
 	cli := client.New(conn)
 
 	// Authenticate
-	authResp, err := cli.Authenticate(&commands.AuthenticateCommand{
-		Credentials: commands.AuthenticateCredentials{
+	auth := &commands.Authenticate{
+		Credentials: &commands.AuthenticateCredentials{
 			Username: "admin",
 			Password: "secret",
 		},
-	})
+	}
+	authResp, err := cli.Authenticate(auth)
 	if err != nil {
 		log.Fatalf("auth failed: %v", err)
 	}
@@ -70,7 +71,7 @@ func main() {
 	fmt.Printf("Authenticated! Role: %s, Timezone: %s\n", authResp.Role, authResp.Timezone)
 
 	// Basic query: get tasks
-	tasksResp, err := cli.GetTasks(&commands.GetTasksCommand{})
+	tasksResp, err := cli.GetTasks(&commands.GetTasks{})
 	if err != nil {
 		log.Fatalf("get tasks failed: %v", err)
 	}
@@ -87,7 +88,7 @@ func main() {
 
 - **Connection**: You create a `gmp.Connection` (TLS or Unix socket). This handles the low-level protocol.
 - **Client**: Pass the connection to `client.New()` to get a `gmp.Client`.
-- **Commands**: Each GMP command is a Go struct (e.g., `GetTasksCommand`).
+- **Commands**: Each GMP command is a Go struct (e.g., `GetTasks`).
 - **Responses**: Each command returns a strongly-typed response struct (e.g., `GetTasksResponse`).
 - **Error Handling**: All client methods return a response and an error. Protocol errors are mapped to Go errors.
 
@@ -97,7 +98,7 @@ GMP supports powerful filtering for most list/get commands. You can use the `Fil
 
 ```go
 // Get only running tasks, sorted by name
-tasksResp, err := cli.GetTasks(&commands.GetTasksCommand{
+tasksResp, err := cli.GetTasks(&commands.GetTasks{
 	Filter: "status=running sort=name",
 })
 if err != nil {
@@ -113,14 +114,14 @@ for _, task := range tasksResp.Task {
 
 ## Pagination
 
-> [!IMPORTANT]
+> [!NOTE]
 > By default, the GMP server returns 10 rows per page if you do not specify the `rows` filter.
 
 For large result sets, use `Filter` with `rows` and `first`:
 
 ```go
 // Get the first 10 results for a task
-resultsResp, err := cli.GetResults(&commands.GetResultsCommand{
+resultsResp, err := cli.GetResults(&commands.GetResults{
 	TaskID: "<task-id>",
 	Filter: "rows=10 first=1",
 })
@@ -130,7 +131,7 @@ if err != nil {
 if resultsResp.Status != "200" {
 	log.Fatalf("get results failed: %s (%s)", resultsResp.Status, resultsResp.StatusText)
 }
-for _, result := range resultsResp.Result {
+for _, result := range resultsResp.Results {
 	fmt.Println(result.ID, result.Name)
 }
 ```
@@ -140,7 +141,7 @@ for _, result := range resultsResp.Result {
 All client methods return a response and an error. If the server returns a protocol error, it is mapped to a Go error:
 
 ```go
-resp, err := cli.DeleteTask(&commands.DeleteTaskCommand{TaskID: "bad-id"})
+resp, err := cli.DeleteTask(&commands.DeleteTask{TaskID: "bad-id"})
 if err != nil {
 	log.Printf("delete failed: %v", err)
 }
@@ -166,9 +167,13 @@ This is useful for experimenting with custom or not-yet-supported GMP commands.
 
 ## Extending the client
 
-- All GMP commands are available.
-- Each command/response struct is documented and should match the protocol XML.
+- All major GMP commands are available.
+- Each command/response struct is documented and matches the protocol XML.
 - You can add new commands by following the same pattern.
+
+## Examples
+
+A set of example programs is provided in the [examples/](./examples/) directory
 
 ## See Also
 

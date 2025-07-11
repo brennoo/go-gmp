@@ -14,8 +14,8 @@ func TestCreateNote(t *testing.T) {
 
 	cmd := &commands.CreateNote{
 		Text:   "This issue should be resolved after the upgrade.",
-		NVT:    commands.NewNVTOID("1.3.6.1.4.1.25623.1.0.10330"),
-		Result: commands.NewResultID("254cd3ef-bbe1-4d58-859d-21b8d0c046c6"),
+		NVT:    &commands.NoteNVT{OID: "1.3.6.1.4.1.25623.1.0.10330"},
+		Result: &commands.CreateNoteResult{ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"},
 	}
 	resp, err := cli.CreateNote(cmd)
 	if err != nil {

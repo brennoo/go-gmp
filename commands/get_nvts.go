@@ -2,8 +2,8 @@ package commands
 
 import "encoding/xml"
 
-// GetNvts represents a get_nvts command request.
-type GetNvts struct {
+// GetNVTs represents a get_nvts command request.
+type GetNVTs struct {
 	XMLName             xml.Name `xml:"get_nvts"`
 	NvtOID              string   `xml:"nvt_oid,attr,omitempty"`
 	Details             string   `xml:"details,attr,omitempty"`
@@ -20,38 +20,73 @@ type GetNvts struct {
 	SortField           string   `xml:"sort_field,attr,omitempty"`
 }
 
-// GetNvtsResponse represents a get_nvts command response.
-type GetNvtsResponse struct {
+// GetNVTsResponse represents a get_nvts command response.
+type GetNVTsResponse struct {
 	XMLName    xml.Name `xml:"get_nvts_response"`
 	Status     string   `xml:"status,attr"`
 	StatusText string   `xml:"status_text,attr"`
-	Nvts       []NVT    `xml:"nvt,omitempty"`
+	NVTs       []NVT    `xml:"nvt,omitempty"`
 }
 
-// NVT represents a Network Vulnerability Test.
+// NVT represents a Network Vulnerability Test in the response.
 type NVT struct {
-	OID              string `xml:"oid,attr"`
-	Name             string `xml:"name,omitempty"`
-	UserTags         string `xml:"user_tags,omitempty"`
-	CreationTime     string `xml:"creation_time,omitempty"`
-	ModificationTime string `xml:"modification_time,omitempty"`
-	Category         string `xml:"category,omitempty"`
-	Family           string `xml:"family,omitempty"`
-	CvssBase         string `xml:"cvss_base,omitempty"`
-	Severities       string `xml:"severities,omitempty"`
-	Qod              string `xml:"qod,omitempty"`
-	Refs             string `xml:"refs,omitempty"`
-	Tags             string `xml:"tags,omitempty"`
-	PreferenceCount  string `xml:"preference_count,omitempty"`
-	Timeout          string `xml:"timeout,omitempty"`
-	DefaultTimeout   string `xml:"default_timeout,omitempty"`
-	Solution         string `xml:"solution,omitempty"`
-	Epss             string `xml:"epss,omitempty"`
-	Preferences      string `xml:"preferences,omitempty"`
+	OID              string          `xml:"oid,attr"`
+	Name             string          `xml:"name,omitempty"`
+	CreationTime     string          `xml:"creation_time,omitempty"`
+	ModificationTime string          `xml:"modification_time,omitempty"`
+	Category         string          `xml:"category,omitempty"`
+	Family           string          `xml:"family,omitempty"`
+	CvssBase         string          `xml:"cvss_base,omitempty"`
+	Severities       *NVTSeverities  `xml:"severities,omitempty"`
+	Refs             string          `xml:"refs,omitempty"`
+	Tags             string          `xml:"tags,omitempty"`
+	PreferenceCount  string          `xml:"preference_count,omitempty"`
+	Timeout          string          `xml:"timeout,omitempty"`
+	DefaultTimeout   string          `xml:"default_timeout,omitempty"`
+	Solution         string          `xml:"solution,omitempty"`
+	Epss             string          `xml:"epss,omitempty"`
+	Preferences      *NVTPreferences `xml:"preferences,omitempty"`
+	UserTags         string          `xml:"user_tags,omitempty"`
+	Qod              string          `xml:"qod,omitempty"`
+	Description      string          `xml:"description,omitempty"`
 }
 
-type nvt struct {
-	OID string `xml:"oid,attr"`
+// NVTSeverities represents the severities element in an NVT.
+type NVTSeverities struct {
+	Score      string        `xml:"score,attr,omitempty"`
+	Severities []NVTSeverity `xml:"severity,omitempty"`
 }
 
-func NewNVTOID(oid string) *nvt { return &nvt{OID: oid} }
+// NVTSeverity represents a severity element in an NVT.
+type NVTSeverity struct {
+	Type   string `xml:"type,attr,omitempty"`
+	Origin string `xml:"origin,omitempty"`
+	Date   string `xml:"date,omitempty"`
+	Score  string `xml:"score,omitempty"`
+	Value  string `xml:"value,omitempty"`
+}
+
+// NVTPreferences represents the preferences element in an NVT.
+type NVTPreferences struct {
+	Timeout        string          `xml:"timeout,omitempty"`
+	DefaultTimeout string          `xml:"default_timeout,omitempty"`
+	Preferences    []NVTPreference `xml:"preference,omitempty"`
+}
+
+// NVTPreference represents a preference element in an NVT.
+type NVTPreference struct {
+	NVT     *NVTPreferenceNVT `xml:"nvt,omitempty"`
+	ID      string            `xml:"id,omitempty"`
+	Name    string            `xml:"name,omitempty"`
+	HRName  string            `xml:"hr_name,omitempty"`
+	Type    string            `xml:"type,omitempty"`
+	Value   string            `xml:"value,omitempty"`
+	Alt     string            `xml:"alt,omitempty"`
+	Default string            `xml:"default,omitempty"`
+}
+
+// NVTPreferenceNVT represents an NVT reference in a preference.
+type NVTPreferenceNVT struct {
+	OID  string `xml:"oid,attr"`
+	Name string `xml:"name,omitempty"`
+}

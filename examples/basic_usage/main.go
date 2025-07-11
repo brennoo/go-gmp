@@ -60,12 +60,7 @@ func (g *GMPClient) Close() error {
 func (g *GMPClient) Authenticate(ctx context.Context, username, password string) error {
 	log.Printf("Authenticating as user: %s", username)
 
-	auth := &commands.Authenticate{
-		Credentials: commands.AuthenticateCredentials{
-			Username: username,
-			Password: password,
-		},
-	}
+	auth := &commands.Authenticate{Credentials: &commands.AuthenticateCredentials{Username: username, Password: password}}
 
 	resp, err := g.client.Authenticate(auth)
 	if err != nil {
@@ -81,7 +76,7 @@ func (g *GMPClient) Authenticate(ctx context.Context, username, password string)
 }
 
 // GetScanner retrieves a scanner by name
-func (g *GMPClient) GetScanner(ctx context.Context, name string) (*commands.GetScannersResponseScanner, error) {
+func (g *GMPClient) GetScanner(ctx context.Context, name string) (*commands.Scanner, error) {
 	log.Printf("Getting scanner: %s", name)
 
 	cmd := &commands.GetScanners{
@@ -147,16 +142,16 @@ func (g *GMPClient) GetPortList(ctx context.Context, name string) (string, error
 		return "", fmt.Errorf("get port lists failed with status %s: %s", resp.Status, resp.StatusText)
 	}
 
-	if len(resp.PortList) == 0 {
+	if len(resp.PortLists) == 0 {
 		return "", fmt.Errorf("port list '%s' not found", name)
 	}
 
-	log.Printf("Found port list: %s (ID: %s)", resp.PortList[0].Name, resp.PortList[0].ID)
-	return resp.PortList[0].ID, nil
+	log.Printf("Found port list: %s (ID: %s)", resp.PortLists[0].Name, resp.PortLists[0].ID)
+	return resp.PortLists[0].ID, nil
 }
 
 // GetTarget retrieves a target by name
-func (g *GMPClient) GetTarget(ctx context.Context, name string) (*commands.GetTargetsResponseTarget, error) {
+func (g *GMPClient) GetTarget(ctx context.Context, name string) (*commands.Target, error) {
 	log.Printf("Getting target: %s", name)
 
 	cmd := &commands.GetTargets{
@@ -228,7 +223,7 @@ func (g *GMPClient) DeleteTargetWithDependencies(ctx context.Context, targetID s
 }
 
 // GetTargetByID retrieves a target by ID
-func (g *GMPClient) GetTargetByID(ctx context.Context, targetID string) (*commands.GetTargetsResponseTarget, error) {
+func (g *GMPClient) GetTargetByID(ctx context.Context, targetID string) (*commands.Target, error) {
 	log.Printf("Getting target by ID: %s", targetID)
 
 	cmd := &commands.GetTargets{
@@ -312,9 +307,9 @@ func (g *GMPClient) CreateTarget(ctx context.Context, name, hosts, portListID st
 	}
 
 	cmd := &commands.CreateTarget{
-		Name:     name,
-		Hosts:    hosts,
-		PortList: &commands.CreateTargetPortList{ID: portListID},
+		Name:      name,
+		Hosts:     hosts,
+		PortList:  &commands.TargetPortList{ID: portListID},
 	}
 
 	resp, err := g.client.CreateTarget(cmd)
@@ -344,13 +339,13 @@ func (g *GMPClient) CreateTask(ctx context.Context, name, configID, targetID, sc
 
 	cmd := &commands.CreateTask{
 		Name: name,
-		Config: &commands.CreateTaskConfig{
+		Config: &commands.TaskConfig{
 			ID: configID,
 		},
-		Target: &commands.CreateTaskTarget{
+		Target: &commands.TaskTarget{
 			ID: targetID,
 		},
-		Scanner: &commands.CreateTaskScanner{
+		Scanner: &commands.TaskScanner{
 			ID: scannerID,
 		},
 	}

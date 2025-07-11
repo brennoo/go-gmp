@@ -12,25 +12,25 @@ type GetPreferences struct {
 
 // GetPreferencesResponse represents a get_preferences command response.
 type GetPreferencesResponse struct {
-	XMLName    xml.Name                           `xml:"get_preferences_response"`
-	Status     string                             `xml:"status,attr"`
-	StatusText string                             `xml:"status_text,attr"`
-	Preference []GetPreferencesResponsePreference `xml:"preference"`
+	XMLName    xml.Name     `xml:"get_preferences_response"`
+	Status     string       `xml:"status,attr"`
+	StatusText string       `xml:"status_text,attr"`
+	Preference []Preference `xml:"preference"`
 }
 
-// GetPreferencesResponsePreference represents a preference element in the get_preferences response.
-type GetPreferencesResponsePreference struct {
-	NVT     GetPreferencesResponsePreferenceNVT `xml:"nvt"`
-	Name    string                              `xml:"name"`
-	ID      string                              `xml:"id"`
-	Type    string                              `xml:"type"`
-	Value   string                              `xml:"value"`
-	Alt     []string                            `xml:"alt"`
-	Default string                              `xml:"default"`
+// Preference represents a preference element in the get_preferences response.
+type Preference struct {
+	NVT     PreferenceNVT `xml:"nvt"`
+	Name    string        `xml:"name"`
+	ID      string        `xml:"id"`
+	Type    string        `xml:"type"`
+	Value   string        `xml:"value"`
+	Alt     []string      `xml:"alt"`
+	Default string        `xml:"default"`
 }
 
-// GetPreferencesResponsePreferenceNVT represents the NVT element for a preference in the get_preferences response.
-type GetPreferencesResponsePreferenceNVT struct {
+// PreferenceNVT represents the NVT element for a preference in the get_preferences response.
+type PreferenceNVT struct {
 	OID  string `xml:"oid,attr"`
 	Name string `xml:"name"`
 }

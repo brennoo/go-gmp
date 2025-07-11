@@ -22,20 +22,22 @@ type GetAggregates struct {
 
 // GetAggregatesResponse represents a get_aggregates command response.
 type GetAggregatesResponse struct {
-	XMLName    xml.Name        `xml:"get_aggregates_response"`
-	Status     string          `xml:"status,attr"`
-	StatusText string          `xml:"status_text,attr"`
-	Aggregate  *AggregateBlock `xml:"aggregate,omitempty"`
+	XMLName    xml.Name   `xml:"get_aggregates_response"`
+	Status     string     `xml:"status,attr"`
+	StatusText string     `xml:"status_text,attr"`
+	Aggregate  *Aggregate `xml:"aggregate,omitempty"`
 }
 
-type AggregateBlock struct {
-	DataType    string           `xml:"data_type,omitempty"`
-	DataColumn  string           `xml:"data_column,omitempty"`
-	GroupColumn string           `xml:"group_column,omitempty"`
-	Groups      []AggregateGroup `xml:"group"`
-	ColumnInfo  *ColumnInfo      `xml:"column_info,omitempty"`
+// Aggregate represents an aggregate block containing grouped data.
+type Aggregate struct {
+	DataType    string               `xml:"data_type,omitempty"`
+	DataColumn  string               `xml:"data_column,omitempty"`
+	GroupColumn string               `xml:"group_column,omitempty"`
+	Groups      []AggregateGroup     `xml:"group"`
+	ColumnInfo  *AggregateColumnInfo `xml:"column_info,omitempty"`
 }
 
+// AggregateGroup represents a group within an aggregate with statistical data.
 type AggregateGroup struct {
 	Value  string  `xml:"value,omitempty"`
 	Count  int     `xml:"count,omitempty"`
@@ -47,10 +49,12 @@ type AggregateGroup struct {
 	CSum   float64 `xml:"c_sum,omitempty"`
 }
 
-type ColumnInfo struct {
+// AggregateColumnInfo represents information about aggregate columns.
+type AggregateColumnInfo struct {
 	Columns []AggregateColumn `xml:"aggregate_column"`
 }
 
+// AggregateColumn represents information about a single aggregate column.
 type AggregateColumn struct {
 	Name     string `xml:"name,omitempty"`
 	Stat     string `xml:"stat,omitempty"`

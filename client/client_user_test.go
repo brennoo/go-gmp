@@ -16,7 +16,7 @@ func TestCreateUser(t *testing.T) {
 	cmd := &commands.CreateUser{
 		Name:     "testuser",
 		Password: "testpass",
-		Roles:    []commands.CreateUserRole{{ID: "role-uuid"}},
+		Roles:    []*commands.UserRole{{ID: "role-uuid"}},
 	}
 	resp, err := cli.CreateUser(cmd)
 	if err != nil {
@@ -55,11 +55,11 @@ func TestModifyUser(t *testing.T) {
 		Name:    "testuser",
 		NewName: "newuser",
 		Comment: "Updated user",
-		Password: &commands.ModifyUserPassword{
+		Password: &commands.UserPassword{
 			Modify: "1",
 			Text:   "newpass",
 		},
-		Roles: []commands.CreateUserRole{{ID: "role-uuid"}},
+		Roles: []*commands.UserRole{{ID: "role-uuid"}},
 	}
 	resp, err := cli.ModifyUser(cmd)
 	if err != nil {

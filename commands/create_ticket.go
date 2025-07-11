@@ -4,24 +4,12 @@ import "encoding/xml"
 
 // CreateTicket represents a create_ticket command request.
 type CreateTicket struct {
-	XMLName  xml.Name               `xml:"create_ticket"`
-	Comment  string                 `xml:"comment,omitempty"`
-	Copy     string                 `xml:"copy,omitempty"`
-	Result   CreateTicketResult     `xml:"result"`
-	Assigned CreateTicketAssignedTo `xml:"assigned_to"`
-	OpenNote string                 `xml:"open_note"`
-}
-
-type CreateTicketResult struct {
-	ID string `xml:"id,attr"`
-}
-
-type CreateTicketAssignedTo struct {
-	User CreateTicketUser `xml:"user"`
-}
-
-type CreateTicketUser struct {
-	ID string `xml:"id,attr"`
+	XMLName  xml.Name         `xml:"create_ticket"`
+	Comment  string           `xml:"comment,omitempty"`
+	Copy     string           `xml:"copy,omitempty"`
+	Result   TicketResult     `xml:"result"`
+	Assigned TicketAssignedTo `xml:"assigned_to"`
+	OpenNote string           `xml:"open_note"`
 }
 
 // CreateTicketResponse represents a create_ticket command response.

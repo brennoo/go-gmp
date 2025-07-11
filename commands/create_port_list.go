@@ -2,7 +2,7 @@ package commands
 
 import "encoding/xml"
 
-// CreatePortList represents a create_port_list command request.
+// CreatePortList is a create_port_list command request.
 type CreatePortList struct {
 	XMLName   xml.Name `xml:"create_port_list"`
 	Name      string   `xml:"name"`
@@ -11,7 +11,7 @@ type CreatePortList struct {
 	PortRange string   `xml:"port_range"`
 }
 
-// CreatePortListResponse represents a create_port_list command response.
+// CreatePortListResponse is a create_port_list command response.
 type CreatePortListResponse struct {
 	XMLName    xml.Name `xml:"create_port_list_response"`
 	Status     string   `xml:"status,attr"`

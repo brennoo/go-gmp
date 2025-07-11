@@ -12,14 +12,15 @@ type GetResourceNames struct {
 
 // GetResourceNamesResponse represents a get_resource_names command response.
 type GetResourceNamesResponse struct {
-	XMLName    xml.Name       `xml:"get_resource_names_response"`
-	Status     string         `xml:"status,attr"`
-	StatusText string         `xml:"status_text,attr"`
-	Type       string         `xml:"type,omitempty"`
-	Resources  []ResourceName `xml:"resource"`
+	XMLName    xml.Name   `xml:"get_resource_names_response"`
+	Status     string     `xml:"status,attr"`
+	StatusText string     `xml:"status_text,attr"`
+	Type       string     `xml:"type,omitempty"`
+	Resources  []Resource `xml:"resource"`
 }
 
-type ResourceName struct {
+// Resource represents a <resource> element in the response.
+type Resource struct {
 	ID   string `xml:"id,attr"`
 	Name string `xml:"name"`
 }

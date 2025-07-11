@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/xml"
-	"time"
 )
 
 // GetPortLists represents a get_port_lists command request.
@@ -11,85 +10,85 @@ type GetPortLists struct {
 	PortListID string   `xml:"port_list_id,attr,omitempty"`
 	Filter     string   `xml:"filter,attr,omitempty"`
 	FiltID     string   `xml:"filt_id,attr,omitempty"`
-	Details    bool     `xml:"details,attr,omitempty"`
-	Targets    bool     `xml:"targets,attr,omitempty"`
-	Trash      bool     `xml:"trash,attr,omitempty"`
+	Details    string   `xml:"details,attr,omitempty"`
+	Targets    string   `xml:"targets,attr,omitempty"`
+	Trash      string   `xml:"trash,attr,omitempty"`
 }
 
 // GetPortListsResponse represents a get_port_lists command response.
 type GetPortListsResponse struct {
-	XMLName       xml.Name                       `xml:"get_port_lists_response"`
-	Status        string                         `xml:"status,attr"`
-	StatusText    string                         `xml:"status_text,attr"`
-	PortList      []GetPortListsResponsePortList `xml:"port_list,omitempty"`
-	Filters       *GetPortListsResponseFilters   `xml:"filters,omitempty"`
-	Sort          *GetPortListsResponseSort      `xml:"sort,omitempty"`
-	PortLists     *GetPortListsResponsePortLists `xml:"port_lists,omitempty"`
-	PortListCount *GetPortListsResponseCount     `xml:"port_list_count,omitempty"`
+	XMLName    xml.Name            `xml:"get_port_lists_response"`
+	Status     string              `xml:"status,attr"`
+	StatusText string              `xml:"status_text,attr"`
+	PortLists  []PortList          `xml:"port_list,omitempty"`
+	Filters    *PortListFilters    `xml:"filters,omitempty"`
+	Sort       *PortListSort       `xml:"sort,omitempty"`
+	Pagination *PortListPagination `xml:"port_lists,omitempty"`
+	Count      *PortListCount      `xml:"port_list_count,omitempty"`
 }
 
-// GetPortListsResponsePortList represents a port_list element in the get_port_lists response.
-type GetPortListsResponsePortList struct {
-	ID               string                             `xml:"id,attr"`
-	Owner            *GetPortListsResponsePortListOwner `xml:"owner,omitempty"`
-	Name             string                             `xml:"name,omitempty"`
-	Comment          string                             `xml:"comment,omitempty"`
-	CreationTime     time.Time                          `xml:"creation_time,omitempty"`
-	ModificationTime time.Time                          `xml:"modification_time,omitempty"`
-	Writable         bool                               `xml:"writable,omitempty"`
-	InUse            bool                               `xml:"in_use,omitempty"`
-	Permissions      *GetPortListsResponsePermissions   `xml:"permissions,omitempty"`
-	UserTags         *GetPortListsResponseUserTags      `xml:"user_tags,omitempty"`
-	PortCount        *GetPortListsResponsePortCount     `xml:"port_count,omitempty"`
-	PortRanges       *GetPortListsResponsePortRanges    `xml:"port_ranges,omitempty"`
-	Targets          *GetPortListsResponseTargets       `xml:"targets,omitempty"`
-	Predefined       bool                               `xml:"predefined,omitempty"`
-	Deprecated       bool                               `xml:"deprecated,omitempty"`
+// PortList represents a port_list element in the response.
+type PortList struct {
+	ID               string               `xml:"id,attr"`
+	Owner            *PortListOwner       `xml:"owner,omitempty"`
+	Name             string               `xml:"name,omitempty"`
+	Comment          string               `xml:"comment,omitempty"`
+	CreationTime     string               `xml:"creation_time,omitempty"`
+	ModificationTime string               `xml:"modification_time,omitempty"`
+	Writable         string               `xml:"writable,omitempty"`
+	InUse            string               `xml:"in_use,omitempty"`
+	Permissions      *PortListPermissions `xml:"permissions,omitempty"`
+	UserTags         *PortListUserTags    `xml:"user_tags,omitempty"`
+	PortCount        *PortListPortCount   `xml:"port_count,omitempty"`
+	PortRanges       *PortListPortRanges  `xml:"port_ranges,omitempty"`
+	Targets          *PortListTargets     `xml:"targets,omitempty"`
+	Predefined       string               `xml:"predefined,omitempty"`
+	Deprecated       string               `xml:"deprecated,omitempty"`
 }
 
-// GetPortListsResponsePortListOwner represents the owner of a port list.
-type GetPortListsResponsePortListOwner struct {
+// PortListOwner represents the owner of a port list.
+type PortListOwner struct {
 	Name string `xml:"name,omitempty"`
 }
 
-// GetPortListsResponsePermissions represents permissions for a port list.
-type GetPortListsResponsePermissions struct {
-	Permission []GetPortListsResponsePermission `xml:"permission,omitempty"`
+// PortListPermissions represents permissions for a port list.
+type PortListPermissions struct {
+	Permission []PortListPermission `xml:"permission,omitempty"`
 }
 
-// GetPortListsResponsePermission represents a permission for a port list.
-type GetPortListsResponsePermission struct {
+// PortListPermission represents a single permission for a port list.
+type PortListPermission struct {
 	Name string `xml:"name,omitempty"`
 }
 
-// GetPortListsResponseUserTags represents user tags for a port list.
-type GetPortListsResponseUserTags struct {
-	Count int                               `xml:"count,attr,omitempty"`
-	Tag   []GetPortListsResponseUserTagsTag `xml:"tag,omitempty"`
+// PortListUserTags represents user tags for a port list.
+type PortListUserTags struct {
+	Count int               `xml:"count,attr,omitempty"`
+	Tag   []PortListUserTag `xml:"tag,omitempty"`
 }
 
-// GetPortListsResponseUserTagsTag represents a user tag for a port list.
-type GetPortListsResponseUserTagsTag struct {
+// PortListUserTag represents a user tag for a port list.
+type PortListUserTag struct {
 	ID      string `xml:"id,attr,omitempty"`
 	Name    string `xml:"name,omitempty"`
 	Value   string `xml:"value,omitempty"`
 	Comment string `xml:"comment,omitempty"`
 }
 
-// GetPortListsResponsePortCount represents the port count for a port list.
-type GetPortListsResponsePortCount struct {
+// PortListPortCount represents the port count for a port list.
+type PortListPortCount struct {
 	All int `xml:"all,omitempty"`
 	TCP int `xml:"tcp,omitempty"`
 	UDP int `xml:"udp,omitempty"`
 }
 
-// GetPortListsResponsePortRanges represents port ranges for a port list.
-type GetPortListsResponsePortRanges struct {
-	PortRange []GetPortListsResponsePortRange `xml:"port_range,omitempty"`
+// PortListPortRanges represents port ranges for a port list.
+type PortListPortRanges struct {
+	PortRange []PortListPortRange `xml:"port_range,omitempty"`
 }
 
-// GetPortListsResponsePortRange represents a port range for a port list.
-type GetPortListsResponsePortRange struct {
+// PortListPortRange represents a port range for a port list.
+type PortListPortRange struct {
 	ID      string `xml:"id,attr,omitempty"`
 	Start   int    `xml:"start,omitempty"`
 	End     int    `xml:"end,omitempty"`
@@ -97,40 +96,40 @@ type GetPortListsResponsePortRange struct {
 	Comment string `xml:"comment,omitempty"`
 }
 
-// GetPortListsResponseTargets represents targets for a port list.
-type GetPortListsResponseTargets struct {
-	Target []GetPortListsResponseTarget `xml:"target,omitempty"`
+// PortListTargets represents targets for a port list.
+type PortListTargets struct {
+	Target []PortListTarget `xml:"target,omitempty"`
 }
 
-// GetPortListsResponseTarget represents a target for a port list.
-type GetPortListsResponseTarget struct {
+// PortListTarget represents a target for a port list.
+type PortListTarget struct {
 	ID          string `xml:"id,attr,omitempty"`
 	Name        string `xml:"name,omitempty"`
 	Permissions string `xml:"permissions,omitempty"`
 }
 
-// GetPortListsResponseFilters represents filters for the get_port_lists response.
-type GetPortListsResponseFilters struct {
+// PortListFilters represents filters for the get_port_lists response.
+type PortListFilters struct {
 	ID       string `xml:"id,attr,omitempty"`
 	Term     string `xml:"term,omitempty"`
 	Name     string `xml:"name,omitempty"`
 	Keywords string `xml:"keywords,omitempty"`
 }
 
-// GetPortListsResponseSort represents sorting information for the get_port_lists response.
-type GetPortListsResponseSort struct {
+// PortListSort represents sorting information for the get_port_lists response.
+type PortListSort struct {
 	Field string `xml:"field,omitempty"`
 	Order string `xml:"order,omitempty"`
 }
 
-// GetPortListsResponsePortLists represents the port_lists element in the get_port_lists response.
-type GetPortListsResponsePortLists struct {
+// PortListPagination represents pagination information for the get_port_lists response.
+type PortListPagination struct {
 	Start int `xml:"start,attr,omitempty"`
 	Max   int `xml:"max,attr,omitempty"`
 }
 
-// GetPortListsResponseCount represents the port_list_count element in the get_port_lists response.
-type GetPortListsResponseCount struct {
+// PortListCount represents the port_list_count element in the get_port_lists response.
+type PortListCount struct {
 	Filtered int `xml:"filtered,attr,omitempty"`
 	Page     int `xml:"page,attr,omitempty"`
 }

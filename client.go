@@ -144,8 +144,8 @@ type Client interface {
 	DeleteAgents(cmd *commands.DeleteAgents) (resp *commands.DeleteAgentsResponse, err error)
 
 	// Feeds, Licenses, Features, Aggregates, Resource Names
-	GetNvts(cmd *commands.GetNvts) (resp *commands.GetNvtsResponse, err error)
-	GetNvtFamilies(cmd *commands.GetNvtFamilies) (resp *commands.GetNvtFamiliesResponse, err error)
+	GetNVTs(cmd *commands.GetNVTs) (resp *commands.GetNVTsResponse, err error)
+	GetNVTFamilies(cmd *commands.GetNVTFamilies) (resp *commands.GetNVTFamiliesResponse, err error)
 	GetFeeds(cmd *commands.GetFeeds) (resp *commands.GetFeedsResponse, err error)
 	ModifyLicense(cmd *commands.ModifyLicense) (resp *commands.ModifyLicenseResponse, err error)
 	GetLicense(cmd *commands.GetLicense) (resp *commands.GetLicenseResponse, err error)

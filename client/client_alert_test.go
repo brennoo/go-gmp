@@ -13,26 +13,26 @@ func TestCreateAlert(t *testing.T) {
 	}
 
 	condData := []commands.AlertData{
-		commands.NewAlertData("severity", "5.5"),
+		{Name: "severity", Text: "5.5"},
 	}
 	evtData := []commands.AlertData{
-		commands.NewAlertData("status", "Done"),
+		{Name: "status", Text: "Done"},
 	}
 	methData := []commands.AlertData{
-		commands.NewAlertData("to_address", "test@example.org"),
-		commands.NewAlertData("from_address", "alert@example.org"),
+		{Name: "to_address", Text: "test@example.org"},
+		{Name: "from_address", Text: "alert@example.org"},
 	}
 
-	cmd := commands.NewCreateAlert(
-		"Test Alert",
-		"",
-		"",
-		commands.NewAlertCondition("Severity at least", condData),
-		commands.NewAlertEvent("Task run status changed", evtData),
-		commands.NewAlertMethod("Email", methData),
-		nil, // filter
-		nil, // active
-	)
+	cmd := &commands.CreateAlert{
+		Name:      "Test Alert",
+		Comment:   "",
+		Copy:      "",
+		Condition: commands.AlertCondition{Text: "Severity at least", Data: condData},
+		Event:     commands.AlertEvent{Text: "Task run status changed", Data: evtData},
+		Method:    commands.AlertMethod{Text: "Email", Data: methData},
+		Filter:    nil, // filter
+		Active:    "",  // active
+	}
 	resp, err := cli.CreateAlert(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateAlert: %s", err)
@@ -77,7 +77,7 @@ func TestModifyAlert(t *testing.T) {
 	alertID := "914b59f8-25f5-4c8f-832c-2379cd625236"
 	name := "Updated Alert Name"
 	comment := "Updated comment"
-	filter := &commands.ModifyAlertFilter{ID: "7a06bd00-7e4a-4669-b7d7-8fe65ec64a41"}
+	filter := &commands.AlertFilter{ID: "7a06bd00-7e4a-4669-b7d7-8fe65ec64a41"}
 	cmd := &commands.ModifyAlert{
 		AlertID: alertID,
 		Name:    &name,
@@ -102,7 +102,7 @@ func TestDeleteAlert(t *testing.T) {
 	alertID := "267a3405-e84a-47da-97b2-5fa0d2e8995e"
 	cmd := &commands.DeleteAlert{
 		AlertID:  alertID,
-		Ultimate: true,
+		Ultimate: "1",
 	}
 	resp, err := cli.DeleteAlert(cmd)
 	if err != nil {

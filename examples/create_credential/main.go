@@ -20,7 +20,7 @@ func main() {
 	cli := client.New(gmpConn)
 
 	// Authenticate as admin:admin
-	auth := commands.NewAuthenticateCredentials("admin", "admin")
+	auth := &commands.Authenticate{Credentials: &commands.AuthenticateCredentials{Username: "admin", Password: "admin"}}
 	respAuth, err := cli.Authenticate(auth)
 	if err != nil {
 		log.Fatalf("Authentication failed: %v", err)
@@ -36,9 +36,9 @@ func main() {
 		Login:         "username",
 		Password:      "password",
 		Type:          "ssh",
-		KDCs:          commands.NewCredentialKDCs("kdc1.example.com", "kdc2.example.com"),
-		Key:           commands.NewCredentialKey("passphrase", "private-key", "public-key"),
-		Privacy:       commands.NewCredentialPrivacy("AES", "snmp-password"),
+		KDCs:          &commands.CreateCredentialKDCs{KDC: []string{"kdc1.example.com", "kdc2.example.com"}},
+		Key:           &commands.CreateCredentialKey{Phrase: "passphrase", Private: "private-key", Public: "public-key"},
+		Privacy:       &commands.CreateCredentialPrivacy{Algorithm: "AES", Password: "snmp-password"},
 		AllowInsecure: "0",
 	}
 

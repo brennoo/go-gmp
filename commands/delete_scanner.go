@@ -6,8 +6,7 @@ import "encoding/xml"
 type DeleteScanner struct {
 	XMLName   xml.Name `xml:"delete_scanner"`
 	ScannerID string   `xml:"scanner_id,attr"`
-	// Ultimate: "1" to remove entirely, "0" to move to trashcan (required by protocol)
-	Ultimate string `xml:"ultimate,attr"`
+	Ultimate  string   `xml:"ultimate,attr"`
 }
 
 // DeleteScannerResponse represents a delete_scanner command response.

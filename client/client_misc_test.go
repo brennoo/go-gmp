@@ -174,13 +174,13 @@ func TestGetFeeds(t *testing.T) {
 		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
 	}
 	if resp.FeedOwnerSet != "1" {
-		t.Fatalf("Unexpected feed_owner_set. Expected: 1 Got: %s", resp.FeedOwnerSet)
+		t.Fatalf("Unexpected feed_owner_set. Expected: 1 Got: %v", resp.FeedOwnerSet)
 	}
 	if resp.FeedRolesSet != "1" {
-		t.Fatalf("Unexpected feed_roles_set. Expected: 1 Got: %s", resp.FeedRolesSet)
+		t.Fatalf("Unexpected feed_roles_set. Expected: 1 Got: %v", resp.FeedRolesSet)
 	}
 	if resp.FeedResourcesAccess != "1" {
-		t.Fatalf("Unexpected feed_resources_access. Expected: 1 Got: %s", resp.FeedResourcesAccess)
+		t.Fatalf("Unexpected feed_resources_access. Expected: 1 Got: %v", resp.FeedResourcesAccess)
 	}
 	if len(resp.Feeds) != 3 {
 		t.Fatalf("Expected 3 feeds, got %d", len(resp.Feeds))

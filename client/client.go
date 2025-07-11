@@ -480,14 +480,14 @@ func (cli *client) DeleteAgents(cmd *commands.DeleteAgents) (resp *commands.Dele
 	return resp, err
 }
 
-func (cli *client) GetNvts(cmd *commands.GetNvts) (resp *commands.GetNvtsResponse, err error) {
-	resp = new(commands.GetNvtsResponse)
+func (cli *client) GetNVTs(cmd *commands.GetNVTs) (resp *commands.GetNVTsResponse, err error) {
+	resp = new(commands.GetNVTsResponse)
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
 
-func (cli *client) GetNvtFamilies(cmd *commands.GetNvtFamilies) (resp *commands.GetNvtFamiliesResponse, err error) {
-	resp = new(commands.GetNvtFamiliesResponse)
+func (cli *client) GetNVTFamilies(cmd *commands.GetNVTFamilies) (resp *commands.GetNVTFamiliesResponse, err error) {
+	resp = new(commands.GetNVTFamiliesResponse)
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }

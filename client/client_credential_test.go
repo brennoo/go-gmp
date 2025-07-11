@@ -15,9 +15,9 @@ func TestCreateCredential(t *testing.T) {
 	// Success case
 	cmd := &commands.CreateCredential{
 		Name:    "Test Credential",
-		KDCs:    commands.NewCredentialKDCs("kdc1.example.com", "kdc2.example.com"),
-		Key:     commands.NewCredentialKey("passphrase", "private-key", "public-key"),
-		Privacy: commands.NewCredentialPrivacy("AES", "snmp-password"),
+		KDCs:    &commands.CreateCredentialKDCs{KDC: []string{"kdc1.example.com", "kdc2.example.com"}},
+		Key:     &commands.CreateCredentialKey{Phrase: "passphrase", Private: "private-key", Public: "public-key"},
+		Privacy: &commands.CreateCredentialPrivacy{Algorithm: "AES", Password: "snmp-password"},
 	}
 	resp, err := cli.CreateCredential(cmd)
 	if err != nil {
@@ -33,9 +33,9 @@ func TestCreateCredential(t *testing.T) {
 	// Failure case
 	cmdFail := &commands.CreateCredential{
 		Name:    "",
-		KDCs:    commands.NewCredentialKDCs(),
-		Key:     commands.NewCredentialKey("", "", ""),
-		Privacy: commands.NewCredentialPrivacy("", ""),
+		KDCs:    &commands.CreateCredentialKDCs{KDC: []string{}},
+		Key:     &commands.CreateCredentialKey{},
+		Privacy: &commands.CreateCredentialPrivacy{},
 	}
 	respFail, err := cli.CreateCredential(cmdFail)
 	if err != nil {

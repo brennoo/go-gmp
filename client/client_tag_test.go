@@ -14,9 +14,11 @@ func TestCreateTag(t *testing.T) {
 
 	cmd := &commands.CreateTag{
 		Name: "geo:long",
-		Resources: &commands.Resources{
-			Resource: &commands.Resource{ID: "b493b7a8-7489-11df-a3ec-002264764cea"},
-			Type:     "target",
+		Resources: &commands.CreateTagResources{
+			Type: "target",
+			Resources: []commands.TagResource{
+				{ID: "b493b7a8-7489-11df-a3ec-002264764cea"},
+			},
 		},
 		Value: "52.2788",
 	}

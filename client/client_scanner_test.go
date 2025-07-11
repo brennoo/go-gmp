@@ -13,14 +13,12 @@ func TestCreateScanner(t *testing.T) {
 	}
 
 	cmd := &commands.CreateScanner{
-		Name:  "Default Scanner",
-		Host:  "localhost",
-		Port:  "9391",
-		Type:  "2",
-		CAPub: "dummy-ca-pub",
-		Credential: &commands.CreateScannerCredential{
-			ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
-		},
+		Name:       "Default Scanner",
+		Host:       "localhost",
+		Port:       "9391",
+		Type:       "2",
+		CAPub:      "dummy-ca-pub",
+		Credential: &commands.ScannerCredential{ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"},
 	}
 	resp, err := cli.CreateScanner(cmd)
 	if err != nil {
@@ -59,14 +57,12 @@ func TestCreateScannerFail(t *testing.T) {
 	}
 
 	cmd := &commands.CreateScanner{
-		Name:  "",
-		Host:  "localhost",
-		Port:  "9391",
-		Type:  "2",
-		CAPub: "dummy-ca-pub",
-		Credential: &commands.CreateScannerCredential{
-			ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
-		},
+		Name:       "",
+		Host:       "localhost",
+		Port:       "9391",
+		Type:       "2",
+		CAPub:      "dummy-ca-pub",
+		Credential: &commands.ScannerCredential{ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"},
 	}
 	resp, err := cli.CreateScanner(cmd)
 	if err != nil {

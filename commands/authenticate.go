@@ -4,14 +4,8 @@ import "encoding/xml"
 
 // Authenticate represents an authenticate command request.
 type Authenticate struct {
-	XMLName     xml.Name     `xml:"authenticate"`
-	Credentials *credentials `xml:"credentials"`
-}
-
-// credentials contains the username and password for authentication.
-type credentials struct {
-	Username string `xml:"username"`
-	Password string `xml:"password"`
+	XMLName     xml.Name                 `xml:"authenticate"`
+	Credentials *AuthenticateCredentials `xml:"credentials"`
 }
 
 // AuthenticateResponse represents an authenticate command response.
@@ -23,12 +17,8 @@ type AuthenticateResponse struct {
 	Timezone   string   `xml:"timezone,omitempty"`
 }
 
-// NewAuthenticateCredentials creates a new Authenticate command with the given username and password.
-func NewAuthenticateCredentials(username, password string) *Authenticate {
-	return &Authenticate{
-		Credentials: &credentials{
-			Username: username,
-			Password: password,
-		},
-	}
+// AuthenticateCredentials contains the username and password for authentication.
+type AuthenticateCredentials struct {
+	Username string `xml:"username"`
+	Password string `xml:"password"`
 }

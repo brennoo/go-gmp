@@ -14,15 +14,13 @@ func TestCreateReport(t *testing.T) {
 
 	// Success case
 	cmd := &commands.CreateReport{
-		Report: &commands.ReportWrapper{
+		Report: &commands.Report{
 			ID:          "report-uuid",
 			FormatID:    "format-uuid",
 			Extension:   "xml",
 			ContentType: "text/xml",
 		},
-		Task: &commands.CreateReportTask{
-			ID: "task-uuid",
-		},
+		Task:     &commands.ReportTask{ID: "task-uuid"},
 		InAssets: nil,
 	}
 	resp, err := cli.CreateReport(cmd)
@@ -41,12 +39,10 @@ func TestCreateReport(t *testing.T) {
 
 	// Failure case
 	cmdFail := &commands.CreateReport{
-		Report: &commands.ReportWrapper{
+		Report: &commands.Report{
 			ID: "wrong-id",
 		},
-		Task: &commands.CreateReportTask{
-			ID: "wrong-task",
-		},
+		Task: &commands.ReportTask{ID: "wrong-task"},
 	}
 	respFail, err := cli.CreateReport(cmdFail)
 	if err != nil {
@@ -218,8 +214,10 @@ func TestCreateReportConfig(t *testing.T) {
 
 	// Success case
 	cmd := &commands.CreateReportConfig{
-		Name:         "Test config",
-		ReportFormat: commands.CreateReportConfigFormat{ID: "format-uuid"},
+		Name: "Test config",
+		ReportFormat: commands.ReportConfigReportFormat{
+			ID: "format-uuid",
+		},
 	}
 	resp, err := cli.CreateReportConfig(cmd)
 	if err != nil {
@@ -237,8 +235,10 @@ func TestCreateReportConfig(t *testing.T) {
 
 	// Failure case
 	cmdFail := &commands.CreateReportConfig{
-		Name:         "Wrong config",
-		ReportFormat: commands.CreateReportConfigFormat{ID: "wrong-uuid"},
+		Name: "Wrong config",
+		ReportFormat: commands.ReportConfigReportFormat{
+			ID: "wrong-uuid",
+		},
 	}
 	respFail, err := cli.CreateReportConfig(cmdFail)
 	if err != nil {
@@ -278,7 +278,7 @@ func TestModifyReportConfig(t *testing.T) {
 
 	// Success case: modify param
 	cmdParam := &commands.ModifyReportConfig{
-		Params: []commands.ModifyReportConfigParam{{Name: "Node Distance", UseDefault: "1"}},
+		Params: []commands.ReportConfigParam{{Name: "Node Distance", UsingDefault: true}},
 	}
 	respParam, err := cli.ModifyReportConfig(cmdParam)
 	if err != nil {
@@ -377,7 +377,7 @@ func TestModifyReportFormat(t *testing.T) {
 	// Success case: modify param
 	cmdParam := &commands.ModifyReportFormat{
 		ReportFormatID: "format-uuid",
-		Param: &commands.ModifyReportFormatParam{
+		Param: &commands.ReportFormatParam{
 			Name:  "Background Colour",
 			Value: "red",
 		},

@@ -1,4 +1,3 @@
-// Package gmp provides types and commands for interacting with the Greenbone Management Protocol (GMP).
 package commands
 
 import "encoding/xml"
@@ -23,43 +22,28 @@ type CreateCredential struct {
 	Type          string                   `xml:"type,omitempty"`
 }
 
-// CreateCredentialKDCs represents a list of Kerberos KDCs (<kdcs> element) in the GMP protocol.
-type CreateCredentialKDCs struct {
-	KDC []string `xml:"kdc"`
-}
-
-// NewCredentialKDCs creates a new CreateCredentialKDCs with the given KDCs.
-func NewCredentialKDCs(kdcs ...string) *CreateCredentialKDCs {
-	return &CreateCredentialKDCs{KDC: kdcs}
-}
-
-// CreateCredentialKey represents the <key> element for key-based credentials in the GMP protocol.
-type CreateCredentialKey struct {
-	Phrase  string `xml:"phrase,omitempty"`
-	Private string `xml:"private,omitempty"`
-	Public  string `xml:"public,omitempty"`
-}
-
-// NewCredentialKey creates a new CreateCredentialKey.
-func NewCredentialKey(phrase, private, public string) *CreateCredentialKey {
-	return &CreateCredentialKey{Phrase: phrase, Private: private, Public: public}
-}
-
-// CreateCredentialPrivacy represents SNMP privacy settings (<privacy> element) in the GMP protocol.
-type CreateCredentialPrivacy struct {
-	Algorithm string `xml:"algorithm,omitempty"`
-	Password  string `xml:"password,omitempty"`
-}
-
-// NewCredentialPrivacy creates a new CreateCredentialPrivacy.
-func NewCredentialPrivacy(algorithm, password string) *CreateCredentialPrivacy {
-	return &CreateCredentialPrivacy{Algorithm: algorithm, Password: password}
-}
-
 // CreateCredentialResponse represents a GMP create_credential command response.
 type CreateCredentialResponse struct {
 	XMLName    xml.Name `xml:"create_credential_response"`
 	Status     string   `xml:"status,attr"`
 	StatusText string   `xml:"status_text,attr"`
 	ID         string   `xml:"id,attr"`
+}
+
+// CreateCredentialKDCs represents a list of Kerberos Key Distribution Centers (KDCs).
+type CreateCredentialKDCs struct {
+	KDC []string `xml:"kdc"`
+}
+
+// CredentialKey represents the key element for key-based credentials.
+type CreateCredentialKey struct {
+	Phrase  string `xml:"phrase,omitempty"`
+	Private string `xml:"private,omitempty"`
+	Public  string `xml:"public,omitempty"`
+}
+
+// CreateCredentialPrivacy represents SNMP privacy settings.
+type CreateCredentialPrivacy struct {
+	Algorithm string `xml:"algorithm,omitempty"`
+	Password  string `xml:"password,omitempty"`
 }
