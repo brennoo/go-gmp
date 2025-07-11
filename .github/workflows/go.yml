@@ -27,8 +27,8 @@ jobs:
           version: v1.60
       - name: Build
         run: go build -v ./...
-      - name: Test with coverage
-        run: go test -v -coverprofile=coverage.out ./...
+      - name: Test
+        run: go test -v -coverprofile=coverage.out $(go list ./... | grep -v '^./examples')
       - name: Upload coverage to Codacy
         uses: codacy/codacy-coverage-reporter-action@89d6c85cfafaec52c72b6c5e8b2878d33104c699 # v1.3.0
         with:

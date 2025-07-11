@@ -2,6 +2,8 @@ engines:
   duplication:
     exclude_paths:
       - "**/*_test.go"
-  coverage:
+  complexity:
     exclude_paths:
-      - "examples/**" 
+      - "**/*_test.go"
+exclude_paths:
+  - "examples/**"
