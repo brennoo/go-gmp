@@ -9,10 +9,10 @@ type ModifyNote struct {
 	Text     string            `xml:"text,omitempty"`
 	NVT      *NoteNVT          `xml:"nvt,omitempty"`
 	Result   *ModifyNoteResult `xml:"result,omitempty"`
-	Active   string            `xml:"active,omitempty"`
+	Active   int               `xml:"active,omitempty"`
 	Hosts    string            `xml:"hosts,omitempty"`
 	Port     string            `xml:"port,omitempty"`
-	Severity string            `xml:"severity,omitempty"`
+	Severity float64           `xml:"severity,omitempty"`
 	Task     *ModifyNoteTask   `xml:"task,omitempty"`
 }
 

@@ -16,9 +16,9 @@ func TestModifyAgents(t *testing.T) {
 		Agents: []commands.Agent{
 			{ID: "fb6451bf-ec5a-45a8-8bab-5cf4b862e51b"},
 		},
-		Authorized:        "1",
-		MinInterval:       "1000",
-		HeartbeatInterval: "0",
+		Authorized:        1,
+		MinInterval:       1000,
+		HeartbeatInterval: 0,
 		Schedule:          "@every 12h",
 		Comment:           "example update",
 	}

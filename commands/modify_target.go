@@ -22,9 +22,9 @@ type ModifyTarget struct {
 	ESXILSCCredential    *TargetCredential `xml:"esxi_lsc_credential,omitempty"`
 	PortList             *TargetPortList   `xml:"port_list,omitempty"`
 	AliveTests           string            `xml:"alive_tests,omitempty"`
-	ReverseLookupOnly    string            `xml:"reverse_lookup_only,omitempty"`
-	ReverseLookupUnify   string            `xml:"reverse_lookup_unify,omitempty"`
-	AllowSimultaneousIPs string            `xml:"allow_simultaneous_ips,omitempty"`
+	ReverseLookupOnly    bool              `xml:"reverse_lookup_only,omitempty"`
+	ReverseLookupUnify   bool              `xml:"reverse_lookup_unify,omitempty"`
+	AllowSimultaneousIPs bool              `xml:"allow_simultaneous_ips,omitempty"`
 }
 
 // ModifyTargetResponse represents a modify_target command response.

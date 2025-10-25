@@ -110,7 +110,7 @@ func TestDeleteRole(t *testing.T) {
 	// Success case
 	cmd := &commands.DeleteRole{
 		RoleID:   "b64c81b2-b9de-11e3-a2e9-406186ea4fc5",
-		Ultimate: "1",
+		Ultimate: true,
 	}
 	resp, err := cli.DeleteRole(cmd)
 	if err != nil {
@@ -126,7 +126,7 @@ func TestDeleteRole(t *testing.T) {
 	// Failure case
 	cmdFail := &commands.DeleteRole{
 		RoleID:   "",
-		Ultimate: "1",
+		Ultimate: true,
 	}
 	respFail, err := cli.DeleteRole(cmdFail)
 	if err != nil {

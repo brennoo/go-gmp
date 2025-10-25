@@ -6,7 +6,7 @@ import "encoding/xml"
 type DeleteTicket struct {
 	XMLName  xml.Name `xml:"delete_ticket"`
 	TicketID string   `xml:"ticket_id,attr"`
-	Ultimate string   `xml:"ultimate,attr"`
+	Ultimate bool     `xml:"ultimate,attr"`
 }
 
 // DeleteTicketResponse represents a delete_ticket command response.

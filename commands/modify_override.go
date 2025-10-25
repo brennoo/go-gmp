@@ -9,13 +9,13 @@ type ModifyOverride struct {
 	Active      *int         `xml:"active,omitempty"`
 	NVT         *OverrideNVT `xml:"nvt,omitempty"`
 	Hosts       string       `xml:"hosts,omitempty"`
-	NewSeverity string       `xml:"new_severity,omitempty"`
+	NewSeverity float64      `xml:"new_severity,omitempty"`
 	NewThreat   string       `xml:"new_threat,omitempty"`
 	Port        string       `xml:"port,omitempty"`
 	Result      string       `xml:"result,omitempty"`
 	Task        string       `xml:"task,omitempty"`
 	Text        string       `xml:"text"`
-	Severity    string       `xml:"severity,omitempty"`
+	Severity    float64      `xml:"severity,omitempty"`
 	Threat      string       `xml:"threat,omitempty"`
 }
 

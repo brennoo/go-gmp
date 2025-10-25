@@ -174,7 +174,7 @@ func TestDeleteReportFormat(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.DeleteReportFormat{ReportFormatID: "format-uuid", Ultimate: "1"}
+	cmd := &commands.DeleteReportFormat{ReportFormatID: "format-uuid", Ultimate: true}
 	resp, err := cli.DeleteReportFormat(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
@@ -453,7 +453,7 @@ func TestDeleteReportConfig(t *testing.T) {
 	// Success case
 	cmd := &commands.DeleteReportConfig{
 		ReportConfigID: "config-uuid",
-		Ultimate:       "1",
+		Ultimate:       true,
 	}
 	resp, err := cli.DeleteReportConfig(cmd)
 	if err != nil {
@@ -466,7 +466,7 @@ func TestDeleteReportConfig(t *testing.T) {
 	// Failure case
 	cmd = &commands.DeleteReportConfig{
 		ReportConfigID: "notfound",
-		Ultimate:       "1",
+		Ultimate:       true,
 	}
 	resp, err = cli.DeleteReportConfig(cmd)
 	if err != nil {

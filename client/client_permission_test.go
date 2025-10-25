@@ -117,7 +117,7 @@ func TestDeletePermission(t *testing.T) {
 
 	cmd := &commands.DeletePermission{
 		PermissionID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
-		Ultimate:     "1",
+		Ultimate:     true,
 	}
 	resp, err := cli.DeletePermission(cmd)
 	if err != nil {

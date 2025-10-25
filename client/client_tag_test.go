@@ -42,7 +42,7 @@ func TestModifyTag(t *testing.T) {
 
 	cmd := &commands.ModifyTag{
 		TagID:  "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
-		Active: "0",
+		Active: false,
 	}
 	resp, err := cli.ModifyTag(cmd)
 	if err != nil {
@@ -80,7 +80,7 @@ func TestDeleteTag(t *testing.T) {
 
 	cmd := &commands.DeleteTag{
 		TagID:    "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
-		Ultimate: "1",
+		Ultimate: true,
 	}
 	resp, err := cli.DeleteTag(cmd)
 	if err != nil {

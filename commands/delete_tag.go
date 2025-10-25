@@ -6,7 +6,7 @@ import "encoding/xml"
 type DeleteTag struct {
 	XMLName  xml.Name `xml:"delete_tag"`
 	TagID    string   `xml:"tag_id,attr"`
-	Ultimate string   `xml:"ultimate,attr"`
+	Ultimate bool     `xml:"ultimate,attr"`
 }
 
 // DeleteTagResponse represents a delete_tag command response.

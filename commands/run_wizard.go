@@ -10,7 +10,7 @@ type RunWizard struct {
 	Mode     string        `xml:"mode,omitempty"`
 	Name     string        `xml:"name"`
 	Params   *WizardParams `xml:"params,omitempty"`
-	ReadOnly string        `xml:"read_only,attr,omitempty"`
+	ReadOnly bool          `xml:"read_only,attr,omitempty"`
 }
 
 // RunWizardResponse represents a run_wizard command response.

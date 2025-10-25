@@ -76,7 +76,7 @@ func TestDeleteNote(t *testing.T) {
 
 	cmd := &commands.DeleteNote{
 		NoteID:   "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
-		Ultimate: "0",
+		Ultimate: false,
 	}
 	resp, err := cli.DeleteNote(cmd)
 	if err != nil {

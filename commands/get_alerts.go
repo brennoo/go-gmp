@@ -2,6 +2,7 @@ package commands
 
 import (
 	"encoding/xml"
+	"time"
 )
 
 // GetAlerts represents a get_alerts command request.
@@ -32,8 +33,8 @@ type Alert struct {
 	Owner            AlertOwner        `xml:"owner"`
 	Name             string            `xml:"name"`
 	Comment          string            `xml:"comment"`
-	CreationTime     string            `xml:"creation_time"`
-	ModificationTime string            `xml:"modification_time"`
+	CreationTime     time.Time         `xml:"creation_time"`
+	ModificationTime time.Time         `xml:"modification_time"`
 	InUse            *bool             `xml:"in_use"`
 	Writable         *bool             `xml:"writable"`
 	Permissions      []AlertPermission `xml:"permissions>permission,omitempty"`

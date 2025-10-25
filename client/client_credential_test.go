@@ -136,7 +136,7 @@ func TestDeleteCredential(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.DeleteCredential{CredentialID: "cred-uuid-1", Ultimate: "1"}
+	cmd := &commands.DeleteCredential{CredentialID: "cred-uuid-1", Ultimate: true}
 	resp, err := cli.DeleteCredential(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)

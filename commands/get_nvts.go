@@ -1,6 +1,9 @@
 package commands
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"time"
+)
 
 // GetNVTs represents a get_nvts command request.
 type GetNVTs struct {
@@ -32,17 +35,17 @@ type GetNVTsResponse struct {
 type NVT struct {
 	OID              string          `xml:"oid,attr"`
 	Name             string          `xml:"name,omitempty"`
-	CreationTime     string          `xml:"creation_time,omitempty"`
-	ModificationTime string          `xml:"modification_time,omitempty"`
-	Category         string          `xml:"category,omitempty"`
+	CreationTime     time.Time       `xml:"creation_time,omitempty"`
+	ModificationTime time.Time       `xml:"modification_time,omitempty"`
+	Category         int             `xml:"category,omitempty"`
 	Family           string          `xml:"family,omitempty"`
-	CvssBase         string          `xml:"cvss_base,omitempty"`
+	CvssBase         int             `xml:"cvss_base,omitempty"`
 	Severities       *NVTSeverities  `xml:"severities,omitempty"`
 	Refs             string          `xml:"refs,omitempty"`
 	Tags             string          `xml:"tags,omitempty"`
-	PreferenceCount  string          `xml:"preference_count,omitempty"`
-	Timeout          string          `xml:"timeout,omitempty"`
-	DefaultTimeout   string          `xml:"default_timeout,omitempty"`
+	PreferenceCount  int             `xml:"preference_count,omitempty"`
+	Timeout          int             `xml:"timeout,omitempty"`
+	DefaultTimeout   int             `xml:"default_timeout,omitempty"`
 	Solution         string          `xml:"solution,omitempty"`
 	Epss             string          `xml:"epss,omitempty"`
 	Preferences      *NVTPreferences `xml:"preferences,omitempty"`
@@ -53,17 +56,17 @@ type NVT struct {
 
 // NVTSeverities represents the severities element in an NVT.
 type NVTSeverities struct {
-	Score      string        `xml:"score,attr,omitempty"`
+	Score      float64       `xml:"score,attr,omitempty"`
 	Severities []NVTSeverity `xml:"severity,omitempty"`
 }
 
 // NVTSeverity represents a severity element in an NVT.
 type NVTSeverity struct {
-	Type   string `xml:"type,attr,omitempty"`
-	Origin string `xml:"origin,omitempty"`
-	Date   string `xml:"date,omitempty"`
-	Score  string `xml:"score,omitempty"`
-	Value  string `xml:"value,omitempty"`
+	Type   string  `xml:"type,attr,omitempty"`
+	Origin string  `xml:"origin,omitempty"`
+	Date   string  `xml:"date,omitempty"`
+	Score  float64 `xml:"score,omitempty"`
+	Value  string  `xml:"value,omitempty"`
 }
 
 // NVTPreferences represents the preferences element in an NVT.

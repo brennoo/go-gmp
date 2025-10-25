@@ -17,6 +17,6 @@ type GetFeaturesResponse struct {
 
 // Feature represents a <feature> element in the get_features response.
 type Feature struct {
-	Enabled string `xml:"enabled,attr"`
+	Enabled bool   `xml:"enabled,attr"`
 	Name    string `xml:"name"`
 }

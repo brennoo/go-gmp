@@ -1,6 +1,9 @@
 package commands
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"time"
+)
 
 // GetReportConfigs represents a get_report_configs command request.
 type GetReportConfigs struct {
@@ -26,10 +29,10 @@ type ReportConfig struct {
 	Owner            *ReportConfigOwner        `xml:"owner,omitempty"`
 	Name             string                    `xml:"name"`
 	Comment          string                    `xml:"comment,omitempty"`
-	CreationTime     string                    `xml:"creation_time"`
-	ModificationTime string                    `xml:"modification_time"`
-	Writable         string                    `xml:"writable"`
-	InUse            string                    `xml:"in_use"`
+	CreationTime     time.Time                 `xml:"creation_time"`
+	ModificationTime time.Time                 `xml:"modification_time"`
+	Writable         bool                      `xml:"writable"`
+	InUse            bool                      `xml:"in_use"`
 	Permissions      *ReportConfigPermissions  `xml:"permissions,omitempty"`
 	ReportFormat     *ReportConfigReportFormat `xml:"report_format"`
 	Params           []ReportConfigParam       `xml:"param"`

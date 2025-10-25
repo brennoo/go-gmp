@@ -96,7 +96,7 @@ func TestDeleteTicket(t *testing.T) {
 	cli := New(mockedConnection())
 	cmd := &commands.DeleteTicket{
 		TicketID: "ticket-uuid",
-		Ultimate: "1",
+		Ultimate: true,
 	}
 	resp, err := cli.DeleteTicket(cmd)
 	if err != nil {

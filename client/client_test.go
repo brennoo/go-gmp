@@ -1,6 +1,8 @@
 package client
 
 import (
+	"time"
+
 	"github.com/brennoo/go-gmp"
 	"github.com/brennoo/go-gmp/commands"
 )
@@ -238,8 +240,8 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 					ID:               "b493b7a8-7489-11df-a3ec-002264764cea",
 					Name:             "Localhost",
 					Comment:          "",
-					CreationTime:     "2018-08-29T20:21:33Z",
-					ModificationTime: "2018-08-29T20:21:33Z",
+					CreationTime:     time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
+					ModificationTime: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
 					Type:             "host",
 				},
 			}
@@ -285,10 +287,10 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 					ID:               "ddda859a-45be-4c58-85b3-517c66230232",
 					Name:             "Every day",
 					Comment:          "",
-					CreationTime:     "2020-06-03T16:27:05Z",
-					ModificationTime: "2020-06-03T16:27:05Z",
-					Writable:         "1",
-					InUse:            "0",
+					CreationTime:     time.Date(2020, 6, 3, 16, 27, 5, 0, time.UTC),
+					ModificationTime: time.Date(2020, 6, 3, 16, 27, 5, 0, time.UTC),
+					Writable:         true,
+					InUse:            false,
 					ICalendar:        "DTSTART:20200603T162600Z DURATION:PT0S RRULE:FREQ=DAILY",
 					Timezone:         "UTC",
 				},
@@ -335,9 +337,9 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 					ID:          "b76b81a7-9df8-42df-afff-baa9d4620128",
 					Text:        &commands.OverrideText{Text: "This is the full text of the override."},
 					NewThreat:   "Log",
-					NewSeverity: "0.0",
-					Orphan:      "1",
-					Active:      "1",
+					NewSeverity: 0.0,
+					Orphan:      true,
+					Active:      true,
 					NVT:         &commands.OverrideNVT{OID: "1.3.6.1.4.1.25623.1.0.75", Name: "Test NVT: long lines"},
 				},
 			}
@@ -378,10 +380,10 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 					ContentType:      "text/xml",
 					Name:             "Test Report",
 					Owner:            &commands.ReportOwner{Name: "admin"},
-					CreationTime:     "2024-01-23T09:43:03Z",
-					ModificationTime: "2024-01-26T14:11:54Z",
-					Writable:         "1",
-					InUse:            "0",
+					CreationTime:     time.Date(2024, 1, 23, 9, 43, 3, 0, time.UTC),
+					ModificationTime: time.Date(2024, 1, 26, 14, 11, 54, 0, time.UTC),
+					Writable:         true,
+					InUse:            false,
 				},
 			}
 		} else {
@@ -436,11 +438,11 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 					ContentType:      "text/html",
 					Summary:          "Single page HTML report.",
 					Description:      "A single HTML page listing results of a scan.",
-					CreationTime:     "2013-01-31T16:46:32+01:00",
-					ModificationTime: "2013-01-31T16:46:32+01:00",
-					Writable:         "1",
-					InUse:            "0",
-					Active:           "1",
+					CreationTime:     time.Date(2013, 1, 31, 16, 46, 32, 0, time.FixedZone("+01:00", 3600)),
+					ModificationTime: time.Date(2013, 1, 31, 16, 46, 32, 0, time.FixedZone("+01:00", 3600)),
+					Writable:         true,
+					InUse:            false,
+					Active:           true,
 				},
 			}
 		} else {
@@ -450,7 +452,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.DeleteReportFormat); ok {
-		if cmd.ReportFormatID == "format-uuid" && cmd.Ultimate == "1" {
+		if cmd.ReportFormatID == "format-uuid" && cmd.Ultimate == true {
 			(*response.(*commands.DeleteReportFormatResponse)).Status = "200"
 			(*response.(*commands.DeleteReportFormatResponse)).StatusText = "OK"
 		} else {
@@ -505,10 +507,10 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 					Name:             "Test config",
 					Owner:            &commands.ReportConfigOwner{Name: "admin"},
 					Comment:          "Test comment",
-					CreationTime:     "2024-01-23T09:43:03Z",
-					ModificationTime: "2024-01-26T14:11:54Z",
-					Writable:         "1",
-					InUse:            "0",
+					CreationTime:     time.Date(2024, 1, 23, 9, 43, 3, 0, time.UTC),
+					ModificationTime: time.Date(2024, 1, 26, 14, 11, 54, 0, time.UTC),
+					Writable:         true,
+					InUse:            false,
 					Permissions: &commands.ReportConfigPermissions{
 						Permissions: []commands.ReportConfigPermission{{Name: "Everything"}},
 					},
@@ -542,7 +544,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.DeleteReportConfig); ok {
-		if cmd.ReportConfigID == "config-uuid" && cmd.Ultimate == "1" {
+		if cmd.ReportConfigID == "config-uuid" && cmd.Ultimate == true {
 			(*response.(*commands.DeleteReportConfigResponse)).Status = "200"
 			(*response.(*commands.DeleteReportConfigResponse)).StatusText = "OK"
 		} else {
@@ -561,12 +563,12 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 					Title: "Processes",
 					Report: &commands.SystemReportReport{
 						Format:   "png",
-						Duration: "86400",
+						Duration: 86400,
 						Value:    "iVBORw0KGgoAAAANSUhEUgAAArkAAAE...2bEdAAAAAElFTkSuQmCC",
 					},
 				},
 			}
-		} else if cmd.Brief == "1" {
+		} else if cmd.Brief {
 			(*response.(*commands.GetSystemReportsResponse)).Status = "200"
 			(*response.(*commands.GetSystemReportsResponse)).StatusText = "OK"
 			(*response.(*commands.GetSystemReportsResponse)).SystemReports = []commands.SystemReport{
@@ -609,8 +611,8 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 					ID:       "cred-uuid-1",
 					Name:     "sally",
 					Login:    "sally",
-					Writable: "1",
-					InUse:    "0",
+					Writable: true,
+					InUse:    false,
 					Type:     "usk",
 					FullType: "username + SSH key",
 					Formats:  &commands.CredentialFormats{Formats: []string{"key", "rpm", "deb"}},
@@ -619,8 +621,8 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 					ID:       "cred-uuid-2",
 					Name:     "bob",
 					Login:    "bob",
-					Writable: "1",
-					InUse:    "1",
+					Writable: true,
+					InUse:    true,
 					Type:     "up",
 					FullType: "username + password",
 					Formats:  &commands.CredentialFormats{Formats: []string{"exe"}},
@@ -634,8 +636,8 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 					ID:       "cred-uuid-1",
 					Name:     "sally",
 					Login:    "sally",
-					Writable: "1",
-					InUse:    "0",
+					Writable: true,
+					InUse:    false,
 					Type:     "usk",
 					FullType: "username + SSH key",
 					Formats:  &commands.CredentialFormats{Formats: []string{"key", "rpm", "deb"}},
@@ -648,7 +650,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.DeleteCredential); ok {
-		if cmd.CredentialID == "cred-uuid-1" && cmd.Ultimate == "1" {
+		if cmd.CredentialID == "cred-uuid-1" && cmd.Ultimate == true {
 			(*response.(*commands.DeleteCredentialResponse)).Status = "200"
 			(*response.(*commands.DeleteCredentialResponse)).StatusText = "OK"
 		} else {
@@ -658,7 +660,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.CreateScanner); ok {
-		if cmd.Name == "Default Scanner" && cmd.Host == "localhost" && cmd.Port == "9391" && cmd.Type == "2" && cmd.CAPub != "" && cmd.Credential != nil && cmd.Credential.ID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+		if cmd.Name == "Default Scanner" && cmd.Host == "localhost" && cmd.Port == 9391 && cmd.Type == "2" && cmd.CAPub != "" && cmd.Credential != nil && cmd.Credential.ID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
 			(*response.(*commands.CreateScannerResponse)).Status = "201"
 			(*response.(*commands.CreateScannerResponse)).StatusText = "OK, resource created"
 			(*response.(*commands.CreateScannerResponse)).ID = "814cd30f-dee1-4d58-851d-21b8d0c048e3"
@@ -679,7 +681,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.DeleteScanner); ok {
-		if cmd.ScannerID == "scanner-uuid" && cmd.Ultimate == "1" {
+		if cmd.ScannerID == "scanner-uuid" && cmd.Ultimate == true {
 			(*response.(*commands.DeleteScannerResponse)).Status = "200"
 			(*response.(*commands.DeleteScannerResponse)).StatusText = "OK"
 		} else {
@@ -721,7 +723,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.DeletePortList); ok {
-		if cmd.PortListID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" && cmd.Ultimate == "1" {
+		if cmd.PortListID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" && cmd.Ultimate == true {
 			(*response.(*commands.DeletePortListResponse)).Status = "200"
 			(*response.(*commands.DeletePortListResponse)).StatusText = "OK"
 		} else {
@@ -802,7 +804,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.DeleteConfig); ok {
-		if cmd.ConfigID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" && cmd.Ultimate == "1" {
+		if cmd.ConfigID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" && cmd.Ultimate == true {
 			(*response.(*commands.DeleteConfigResponse)).Status = "200"
 			(*response.(*commands.DeleteConfigResponse)).StatusText = "OK"
 		} else {
@@ -818,7 +820,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 
 	if cmd, ok := command.(*commands.ModifyAgents); ok {
 		if len(cmd.Agents) == 1 && cmd.Agents[0].ID == "fb6451bf-ec5a-45a8-8bab-5cf4b862e51b" &&
-			cmd.Authorized == "1" && cmd.MinInterval == "1000" && cmd.HeartbeatInterval == "0" &&
+			cmd.Authorized == 1 && cmd.MinInterval == 1000 && cmd.HeartbeatInterval == 0 &&
 			cmd.Schedule == "@every 12h" && cmd.Comment == "example update" {
 			(*response.(*commands.ModifyAgentsResponse)).Status = "200"
 			(*response.(*commands.ModifyAgentsResponse)).StatusText = "OK"
@@ -893,8 +895,8 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 				Type:             "target",
 				InUse:            true,
 				Writable:         true,
-				CreationTime:     "2015-07-15T15:05:55Z",
-				ModificationTime: "2015-07-15T15:05:55Z",
+				CreationTime:     time.Date(2015, 7, 15, 15, 5, 55, 0, time.UTC),
+				ModificationTime: time.Date(2015, 7, 15, 15, 5, 55, 0, time.UTC),
 			},
 		}
 	}
@@ -938,8 +940,8 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 				ID:               "b493b7a8-7489-11df-a3ec-002264764cea",
 				Name:             "Management",
 				Comment:          "Managers",
-				CreationTime:     "2018-08-29T20:21:33Z",
-				ModificationTime: "2018-08-29T20:21:33Z",
+				CreationTime:     time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
+				ModificationTime: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
 				Writable:         true,
 				InUse:            false,
 				Users:            "sarah, frank",
@@ -961,9 +963,9 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		resp := response.(*commands.GetFeedsResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.FeedOwnerSet = "1"
-		resp.FeedRolesSet = "1"
-		resp.FeedResourcesAccess = "1"
+		resp.FeedOwnerSet = true
+		resp.FeedRolesSet = true
+		resp.FeedResourcesAccess = true
 		resp.Feeds = []commands.Feed{
 			{
 				Type:        "NVT",
@@ -1009,9 +1011,9 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 					Comment:      "Test License",
 					Type:         "trial",
 					CustomerName: "Jane Doe",
-					Created:      "2021-08-27T06:05:21Z",
-					Begins:       "2021-08-27T07:05:21Z",
-					Expires:      "2021-09-04T07:05:21Z",
+					Created:      time.Date(2021, 8, 27, 6, 5, 21, 0, time.UTC),
+					Begins:       time.Date(2021, 8, 27, 7, 5, 21, 0, time.UTC),
+					Expires:      time.Date(2021, 9, 4, 7, 5, 21, 0, time.UTC),
 				},
 				Appliance: &commands.LicenseAppliance{
 					Model:     "trial",
@@ -1071,8 +1073,8 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 			DataColumn:  "severity",
 			GroupColumn: "family",
 			Groups: []commands.AggregateGroup{
-				{Value: "AIX Local Security Checks", Count: 1, CCount: 1, Min: 3.3, Max: 3.3, Mean: 3.3, Sum: 3.3, CSum: 3.3},
-				{Value: "Brute force attacks", Count: 8, CCount: 9, Min: 0, Max: 7.8, Mean: 6.275, Sum: 50.2, CSum: 53.5},
+				{Value: "AIX Local Security Checks", Count: 1, CCount: 1, Min: "3.3", Max: "3.3", Mean: "3.3", Sum: "3.3", CSum: "3.3"},
+				{Value: "Brute force attacks", Count: 8, CCount: 9, Min: "0", Max: "7.8", Mean: "6.275", Sum: "50.2", CSum: "53.5"},
 			},
 		}
 	}
@@ -1082,7 +1084,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		resp.Status = "200"
 		resp.StatusText = "OK"
 		resp.Features = []commands.Feature{{
-			Enabled: "0",
+			Enabled: false,
 			Name:    "OPENVASD",
 		}}
 	}
@@ -1140,12 +1142,12 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 			{
 				ID:               "b76b81a7-9df8-42df-afff-baa9d4620128",
 				NVT:              &commands.NoteNVT{OID: "1.3.6.1.4.1.25623.1.0.75", Name: "Test NVT: long lines"},
-				CreationTime:     "2013-01-09T09:47:41+01:00",
-				ModificationTime: "2013-01-09T09:47:41+01:00",
-				Writable:         "1",
-				InUse:            "0",
-				Active:           "1",
-				Orphan:           "1",
+				CreationTime:     time.Date(2013, 1, 9, 9, 47, 41, 0, time.FixedZone("+01:00", 3600)),
+				ModificationTime: time.Date(2013, 1, 9, 9, 47, 41, 0, time.FixedZone("+01:00", 3600)),
+				Writable:         true,
+				InUse:            false,
+				Active:           true,
+				Orphan:           true,
 				Text:             "This is the full text of the note.",
 			},
 		}
@@ -1169,23 +1171,23 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 				{
 					OID:              "1.3.6.1.4.1.25623.1.7.13005",
 					Name:             "Services",
-					CreationTime:     "2011-01-14T10:12:23+01:00",
-					ModificationTime: "2012-09-19T20:56:15+02:00",
-					Category:         "3",
+					CreationTime:     time.Date(2011, 1, 14, 10, 12, 23, 0, time.FixedZone("+01:00", 3600)),
+					ModificationTime: time.Date(2012, 9, 19, 20, 56, 15, 0, time.FixedZone("+02:00", 7200)),
+					Category:         3,
 					Family:           "Service detection",
-					CvssBase:         "",
-					Severities:       &commands.NVTSeverities{Score: "0"},
+					CvssBase:         0,
+					Severities:       &commands.NVTSeverities{Score: 0.0},
 					Refs:             "",
 					Tags:             "NOTAG",
-					PreferenceCount:  "-1",
-					Timeout:          "",
+					PreferenceCount:  -1,
+					Timeout:          0,
 				},
 				{
 					OID:              "1.3.6.1.4.1.25623.1.7.13006",
 					Name:             "FooBar 21",
-					CreationTime:     "2011-01-14T10:12:23+01:00",
-					ModificationTime: "2012-09-19T20:56:15+02:00",
-					Category:         "3",
+					CreationTime:     time.Date(2011, 1, 14, 10, 12, 23, 0, time.FixedZone("+01:00", 3600)),
+					ModificationTime: time.Date(2012, 9, 19, 20, 56, 15, 0, time.FixedZone("+02:00", 7200)),
+					Category:         3,
 					Family:           "Service detection",
 				},
 			}
@@ -1246,10 +1248,10 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 				ID:               "b493b7a8-7489-11df-a3ec-002264764cea",
 				Name:             "Management",
 				Comment:          "Managers",
-				CreationTime:     "2018-08-29T20:21:33Z",
-				ModificationTime: "2018-08-29T20:21:33Z",
-				Writable:         "1",
-				InUse:            "0",
+				CreationTime:     time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
+				ModificationTime: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
+				Writable:         true,
+				InUse:            false,
 			},
 		}
 	}
@@ -1298,10 +1300,10 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 					ID:               "b493b7a8-7489-11df-a3ec-002264764cea",
 					Name:             "Management",
 					Comment:          "Managers",
-					CreationTime:     "2018-08-29T20:21:33Z",
-					ModificationTime: "2018-08-29T20:21:33Z",
-					Writable:         "1",
-					InUse:            "0",
+					CreationTime:     time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
+					ModificationTime: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
+					Writable:         true,
+					InUse:            false,
 					Users:            "sarah, frank",
 				},
 			}
@@ -1309,7 +1311,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.DeleteRole); ok {
-		if cmd.RoleID == "b64c81b2-b9de-11e3-a2e9-406186ea4fc5" && cmd.Ultimate == "1" {
+		if cmd.RoleID == "b64c81b2-b9de-11e3-a2e9-406186ea4fc5" && cmd.Ultimate == true {
 			(*response.(*commands.DeleteRoleResponse)).Status = "200"
 			(*response.(*commands.DeleteRoleResponse)).StatusText = "OK"
 		} else {
@@ -1329,7 +1331,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.ModifyTag); ok {
-		if cmd.TagID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" && cmd.Active == "0" {
+		if cmd.TagID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" && cmd.Active == false {
 			(*response.(*commands.ModifyTagResponse)).Status = "200"
 			(*response.(*commands.ModifyTagResponse)).StatusText = "OK"
 		} else {
@@ -1346,18 +1348,18 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 				ID:               "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 				Name:             "geo:long",
 				Comment:          "",
-				CreationTime:     "2016-03-03T11:46:56Z",
-				ModificationTime: "2016-03-03T11:46:56Z",
-				Writable:         "1",
-				InUse:            "0",
+				CreationTime:     time.Date(2016, 3, 3, 11, 46, 56, 0, time.UTC),
+				ModificationTime: time.Date(2016, 3, 3, 11, 46, 56, 0, time.UTC),
+				Writable:         true,
+				InUse:            false,
 				Value:            "52.2788",
-				Active:           "1",
+				Active:           true,
 				Resources: []commands.TagResource{
 					{
 						ID:    "b493b7a8-7489-11df-a3ec-002264764cea",
 						Type:  "target",
 						Name:  "Server 1",
-						Trash: "0",
+						Trash: false,
 					},
 				},
 			},
@@ -1393,10 +1395,10 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 				ID:               "93cd2f71-48c3-4cf2-b542-5b256f59cae0",
 				Name:             "OpenSSH Denial of Service Vulnerability - Jan16",
 				Comment:          "",
-				CreationTime:     "2018-11-29T16:18:56Z",
-				ModificationTime: "2018-11-29T16:18:56Z",
-				Writable:         "1",
-				InUse:            "0",
+				CreationTime:     time.Date(2018, 11, 29, 16, 18, 56, 0, time.UTC),
+				ModificationTime: time.Date(2018, 11, 29, 16, 18, 56, 0, time.UTC),
+				Writable:         true,
+				InUse:            false,
 				Status:           "Open",
 				OpenNote:         "Probably the new version fixes this",
 			},
@@ -1414,7 +1416,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.DeleteTicket); ok {
-		if cmd.TicketID == "ticket-uuid" && cmd.Ultimate == "1" {
+		if cmd.TicketID == "ticket-uuid" && cmd.Ultimate == true {
 			(*response.(*commands.DeleteTicketResponse)).Status = "200"
 			(*response.(*commands.DeleteTicketResponse)).StatusText = "OK"
 		} else {

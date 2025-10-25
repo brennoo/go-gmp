@@ -15,7 +15,7 @@ func TestCreateScanner(t *testing.T) {
 	cmd := &commands.CreateScanner{
 		Name:       "Default Scanner",
 		Host:       "localhost",
-		Port:       "9391",
+		Port:       9391,
 		Type:       "2",
 		CAPub:      "dummy-ca-pub",
 		Credential: &commands.ScannerCredential{ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"},
@@ -59,7 +59,7 @@ func TestCreateScannerFail(t *testing.T) {
 	cmd := &commands.CreateScanner{
 		Name:       "",
 		Host:       "localhost",
-		Port:       "9391",
+		Port:       9391,
 		Type:       "2",
 		CAPub:      "dummy-ca-pub",
 		Credential: &commands.ScannerCredential{ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"},
@@ -123,7 +123,7 @@ func TestDeleteScanner(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.DeleteScanner{ScannerID: "scanner-uuid", Ultimate: "1"}
+	cmd := &commands.DeleteScanner{ScannerID: "scanner-uuid", Ultimate: true}
 	resp, err := cli.DeleteScanner(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)

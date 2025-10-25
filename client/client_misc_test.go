@@ -60,7 +60,7 @@ func TestGetSystemReports(t *testing.T) {
 
 	// Success case: get brief listing
 	cmd = &commands.GetSystemReports{
-		Brief: "1",
+		Brief: true,
 	}
 	resp, err = cli.GetSystemReports(cmd)
 	if err != nil {
@@ -173,14 +173,14 @@ func TestGetFeeds(t *testing.T) {
 	if resp.StatusText != "OK" {
 		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
 	}
-	if resp.FeedOwnerSet != "1" {
-		t.Fatalf("Unexpected feed_owner_set. Expected: 1 Got: %v", resp.FeedOwnerSet)
+	if resp.FeedOwnerSet != true {
+		t.Fatalf("Unexpected feed_owner_set. Expected: true Got: %t", resp.FeedOwnerSet)
 	}
-	if resp.FeedRolesSet != "1" {
-		t.Fatalf("Unexpected feed_roles_set. Expected: 1 Got: %v", resp.FeedRolesSet)
+	if resp.FeedRolesSet != true {
+		t.Fatalf("Unexpected feed_roles_set. Expected: true Got: %t", resp.FeedRolesSet)
 	}
-	if resp.FeedResourcesAccess != "1" {
-		t.Fatalf("Unexpected feed_resources_access. Expected: 1 Got: %v", resp.FeedResourcesAccess)
+	if resp.FeedResourcesAccess != true {
+		t.Fatalf("Unexpected feed_resources_access. Expected: true Got: %t", resp.FeedResourcesAccess)
 	}
 	if len(resp.Feeds) != 3 {
 		t.Fatalf("Expected 3 feeds, got %d", len(resp.Feeds))
@@ -430,8 +430,8 @@ func TestGetFeatures(t *testing.T) {
 	if len(resp.Features) != 1 {
 		t.Fatalf("Expected 1 feature, got %d", len(resp.Features))
 	}
-	if resp.Features[0].Enabled != "0" {
-		t.Fatalf("Unexpected feature enabled. Expected: 0 Got: %s", resp.Features[0].Enabled)
+	if resp.Features[0].Enabled != false {
+		t.Fatalf("Unexpected feature enabled. Expected: false Got: %t", resp.Features[0].Enabled)
 	}
 	if resp.Features[0].Name != "OPENVASD" {
 		t.Fatalf("Unexpected feature name. Expected: OPENVASD Got: %s", resp.Features[0].Name)

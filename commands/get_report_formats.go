@@ -1,6 +1,9 @@
 package commands
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"time"
+)
 
 // GetReportFormats represents a get_report_formats command request.
 type GetReportFormats struct {
@@ -26,22 +29,22 @@ type ReportFormat struct {
 	ID               string                 `xml:"id,attr"`
 	Name             string                 `xml:"name"`
 	Comment          string                 `xml:"comment,omitempty"`
-	CreationTime     string                 `xml:"creation_time"`
-	ModificationTime string                 `xml:"modification_time"`
-	Writable         string                 `xml:"writable"`
-	InUse            string                 `xml:"in_use"`
+	CreationTime     time.Time              `xml:"creation_time"`
+	ModificationTime time.Time              `xml:"modification_time"`
+	Writable         bool                   `xml:"writable"`
+	InUse            bool                   `xml:"in_use"`
 	Extension        string                 `xml:"extension"`
 	ContentType      string                 `xml:"content_type"`
 	Summary          string                 `xml:"summary"`
 	Description      string                 `xml:"description"`
 	Trust            *ReportFormatTrust     `xml:"trust,omitempty"`
-	Active           string                 `xml:"active"`
+	Active           bool                   `xml:"active"`
 	Files            []ReportFormatFile     `xml:"file"`
 	Signature        *ReportFormatSignature `xml:"signature,omitempty"`
-	Predefined       string                 `xml:"predefined,omitempty"`
-	Configurable     string                 `xml:"configurable,omitempty"`
+	Predefined       bool                   `xml:"predefined,omitempty"`
+	Configurable     bool                   `xml:"configurable,omitempty"`
 	ReportType       string                 `xml:"report_type,omitempty"`
-	Deprecated       string                 `xml:"deprecated,omitempty"`
+	Deprecated       bool                   `xml:"deprecated,omitempty"`
 }
 
 // ReportFormatTrust represents the trust element in a report format.

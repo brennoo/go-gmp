@@ -30,8 +30,8 @@ func TestCreateAlert(t *testing.T) {
 		Condition: commands.AlertCondition{Text: "Severity at least", Data: condData},
 		Event:     commands.AlertEvent{Text: "Task run status changed", Data: evtData},
 		Method:    commands.AlertMethod{Text: "Email", Data: methData},
-		Filter:    nil, // filter
-		Active:    "",  // active
+		Filter:    nil,   // filter
+		Active:    false, // active
 	}
 	resp, err := cli.CreateAlert(cmd)
 	if err != nil {
@@ -102,7 +102,7 @@ func TestDeleteAlert(t *testing.T) {
 	alertID := "267a3405-e84a-47da-97b2-5fa0d2e8995e"
 	cmd := &commands.DeleteAlert{
 		AlertID:  alertID,
-		Ultimate: "1",
+		Ultimate: true,
 	}
 	resp, err := cli.DeleteAlert(cmd)
 	if err != nil {

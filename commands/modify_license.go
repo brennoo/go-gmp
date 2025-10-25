@@ -5,7 +5,7 @@ import "encoding/xml"
 // ModifyLicense represents a modify_license command request.
 type ModifyLicense struct {
 	XMLName    xml.Name `xml:"modify_license"`
-	AllowEmpty string   `xml:"allow_empty,attr,omitempty"`
+	AllowEmpty bool     `xml:"allow_empty,attr,omitempty"`
 	File       string   `xml:"file"`
 }
 

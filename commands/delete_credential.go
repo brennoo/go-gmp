@@ -6,7 +6,7 @@ import "encoding/xml"
 type DeleteCredential struct {
 	XMLName      xml.Name `xml:"delete_credential"`
 	CredentialID string   `xml:"credential_id,attr"`
-	Ultimate     string   `xml:"ultimate,attr"`
+	Ultimate     bool     `xml:"ultimate,attr"`
 }
 
 // DeleteCredentialResponse represents a delete_credential command response.

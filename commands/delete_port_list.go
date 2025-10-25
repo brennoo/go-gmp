@@ -6,7 +6,7 @@ import "encoding/xml"
 type DeletePortList struct {
 	XMLName    xml.Name `xml:"delete_port_list"`
 	PortListID string   `xml:"port_list_id,attr"`
-	Ultimate   string   `xml:"ultimate,attr"`
+	Ultimate   bool     `xml:"ultimate,attr"`
 }
 
 // DeletePortListResponse represents a delete_port_list command response.

@@ -8,11 +8,11 @@ type CreateNote struct {
 	Text     string            `xml:"text"`
 	NVT      *NoteNVT          `xml:"nvt"`
 	Result   *CreateNoteResult `xml:"result,omitempty"`
-	Active   string            `xml:"active,omitempty"`
+	Active   int               `xml:"active,omitempty"`
 	Copy     string            `xml:"copy,omitempty"`
 	Hosts    string            `xml:"hosts,omitempty"`
 	Port     string            `xml:"port,omitempty"`
-	Severity string            `xml:"severity,omitempty"`
+	Severity float64           `xml:"severity,omitempty"`
 	Task     *CreateNoteTask   `xml:"task,omitempty"`
 	Threat   string            `xml:"threat,omitempty"`
 }

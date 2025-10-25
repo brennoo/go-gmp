@@ -6,7 +6,7 @@ import "encoding/xml"
 type DeleteNote struct {
 	XMLName  xml.Name `xml:"delete_note"`
 	NoteID   string   `xml:"note_id,attr"`
-	Ultimate string   `xml:"ultimate,attr"`
+	Ultimate bool     `xml:"ultimate,attr"`
 }
 
 // DeleteNoteResponse represents a delete_note command response.
