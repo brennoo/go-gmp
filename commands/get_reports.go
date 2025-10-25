@@ -12,6 +12,7 @@ type GetReports struct {
 	FormatID    string   `xml:"format_id,attr,omitempty"`
 	Extension   string   `xml:"extension,attr,omitempty"`
 	ContentType string   `xml:"content_type,attr,omitempty"`
+	UsageType   string   `xml:"usage_type,attr,omitempty"`
 }
 
 // GetReportsResponse represents a get_reports command response.
