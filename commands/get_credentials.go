@@ -1,6 +1,9 @@
 package commands
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"time"
+)
 
 // GetCredentials represents a get_credentials command request to GMP.
 type GetCredentials struct {
@@ -33,13 +36,13 @@ type Credential struct {
 	ID               string                     `xml:"id,attr"`
 	Owner            CredentialOwner            `xml:"owner"`
 	Name             string                     `xml:"name"`
-	AllowInsecure    string                     `xml:"allow_insecure"`
+	AllowInsecure    bool                       `xml:"allow_insecure"`
 	Login            string                     `xml:"login"`
 	Comment          string                     `xml:"comment"`
-	CreationTime     string                     `xml:"creation_time"`
-	ModificationTime string                     `xml:"modification_time"`
-	Writable         string                     `xml:"writable"`
-	InUse            string                     `xml:"in_use"`
+	CreationTime     time.Time                  `xml:"creation_time"`
+	ModificationTime time.Time                  `xml:"modification_time"`
+	Writable         bool                       `xml:"writable"`
+	InUse            bool                       `xml:"in_use"`
 	Permissions      CredentialPermissions      `xml:"permissions"`
 	UserTags         *CredentialUserTags        `xml:"user_tags,omitempty"`
 	Type             string                     `xml:"type"`

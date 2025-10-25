@@ -13,9 +13,9 @@ type GetFeedsResponse struct {
 	XMLName             xml.Name `xml:"get_feeds_response"`
 	Status              string   `xml:"status,attr"`
 	StatusText          string   `xml:"status_text,attr"`
-	FeedOwnerSet        string   `xml:"feed_owner_set,omitempty"`
-	FeedRolesSet        string   `xml:"feed_roles_set,omitempty"`
-	FeedResourcesAccess string   `xml:"feed_resources_access,omitempty"`
+	FeedOwnerSet        bool     `xml:"feed_owner_set,omitempty"`
+	FeedRolesSet        bool     `xml:"feed_roles_set,omitempty"`
+	FeedResourcesAccess bool     `xml:"feed_resources_access,omitempty"`
 	Feeds               []Feed   `xml:"feed,omitempty"`
 }
 

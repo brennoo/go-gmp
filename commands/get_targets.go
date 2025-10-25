@@ -2,6 +2,7 @@ package commands
 
 import (
 	"encoding/xml"
+	"time"
 )
 
 // GetTargets represents a get_targets command request.
@@ -10,9 +11,9 @@ type GetTargets struct {
 	TargetID string   `xml:"target_id,attr,omitempty"`
 	Filter   string   `xml:"filter,attr,omitempty"`
 	FiltID   string   `xml:"filt_id,attr,omitempty"`
-	Trash    string   `xml:"trash,attr,omitempty"`   // "0"/"1"
-	Tasks    string   `xml:"tasks,attr,omitempty"`   // "0"/"1"
-	Details  string   `xml:"details,attr,omitempty"` // "0"/"1"
+	Trash    bool     `xml:"trash,attr,omitempty"`
+	Tasks    bool     `xml:"tasks,attr,omitempty"`
+	Details  bool     `xml:"details,attr,omitempty"`
 }
 
 // Target represents a <target> element in the get_targets response.
@@ -21,10 +22,10 @@ type Target struct {
 	Owner                *TargetOwner       `xml:"owner,omitempty"`
 	Name                 string             `xml:"name,omitempty"`
 	Comment              string             `xml:"comment,omitempty"`
-	CreationTime         string             `xml:"creation_time,omitempty"`     // ISO 8601 string
-	ModificationTime     string             `xml:"modification_time,omitempty"` // ISO 8601 string
-	Writable             string             `xml:"writable,omitempty"`          // "0"/"1"
-	InUse                string             `xml:"in_use,omitempty"`            // "0"/"1"
+	CreationTime         time.Time          `xml:"creation_time,omitempty"`
+	ModificationTime     time.Time          `xml:"modification_time,omitempty"`
+	Writable             bool               `xml:"writable,omitempty"`
+	InUse                bool               `xml:"in_use,omitempty"`
 	Permissions          *TargetPermissions `xml:"permissions,omitempty"`
 	UserTags             *TargetUserTags    `xml:"user_tags,omitempty"`
 	Hosts                string             `xml:"hosts,omitempty"`
@@ -39,9 +40,9 @@ type Target struct {
 	PortRange            *TargetPortRange   `xml:"port_range,omitempty"`
 	PortList             *TargetPortList    `xml:"port_list,omitempty"`
 	AliveTests           string             `xml:"alive_tests,omitempty"`
-	ReverseLookupOnly    string             `xml:"reverse_lookup_only,omitempty"`    // "0"/"1"
-	ReverseLookupUnify   string             `xml:"reverse_lookup_unify,omitempty"`   // "0"/"1"
-	AllowSimultaneousIPs string             `xml:"allow_simultaneous_ips,omitempty"` // "0"/"1"
+	ReverseLookupOnly    bool               `xml:"reverse_lookup_only,omitempty"`
+	ReverseLookupUnify   bool               `xml:"reverse_lookup_unify,omitempty"`
+	AllowSimultaneousIPs bool               `xml:"allow_simultaneous_ips,omitempty"`
 	Tasks                *TargetTasks       `xml:"tasks,omitempty"`
 }
 
@@ -139,4 +140,5 @@ type GetTargetsResponse struct {
 	Sort        *TargetSort    `xml:"sort,omitempty"`
 	Targets     *TargetTargets `xml:"targets,omitempty"`
 	TargetCount *TargetCount   `xml:"target_count,omitempty"`
+	Truncated   string         `xml:"truncated,omitempty"`
 }

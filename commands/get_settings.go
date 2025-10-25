@@ -15,11 +15,13 @@ type GetSettings struct {
 
 // GetSettingsResponse represents a get_settings command response.
 type GetSettingsResponse struct {
-	XMLName      xml.Name  `xml:"get_settings_response"`
-	Status       string    `xml:"status,attr"`
-	StatusText   string    `xml:"status_text,attr"`
-	Settings     *Settings `xml:"settings,omitempty"`
-	SettingsList []Setting `xml:"setting,omitempty"`
+	XMLName      xml.Name        `xml:"get_settings_response"`
+	Status       string          `xml:"status,attr"`
+	StatusText   string          `xml:"status_text,attr"`
+	Filters      *SettingFilters `xml:"filters,omitempty"`
+	Settings     *Settings       `xml:"settings,omitempty"`
+	SettingsList []Setting       `xml:"setting,omitempty"`
+	SettingCount *SettingCount   `xml:"setting_count,omitempty"`
 }
 
 // Settings represents a <settings> element in the get_settings response.
@@ -35,4 +37,15 @@ type Setting struct {
 	Name    string `xml:"name,omitempty"`
 	Comment string `xml:"comment,omitempty"`
 	Value   string `xml:"value,omitempty"`
+}
+
+// SettingFilters represents the filters element in the response.
+type SettingFilters struct {
+	Term string `xml:"term,omitempty"`
+}
+
+// SettingCount represents the setting_count element in the response.
+type SettingCount struct {
+	Filtered int `xml:"filtered,omitempty"`
+	Page     int `xml:"page,omitempty"`
 }

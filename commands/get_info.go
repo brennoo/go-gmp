@@ -1,6 +1,9 @@
 package commands
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"time"
+)
 
 // GetInfo represents a get_info command request.
 type GetInfo struct {
@@ -28,11 +31,11 @@ type Info struct {
 	ID               string           `xml:"id,attr"`
 	Name             string           `xml:"name"`
 	Comment          string           `xml:"comment"`
-	CreationTime     string           `xml:"creation_time"`
-	ModificationTime string           `xml:"modification_time"`
+	CreationTime     time.Time        `xml:"creation_time"`
+	ModificationTime time.Time        `xml:"modification_time"`
 	Writable         bool             `xml:"writable"`
 	InUse            bool             `xml:"in_use"`
-	UpdateTime       string           `xml:"update_time"`
+	UpdateTime       time.Time        `xml:"update_time"`
 	Owner            *InfoOwner       `xml:"owner,omitempty"`
 	Permissions      *InfoPermissions `xml:"permissions,omitempty"`
 	UserTags         *InfoUserTags    `xml:"user_tags,omitempty"`
@@ -141,11 +144,11 @@ type InfoConfigurationNodes struct {
 
 // InfoCERTBundAdv represents the cert_bund_adv element in an info.
 type InfoCERTBundAdv struct {
-	Title    string `xml:"title"`
-	Summary  string `xml:"summary"`
-	Severity string `xml:"severity"`
-	CVERefs  int    `xml:"cve_refs"`
-	RawData  string `xml:"raw_data,omitempty"`
+	Title    string  `xml:"title"`
+	Summary  string  `xml:"summary"`
+	Severity float64 `xml:"severity"`
+	CVERefs  int     `xml:"cve_refs"`
+	RawData  string  `xml:"raw_data,omitempty"`
 }
 
 // InfoFilters represents the filters element in the response.

@@ -1,6 +1,9 @@
 package commands
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"time"
+)
 
 // GetReports represents a get_reports command request.
 type GetReports struct {
@@ -31,10 +34,10 @@ type Report struct {
 	Owner            *ReportOwner     `xml:"owner,omitempty"`
 	Name             string           `xml:"name,omitempty"`
 	Comment          string           `xml:"comment,omitempty"`
-	CreationTime     string           `xml:"creation_time,omitempty"`
-	ModificationTime string           `xml:"modification_time,omitempty"`
-	Writable         string           `xml:"writable,omitempty"`
-	InUse            string           `xml:"in_use,omitempty"`
+	CreationTime     time.Time        `xml:"creation_time,omitempty"`
+	ModificationTime time.Time        `xml:"modification_time,omitempty"`
+	Writable         bool             `xml:"writable,omitempty"`
+	InUse            bool             `xml:"in_use,omitempty"`
 	Task             *ReportTask      `xml:"task,omitempty"`
 	ReportFormat     *ReportFormatRef `xml:"report_format,omitempty"`
 	ReportConfig     *ReportConfigRef `xml:"report_config,omitempty"`
@@ -93,9 +96,9 @@ type ReportContent struct {
 	SSLCerts        *ReportCount           `xml:"ssl_certs,omitempty"`
 	Host            []ReportHost           `xml:"host,omitempty"`
 	TLSCertificates *ReportTLSCertificates `xml:"tls_certificates,omitempty"`
-	Timestamp       string                 `xml:"timestamp,omitempty"`
-	ScanStart       string                 `xml:"scan_start,omitempty"`
-	ScanEnd         string                 `xml:"scan_end,omitempty"`
+	Timestamp       time.Time              `xml:"timestamp,omitempty"`
+	ScanStart       time.Time              `xml:"scan_start,omitempty"`
+	ScanEnd         time.Time              `xml:"scan_end,omitempty"`
 	Errors          *ReportErrors          `xml:"errors,omitempty"`
 }
 
@@ -167,8 +170,8 @@ type ReportResultCount struct {
 }
 
 type ReportSeverity struct {
-	Full     string `xml:"full,omitempty"`
-	Filtered string `xml:"filtered,omitempty"`
+	Full     float64 `xml:"full,omitempty"`
+	Filtered float64 `xml:"filtered,omitempty"`
 }
 
 type ReportComplianceCount struct {
@@ -195,7 +198,7 @@ type ReportTaskDetail struct {
 }
 type ReportTaskTarget struct {
 	ID      string `xml:"id,attr,omitempty"`
-	Trash   string `xml:"trash,omitempty"`
+	Trash   bool   `xml:"trash,omitempty"`
 	Name    string `xml:"name,omitempty"`
 	Comment string `xml:"comment,omitempty"`
 }
@@ -206,9 +209,9 @@ type ReportPorts struct {
 	Ports []ReportPort `xml:"port,omitempty"`
 }
 type ReportPort struct {
-	Host     string `xml:"host,omitempty"`
-	Severity string `xml:"severity,omitempty"`
-	Threat   string `xml:"threat,omitempty"`
+	Host     string  `xml:"host,omitempty"`
+	Severity float64 `xml:"severity,omitempty"`
+	Threat   string  `xml:"threat,omitempty"`
 }
 
 type ReportResults struct {
@@ -221,8 +224,8 @@ type ReportResult struct {
 	Name             string          `xml:"name,omitempty"`
 	Owner            *ReportOwner    `xml:"owner,omitempty"`
 	Comment          string          `xml:"comment,omitempty"`
-	CreationTime     string          `xml:"creation_time,omitempty"`
-	ModificationTime string          `xml:"modification_time,omitempty"`
+	CreationTime     time.Time       `xml:"creation_time,omitempty"`
+	ModificationTime time.Time       `xml:"modification_time,omitempty"`
 	UserTags         *ReportUserTags `xml:"user_tags,omitempty"`
 	Report           *ReportRef      `xml:"report,omitempty"`
 	Task             *ReportTaskRef  `xml:"task,omitempty"`
@@ -232,10 +235,10 @@ type ReportResult struct {
 	NVT              *ReportNVT      `xml:"nvt,omitempty"`
 	ScanNVTVersion   string          `xml:"scan_nvt_version,omitempty"`
 	Threat           string          `xml:"threat,omitempty"`
-	Severity         string          `xml:"severity,omitempty"`
+	Severity         float64         `xml:"severity,omitempty"`
 	QOD              string          `xml:"qod,omitempty"`
 	OriginalThreat   string          `xml:"original_threat,omitempty"`
-	OriginalSeverity string          `xml:"original_severity,omitempty"`
+	OriginalSeverity float64         `xml:"original_severity,omitempty"`
 	Compliance       string          `xml:"compliance,omitempty"`
 	Description      string          `xml:"description,omitempty"`
 	Delta            string          `xml:"delta,omitempty"`
@@ -257,16 +260,16 @@ type ReportHostRef struct {
 	IP       string `xml:",chardata"`
 }
 type ReportNVT struct {
-	OID        string `xml:"oid,attr,omitempty"`
-	Name       string `xml:"name,omitempty"`
-	Type       string `xml:"type,omitempty"`
-	Family     string `xml:"family,omitempty"`
-	CVSSBase   string `xml:"cvss_base,omitempty"`
-	Severities string `xml:"severities,omitempty"`
-	CPE        string `xml:"cpe,omitempty"`
-	Tags       string `xml:"tags,omitempty"`
-	EPSS       string `xml:"epss,omitempty"`
-	Refs       string `xml:"refs,omitempty"`
+	OID        string  `xml:"oid,attr,omitempty"`
+	Name       string  `xml:"name,omitempty"`
+	Type       string  `xml:"type,omitempty"`
+	Family     string  `xml:"family,omitempty"`
+	CVSSBase   float64 `xml:"cvss_base,omitempty"`
+	Severities string  `xml:"severities,omitempty"`
+	CPE        string  `xml:"cpe,omitempty"`
+	Tags       string  `xml:"tags,omitempty"`
+	EPSS       string  `xml:"epss,omitempty"`
+	Refs       string  `xml:"refs,omitempty"`
 }
 type ReportHosts struct {
 	Start int `xml:"start,attr,omitempty"`
@@ -297,29 +300,29 @@ type ReportTLSCertificates struct {
 	Certificates []ReportTLSCertificate `xml:"tls_certificate,omitempty"`
 }
 type ReportTLSCertificate struct {
-	Name              string `xml:"name,omitempty"`
-	Certificate       string `xml:"certificate,omitempty"`
-	Format            string `xml:"format,attr,omitempty"`
-	SHA256Fingerprint string `xml:"sha256_fingerprint,omitempty"`
-	MD5Fingerprint    string `xml:"md5_fingerprint,omitempty"`
-	Valid             string `xml:"valid,omitempty"`
-	ActivationTime    string `xml:"activation_time,omitempty"`
-	ExpirationTime    string `xml:"expiration_time,omitempty"`
-	SubjectDN         string `xml:"subject_dn,omitempty"`
-	IssuerDN          string `xml:"issuer_dn,omitempty"`
-	Serial            string `xml:"serial,omitempty"`
-	Host              string `xml:"host,omitempty"`
-	Ports             []int  `xml:"ports>port,omitempty"`
+	Name              string    `xml:"name,omitempty"`
+	Certificate       string    `xml:"certificate,omitempty"`
+	Format            string    `xml:"format,attr,omitempty"`
+	SHA256Fingerprint string    `xml:"sha256_fingerprint,omitempty"`
+	MD5Fingerprint    string    `xml:"md5_fingerprint,omitempty"`
+	Valid             bool      `xml:"valid,omitempty"`
+	ActivationTime    time.Time `xml:"activation_time,omitempty"`
+	ExpirationTime    time.Time `xml:"expiration_time,omitempty"`
+	SubjectDN         string    `xml:"subject_dn,omitempty"`
+	IssuerDN          string    `xml:"issuer_dn,omitempty"`
+	Serial            string    `xml:"serial,omitempty"`
+	Host              string    `xml:"host,omitempty"`
+	Ports             []int     `xml:"ports>port,omitempty"`
 }
 type ReportErrors struct {
 	Count  int           `xml:"count,omitempty"`
 	Errors []ReportError `xml:"error,omitempty"`
 }
 type ReportError struct {
-	Host           string `xml:"host,omitempty"`
-	Port           string `xml:"port,omitempty"`
-	Description    string `xml:"description,omitempty"`
-	NVT            string `xml:"nvt,omitempty"`
-	ScanNVTVersion string `xml:"scan_nvt_version,omitempty"`
-	Severity       string `xml:"severity,omitempty"`
+	Host           string  `xml:"host,omitempty"`
+	Port           string  `xml:"port,omitempty"`
+	Description    string  `xml:"description,omitempty"`
+	NVT            string  `xml:"nvt,omitempty"`
+	ScanNVTVersion string  `xml:"scan_nvt_version,omitempty"`
+	Severity       float64 `xml:"severity,omitempty"`
 }

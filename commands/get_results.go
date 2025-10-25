@@ -46,10 +46,10 @@ type Result struct {
 	NVT              ResultNVT        `xml:"nvt"`
 	ScanNVTVersion   string           `xml:"scan_nvt_version"`
 	Threat           string           `xml:"threat"`
-	Severity         float32          `xml:"severity"`
+	Severity         float64          `xml:"severity"`
 	QOD              ResultQOD        `xml:"qod"`
 	OriginalThreat   *string          `xml:"original_threat,omitempty"`
-	OriginalSeverity *float32         `xml:"original_severity,omitempty"`
+	OriginalSeverity *float64         `xml:"original_severity,omitempty"`
 	Compliance       string           `xml:"compliance"`
 	Description      string           `xml:"description"`
 	Delta            *ResultDelta     `xml:"delta,omitempty"`
@@ -107,7 +107,7 @@ type ResultNVT struct {
 	Name       string              `xml:"name"`
 	Type       string              `xml:"type"`
 	Family     string              `xml:"family"`
-	CVSSBase   float32             `xml:"cvss_base"`
+	CVSSBase   float64             `xml:"cvss_base"`
 	Severities ResultNVTSeverities `xml:"severities"`
 	CPE        string              `xml:"cpe"`
 	Tags       string              `xml:"tags"`
@@ -117,7 +117,7 @@ type ResultNVT struct {
 
 // ResultNVTSeverities represents severity information for an NVT.
 type ResultNVTSeverities struct {
-	Score float32 `xml:"score,attr"`
+	Score float64 `xml:"score,attr"`
 }
 
 // ResultNVTEPSS represents EPSS information for an NVT.
@@ -128,15 +128,15 @@ type ResultNVTEPSS struct {
 
 // ResultNVTEPSSInfo represents detailed EPSS info for an NVT.
 type ResultNVTEPSSInfo struct {
-	Score      float32          `xml:"score"`
-	Percentile float32          `xml:"percentile"`
+	Score      float64          `xml:"score"`
+	Percentile float64          `xml:"percentile"`
 	CVE        ResultNVTEPSSCVE `xml:"cve"`
 }
 
 // ResultNVTEPSSCVE represents a CVE reference in EPSS info.
 type ResultNVTEPSSCVE struct {
 	ID       string   `xml:"id,attr"`
-	Severity *float32 `xml:"severity,omitempty"`
+	Severity *float64 `xml:"severity,omitempty"`
 }
 
 // ResultNVTRefs represents references for an NVT.
@@ -186,7 +186,7 @@ type ResultNote struct {
 	UserTags         ResultNoteUserTags `xml:"user_tags"`
 	Hosts            string             `xml:"hosts"`
 	Port             string             `xml:"port"`
-	Severity         string             `xml:"severity"`
+	Severity         float64            `xml:"severity"`
 	Task             ResultNoteTask     `xml:"task"`
 	EndTime          string             `xml:"end_time"`
 	Result           ResultNoteResult   `xml:"result"`
@@ -247,7 +247,7 @@ type ResultNoteResult struct {
 	Host        ResultNoteHost `xml:"host"`
 	Port        string         `xml:"port"`
 	NVT         ResultNoteNVT  `xml:"nvt"`
-	Severity    string         `xml:"severity"`
+	Severity    float64        `xml:"severity"`
 	Threat      string         `xml:"threat"`
 	QOD         ResultNoteQOD  `xml:"qod"`
 	Description string         `xml:"description"`
@@ -288,9 +288,9 @@ type ResultOverride struct {
 	Active           string                 `xml:"active"`
 	Text             ResultOverrideText     `xml:"text"`
 	Threat           string                 `xml:"threat"`
-	Severity         string                 `xml:"severity"`
+	Severity         float64                `xml:"severity"`
 	NewThreat        string                 `xml:"new_threat"`
-	NewSeverity      string                 `xml:"new_severity"`
+	NewSeverity      float64                `xml:"new_severity"`
 	Orphan           string                 `xml:"orphan"`
 	UserTags         ResultOverrideUserTags `xml:"user_tags"`
 	Hosts            string                 `xml:"hosts"`
@@ -356,7 +356,7 @@ type ResultOverrideResult struct {
 	Port        string             `xml:"port"`
 	NVT         ResultOverrideNVT  `xml:"nvt"`
 	Threat      string             `xml:"threat"`
-	Severity    string             `xml:"severity"`
+	Severity    float64            `xml:"severity"`
 	QOD         ResultOverrideQOD  `xml:"qod"`
 	Description string             `xml:"description"`
 }

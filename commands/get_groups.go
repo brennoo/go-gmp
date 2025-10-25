@@ -1,6 +1,9 @@
 package commands
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"time"
+)
 
 // GetGroups represents a get_groups command request.
 type GetGroups struct {
@@ -29,8 +32,8 @@ type Group struct {
 	Owner            GroupOwner       `xml:"owner"`
 	Name             string           `xml:"name"`
 	Comment          string           `xml:"comment"`
-	CreationTime     string           `xml:"creation_time"`
-	ModificationTime string           `xml:"modification_time"`
+	CreationTime     time.Time        `xml:"creation_time"`
+	ModificationTime time.Time        `xml:"modification_time"`
 	Writable         bool             `xml:"writable"`
 	InUse            bool             `xml:"in_use"`
 	Permissions      GroupPermissions `xml:"permissions"`

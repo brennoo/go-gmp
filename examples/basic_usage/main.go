@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strconv"
 	"strings"
 	"time"
 
@@ -307,9 +306,9 @@ func (g *GMPClient) CreateTarget(ctx context.Context, name, hosts, portListID st
 	}
 
 	cmd := &commands.CreateTarget{
-		Name:      name,
-		Hosts:     hosts,
-		PortList:  &commands.TargetPortList{ID: portListID},
+		Name:     name,
+		Hosts:    hosts,
+		PortList: &commands.TargetPortList{ID: portListID},
 	}
 
 	resp, err := g.client.CreateTarget(cmd)
@@ -436,15 +435,7 @@ func (g *GMPClient) getTaskProgress(ctx context.Context, taskID string) (int, er
 		return 0, fmt.Errorf("task not found")
 	}
 
-	progressStr := resp.Task[0].Progress
-	if progressStr == "" {
-		return 0, fmt.Errorf("progress value is empty")
-	}
-	progress, err := strconv.Atoi(progressStr)
-	if err != nil {
-		return 0, fmt.Errorf("invalid progress value: %s", progressStr)
-	}
-
+	progress := resp.Task[0].Progress
 	return progress, nil
 }
 

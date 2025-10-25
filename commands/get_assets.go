@@ -2,6 +2,7 @@ package commands
 
 import (
 	"encoding/xml"
+	"time"
 )
 
 // GetAssets represents a get_assets command request.
@@ -33,14 +34,19 @@ type Asset struct {
 	Owner            AssetOwner        `xml:"owner"`
 	Name             string            `xml:"name"`
 	Comment          string            `xml:"comment"`
-	CreationTime     string            `xml:"creation_time"`
-	ModificationTime string            `xml:"modification_time"`
-	Writable         string            `xml:"writable,omitempty"`
-	InUse            string            `xml:"in_use,omitempty"`
+	CreationTime     time.Time         `xml:"creation_time"`
+	ModificationTime time.Time         `xml:"modification_time"`
+	Writable         bool              `xml:"writable,omitempty"`
+	InUse            bool              `xml:"in_use,omitempty"`
 	Permissions      []AssetPermission `xml:"permissions>permission,omitempty"`
 	UserTags         *AssetUserTags    `xml:"user_tags,omitempty"`
 	Identifiers      *AssetIdentifiers `xml:"identifiers,omitempty"`
 	Type             string            `xml:"type"`
+	Hosts            string            `xml:"hosts,omitempty"`
+	MaxHosts         int               `xml:"max_hosts,omitempty"`
+	SSHCredential    *AssetCredential  `xml:"ssh_credential,omitempty"`
+	SMBCredential    *AssetCredential  `xml:"smb_credential,omitempty"`
+	ESXICredential   *AssetCredential  `xml:"esxi_credential,omitempty"`
 	Host             *AssetHost        `xml:"host,omitempty"`
 	OS               *AssetOS          `xml:"os,omitempty"`
 	Tasks            *AssetTasks       `xml:"tasks,omitempty"`
@@ -218,4 +224,10 @@ type AssetAssets struct {
 type AssetCount struct {
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
+}
+
+// AssetCredential represents a credential associated with an asset.
+type AssetCredential struct {
+	ID   string `xml:"id,attr"`
+	Name string `xml:"name"`
 }

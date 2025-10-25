@@ -1,16 +1,19 @@
 package commands
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"time"
+)
 
 // GetSystemReports represents a get_system_reports command request.
 type GetSystemReports struct {
-	XMLName   xml.Name `xml:"get_system_reports"`
-	Name      string   `xml:"name,attr,omitempty"`
-	Duration  string   `xml:"duration,attr,omitempty"`
-	StartTime string   `xml:"start_time,attr,omitempty"`
-	EndTime   string   `xml:"end_time,attr,omitempty"`
-	Brief     string   `xml:"brief,attr,omitempty"`
-	SlaveID   string   `xml:"slave_id,attr,omitempty"`
+	XMLName   xml.Name  `xml:"get_system_reports"`
+	Name      string    `xml:"name,attr,omitempty"`
+	Duration  int       `xml:"duration,attr,omitempty"`
+	StartTime time.Time `xml:"start_time,attr,omitempty"`
+	EndTime   time.Time `xml:"end_time,attr,omitempty"`
+	Brief     bool      `xml:"brief,attr,omitempty"`
+	SlaveID   string    `xml:"slave_id,attr,omitempty"`
 }
 
 // GetSystemReportsResponse represents a get_system_reports command response.
@@ -19,6 +22,7 @@ type GetSystemReportsResponse struct {
 	Status        string         `xml:"status,attr"`
 	StatusText    string         `xml:"status_text,attr"`
 	SystemReports []SystemReport `xml:"system_report"`
+	Truncated     string         `xml:"truncated,omitempty"`
 }
 
 // SystemReport represents a <system_report> element in the get_system_reports response.
@@ -31,6 +35,6 @@ type SystemReport struct {
 // SystemReportReport represents the content of a system report.
 type SystemReportReport struct {
 	Format   string `xml:"format,attr"`
-	Duration string `xml:"duration,attr"`
+	Duration int    `xml:"duration,attr"`
 	Value    string `xml:",chardata"`
 }

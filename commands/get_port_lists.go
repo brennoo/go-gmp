@@ -2,6 +2,7 @@ package commands
 
 import (
 	"encoding/xml"
+	"time"
 )
 
 // GetPortLists represents a get_port_lists command request.
@@ -33,17 +34,17 @@ type PortList struct {
 	Owner            *PortListOwner       `xml:"owner,omitempty"`
 	Name             string               `xml:"name,omitempty"`
 	Comment          string               `xml:"comment,omitempty"`
-	CreationTime     string               `xml:"creation_time,omitempty"`
-	ModificationTime string               `xml:"modification_time,omitempty"`
-	Writable         string               `xml:"writable,omitempty"`
-	InUse            string               `xml:"in_use,omitempty"`
+	CreationTime     time.Time            `xml:"creation_time,omitempty"`
+	ModificationTime time.Time            `xml:"modification_time,omitempty"`
+	Writable         bool                 `xml:"writable,omitempty"`
+	InUse            bool                 `xml:"in_use,omitempty"`
 	Permissions      *PortListPermissions `xml:"permissions,omitempty"`
 	UserTags         *PortListUserTags    `xml:"user_tags,omitempty"`
 	PortCount        *PortListPortCount   `xml:"port_count,omitempty"`
 	PortRanges       *PortListPortRanges  `xml:"port_ranges,omitempty"`
 	Targets          *PortListTargets     `xml:"targets,omitempty"`
-	Predefined       string               `xml:"predefined,omitempty"`
-	Deprecated       string               `xml:"deprecated,omitempty"`
+	Predefined       bool                 `xml:"predefined,omitempty"`
+	Deprecated       bool                 `xml:"deprecated,omitempty"`
 }
 
 // PortListOwner represents the owner of a port list.

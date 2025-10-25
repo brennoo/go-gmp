@@ -1,6 +1,9 @@
 package commands
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"time"
+)
 
 // GetVulns represents a get_vulns command request.
 type GetVulns struct {
@@ -8,7 +11,7 @@ type GetVulns struct {
 	VulnID  string   `xml:"vuln_id,attr,omitempty"`
 	Filter  string   `xml:"filter,attr,omitempty"`
 	FiltID  string   `xml:"filt_id,attr,omitempty"`
-	Trash   string   `xml:"trash,attr,omitempty"`
+	Trash   bool     `xml:"trash,attr,omitempty"`
 }
 
 // GetVulnsResponse represents a get_vulns command response.
@@ -21,6 +24,7 @@ type GetVulnsResponse struct {
 	Sort       *VulnsSort    `xml:"sort,omitempty"`
 	VulnsMeta  *VulnsMeta    `xml:"vulns,omitempty"`
 	VulnCount  *VulnCount    `xml:"vuln_count,omitempty"`
+	Truncated  string        `xml:"truncated,omitempty"`
 }
 
 // Vuln represents a <vuln> element in the get_vulns response.
@@ -29,9 +33,9 @@ type Vuln struct {
 	ID               string       `xml:"id,attr"`
 	Name             string       `xml:"name"`
 	Type             string       `xml:"type"`
-	CreationTime     string       `xml:"creation_time"`
-	ModificationTime string       `xml:"modification_time"`
-	Severity         string       `xml:"severity"`
+	CreationTime     time.Time    `xml:"creation_time"`
+	ModificationTime time.Time    `xml:"modification_time"`
+	Severity         float64      `xml:"severity"`
 	QoD              int          `xml:"qod"`
 	Results          *VulnResults `xml:"results,omitempty"`
 	Hosts            *VulnHosts   `xml:"hosts,omitempty"`
@@ -39,9 +43,9 @@ type Vuln struct {
 
 // VulnResults represents the <results> element in a vuln.
 type VulnResults struct {
-	Count  int    `xml:"count"`
-	Oldest string `xml:"oldest"`
-	Newest string `xml:"newest"`
+	Count  int       `xml:"count"`
+	Oldest time.Time `xml:"oldest"`
+	Newest time.Time `xml:"newest"`
 }
 
 // VulnHosts represents the <hosts> element in a vuln.

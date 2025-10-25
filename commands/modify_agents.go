@@ -13,11 +13,6 @@ type ModifyAgents struct {
 	Comment           string   `xml:"comment,omitempty"`
 }
 
-type Agent struct {
-	ID      string `xml:"id,attr"`
-	AgentID string `xml:"agent_id,omitempty"`
-}
-
 // ModifyAgentsResponse represents a modify_agents command response.
 type ModifyAgentsResponse struct {
 	XMLName    xml.Name `xml:"modify_agents_response"`

@@ -2,6 +2,7 @@ package commands
 
 import (
 	"encoding/xml"
+	"time"
 )
 
 // GetOverrides represents a get_overrides command request.
@@ -33,17 +34,17 @@ type Override struct {
 	Permissions      *OverridePermissions `xml:"permissions,omitempty"`
 	Owner            *OverrideOwner       `xml:"owner,omitempty"`
 	NVT              *OverrideNVT         `xml:"nvt,omitempty"`
-	CreationTime     string               `xml:"creation_time,omitempty"`
-	ModificationTime string               `xml:"modification_time,omitempty"`
-	Writable         string               `xml:"writable,omitempty"`
-	InUse            string               `xml:"in_use,omitempty"`
-	Active           string               `xml:"active,omitempty"`
+	CreationTime     time.Time            `xml:"creation_time,omitempty"`
+	ModificationTime time.Time            `xml:"modification_time,omitempty"`
+	Writable         bool                 `xml:"writable,omitempty"`
+	InUse            bool                 `xml:"in_use,omitempty"`
+	Active           bool                 `xml:"active,omitempty"`
 	Text             *OverrideText        `xml:"text,omitempty"`
 	Threat           string               `xml:"threat,omitempty"`
-	Severity         string               `xml:"severity,omitempty"`
+	Severity         float64              `xml:"severity,omitempty"`
 	NewThreat        string               `xml:"new_threat,omitempty"`
-	NewSeverity      string               `xml:"new_severity,omitempty"`
-	Orphan           string               `xml:"orphan,omitempty"`
+	NewSeverity      float64              `xml:"new_severity,omitempty"`
+	Orphan           bool                 `xml:"orphan,omitempty"`
 	UserTags         *OverrideUserTags    `xml:"user_tags,omitempty"`
 	Hosts            string               `xml:"hosts,omitempty"`
 	Port             string               `xml:"port,omitempty"`

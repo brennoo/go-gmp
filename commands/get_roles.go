@@ -1,6 +1,9 @@
 package commands
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"time"
+)
 
 // GetRoles represents a get_roles command request.
 type GetRoles struct {
@@ -16,12 +19,12 @@ type GetRolesResponse struct {
 }
 
 type Role struct {
-	ID               string `xml:"id,attr"`
-	Name             string `xml:"name"`
-	Comment          string `xml:"comment,omitempty"`
-	CreationTime     string `xml:"creation_time,omitempty"`
-	ModificationTime string `xml:"modification_time,omitempty"`
-	Writable         string `xml:"writable,omitempty"`
-	InUse            string `xml:"in_use,omitempty"`
-	Users            string `xml:"users,omitempty"`
+	ID               string    `xml:"id,attr"`
+	Name             string    `xml:"name"`
+	Comment          string    `xml:"comment,omitempty"`
+	CreationTime     time.Time `xml:"creation_time,omitempty"`
+	ModificationTime time.Time `xml:"modification_time,omitempty"`
+	Writable         bool      `xml:"writable,omitempty"`
+	InUse            bool      `xml:"in_use,omitempty"`
+	Users            string    `xml:"users,omitempty"`
 }
