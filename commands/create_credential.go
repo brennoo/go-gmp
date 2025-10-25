@@ -8,7 +8,7 @@ type CreateCredential struct {
 	Name          string                   `xml:"name"`
 	Comment       string                   `xml:"comment,omitempty"`
 	Copy          string                   `xml:"copy,omitempty"`
-	AllowInsecure string                   `xml:"allow_insecure,omitempty"`
+	AllowInsecure bool                     `xml:"allow_insecure,omitempty"`
 	Certificate   string                   `xml:"certificate,omitempty"`
 	KDC           string                   `xml:"kdc,omitempty"`
 	KDCs          *CreateCredentialKDCs    `xml:"kdcs,omitempty"`

@@ -660,7 +660,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.CreateScanner); ok {
-		if cmd.Name == "Default Scanner" && cmd.Host == "localhost" && cmd.Port == "9391" && cmd.Type == "2" && cmd.CAPub != "" && cmd.Credential != nil && cmd.Credential.ID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+		if cmd.Name == "Default Scanner" && cmd.Host == "localhost" && cmd.Port == 9391 && cmd.Type == "2" && cmd.CAPub != "" && cmd.Credential != nil && cmd.Credential.ID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
 			(*response.(*commands.CreateScannerResponse)).Status = "201"
 			(*response.(*commands.CreateScannerResponse)).StatusText = "OK, resource created"
 			(*response.(*commands.CreateScannerResponse)).ID = "814cd30f-dee1-4d58-851d-21b8d0c048e3"

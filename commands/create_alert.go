@@ -12,7 +12,7 @@ type CreateAlert struct {
 	Event     AlertEvent     `xml:"event"`
 	Method    AlertMethod    `xml:"method"`
 	Filter    *AlertFilter   `xml:"filter,omitempty"`
-	Active    string         `xml:"active,omitempty"`
+	Active    bool           `xml:"active,omitempty"`
 }
 
 // CreateAlertResponse represents a create_alert command response.

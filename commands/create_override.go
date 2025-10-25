@@ -10,11 +10,11 @@ type CreateOverride struct {
 	Active      *int         `xml:"active,omitempty"`
 	Copy        string       `xml:"copy,omitempty"`
 	Hosts       string       `xml:"hosts,omitempty"`
-	NewSeverity string       `xml:"new_severity,omitempty"`
+	NewSeverity float64      `xml:"new_severity,omitempty"`
 	NewThreat   string       `xml:"new_threat,omitempty"`
 	Port        string       `xml:"port,omitempty"`
 	Result      string       `xml:"result,omitempty"`
-	Severity    string       `xml:"severity,omitempty"`
+	Severity    float64      `xml:"severity,omitempty"`
 	Task        string       `xml:"task,omitempty"`
 	Threat      string       `xml:"threat,omitempty"`
 }
