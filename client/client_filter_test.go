@@ -101,7 +101,7 @@ func TestDeleteFilter(t *testing.T) {
 
 	cmd := &commands.DeleteFilter{
 		FilterID: "b493b7a8-7489-11df-a3ec-001164764cea",
-		Ultimate: "0",
+		Ultimate: false,
 	}
 	resp, err := cli.DeleteFilter(cmd)
 	if err != nil {

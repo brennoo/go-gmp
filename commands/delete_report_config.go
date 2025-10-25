@@ -6,7 +6,7 @@ import "encoding/xml"
 type DeleteReportConfig struct {
 	XMLName        xml.Name `xml:"delete_report_config"`
 	ReportConfigID string   `xml:"report_config_id,attr"`
-	Ultimate       string   `xml:"ultimate,attr"`
+	Ultimate       bool     `xml:"ultimate,attr"`
 }
 
 // DeleteReportConfigResponse represents a delete_report_config command response.

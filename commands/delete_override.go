@@ -6,7 +6,7 @@ import "encoding/xml"
 type DeleteOverride struct {
 	XMLName    xml.Name `xml:"delete_override"`
 	OverrideID string   `xml:"override_id,attr"`
-	Ultimate   string   `xml:"ultimate,attr"`
+	Ultimate   bool     `xml:"ultimate,attr"`
 }
 
 // DeleteOverrideResponse represents a delete_override command response.

@@ -6,7 +6,7 @@ import "encoding/xml"
 type DeleteSchedule struct {
 	XMLName    xml.Name `xml:"delete_schedule"`
 	ScheduleID string   `xml:"schedule_id,attr"`
-	Ultimate   string   `xml:"ultimate,attr"`
+	Ultimate   bool     `xml:"ultimate,attr"`
 }
 
 // DeleteScheduleResponse represents a delete_schedule command response.

@@ -102,7 +102,7 @@ func TestDeleteAlert(t *testing.T) {
 	alertID := "267a3405-e84a-47da-97b2-5fa0d2e8995e"
 	cmd := &commands.DeleteAlert{
 		AlertID:  alertID,
-		Ultimate: "1",
+		Ultimate: true,
 	}
 	resp, err := cli.DeleteAlert(cmd)
 	if err != nil {

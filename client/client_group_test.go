@@ -74,7 +74,7 @@ func TestDeleteGroup(t *testing.T) {
 
 	cmd := &commands.DeleteGroup{
 		GroupID:  "d94211b6-ba40-11e3-bcb1-406186ea4fc5",
-		Ultimate: "1",
+		Ultimate: true,
 	}
 	resp, err := cli.DeleteGroup(cmd)
 	if err != nil {

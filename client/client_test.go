@@ -452,7 +452,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.DeleteReportFormat); ok {
-		if cmd.ReportFormatID == "format-uuid" && cmd.Ultimate == "1" {
+		if cmd.ReportFormatID == "format-uuid" && cmd.Ultimate == true {
 			(*response.(*commands.DeleteReportFormatResponse)).Status = "200"
 			(*response.(*commands.DeleteReportFormatResponse)).StatusText = "OK"
 		} else {
@@ -544,7 +544,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.DeleteReportConfig); ok {
-		if cmd.ReportConfigID == "config-uuid" && cmd.Ultimate == "1" {
+		if cmd.ReportConfigID == "config-uuid" && cmd.Ultimate == true {
 			(*response.(*commands.DeleteReportConfigResponse)).Status = "200"
 			(*response.(*commands.DeleteReportConfigResponse)).StatusText = "OK"
 		} else {
@@ -650,7 +650,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.DeleteCredential); ok {
-		if cmd.CredentialID == "cred-uuid-1" && cmd.Ultimate == "1" {
+		if cmd.CredentialID == "cred-uuid-1" && cmd.Ultimate == true {
 			(*response.(*commands.DeleteCredentialResponse)).Status = "200"
 			(*response.(*commands.DeleteCredentialResponse)).StatusText = "OK"
 		} else {
@@ -681,7 +681,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.DeleteScanner); ok {
-		if cmd.ScannerID == "scanner-uuid" && cmd.Ultimate == "1" {
+		if cmd.ScannerID == "scanner-uuid" && cmd.Ultimate == true {
 			(*response.(*commands.DeleteScannerResponse)).Status = "200"
 			(*response.(*commands.DeleteScannerResponse)).StatusText = "OK"
 		} else {
@@ -723,7 +723,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.DeletePortList); ok {
-		if cmd.PortListID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" && cmd.Ultimate == "1" {
+		if cmd.PortListID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" && cmd.Ultimate == true {
 			(*response.(*commands.DeletePortListResponse)).Status = "200"
 			(*response.(*commands.DeletePortListResponse)).StatusText = "OK"
 		} else {
@@ -804,7 +804,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.DeleteConfig); ok {
-		if cmd.ConfigID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" && cmd.Ultimate == "1" {
+		if cmd.ConfigID == "267a3405-e84a-47da-97b2-5fa0d2e8995e" && cmd.Ultimate == true {
 			(*response.(*commands.DeleteConfigResponse)).Status = "200"
 			(*response.(*commands.DeleteConfigResponse)).StatusText = "OK"
 		} else {
@@ -1311,7 +1311,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.DeleteRole); ok {
-		if cmd.RoleID == "b64c81b2-b9de-11e3-a2e9-406186ea4fc5" && cmd.Ultimate == "1" {
+		if cmd.RoleID == "b64c81b2-b9de-11e3-a2e9-406186ea4fc5" && cmd.Ultimate == true {
 			(*response.(*commands.DeleteRoleResponse)).Status = "200"
 			(*response.(*commands.DeleteRoleResponse)).StatusText = "OK"
 		} else {
@@ -1416,7 +1416,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.DeleteTicket); ok {
-		if cmd.TicketID == "ticket-uuid" && cmd.Ultimate == "1" {
+		if cmd.TicketID == "ticket-uuid" && cmd.Ultimate == true {
 			(*response.(*commands.DeleteTicketResponse)).Status = "200"
 			(*response.(*commands.DeleteTicketResponse)).StatusText = "OK"
 		} else {

@@ -123,7 +123,7 @@ func TestDeleteScanner(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.DeleteScanner{ScannerID: "scanner-uuid", Ultimate: "1"}
+	cmd := &commands.DeleteScanner{ScannerID: "scanner-uuid", Ultimate: true}
 	resp, err := cli.DeleteScanner(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)

@@ -41,7 +41,7 @@ func TestDeleteOverride(t *testing.T) {
 
 	cmd := &commands.DeleteOverride{
 		OverrideID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
-		Ultimate:   "0",
+		Ultimate:   false,
 	}
 	resp, err := cli.DeleteOverride(cmd)
 	if err != nil {

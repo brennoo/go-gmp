@@ -6,7 +6,7 @@ import "encoding/xml"
 type DeleteGroup struct {
 	XMLName  xml.Name `xml:"delete_group"`
 	GroupID  string   `xml:"group_id,attr"`
-	Ultimate string   `xml:"ultimate,attr"`
+	Ultimate bool     `xml:"ultimate,attr"`
 }
 
 // DeleteGroupResponse represents a delete_group command response.

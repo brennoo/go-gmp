@@ -6,7 +6,7 @@ import "encoding/xml"
 type DeleteRole struct {
 	XMLName  xml.Name `xml:"delete_role"`
 	RoleID   string   `xml:"role_id,attr"`
-	Ultimate string   `xml:"ultimate,attr"`
+	Ultimate bool     `xml:"ultimate,attr"`
 }
 
 // DeleteRoleResponse represents a delete_role command response.

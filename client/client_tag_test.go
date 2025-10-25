@@ -80,7 +80,7 @@ func TestDeleteTag(t *testing.T) {
 
 	cmd := &commands.DeleteTag{
 		TagID:    "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
-		Ultimate: "1",
+		Ultimate: true,
 	}
 	resp, err := cli.DeleteTag(cmd)
 	if err != nil {

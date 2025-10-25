@@ -6,7 +6,7 @@ import "encoding/xml"
 type DeleteAlert struct {
 	XMLName  xml.Name `xml:"delete_alert"`
 	AlertID  string   `xml:"alert_id,attr"`
-	Ultimate string   `xml:"ultimate,attr"`
+	Ultimate bool     `xml:"ultimate,attr"`
 }
 
 // DeleteAlertResponse represents a delete_alert command response.

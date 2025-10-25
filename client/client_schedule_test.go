@@ -92,7 +92,7 @@ func TestDeleteSchedule(t *testing.T) {
 
 	cmd := &commands.DeleteSchedule{
 		ScheduleID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
-		Ultimate:   "0",
+		Ultimate:   false,
 	}
 	resp, err := cli.DeleteSchedule(cmd)
 	if err != nil {
