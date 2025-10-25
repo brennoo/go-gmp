@@ -9,12 +9,12 @@ type ModifyScanner struct {
 	Comment    string             `xml:"comment,omitempty"`
 	Name       string             `xml:"name,omitempty"`
 	Host       string             `xml:"host,omitempty"`
-	Port       string             `xml:"port,omitempty"`
+	Port       int                `xml:"port,omitempty"`
 	Type       string             `xml:"type,omitempty"`
 	CAPub      string             `xml:"ca_pub,omitempty"`
 	Credential *ScannerCredential `xml:"credential,omitempty"`
 	RelayHost  string             `xml:"relay_host,omitempty"`
-	RelayPort  string             `xml:"relay_port,omitempty"`
+	RelayPort  int                `xml:"relay_port,omitempty"`
 }
 
 // ModifyScannerResponse is the response to a modify_scanner command.

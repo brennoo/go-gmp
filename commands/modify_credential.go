@@ -8,7 +8,7 @@ type ModifyCredential struct {
 	CredentialID  string                   `xml:"credential_id,attr"`
 	Comment       string                   `xml:"comment,omitempty"`
 	Name          string                   `xml:"name,omitempty"`
-	AllowInsecure string                   `xml:"allow_insecure,omitempty"`
+	AllowInsecure bool                     `xml:"allow_insecure,omitempty"`
 	Certificate   string                   `xml:"certificate,omitempty"`
 	KDC           string                   `xml:"kdc,omitempty"`
 	KDCs          *CreateCredentialKDCs    `xml:"kdcs,omitempty"`

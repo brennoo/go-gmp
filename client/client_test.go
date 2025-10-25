@@ -820,7 +820,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 
 	if cmd, ok := command.(*commands.ModifyAgents); ok {
 		if len(cmd.Agents) == 1 && cmd.Agents[0].ID == "fb6451bf-ec5a-45a8-8bab-5cf4b862e51b" &&
-			cmd.Authorized == "1" && cmd.MinInterval == "1000" && cmd.HeartbeatInterval == "0" &&
+			cmd.Authorized == 1 && cmd.MinInterval == 1000 && cmd.HeartbeatInterval == 0 &&
 			cmd.Schedule == "@every 12h" && cmd.Comment == "example update" {
 			(*response.(*commands.ModifyAgentsResponse)).Status = "200"
 			(*response.(*commands.ModifyAgentsResponse)).StatusText = "OK"
@@ -1331,7 +1331,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.ModifyTag); ok {
-		if cmd.TagID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" && cmd.Active == "0" {
+		if cmd.TagID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" && cmd.Active == false {
 			(*response.(*commands.ModifyTagResponse)).Status = "200"
 			(*response.(*commands.ModifyTagResponse)).StatusText = "OK"
 		} else {

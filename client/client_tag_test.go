@@ -42,7 +42,7 @@ func TestModifyTag(t *testing.T) {
 
 	cmd := &commands.ModifyTag{
 		TagID:  "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
-		Active: "0",
+		Active: false,
 	}
 	resp, err := cli.ModifyTag(cmd)
 	if err != nil {

@@ -10,7 +10,7 @@ type ModifyTag struct {
 	Resources *CreateTagResources `xml:"resources,omitempty"`
 	Value     string              `xml:"value,omitempty"`
 	Comment   string              `xml:"comment,omitempty"`
-	Active    string              `xml:"active,omitempty"`
+	Active    bool                `xml:"active,omitempty"`
 }
 
 // ModifyTagResponse represents a modify_tag command response.
