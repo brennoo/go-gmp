@@ -1,10 +1,12 @@
 package client
 
 import (
+	"context"
 	"strings"
 	"testing"
 
 	"github.com/brennoo/go-gmp/commands"
+	"github.com/brennoo/go-gmp/commands/filtering"
 )
 
 func TestNew(t *testing.T) {
@@ -302,8 +304,8 @@ func TestGetSettings(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetSettings{}
-	resp, err := cli.GetSettings(cmd)
+	ctx := context.Background()
+	resp, err := cli.GetSettings(ctx)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetSettings: %s", err)
 	}
@@ -538,6 +540,43 @@ func TestRawXML(t *testing.T) {
 
 func contains(s, substr string) bool {
 	return strings.Contains(s, substr)
+}
+
+// TestGetSettingsConsolidated tests the GetSettings method.
+func TestGetSettingsConsolidated(t *testing.T) {
+	cli := New(MockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	ctx := context.Background()
+
+	// Test with no filters
+	resp, err := cli.GetSettings(ctx)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetSettings: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+
+	// Test with string filters
+	resp, err = cli.GetSettings(ctx, "name~timeout")
+	if err != nil {
+		t.Fatalf("Unexpected error during GetSettings with string filter: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+
+	// Test with functional options
+	resp, err = cli.GetSettings(ctx, filtering.WithName("test"))
+	if err != nil {
+		t.Fatalf("Unexpected error during GetSettings with functional options: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
 }
 
 func (m *mockConn) RawXML(xmlStr string) (string, error) {

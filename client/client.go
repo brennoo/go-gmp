@@ -5,6 +5,7 @@ import (
 
 	"github.com/brennoo/go-gmp"
 	"github.com/brennoo/go-gmp/commands"
+	"github.com/brennoo/go-gmp/commands/filtering"
 	"github.com/brennoo/go-gmp/commands/pagination"
 )
 
@@ -81,10 +82,20 @@ func (cli *client) ModifyTarget(cmd *commands.ModifyTarget) (resp *commands.Modi
 	return resp, err
 }
 
-func (cli *client) GetTargets(cmd *commands.GetTargets) (resp *commands.GetTargetsResponse, err error) {
+// GetTargetsRaw provides the low-level method for direct command execution.
+func (cli *client) GetTargetsRaw(cmd *commands.GetTargets) (resp *commands.GetTargetsResponse, err error) {
 	resp = new(commands.GetTargetsResponse)
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
+}
+
+// GetTargets retrieves targets with optional filters.
+func (cli *client) GetTargets(ctx context.Context, args ...filtering.FilterArg) (*commands.GetTargetsResponse, error) {
+	filter := filtering.BuildFilterFromArgs(args...)
+	cmd := &commands.GetTargets{
+		Filter: filter,
+	}
+	return cli.GetTargetsRaw(cmd)
 }
 
 func (cli *client) DeleteTarget(cmd *commands.DeleteTarget) (resp *commands.DeleteTargetResponse, err error) {
@@ -93,10 +104,20 @@ func (cli *client) DeleteTarget(cmd *commands.DeleteTarget) (resp *commands.Dele
 	return resp, err
 }
 
-func (cli *client) GetPortLists(cmd *commands.GetPortLists) (resp *commands.GetPortListsResponse, err error) {
+// GetPortListsRaw provides the low-level method for direct command execution.
+func (cli *client) GetPortListsRaw(cmd *commands.GetPortLists) (resp *commands.GetPortListsResponse, err error) {
 	resp = new(commands.GetPortListsResponse)
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
+}
+
+// GetPortLists retrieves port lists with optional filters.
+func (cli *client) GetPortLists(ctx context.Context, args ...filtering.FilterArg) (*commands.GetPortListsResponse, error) {
+	filter := filtering.BuildFilterFromArgs(args...)
+	cmd := &commands.GetPortLists{
+		Filter: filter,
+	}
+	return cli.GetPortListsRaw(cmd)
 }
 
 func (cli *client) StartTask(cmd *commands.StartTask) (resp *commands.StartTaskResponse, err error) {
@@ -105,10 +126,20 @@ func (cli *client) StartTask(cmd *commands.StartTask) (resp *commands.StartTaskR
 	return resp, err
 }
 
-func (cli *client) GetTasks(cmd *commands.GetTasks) (resp *commands.GetTasksResponse, err error) {
+// GetTasksRaw provides the low-level method for direct command execution.
+func (cli *client) GetTasksRaw(cmd *commands.GetTasks) (resp *commands.GetTasksResponse, err error) {
 	resp = new(commands.GetTasksResponse)
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
+}
+
+// GetTasks retrieves tasks with optional filters.
+func (cli *client) GetTasks(ctx context.Context, args ...filtering.FilterArg) (*commands.GetTasksResponse, error) {
+	filter := filtering.BuildFilterFromArgs(args...)
+	cmd := &commands.GetTasks{
+		Filter: filter,
+	}
+	return cli.GetTasksRaw(cmd)
 }
 
 func (cli *client) StopTask(cmd *commands.StopTask) (resp *commands.StopTaskResponse, err error) {
@@ -123,10 +154,20 @@ func (cli *client) DeleteTask(cmd *commands.DeleteTask) (resp *commands.DeleteTa
 	return resp, err
 }
 
-func (cli *client) GetResults(cmd *commands.GetResults) (resp *commands.GetResultsResponse, err error) {
+// GetResultsRaw provides the low-level method for direct command execution.
+func (cli *client) GetResultsRaw(cmd *commands.GetResults) (resp *commands.GetResultsResponse, err error) {
 	resp = new(commands.GetResultsResponse)
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
+}
+
+// GetResults retrieves results with optional filters.
+func (cli *client) GetResults(ctx context.Context, args ...filtering.FilterArg) (*commands.GetResultsResponse, error) {
+	filter := filtering.BuildFilterFromArgs(args...)
+	cmd := &commands.GetResults{
+		Filter: filter,
+	}
+	return cli.GetResultsRaw(cmd)
 }
 
 func (cli *client) GetVulns(cmd *commands.GetVulns) (resp *commands.GetVulnsResponse, err error) {
@@ -183,10 +224,20 @@ func (cli *client) ModifyAsset(cmd *commands.ModifyAsset) (resp *commands.Modify
 	return resp, err
 }
 
-func (cli *client) GetAssets(cmd *commands.GetAssets) (resp *commands.GetAssetsResponse, err error) {
+// GetAssetsRaw provides the low-level method for direct command execution.
+func (cli *client) GetAssetsRaw(cmd *commands.GetAssets) (resp *commands.GetAssetsResponse, err error) {
 	resp = new(commands.GetAssetsResponse)
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
+}
+
+// GetAssets retrieves assets with optional filters.
+func (cli *client) GetAssets(ctx context.Context, args ...filtering.FilterArg) (*commands.GetAssetsResponse, error) {
+	filter := filtering.BuildFilterFromArgs(args...)
+	cmd := &commands.GetAssets{
+		Filter: filter,
+	}
+	return cli.GetAssetsRaw(cmd)
 }
 
 func (cli *client) DeleteAsset(cmd *commands.DeleteAsset) (resp *commands.DeleteAssetResponse, err error) {
@@ -519,10 +570,20 @@ func (cli *client) ModifySetting(cmd *commands.ModifySetting) (resp *commands.Mo
 	return resp, err
 }
 
-func (cli *client) GetSettings(cmd *commands.GetSettings) (resp *commands.GetSettingsResponse, err error) {
+// GetSettingsRaw provides the low-level method for direct command execution.
+func (cli *client) GetSettingsRaw(cmd *commands.GetSettings) (resp *commands.GetSettingsResponse, err error) {
 	resp = new(commands.GetSettingsResponse)
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
+}
+
+// GetSettings retrieves settings with optional filters.
+func (cli *client) GetSettings(ctx context.Context, args ...filtering.FilterArg) (*commands.GetSettingsResponse, error) {
+	filter := filtering.BuildFilterFromArgs(args...)
+	cmd := &commands.GetSettings{
+		Filter: filter,
+	}
+	return cli.GetSettingsRaw(cmd)
 }
 
 func (cli *client) GetResourceNames(cmd *commands.GetResourceNames) (resp *commands.GetResourceNamesResponse, err error) {
@@ -745,10 +806,20 @@ func (cli *client) ModifyTicket(cmd *commands.ModifyTicket) (resp *commands.Modi
 	return resp, err
 }
 
-func (cli *client) GetTickets(cmd *commands.GetTickets) (resp *commands.GetTicketsResponse, err error) {
+// GetTicketsRaw provides the low-level method for direct command execution.
+func (cli *client) GetTicketsRaw(cmd *commands.GetTickets) (resp *commands.GetTicketsResponse, err error) {
 	resp = new(commands.GetTicketsResponse)
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
+}
+
+// GetTickets retrieves tickets with optional filters.
+func (cli *client) GetTickets(ctx context.Context, args ...filtering.FilterArg) (*commands.GetTicketsResponse, error) {
+	filter := filtering.BuildFilterFromArgs(args...)
+	cmd := &commands.GetTickets{
+		Filter: filter,
+	}
+	return cli.GetTicketsRaw(cmd)
 }
 
 func (cli *client) DeleteTicket(cmd *commands.DeleteTicket) (resp *commands.DeleteTicketResponse, err error) {
@@ -757,102 +828,14 @@ func (cli *client) DeleteTicket(cmd *commands.DeleteTicket) (resp *commands.Dele
 	return resp, err
 }
 
-// Pagination Methods
-
-func (cli *client) GetTasksPaged(page, pageSize int, filters ...string) (*commands.GetTasksResponse, error) {
-	opts := pagination.PaginationOptions{
-		Page:     page,
-		PageSize: pageSize,
+// Tasks returns an iterator for tasks.
+func (cli *client) Tasks(ctx context.Context, pageSize int, args ...filtering.FilterArg) *pagination.TaskIterator {
+	filter := filtering.BuildFilterFromArgs(args...)
+	var filters []string
+	if filter != "" {
+		filters = []string{filter}
 	}
-	filter := pagination.BuildPaginationFilter(opts, filters...)
 
-	cmd := &commands.GetTasks{
-		Filter: filter,
-	}
-	return cli.GetTasks(cmd)
-}
-
-func (cli *client) GetResultsPaged(page, pageSize int, filters ...string) (*commands.GetResultsResponse, error) {
-	opts := pagination.PaginationOptions{
-		Page:     page,
-		PageSize: pageSize,
-	}
-	filter := pagination.BuildPaginationFilter(opts, filters...)
-
-	cmd := &commands.GetResults{
-		Filter: filter,
-	}
-	return cli.GetResults(cmd)
-}
-
-func (cli *client) GetAssetsPaged(page, pageSize int, filters ...string) (*commands.GetAssetsResponse, error) {
-	opts := pagination.PaginationOptions{
-		Page:     page,
-		PageSize: pageSize,
-	}
-	filter := pagination.BuildPaginationFilter(opts, filters...)
-
-	cmd := &commands.GetAssets{
-		Filter: filter,
-	}
-	return cli.GetAssets(cmd)
-}
-
-func (cli *client) GetTargetsPaged(page, pageSize int, filters ...string) (*commands.GetTargetsResponse, error) {
-	opts := pagination.PaginationOptions{
-		Page:     page,
-		PageSize: pageSize,
-	}
-	filter := pagination.BuildPaginationFilter(opts, filters...)
-
-	cmd := &commands.GetTargets{
-		Filter: filter,
-	}
-	return cli.GetTargets(cmd)
-}
-
-func (cli *client) GetTicketsPaged(page, pageSize int, filters ...string) (*commands.GetTicketsResponse, error) {
-	opts := pagination.PaginationOptions{
-		Page:     page,
-		PageSize: pageSize,
-	}
-	filter := pagination.BuildPaginationFilter(opts, filters...)
-
-	cmd := &commands.GetTickets{
-		Filter: filter,
-	}
-	return cli.GetTickets(cmd)
-}
-
-func (cli *client) GetPortListsPaged(page, pageSize int, filters ...string) (*commands.GetPortListsResponse, error) {
-	opts := pagination.PaginationOptions{
-		Page:     page,
-		PageSize: pageSize,
-	}
-	filter := pagination.BuildPaginationFilter(opts, filters...)
-
-	cmd := &commands.GetPortLists{
-		Filter: filter,
-	}
-	return cli.GetPortLists(cmd)
-}
-
-func (cli *client) GetSettingsPaged(page, pageSize int, filters ...string) (*commands.GetSettingsResponse, error) {
-	opts := pagination.PaginationOptions{
-		Page:     page,
-		PageSize: pageSize,
-	}
-	filter := pagination.BuildPaginationFilter(opts, filters...)
-
-	cmd := &commands.GetSettings{
-		Filter: filter,
-	}
-	return cli.GetSettings(cmd)
-}
-
-// Iterator Methods
-
-func (cli *client) GetTasksIter(ctx context.Context, pageSize int, filters ...string) *pagination.TaskIterator {
 	return &pagination.TaskIterator{
 		Client:      cli,
 		Ctx:         ctx,
@@ -863,7 +846,14 @@ func (cli *client) GetTasksIter(ctx context.Context, pageSize int, filters ...st
 	}
 }
 
-func (cli *client) GetResultsIter(ctx context.Context, pageSize int, filters ...string) *pagination.ResultIterator {
+// Results returns an iterator for results.
+func (cli *client) Results(ctx context.Context, pageSize int, args ...filtering.FilterArg) *pagination.ResultIterator {
+	filter := filtering.BuildFilterFromArgs(args...)
+	var filters []string
+	if filter != "" {
+		filters = []string{filter}
+	}
+
 	return &pagination.ResultIterator{
 		Client:      cli,
 		Ctx:         ctx,
@@ -874,7 +864,14 @@ func (cli *client) GetResultsIter(ctx context.Context, pageSize int, filters ...
 	}
 }
 
-func (cli *client) GetAssetsIter(ctx context.Context, pageSize int, filters ...string) *pagination.AssetIterator {
+// Assets returns an iterator for assets.
+func (cli *client) Assets(ctx context.Context, pageSize int, args ...filtering.FilterArg) *pagination.AssetIterator {
+	filter := filtering.BuildFilterFromArgs(args...)
+	var filters []string
+	if filter != "" {
+		filters = []string{filter}
+	}
+
 	return &pagination.AssetIterator{
 		Client:      cli,
 		Ctx:         ctx,
@@ -885,7 +882,14 @@ func (cli *client) GetAssetsIter(ctx context.Context, pageSize int, filters ...s
 	}
 }
 
-func (cli *client) GetTargetsIter(ctx context.Context, pageSize int, filters ...string) *pagination.TargetIterator {
+// Targets returns an iterator for targets.
+func (cli *client) Targets(ctx context.Context, pageSize int, args ...filtering.FilterArg) *pagination.TargetIterator {
+	filter := filtering.BuildFilterFromArgs(args...)
+	var filters []string
+	if filter != "" {
+		filters = []string{filter}
+	}
+
 	return &pagination.TargetIterator{
 		Client:      cli,
 		Ctx:         ctx,
@@ -896,7 +900,14 @@ func (cli *client) GetTargetsIter(ctx context.Context, pageSize int, filters ...
 	}
 }
 
-func (cli *client) GetTicketsIter(ctx context.Context, pageSize int, filters ...string) *pagination.TicketIterator {
+// Tickets returns an iterator for tickets.
+func (cli *client) Tickets(ctx context.Context, pageSize int, args ...filtering.FilterArg) *pagination.TicketIterator {
+	filter := filtering.BuildFilterFromArgs(args...)
+	var filters []string
+	if filter != "" {
+		filters = []string{filter}
+	}
+
 	return &pagination.TicketIterator{
 		Client:      cli,
 		Ctx:         ctx,
@@ -907,7 +918,14 @@ func (cli *client) GetTicketsIter(ctx context.Context, pageSize int, filters ...
 	}
 }
 
-func (cli *client) GetPortListsIter(ctx context.Context, pageSize int, filters ...string) *pagination.PortListIterator {
+// PortLists returns an iterator for port lists.
+func (cli *client) PortLists(ctx context.Context, pageSize int, args ...filtering.FilterArg) *pagination.PortListIterator {
+	filter := filtering.BuildFilterFromArgs(args...)
+	var filters []string
+	if filter != "" {
+		filters = []string{filter}
+	}
+
 	return &pagination.PortListIterator{
 		Client:      cli,
 		Ctx:         ctx,
@@ -918,7 +936,14 @@ func (cli *client) GetPortListsIter(ctx context.Context, pageSize int, filters .
 	}
 }
 
-func (cli *client) GetSettingsIter(ctx context.Context, pageSize int, filters ...string) *pagination.SettingsIterator {
+// Settings returns an iterator for settings.
+func (cli *client) Settings(ctx context.Context, pageSize int, args ...filtering.FilterArg) *pagination.SettingsIterator {
+	filter := filtering.BuildFilterFromArgs(args...)
+	var filters []string
+	if filter != "" {
+		filters = []string{filter}
+	}
+
 	return &pagination.SettingsIterator{
 		Client:      cli,
 		Ctx:         ctx,

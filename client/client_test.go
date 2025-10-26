@@ -93,7 +93,7 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.GetTargets); ok {
-		if cmd.TargetID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" || cmd.Filter != "" {
+		if cmd.TargetID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" || cmd.Filter != "" || (cmd.TargetID == "" && cmd.Filter == "") {
 			resp := response.(*commands.GetTargetsResponse)
 			resp.Status = "200"
 			resp.StatusText = "OK"
@@ -112,6 +112,18 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 				resp.TargetCount = &commands.TargetCount{
 					Filtered: 2,
 					Page:     1,
+				}
+			} else if cmd.TargetID == "" && cmd.Filter == "" {
+				// Return mock data for general list request
+				resp.Target = []commands.Target{
+					{
+						ID:   "target-1",
+						Name: "Test Target 1",
+					},
+					{
+						ID:   "target-2",
+						Name: "Test Target 2",
+					},
 				}
 			}
 		} else {

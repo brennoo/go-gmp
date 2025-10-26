@@ -12,6 +12,7 @@ import (
 	"github.com/brennoo/go-gmp"
 	"github.com/brennoo/go-gmp/client"
 	"github.com/brennoo/go-gmp/commands"
+	"github.com/brennoo/go-gmp/commands/filtering"
 	"github.com/brennoo/go-gmp/connections"
 )
 
@@ -23,9 +24,9 @@ const (
 	scannerName  = "OpenVAS Default"
 	configName   = "Full and fast"
 	portListName = "All IANA assigned TCP"
-	targetName   = "localhost"
-	targetHosts  = "127.0.0.1"
-	taskName     = "New Task"
+	targetName   = "scanme.nmap.org"
+	targetHosts  = "scanme.nmap.org"
+	taskName     = "Scan scanme.nmap.org"
 	pollInterval = 10 * time.Second
 )
 
@@ -130,11 +131,7 @@ func (g *GMPClient) GetConfig(ctx context.Context, name string) (string, error) 
 func (g *GMPClient) GetPortList(ctx context.Context, name string) (string, error) {
 	log.Printf("Getting port list: %s", name)
 
-	cmd := &commands.GetPortLists{
-		Filter: fmt.Sprintf(`name="%s"`, name),
-	}
-
-	resp, err := g.client.GetPortLists(cmd)
+	resp, err := g.client.GetPortLists(ctx, fmt.Sprintf(`name="%s"`, name))
 	if err != nil {
 		return "", fmt.Errorf("failed to get port lists: %w", err)
 	}
@@ -155,11 +152,7 @@ func (g *GMPClient) GetPortList(ctx context.Context, name string) (string, error
 func (g *GMPClient) GetTarget(ctx context.Context, name string) (*commands.Target, error) {
 	log.Printf("Getting target: %s", name)
 
-	cmd := &commands.GetTargets{
-		Filter: fmt.Sprintf(`name="%s"`, name),
-	}
-
-	resp, err := g.client.GetTargets(cmd)
+	resp, err := g.client.GetTargets(ctx, fmt.Sprintf(`name="%s"`, name))
 	if err != nil {
 		return nil, fmt.Errorf("failed to get targets: %w", err)
 	}
@@ -227,11 +220,7 @@ func (g *GMPClient) DeleteTargetWithDependencies(ctx context.Context, targetID s
 func (g *GMPClient) GetTargetByID(ctx context.Context, targetID string) (*commands.Target, error) {
 	log.Printf("Getting target by ID: %s", targetID)
 
-	cmd := &commands.GetTargets{
-		TargetID: targetID,
-	}
-
-	resp, err := g.client.GetTargets(cmd)
+	resp, err := g.client.GetTargets(ctx, fmt.Sprintf(`target_id="%s"`, targetID))
 	if err != nil {
 		return nil, fmt.Errorf("failed to get target: %w", err)
 	}
@@ -252,11 +241,7 @@ func (g *GMPClient) GetTargetByID(ctx context.Context, targetID string) (*comman
 func (g *GMPClient) GetTask(ctx context.Context, name string) (*commands.GetTasksResponseTask, error) {
 	log.Printf("Getting task: %s", name)
 
-	cmd := &commands.GetTasks{
-		Filter: fmt.Sprintf(`name="%s"`, name),
-	}
-
-	resp, err := g.client.GetTasks(cmd)
+	resp, err := g.client.GetTasks(ctx, fmt.Sprintf(`name="%s"`, name))
 	if err != nil {
 		return nil, fmt.Errorf("failed to get tasks: %w", err)
 	}
@@ -420,11 +405,7 @@ func (g *GMPClient) WaitForTaskCompletion(ctx context.Context, taskID string) er
 
 // getTaskProgress gets the current progress of a task.
 func (g *GMPClient) getTaskProgress(ctx context.Context, taskID string) (int, error) {
-	cmd := &commands.GetTasks{
-		TaskID: taskID,
-	}
-
-	resp, err := g.client.GetTasks(cmd)
+	resp, err := g.client.GetTasks(ctx, fmt.Sprintf(`task_id="%s"`, taskID))
 	if err != nil {
 		return 0, err
 	}
@@ -441,39 +422,81 @@ func (g *GMPClient) getTaskProgress(ctx context.Context, taskID string) (int, er
 	return progress, nil
 }
 
-// GetResults retrieves results for a task.
-func (g *GMPClient) GetResults(ctx context.Context, taskID string) ([]commands.Result, error) {
-	log.Printf("Getting results for task: %s", taskID)
+// PrintResultsWithIterator prints all results using an iterator.
+func (g *GMPClient) PrintResultsWithIterator(ctx context.Context, taskID string) error {
+	log.Printf("Getting results for task: %s using iterator", taskID)
 
-	cmd := &commands.GetResults{
-		TaskID: taskID,
-		Filter: "min_qod=0 rows=1000",
+	// Create an iterator for results
+	resultIter := g.client.Results(ctx, 50, taskID)
+	defer resultIter.Close()
+
+	resultCount := 0
+	log.Println("Scanning results...")
+	log.Println("=" + strings.Repeat("=", 80))
+
+	// Iterate through all results
+	for resultIter.Next() {
+		result := resultIter.Current()
+		resultCount++
+
+		fmt.Printf("[%d] %s (Severity: %.1f)\n", resultCount, result.Name, result.Severity)
+		if result.Description != "" {
+			fmt.Printf("     Description: %s\n", result.Description)
+		}
+		if result.Host.Value != "" {
+			fmt.Printf("     Host: %s\n", result.Host.Value)
+		}
+		if result.Port != "" {
+			fmt.Printf("     Port: %s\n", result.Port)
+		}
+		fmt.Println()
 	}
 
-	resp, err := g.client.GetResults(cmd)
+	// Check for errors
+	if err := resultIter.Err(); err != nil {
+		return fmt.Errorf("error during iteration: %w", err)
+	}
+
+	if resultCount == 0 {
+		log.Println("No results found")
+	} else {
+		log.Printf("Total results found: %d", resultCount)
+		log.Printf("Total available: %d", resultIter.Total())
+	}
+
+	return nil
+}
+
+// PrintResultsWithFiltering demonstrates the new filtering system.
+func (g *GMPClient) PrintResultsWithFiltering(ctx context.Context, taskID string) error {
+	log.Printf("Getting results for task: %s using filtering system", taskID)
+
+	// Create filter options for high and critical severity results
+	opts := []filtering.Option{
+		filtering.WithTask(taskID),
+		filtering.WithSeverityGreaterThanOrEqual(7.0), // High and Critical
+		filtering.WithSortDesc(filtering.SortByResultSeverity),
+		filtering.WithLimit(20), // Limit to top 20 results
+	}
+
+	// Use the new filtering method
+	var args []filtering.FilterArg
+	for _, opt := range opts {
+		args = append(args, opt)
+	}
+	resp, err := g.client.GetResults(ctx, args...)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get results: %w", err)
+		return fmt.Errorf("failed to get filtered results: %w", err)
 	}
 
 	if resp.Status != "200" {
-		return nil, fmt.Errorf("get results failed with status %s: %s", resp.Status, resp.StatusText)
+		return fmt.Errorf("get results failed with status %s: %s", resp.Status, resp.StatusText)
 	}
 
-	log.Printf("Retrieved %d results", len(resp.Results))
-	return resp.Results, nil
-}
-
-// PrintResults prints the results in a formatted way.
-func PrintResults(results []commands.Result) {
-	if len(results) == 0 {
-		log.Println("No results found")
-		return
-	}
-
-	log.Printf("Found %d results:", len(results))
+	log.Printf("Found %d high/critical results (showing top 20)", len(resp.Results))
 	log.Println("=" + strings.Repeat("=", 80))
 
-	for i, result := range results {
+	for i, result := range resp.Results {
 		fmt.Printf("[%d] %s (Severity: %.1f)\n", i+1, result.Name, result.Severity)
 		if result.Description != "" {
 			fmt.Printf("     Description: %s\n", result.Description)
@@ -486,6 +509,48 @@ func PrintResults(results []commands.Result) {
 		}
 		fmt.Println()
 	}
+
+	return nil
+}
+
+// PrintTasksWithFiltering demonstrates filtering tasks.
+func (g *GMPClient) PrintTasksWithFiltering(ctx context.Context) error {
+	log.Println("Getting tasks using filtering system")
+
+	// Create filter options for running tasks
+	opts := []filtering.Option{
+		filtering.WithStatus(filtering.StatusRunning),
+		filtering.WithSortDesc(filtering.SortByCreated),
+		filtering.WithLimit(10), // Show last 10 running tasks
+	}
+
+	// Use the new filtering method
+	var args []filtering.FilterArg
+	for _, opt := range opts {
+		args = append(args, opt)
+	}
+	resp, err := g.client.GetTasks(ctx, args...)
+	if err != nil {
+		return fmt.Errorf("failed to get filtered tasks: %w", err)
+	}
+
+	if resp.Status != "200" {
+		return fmt.Errorf("get tasks failed with status %s: %s", resp.Status, resp.StatusText)
+	}
+
+	log.Printf("Found %d running tasks", len(resp.Task))
+	log.Println("=" + strings.Repeat("=", 80))
+
+	for i, task := range resp.Task {
+		fmt.Printf("[%d] %s (Status: %s, Progress: %d%%)\n", i+1, task.Name, task.Status, task.Progress)
+		if task.Comment != "" {
+			fmt.Printf("     Comment: %s\n", task.Comment)
+		}
+		fmt.Printf("     Created: %s\n", task.CreationTime)
+		fmt.Println()
+	}
+
+	return nil
 }
 
 func main() {
@@ -545,12 +610,23 @@ func main() {
 		log.Fatalf("Task failed or timed out: %v", err)
 	}
 
-	// Get results
-	results, err := gmpClient.GetResults(ctx, task.ID)
-	if err != nil {
+	// Get and print results using iterator (old approach)
+	if err := gmpClient.PrintResultsWithIterator(ctx, task.ID); err != nil {
 		log.Fatalf("Failed to get results: %v", err)
 	}
 
-	// Print results
-	PrintResults(results)
+	// Demonstrate the new filtering system
+	log.Println("\n" + strings.Repeat("=", 80))
+	log.Println("DEMONSTRATING NEW FILTERING SYSTEM")
+	log.Println(strings.Repeat("=", 80))
+
+	// Show filtered results (high/critical severity only)
+	if err := gmpClient.PrintResultsWithFiltering(ctx, task.ID); err != nil {
+		log.Printf("Warning: Failed to get filtered results: %v", err)
+	}
+
+	// Show running tasks using filtering
+	if err := gmpClient.PrintTasksWithFiltering(ctx); err != nil {
+		log.Printf("Warning: Failed to get filtered tasks: %v", err)
+	}
 }

@@ -1,9 +1,11 @@
 package client
 
 import (
+	"context"
 	"testing"
 
 	"github.com/brennoo/go-gmp/commands"
+	"github.com/brennoo/go-gmp/commands/filtering"
 )
 
 func TestCreateTicket(t *testing.T) {
@@ -40,8 +42,8 @@ func TestGetTickets(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetTickets{}
-	resp, err := cli.GetTickets(cmd)
+	ctx := context.Background()
+	resp, err := cli.GetTickets(ctx)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetTickets: %s", err)
 	}
@@ -107,5 +109,42 @@ func TestDeleteTicket(t *testing.T) {
 	}
 	if resp.StatusText != "OK" {
 		t.Errorf("expected status text OK, got: %s", resp.StatusText)
+	}
+}
+
+// TestGetTicketsConsolidated tests the GetTickets method.
+func TestGetTicketsConsolidated(t *testing.T) {
+	cli := New(MockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	ctx := context.Background()
+
+	// Test with no filters
+	resp, err := cli.GetTickets(ctx)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetTickets: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+
+	// Test with string filters
+	resp, err = cli.GetTickets(ctx, "status=Open")
+	if err != nil {
+		t.Fatalf("Unexpected error during GetTickets with string filter: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+
+	// Test with functional options
+	resp, err = cli.GetTickets(ctx, filtering.WithStatus("Open"))
+	if err != nil {
+		t.Fatalf("Unexpected error during GetTickets with functional options: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
 	}
 }

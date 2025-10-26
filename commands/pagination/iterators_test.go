@@ -129,43 +129,43 @@ func (tc *testConnection) Close() error {
 }
 
 // Implement the Client interface methods.
-func (tc *testClient) GetTasks(cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
+func (tc *testClient) GetTasksRaw(cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
 	resp := &commands.GetTasksResponse{}
 	err := tc.conn.Execute(cmd, resp)
 	return resp, err
 }
 
-func (tc *testClient) GetResults(cmd *commands.GetResults) (*commands.GetResultsResponse, error) {
+func (tc *testClient) GetResultsRaw(cmd *commands.GetResults) (*commands.GetResultsResponse, error) {
 	resp := &commands.GetResultsResponse{}
 	err := tc.conn.Execute(cmd, resp)
 	return resp, err
 }
 
-func (tc *testClient) GetAssets(cmd *commands.GetAssets) (*commands.GetAssetsResponse, error) {
+func (tc *testClient) GetAssetsRaw(cmd *commands.GetAssets) (*commands.GetAssetsResponse, error) {
 	resp := &commands.GetAssetsResponse{}
 	err := tc.conn.Execute(cmd, resp)
 	return resp, err
 }
 
-func (tc *testClient) GetTargets(cmd *commands.GetTargets) (*commands.GetTargetsResponse, error) {
+func (tc *testClient) GetTargetsRaw(cmd *commands.GetTargets) (*commands.GetTargetsResponse, error) {
 	resp := &commands.GetTargetsResponse{}
 	err := tc.conn.Execute(cmd, resp)
 	return resp, err
 }
 
-func (tc *testClient) GetTickets(cmd *commands.GetTickets) (*commands.GetTicketsResponse, error) {
+func (tc *testClient) GetTicketsRaw(cmd *commands.GetTickets) (*commands.GetTicketsResponse, error) {
 	resp := &commands.GetTicketsResponse{}
 	err := tc.conn.Execute(cmd, resp)
 	return resp, err
 }
 
-func (tc *testClient) GetPortLists(cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error) {
+func (tc *testClient) GetPortListsRaw(cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error) {
 	resp := &commands.GetPortListsResponse{}
 	err := tc.conn.Execute(cmd, resp)
 	return resp, err
 }
 
-func (tc *testClient) GetSettings(cmd *commands.GetSettings) (*commands.GetSettingsResponse, error) {
+func (tc *testClient) GetSettingsRaw(cmd *commands.GetSettings) (*commands.GetSettingsResponse, error) {
 	resp := &commands.GetSettingsResponse{}
 	err := tc.conn.Execute(cmd, resp)
 	return resp, err
@@ -913,31 +913,31 @@ func TestIteratorErrorScenarios(t *testing.T) {
 // Error test client.
 type errorTestClient struct{}
 
-func (etc *errorTestClient) GetTasks(cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
+func (etc *errorTestClient) GetTasksRaw(cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
 	return nil, errors.New("mock error")
 }
 
-func (etc *errorTestClient) GetResults(cmd *commands.GetResults) (*commands.GetResultsResponse, error) {
+func (etc *errorTestClient) GetResultsRaw(cmd *commands.GetResults) (*commands.GetResultsResponse, error) {
 	return nil, errors.New("mock error")
 }
 
-func (etc *errorTestClient) GetAssets(cmd *commands.GetAssets) (*commands.GetAssetsResponse, error) {
+func (etc *errorTestClient) GetAssetsRaw(cmd *commands.GetAssets) (*commands.GetAssetsResponse, error) {
 	return nil, errors.New("mock error")
 }
 
-func (etc *errorTestClient) GetTargets(cmd *commands.GetTargets) (*commands.GetTargetsResponse, error) {
+func (etc *errorTestClient) GetTargetsRaw(cmd *commands.GetTargets) (*commands.GetTargetsResponse, error) {
 	return nil, errors.New("mock error")
 }
 
-func (etc *errorTestClient) GetTickets(cmd *commands.GetTickets) (*commands.GetTicketsResponse, error) {
+func (etc *errorTestClient) GetTicketsRaw(cmd *commands.GetTickets) (*commands.GetTicketsResponse, error) {
 	return nil, errors.New("mock error")
 }
 
-func (etc *errorTestClient) GetPortLists(cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error) {
+func (etc *errorTestClient) GetPortListsRaw(cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error) {
 	return nil, errors.New("mock error")
 }
 
-func (etc *errorTestClient) GetSettings(cmd *commands.GetSettings) (*commands.GetSettingsResponse, error) {
+func (etc *errorTestClient) GetSettingsRaw(cmd *commands.GetSettings) (*commands.GetSettingsResponse, error) {
 	return nil, errors.New("mock error")
 }
 
@@ -1749,7 +1749,7 @@ func TestIteratorNextValidContextAll(t *testing.T) {
 // emptyTestClient returns empty results to test empty current slice scenario.
 type emptyTestClient struct{}
 
-func (etc *emptyTestClient) GetTasks(cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
+func (etc *emptyTestClient) GetTasksRaw(cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
 	return &commands.GetTasksResponse{
 		Status:     "200",
 		StatusText: "OK",
@@ -1758,7 +1758,7 @@ func (etc *emptyTestClient) GetTasks(cmd *commands.GetTasks) (*commands.GetTasks
 	}, nil
 }
 
-func (etc *emptyTestClient) GetResults(cmd *commands.GetResults) (*commands.GetResultsResponse, error) {
+func (etc *emptyTestClient) GetResultsRaw(cmd *commands.GetResults) (*commands.GetResultsResponse, error) {
 	return &commands.GetResultsResponse{
 		Status:  "200",
 		Results: []commands.Result{},
@@ -1766,7 +1766,7 @@ func (etc *emptyTestClient) GetResults(cmd *commands.GetResults) (*commands.GetR
 	}, nil
 }
 
-func (etc *emptyTestClient) GetAssets(cmd *commands.GetAssets) (*commands.GetAssetsResponse, error) {
+func (etc *emptyTestClient) GetAssetsRaw(cmd *commands.GetAssets) (*commands.GetAssetsResponse, error) {
 	return &commands.GetAssetsResponse{
 		Status:     "200",
 		Assets:     []commands.Asset{},
@@ -1774,7 +1774,7 @@ func (etc *emptyTestClient) GetAssets(cmd *commands.GetAssets) (*commands.GetAss
 	}, nil
 }
 
-func (etc *emptyTestClient) GetTargets(cmd *commands.GetTargets) (*commands.GetTargetsResponse, error) {
+func (etc *emptyTestClient) GetTargetsRaw(cmd *commands.GetTargets) (*commands.GetTargetsResponse, error) {
 	return &commands.GetTargetsResponse{
 		Status:      "200",
 		Target:      []commands.Target{},
@@ -1782,7 +1782,7 @@ func (etc *emptyTestClient) GetTargets(cmd *commands.GetTargets) (*commands.GetT
 	}, nil
 }
 
-func (etc *emptyTestClient) GetTickets(cmd *commands.GetTickets) (*commands.GetTicketsResponse, error) {
+func (etc *emptyTestClient) GetTicketsRaw(cmd *commands.GetTickets) (*commands.GetTicketsResponse, error) {
 	return &commands.GetTicketsResponse{
 		Status:      "200",
 		Tickets:     []commands.Ticket{},
@@ -1790,7 +1790,7 @@ func (etc *emptyTestClient) GetTickets(cmd *commands.GetTickets) (*commands.GetT
 	}, nil
 }
 
-func (etc *emptyTestClient) GetPortLists(cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error) {
+func (etc *emptyTestClient) GetPortListsRaw(cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error) {
 	return &commands.GetPortListsResponse{
 		Status:    "200",
 		PortLists: []commands.PortList{},
@@ -1798,7 +1798,7 @@ func (etc *emptyTestClient) GetPortLists(cmd *commands.GetPortLists) (*commands.
 	}, nil
 }
 
-func (etc *emptyTestClient) GetSettings(cmd *commands.GetSettings) (*commands.GetSettingsResponse, error) {
+func (etc *emptyTestClient) GetSettingsRaw(cmd *commands.GetSettings) (*commands.GetSettingsResponse, error) {
 	return &commands.GetSettingsResponse{
 		Status:       "200",
 		SettingsList: []commands.Setting{},

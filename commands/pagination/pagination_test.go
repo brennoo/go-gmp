@@ -13,35 +13,35 @@ type fakeClient struct {
 	getTasksFunc func(*commands.GetTasks) (*commands.GetTasksResponse, error)
 }
 
-func (f *fakeClient) GetTasks(cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
+func (f *fakeClient) GetTasksRaw(cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
 	if f.getTasksFunc != nil {
 		return f.getTasksFunc(cmd)
 	}
-	panic("GetTasks called unexpectedly")
+	panic("GetTasksRaw called unexpectedly")
 }
 
-func (f *fakeClient) GetResults(cmd *commands.GetResults) (*commands.GetResultsResponse, error) {
-	panic("GetResults not implemented for this test")
+func (f *fakeClient) GetResultsRaw(cmd *commands.GetResults) (*commands.GetResultsResponse, error) {
+	panic("GetResultsRaw not implemented for this test")
 }
 
-func (f *fakeClient) GetAssets(cmd *commands.GetAssets) (*commands.GetAssetsResponse, error) {
-	panic("GetAssets not implemented for this test")
+func (f *fakeClient) GetAssetsRaw(cmd *commands.GetAssets) (*commands.GetAssetsResponse, error) {
+	panic("GetAssetsRaw not implemented for this test")
 }
 
-func (f *fakeClient) GetTargets(cmd *commands.GetTargets) (*commands.GetTargetsResponse, error) {
-	panic("GetTargets not implemented for this test")
+func (f *fakeClient) GetTargetsRaw(cmd *commands.GetTargets) (*commands.GetTargetsResponse, error) {
+	panic("GetTargetsRaw not implemented for this test")
 }
 
-func (f *fakeClient) GetTickets(cmd *commands.GetTickets) (*commands.GetTicketsResponse, error) {
-	panic("GetTickets not implemented for this test")
+func (f *fakeClient) GetTicketsRaw(cmd *commands.GetTickets) (*commands.GetTicketsResponse, error) {
+	panic("GetTicketsRaw not implemented for this test")
 }
 
-func (f *fakeClient) GetPortLists(cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error) {
-	panic("GetPortLists not implemented for this test")
+func (f *fakeClient) GetPortListsRaw(cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error) {
+	panic("GetPortListsRaw not implemented for this test")
 }
 
-func (f *fakeClient) GetSettings(cmd *commands.GetSettings) (*commands.GetSettingsResponse, error) {
-	panic("GetSettings not implemented for this test")
+func (f *fakeClient) GetSettingsRaw(cmd *commands.GetSettings) (*commands.GetSettingsResponse, error) {
+	panic("GetSettingsRaw not implemented for this test")
 }
 
 // Helper to create a TaskIterator with defaults.

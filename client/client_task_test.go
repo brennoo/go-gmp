@@ -1,9 +1,11 @@
 package client
 
 import (
+	"context"
 	"testing"
 
 	"github.com/brennoo/go-gmp/commands"
+	"github.com/brennoo/go-gmp/commands/filtering"
 )
 
 func TestCreateTask(t *testing.T) {
@@ -47,11 +49,47 @@ func TestGetTasks(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetTasks{}
-	cmd.TaskID = "e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31"
-	resp, err := cli.GetTasks(cmd)
+	ctx := context.Background()
+	resp, err := cli.GetTasks(ctx, "task_id=e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31")
 	if err != nil {
 		t.Fatalf("Unexpected error during GetTasks: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+}
+
+// TestGetTasksConsolidated tests the GetTasks method.
+func TestGetTasksConsolidated(t *testing.T) {
+	cli := New(MockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	ctx := context.Background()
+
+	// Test with no filters
+	resp, err := cli.GetTasks(ctx)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetTasks: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+
+	// Test with string filter
+	resp, err = cli.GetTasks(ctx, "status=running")
+	if err != nil {
+		t.Fatalf("Unexpected error during GetTasks with string filter: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+
+	// Test with functional options
+	resp, err = cli.GetTasks(ctx, filtering.WithStatus(filtering.StatusRunning))
+	if err != nil {
+		t.Fatalf("Unexpected error during GetTasks with functional options: %s", err)
 	}
 	if resp.Status != "200" {
 		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
