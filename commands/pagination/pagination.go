@@ -1,3 +1,5 @@
+//nolint:dupl // Similar patterns across iterators are intentional
+
 package pagination
 
 import (
@@ -7,7 +9,7 @@ import (
 	"github.com/brennoo/go-gmp/commands"
 )
 
-// Client defines the minimal interface needed for pagination
+// Client defines the minimal interface needed for pagination.
 type Client interface {
 	GetTasks(cmd *commands.GetTasks) (*commands.GetTasksResponse, error)
 	GetResults(cmd *commands.GetResults) (*commands.GetResultsResponse, error)
@@ -18,14 +20,14 @@ type Client interface {
 	GetSettings(cmd *commands.GetSettings) (*commands.GetSettingsResponse, error)
 }
 
-// PaginationOptions represents pagination configuration
+// PaginationOptions represents pagination configuration.
 type PaginationOptions struct {
 	Page     int // 1-based page number
 	PageSize int // Number of items per page
 	MaxItems int // Maximum total items to fetch (0 = no limit)
 }
 
-// DefaultPaginationOptions returns sensible default pagination options
+// DefaultPaginationOptions returns sensible default pagination options.
 func DefaultPaginationOptions() PaginationOptions {
 	return PaginationOptions{
 		Page:     1,
@@ -34,7 +36,7 @@ func DefaultPaginationOptions() PaginationOptions {
 	}
 }
 
-// BuildPaginationFilter constructs the filter string for pagination
+// BuildPaginationFilter constructs the filter string for pagination.
 func BuildPaginationFilter(opts PaginationOptions, additionalFilters ...string) string {
 	first := (opts.Page-1)*opts.PageSize + 1
 	rows := opts.PageSize
@@ -59,7 +61,7 @@ func BuildPaginationFilter(opts PaginationOptions, additionalFilters ...string) 
 	return filter
 }
 
-// Iterator defines the generic iterator interface
+// Iterator defines the generic iterator interface.
 type Iterator[T any] interface {
 	Next() bool
 	Current() T
@@ -69,7 +71,7 @@ type Iterator[T any] interface {
 	Close()
 }
 
-// TaskIterator provides iteration over tasks with automatic pagination
+// TaskIterator provides iteration over tasks with automatic pagination.
 type TaskIterator struct {
 	Client      Client
 	Ctx         context.Context
@@ -83,7 +85,9 @@ type TaskIterator struct {
 	err         error
 }
 
-// Next advances the iterator to the next item and returns true if successful
+// Next advances the iterator to the next item and returns true if successful.
+
+//nolint:dupl // Similar pattern across iterators is intentional
 func (it *TaskIterator) Next() bool {
 	if it.err != nil {
 		return false
@@ -126,7 +130,7 @@ func (it *TaskIterator) Next() bool {
 	return true
 }
 
-// Current returns the current item (call after Next() returns true)
+// Current returns the current item (call after Next() returns true).
 func (it *TaskIterator) Current() *commands.GetTasksResponseTask {
 	if it.index == 0 || it.index > len(it.current) {
 		return nil
@@ -134,28 +138,28 @@ func (it *TaskIterator) Current() *commands.GetTasksResponseTask {
 	return it.current[it.index-1]
 }
 
-// HasMore returns true if there are more items to iterate
+// HasMore returns true if there are more items to iterate.
 func (it *TaskIterator) HasMore() bool {
 	return it.HasMoreData || it.index < len(it.current)
 }
 
-// Err returns the last error encountered
+// Err returns the last error encountered.
 func (it *TaskIterator) Err() error {
 	return it.err
 }
 
-// Total returns the total number of items (if available)
+// Total returns the total number of items (if available).
 func (it *TaskIterator) Total() int {
 	return it.total
 }
 
-// Close cleans up the iterator
+// Close cleans up the iterator.
 func (it *TaskIterator) Close() {
 	it.HasMoreData = false
 	it.current = nil
 }
 
-// ResultIterator provides iteration over results with automatic pagination
+// ResultIterator provides iteration over results with automatic pagination.
 type ResultIterator struct {
 	Client      Client
 	Ctx         context.Context
@@ -169,7 +173,7 @@ type ResultIterator struct {
 	err         error
 }
 
-// Next advances the iterator to the next item and returns true if successful
+// Next advances the iterator to the next item and returns true if successful.
 func (it *ResultIterator) Next() bool {
 	if it.err != nil {
 		return false
@@ -212,7 +216,7 @@ func (it *ResultIterator) Next() bool {
 	return true
 }
 
-// Current returns the current item (call after Next() returns true)
+// Current returns the current item (call after Next() returns true).
 func (it *ResultIterator) Current() *commands.Result {
 	if it.index == 0 || it.index > len(it.current) {
 		return nil
@@ -220,28 +224,28 @@ func (it *ResultIterator) Current() *commands.Result {
 	return it.current[it.index-1]
 }
 
-// HasMore returns true if there are more items to iterate
+// HasMore returns true if there are more items to iterate.
 func (it *ResultIterator) HasMore() bool {
 	return it.HasMoreData || it.index < len(it.current)
 }
 
-// Err returns the last error encountered
+// Err returns the last error encountered.
 func (it *ResultIterator) Err() error {
 	return it.err
 }
 
-// Total returns the total number of items (if available)
+// Total returns the total number of items (if available).
 func (it *ResultIterator) Total() int {
 	return it.total
 }
 
-// Close cleans up the iterator
+// Close cleans up the iterator.
 func (it *ResultIterator) Close() {
 	it.HasMoreData = false
 	it.current = nil
 }
 
-// AssetIterator provides iteration over assets with automatic pagination
+// AssetIterator provides iteration over assets with automatic pagination.
 type AssetIterator struct {
 	Client      Client
 	Ctx         context.Context
@@ -255,7 +259,7 @@ type AssetIterator struct {
 	err         error
 }
 
-// Next advances the iterator to the next item and returns true if successful
+// Next advances the iterator to the next item and returns true if successful.
 func (it *AssetIterator) Next() bool {
 	if it.err != nil {
 		return false
@@ -298,7 +302,7 @@ func (it *AssetIterator) Next() bool {
 	return true
 }
 
-// Current returns the current item (call after Next() returns true)
+// Current returns the current item (call after Next() returns true).
 func (it *AssetIterator) Current() *commands.Asset {
 	if it.index == 0 || it.index > len(it.current) {
 		return nil
@@ -306,28 +310,28 @@ func (it *AssetIterator) Current() *commands.Asset {
 	return it.current[it.index-1]
 }
 
-// HasMore returns true if there are more items to iterate
+// HasMore returns true if there are more items to iterate.
 func (it *AssetIterator) HasMore() bool {
 	return it.HasMoreData || it.index < len(it.current)
 }
 
-// Err returns the last error encountered
+// Err returns the last error encountered.
 func (it *AssetIterator) Err() error {
 	return it.err
 }
 
-// Total returns the total number of items (if available)
+// Total returns the total number of items (if available).
 func (it *AssetIterator) Total() int {
 	return it.total
 }
 
-// Close cleans up the iterator
+// Close cleans up the iterator.
 func (it *AssetIterator) Close() {
 	it.HasMoreData = false
 	it.current = nil
 }
 
-// TargetIterator provides iteration over targets with automatic pagination
+// TargetIterator provides iteration over targets with automatic pagination.
 type TargetIterator struct {
 	Client      Client
 	Ctx         context.Context
@@ -341,7 +345,7 @@ type TargetIterator struct {
 	err         error
 }
 
-// Next advances the iterator to the next item and returns true if successful
+// Next advances the iterator to the next item and returns true if successful.
 func (it *TargetIterator) Next() bool {
 	if it.err != nil {
 		return false
@@ -384,7 +388,7 @@ func (it *TargetIterator) Next() bool {
 	return true
 }
 
-// Current returns the current item (call after Next() returns true)
+// Current returns the current item (call after Next() returns true).
 func (it *TargetIterator) Current() *commands.Target {
 	if it.index == 0 || it.index > len(it.current) {
 		return nil
@@ -392,28 +396,28 @@ func (it *TargetIterator) Current() *commands.Target {
 	return it.current[it.index-1]
 }
 
-// HasMore returns true if there are more items to iterate
+// HasMore returns true if there are more items to iterate.
 func (it *TargetIterator) HasMore() bool {
 	return it.HasMoreData || it.index < len(it.current)
 }
 
-// Err returns the last error encountered
+// Err returns the last error encountered.
 func (it *TargetIterator) Err() error {
 	return it.err
 }
 
-// Total returns the total number of items (if available)
+// Total returns the total number of items (if available).
 func (it *TargetIterator) Total() int {
 	return it.total
 }
 
-// Close cleans up the iterator
+// Close cleans up the iterator.
 func (it *TargetIterator) Close() {
 	it.HasMoreData = false
 	it.current = nil
 }
 
-// TicketIterator provides iteration over tickets with automatic pagination
+// TicketIterator provides iteration over tickets with automatic pagination.
 type TicketIterator struct {
 	Client      Client
 	Ctx         context.Context
@@ -427,7 +431,7 @@ type TicketIterator struct {
 	err         error
 }
 
-// Next advances the iterator to the next item and returns true if successful
+// Next advances the iterator to the next item and returns true if successful.
 func (it *TicketIterator) Next() bool {
 	if it.err != nil {
 		return false
@@ -470,7 +474,7 @@ func (it *TicketIterator) Next() bool {
 	return true
 }
 
-// Current returns the current item (call after Next() returns true)
+// Current returns the current item (call after Next() returns true).
 func (it *TicketIterator) Current() *commands.Ticket {
 	if it.index == 0 || it.index > len(it.current) {
 		return nil
@@ -478,28 +482,28 @@ func (it *TicketIterator) Current() *commands.Ticket {
 	return it.current[it.index-1]
 }
 
-// HasMore returns true if there are more items to iterate
+// HasMore returns true if there are more items to iterate.
 func (it *TicketIterator) HasMore() bool {
 	return it.HasMoreData || it.index < len(it.current)
 }
 
-// Err returns the last error encountered
+// Err returns the last error encountered.
 func (it *TicketIterator) Err() error {
 	return it.err
 }
 
-// Total returns the total number of items (if available)
+// Total returns the total number of items (if available).
 func (it *TicketIterator) Total() int {
 	return it.total
 }
 
-// Close cleans up the iterator
+// Close cleans up the iterator.
 func (it *TicketIterator) Close() {
 	it.HasMoreData = false
 	it.current = nil
 }
 
-// PortListIterator provides iteration over port lists with automatic pagination
+// PortListIterator provides iteration over port lists with automatic pagination.
 type PortListIterator struct {
 	Client      Client
 	Ctx         context.Context
@@ -513,7 +517,7 @@ type PortListIterator struct {
 	err         error
 }
 
-// Next advances the iterator to the next item and returns true if successful
+// Next advances the iterator to the next item and returns true if successful.
 func (it *PortListIterator) Next() bool {
 	if it.err != nil {
 		return false
@@ -556,7 +560,7 @@ func (it *PortListIterator) Next() bool {
 	return true
 }
 
-// Current returns the current item (call after Next() returns true)
+// Current returns the current item (call after Next() returns true).
 func (it *PortListIterator) Current() *commands.PortList {
 	if it.index == 0 || it.index > len(it.current) {
 		return nil
@@ -564,28 +568,28 @@ func (it *PortListIterator) Current() *commands.PortList {
 	return it.current[it.index-1]
 }
 
-// HasMore returns true if there are more items to iterate
+// HasMore returns true if there are more items to iterate.
 func (it *PortListIterator) HasMore() bool {
 	return it.HasMoreData || it.index < len(it.current)
 }
 
-// Err returns the last error encountered
+// Err returns the last error encountered.
 func (it *PortListIterator) Err() error {
 	return it.err
 }
 
-// Total returns the total number of items (if available)
+// Total returns the total number of items (if available).
 func (it *PortListIterator) Total() int {
 	return it.total
 }
 
-// Close cleans up the iterator
+// Close cleans up the iterator.
 func (it *PortListIterator) Close() {
 	it.HasMoreData = false
 	it.current = nil
 }
 
-// SettingsIterator provides iteration over settings with automatic pagination
+// SettingsIterator provides iteration over settings with automatic pagination.
 type SettingsIterator struct {
 	Client      Client
 	Ctx         context.Context
@@ -599,7 +603,7 @@ type SettingsIterator struct {
 	err         error
 }
 
-// Next advances the iterator to the next item and returns true if successful
+// Next advances the iterator to the next item and returns true if successful.
 func (it *SettingsIterator) Next() bool {
 	if it.err != nil {
 		return false
@@ -642,7 +646,7 @@ func (it *SettingsIterator) Next() bool {
 	return true
 }
 
-// Current returns the current item (call after Next() returns true)
+// Current returns the current item (call after Next() returns true).
 func (it *SettingsIterator) Current() *commands.Setting {
 	if it.index == 0 || it.index > len(it.current) {
 		return nil
@@ -650,22 +654,22 @@ func (it *SettingsIterator) Current() *commands.Setting {
 	return it.current[it.index-1]
 }
 
-// HasMore returns true if there are more items to iterate
+// HasMore returns true if there are more items to iterate.
 func (it *SettingsIterator) HasMore() bool {
 	return it.HasMoreData || it.index < len(it.current)
 }
 
-// Err returns the last error encountered
+// Err returns the last error encountered.
 func (it *SettingsIterator) Err() error {
 	return it.err
 }
 
-// Total returns the total number of items (if available)
+// Total returns the total number of items (if available).
 func (it *SettingsIterator) Total() int {
 	return it.total
 }
 
-// Close cleans up the iterator
+// Close cleans up the iterator.
 func (it *SettingsIterator) Close() {
 	it.HasMoreData = false
 	it.current = nil

@@ -1,5 +1,7 @@
 package main
 
+//nolint:errcheck // Ignoring Close errors in example
+
 import (
 	"fmt"
 	"log"
@@ -14,7 +16,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to connect: %v", err)
 	}
-	defer conn.Close()
+	defer conn.Close() //nolint:errcheck // Ignoring close error
 
 	cli := client.New(conn)
 	resp, err := cli.GetVersion(&commands.GetVersion{})

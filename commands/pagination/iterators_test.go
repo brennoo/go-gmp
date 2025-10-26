@@ -8,13 +8,14 @@ import (
 	"github.com/brennoo/go-gmp/commands"
 )
 
-// Simple test client that implements the minimal Client interface
+// Simple test client that implements the minimal Client interface.
 type testClient struct {
 	conn testConnection
 }
 
 type testConnection struct{}
 
+//nolint:gocyclo // Mock connection handles all GMP commands
 func (tc *testConnection) Execute(command interface{}, response interface{}) error {
 	// Handle pagination commands
 	if cmd, ok := command.(*commands.GetTasks); ok {
@@ -127,7 +128,7 @@ func (tc *testConnection) Close() error {
 	return nil
 }
 
-// Implement the Client interface methods
+// Implement the Client interface methods.
 func (tc *testClient) GetTasks(cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
 	resp := &commands.GetTasksResponse{}
 	err := tc.conn.Execute(cmd, resp)
@@ -475,7 +476,7 @@ func TestSettingsIterator(t *testing.T) {
 	iterator.Close()
 }
 
-// Test error scenarios
+// Test error scenarios.
 func TestIteratorErrorHandling(t *testing.T) {
 	// Test with invalid context (cancelled)
 	ctx, cancel := context.WithCancel(context.Background())
@@ -495,14 +496,14 @@ func TestIteratorErrorHandling(t *testing.T) {
 	if iterator.Next() {
 		t.Error("Expected Next() to return false due to cancelled context")
 	}
-	if iterator.Err() != nil && iterator.Err() != context.Canceled {
+	if iterator.Err() != nil && !errors.Is(iterator.Err(), context.Canceled) {
 		t.Errorf("Expected context.Canceled error, got: %v", iterator.Err())
 	}
 
 	iterator.Close()
 }
 
-// Test edge cases
+// Test edge cases.
 func TestIteratorEdgeCases(t *testing.T) {
 	cli := &testClient{}
 	ctx := context.Background()
@@ -558,7 +559,7 @@ func TestIteratorEdgeCases(t *testing.T) {
 	iterator.Close()
 }
 
-// Test iterator with filters
+// Test iterator with filters.
 func TestIteratorWithFilters(t *testing.T) {
 	cli := &testClient{}
 	ctx := context.Background()
@@ -590,7 +591,7 @@ func TestIteratorWithFilters(t *testing.T) {
 	iterator.Close()
 }
 
-// Test pagination scenarios
+// Test pagination scenarios.
 func TestIteratorPagination(t *testing.T) {
 	cli := &testClient{}
 	ctx := context.Background()
@@ -622,7 +623,7 @@ func TestIteratorPagination(t *testing.T) {
 	iterator.Close()
 }
 
-// Test iterator state management
+// Test iterator state management.
 func TestIteratorStateManagement(t *testing.T) {
 	cli := &testClient{}
 	ctx := context.Background()
@@ -671,7 +672,7 @@ func TestIteratorStateManagement(t *testing.T) {
 	iterator.Close()
 }
 
-// Test generic Next method with type assertion
+// Test generic Next method with type assertion.
 func TestNextTaskMethod(t *testing.T) {
 	cli := &testClient{}
 	ctx := context.Background()
@@ -875,7 +876,7 @@ func TestNextSettingMethod(t *testing.T) {
 	iterator.Close()
 }
 
-// Test error scenarios for better coverage
+// Test error scenarios for better coverage.
 func TestIteratorErrorScenarios(t *testing.T) {
 	// Test with error client
 	errorClient := &errorTestClient{}
@@ -909,7 +910,7 @@ func TestIteratorErrorScenarios(t *testing.T) {
 	iterator.Close()
 }
 
-// Error test client
+// Error test client.
 type errorTestClient struct{}
 
 func (etc *errorTestClient) GetTasks(cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
@@ -940,7 +941,7 @@ func (etc *errorTestClient) GetSettings(cmd *commands.GetSettings) (*commands.Ge
 	return nil, errors.New("mock error")
 }
 
-// Test error scenarios for NextXXX methods
+// Test error scenarios for NextXXX methods.
 func TestNextTaskMethodError(t *testing.T) {
 	errorClient := &errorTestClient{}
 	ctx := context.Background()
@@ -1130,7 +1131,7 @@ func TestNextSettingMethodError(t *testing.T) {
 	iterator.Close()
 }
 
-// Test BuildPaginationFilter additional edge cases
+// Test BuildPaginationFilter additional edge cases.
 func TestBuildPaginationFilterAdditional(t *testing.T) {
 	// Test with MaxItems
 	opts := PaginationOptions{
@@ -1168,7 +1169,7 @@ func TestBuildPaginationFilterAdditional(t *testing.T) {
 	}
 }
 
-// Test empty current slice scenario for all iterators
+// Test empty current slice scenario for all iterators.
 func TestIteratorEmptyCurrentSlice(t *testing.T) {
 	// Create a custom test client that returns empty results
 	emptyClient := &emptyTestClient{}
@@ -1295,7 +1296,7 @@ func TestIteratorEmptyCurrentSlice(t *testing.T) {
 	settingsIterator.Close()
 }
 
-// Test context cancellation for all iterators
+// Test context cancellation for all iterators.
 func TestIteratorContextCancellation(t *testing.T) {
 	// Create a cancelled context
 	ctx, cancel := context.WithCancel(context.Background())
@@ -1315,7 +1316,7 @@ func TestIteratorContextCancellation(t *testing.T) {
 	if taskIterator.Next() {
 		t.Error("Expected TaskIterator Next() to return false due to cancelled context")
 	}
-	if taskIterator.Err() != context.Canceled {
+	if !errors.Is(taskIterator.Err(), context.Canceled) {
 		t.Errorf("Expected TaskIterator context.Canceled error, got: %v", taskIterator.Err())
 	}
 	taskIterator.Close()
@@ -1332,7 +1333,7 @@ func TestIteratorContextCancellation(t *testing.T) {
 	if resultIterator.Next() {
 		t.Error("Expected ResultIterator Next() to return false due to cancelled context")
 	}
-	if resultIterator.Err() != context.Canceled {
+	if !errors.Is(resultIterator.Err(), context.Canceled) {
 		t.Errorf("Expected ResultIterator context.Canceled error, got: %v", resultIterator.Err())
 	}
 	resultIterator.Close()
@@ -1349,7 +1350,7 @@ func TestIteratorContextCancellation(t *testing.T) {
 	if assetIterator.Next() {
 		t.Error("Expected AssetIterator Next() to return false due to cancelled context")
 	}
-	if assetIterator.Err() != context.Canceled {
+	if !errors.Is(assetIterator.Err(), context.Canceled) {
 		t.Errorf("Expected AssetIterator context.Canceled error, got: %v", assetIterator.Err())
 	}
 	assetIterator.Close()
@@ -1366,7 +1367,7 @@ func TestIteratorContextCancellation(t *testing.T) {
 	if targetIterator.Next() {
 		t.Error("Expected TargetIterator Next() to return false due to cancelled context")
 	}
-	if targetIterator.Err() != context.Canceled {
+	if !errors.Is(targetIterator.Err(), context.Canceled) {
 		t.Errorf("Expected TargetIterator context.Canceled error, got: %v", targetIterator.Err())
 	}
 	targetIterator.Close()
@@ -1383,7 +1384,7 @@ func TestIteratorContextCancellation(t *testing.T) {
 	if ticketIterator.Next() {
 		t.Error("Expected TicketIterator Next() to return false due to cancelled context")
 	}
-	if ticketIterator.Err() != context.Canceled {
+	if !errors.Is(ticketIterator.Err(), context.Canceled) {
 		t.Errorf("Expected TicketIterator context.Canceled error, got: %v", ticketIterator.Err())
 	}
 	ticketIterator.Close()
@@ -1400,7 +1401,7 @@ func TestIteratorContextCancellation(t *testing.T) {
 	if portListIterator.Next() {
 		t.Error("Expected PortListIterator Next() to return false due to cancelled context")
 	}
-	if portListIterator.Err() != context.Canceled {
+	if !errors.Is(portListIterator.Err(), context.Canceled) {
 		t.Errorf("Expected PortListIterator context.Canceled error, got: %v", portListIterator.Err())
 	}
 	portListIterator.Close()
@@ -1417,13 +1418,13 @@ func TestIteratorContextCancellation(t *testing.T) {
 	if settingsIterator.Next() {
 		t.Error("Expected SettingsIterator Next() to return false due to cancelled context")
 	}
-	if settingsIterator.Err() != context.Canceled {
+	if !errors.Is(settingsIterator.Err(), context.Canceled) {
 		t.Errorf("Expected SettingsIterator context.Canceled error, got: %v", settingsIterator.Err())
 	}
 	settingsIterator.Close()
 }
 
-// Test loadPage error handling for all iterators
+// Test loadPage error handling for all iterators.
 func TestIteratorLoadPageError(t *testing.T) {
 	// Create an error test client that returns errors
 	errorClient := &errorTestClient{}
@@ -1550,7 +1551,7 @@ func TestIteratorLoadPageError(t *testing.T) {
 	settingsIterator.Close()
 }
 
-// Test Current() method boundary conditions
+// Test Current() method boundary conditions.
 func TestIteratorCurrentBoundaryConditions(t *testing.T) {
 	cli := &testClient{}
 	ctx := context.Background()
@@ -1586,7 +1587,7 @@ func TestIteratorCurrentBoundaryConditions(t *testing.T) {
 	taskIterator.Close()
 }
 
-// Test Next() method when HasMoreData is false
+// Test Next() method when HasMoreData is false.
 func TestIteratorNextNoMoreData(t *testing.T) {
 	cli := &testClient{}
 	ctx := context.Background()
@@ -1613,7 +1614,7 @@ func TestIteratorNextNoMoreData(t *testing.T) {
 	taskIterator.Close()
 }
 
-// Test Next() method with valid context (default case)
+// Test Next() method with valid context (default case).
 func TestIteratorNextValidContext(t *testing.T) {
 	cli := &testClient{}
 	ctx := context.Background()
@@ -1643,7 +1644,7 @@ func TestIteratorNextValidContext(t *testing.T) {
 	taskIterator.Close()
 }
 
-// Test Next() method with valid context for all iterators
+// Test Next() method with valid context for all iterators.
 func TestIteratorNextValidContextAll(t *testing.T) {
 	cli := &testClient{}
 	ctx := context.Background()
@@ -1745,7 +1746,7 @@ func TestIteratorNextValidContextAll(t *testing.T) {
 	settingsIterator.Close()
 }
 
-// emptyTestClient returns empty results to test empty current slice scenario
+// emptyTestClient returns empty results to test empty current slice scenario.
 type emptyTestClient struct{}
 
 func (etc *emptyTestClient) GetTasks(cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {

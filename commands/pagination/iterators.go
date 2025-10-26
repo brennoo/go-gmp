@@ -1,10 +1,14 @@
+//nolint:dupl // Similar patterns across iterators are intentional
+
 package pagination
 
 import (
 	"github.com/brennoo/go-gmp/commands"
 )
 
-// TaskIterator implementation
+// TaskIterator implementation.
+
+//nolint:dupl // Similar pattern across iterators is intentional
 func (it *TaskIterator) loadPage() error {
 	opts := PaginationOptions{
 		Page:     it.Page,
@@ -38,7 +42,7 @@ func (it *TaskIterator) loadPage() error {
 	return nil
 }
 
-// ResultIterator implementation
+// ResultIterator implementation.
 func (it *ResultIterator) loadPage() error {
 	opts := PaginationOptions{
 		Page:     it.Page,
@@ -72,7 +76,7 @@ func (it *ResultIterator) loadPage() error {
 	return nil
 }
 
-// AssetIterator implementation
+// AssetIterator implementation.
 func (it *AssetIterator) loadPage() error {
 	opts := PaginationOptions{
 		Page:     it.Page,
@@ -106,7 +110,7 @@ func (it *AssetIterator) loadPage() error {
 	return nil
 }
 
-// TargetIterator implementation
+// TargetIterator implementation.
 func (it *TargetIterator) loadPage() error {
 	opts := PaginationOptions{
 		Page:     it.Page,
@@ -140,7 +144,7 @@ func (it *TargetIterator) loadPage() error {
 	return nil
 }
 
-// TicketIterator implementation
+// TicketIterator implementation.
 func (it *TicketIterator) loadPage() error {
 	opts := PaginationOptions{
 		Page:     it.Page,
@@ -174,7 +178,7 @@ func (it *TicketIterator) loadPage() error {
 	return nil
 }
 
-// PortListIterator implementation
+// PortListIterator implementation.
 func (it *PortListIterator) loadPage() error {
 	opts := PaginationOptions{
 		Page:     it.Page,
@@ -208,7 +212,7 @@ func (it *PortListIterator) loadPage() error {
 	return nil
 }
 
-// SettingsIterator implementation
+// SettingsIterator implementation.
 func (it *SettingsIterator) loadPage() error {
 	opts := PaginationOptions{
 		Page:     it.Page,

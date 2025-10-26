@@ -8,7 +8,7 @@ import (
 	"github.com/brennoo/go-gmp/commands"
 )
 
-// fakeClient provides a test client for pagination tests
+// fakeClient provides a test client for pagination tests.
 type fakeClient struct {
 	getTasksFunc func(*commands.GetTasks) (*commands.GetTasksResponse, error)
 }
@@ -44,7 +44,7 @@ func (f *fakeClient) GetSettings(cmd *commands.GetSettings) (*commands.GetSettin
 	panic("GetSettings not implemented for this test")
 }
 
-// Helper to create a TaskIterator with defaults
+// Helper to create a TaskIterator with defaults.
 func newTestTaskIterator(client Client, ctx context.Context) *TaskIterator {
 	return &TaskIterator{
 		Client:      client,
@@ -152,7 +152,7 @@ func TestTaskIterator_ContextCanceled(t *testing.T) {
 		t.Fatal("Expected Next to return false when context is canceled")
 	}
 
-	if it.Err() != context.Canceled {
+	if !errors.Is(it.Err(), context.Canceled) {
 		t.Fatalf("Expected context.Canceled, got %v", it.Err())
 	}
 }
