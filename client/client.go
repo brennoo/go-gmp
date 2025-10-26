@@ -1,8 +1,11 @@
 package client
 
 import (
+	"context"
+
 	"github.com/brennoo/go-gmp"
 	"github.com/brennoo/go-gmp/commands"
+	"github.com/brennoo/go-gmp/commands/pagination"
 )
 
 // client implements the gmp.Client interface and provides methods to interact with the GMP server.
@@ -752,4 +755,176 @@ func (cli *client) DeleteTicket(cmd *commands.DeleteTicket) (resp *commands.Dele
 	resp = new(commands.DeleteTicketResponse)
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
+}
+
+// Pagination Methods
+
+func (cli *client) GetTasksPaged(page, pageSize int, filters ...string) (*commands.GetTasksResponse, error) {
+	opts := pagination.PaginationOptions{
+		Page:     page,
+		PageSize: pageSize,
+	}
+	filter := pagination.BuildPaginationFilter(opts, filters...)
+
+	cmd := &commands.GetTasks{
+		Filter: filter,
+	}
+	return cli.GetTasks(cmd)
+}
+
+func (cli *client) GetResultsPaged(page, pageSize int, filters ...string) (*commands.GetResultsResponse, error) {
+	opts := pagination.PaginationOptions{
+		Page:     page,
+		PageSize: pageSize,
+	}
+	filter := pagination.BuildPaginationFilter(opts, filters...)
+
+	cmd := &commands.GetResults{
+		Filter: filter,
+	}
+	return cli.GetResults(cmd)
+}
+
+func (cli *client) GetAssetsPaged(page, pageSize int, filters ...string) (*commands.GetAssetsResponse, error) {
+	opts := pagination.PaginationOptions{
+		Page:     page,
+		PageSize: pageSize,
+	}
+	filter := pagination.BuildPaginationFilter(opts, filters...)
+
+	cmd := &commands.GetAssets{
+		Filter: filter,
+	}
+	return cli.GetAssets(cmd)
+}
+
+func (cli *client) GetTargetsPaged(page, pageSize int, filters ...string) (*commands.GetTargetsResponse, error) {
+	opts := pagination.PaginationOptions{
+		Page:     page,
+		PageSize: pageSize,
+	}
+	filter := pagination.BuildPaginationFilter(opts, filters...)
+
+	cmd := &commands.GetTargets{
+		Filter: filter,
+	}
+	return cli.GetTargets(cmd)
+}
+
+func (cli *client) GetTicketsPaged(page, pageSize int, filters ...string) (*commands.GetTicketsResponse, error) {
+	opts := pagination.PaginationOptions{
+		Page:     page,
+		PageSize: pageSize,
+	}
+	filter := pagination.BuildPaginationFilter(opts, filters...)
+
+	cmd := &commands.GetTickets{
+		Filter: filter,
+	}
+	return cli.GetTickets(cmd)
+}
+
+func (cli *client) GetPortListsPaged(page, pageSize int, filters ...string) (*commands.GetPortListsResponse, error) {
+	opts := pagination.PaginationOptions{
+		Page:     page,
+		PageSize: pageSize,
+	}
+	filter := pagination.BuildPaginationFilter(opts, filters...)
+
+	cmd := &commands.GetPortLists{
+		Filter: filter,
+	}
+	return cli.GetPortLists(cmd)
+}
+
+func (cli *client) GetSettingsPaged(page, pageSize int, filters ...string) (*commands.GetSettingsResponse, error) {
+	opts := pagination.PaginationOptions{
+		Page:     page,
+		PageSize: pageSize,
+	}
+	filter := pagination.BuildPaginationFilter(opts, filters...)
+
+	cmd := &commands.GetSettings{
+		Filter: filter,
+	}
+	return cli.GetSettings(cmd)
+}
+
+// Iterator Methods
+
+func (cli *client) GetTasksIter(ctx context.Context, pageSize int, filters ...string) *pagination.TaskIterator {
+	return &pagination.TaskIterator{
+		Client:      cli,
+		Ctx:         ctx,
+		Opts:        pagination.PaginationOptions{Page: 1, PageSize: pageSize},
+		Filters:     filters,
+		Page:        1,
+		HasMoreData: true,
+	}
+}
+
+func (cli *client) GetResultsIter(ctx context.Context, pageSize int, filters ...string) *pagination.ResultIterator {
+	return &pagination.ResultIterator{
+		Client:      cli,
+		Ctx:         ctx,
+		Opts:        pagination.PaginationOptions{Page: 1, PageSize: pageSize},
+		Filters:     filters,
+		Page:        1,
+		HasMoreData: true,
+	}
+}
+
+func (cli *client) GetAssetsIter(ctx context.Context, pageSize int, filters ...string) *pagination.AssetIterator {
+	return &pagination.AssetIterator{
+		Client:      cli,
+		Ctx:         ctx,
+		Opts:        pagination.PaginationOptions{Page: 1, PageSize: pageSize},
+		Filters:     filters,
+		Page:        1,
+		HasMoreData: true,
+	}
+}
+
+func (cli *client) GetTargetsIter(ctx context.Context, pageSize int, filters ...string) *pagination.TargetIterator {
+	return &pagination.TargetIterator{
+		Client:      cli,
+		Ctx:         ctx,
+		Opts:        pagination.PaginationOptions{Page: 1, PageSize: pageSize},
+		Filters:     filters,
+		Page:        1,
+		HasMoreData: true,
+	}
+}
+
+func (cli *client) GetTicketsIter(ctx context.Context, pageSize int, filters ...string) *pagination.TicketIterator {
+	return &pagination.TicketIterator{
+		Client:      cli,
+		Ctx:         ctx,
+		Opts:        pagination.PaginationOptions{Page: 1, PageSize: pageSize},
+		Filters:     filters,
+		Page:        1,
+		HasMoreData: true,
+	}
+}
+
+func (cli *client) GetPortListsIter(ctx context.Context, pageSize int, filters ...string) *pagination.PortListIterator {
+	return &pagination.PortListIterator{
+		Client:      cli,
+		Ctx:         ctx,
+		Opts:        pagination.PaginationOptions{Page: 1, PageSize: pageSize},
+		Filters:     filters,
+		Page:        1,
+		HasMoreData: true,
+	}
+}
+
+func (cli *client) GetSettingsIter(ctx context.Context, pageSize int, filters ...string) *pagination.SettingsIterator {
+	return &pagination.SettingsIterator{
+		Client:      cli,
+		Ctx:         ctx,
+		Opts:        pagination.PaginationOptions{Page: 1, PageSize: pageSize},
+		Filters:     filters,
+		Page:        1,
+		HasMoreData: true,
+	}
 }

@@ -1,5 +1,7 @@
 package main
 
+//nolint:errcheck // Ignoring Close errors in example
+
 import (
 	"fmt"
 	"log"
@@ -15,7 +17,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to connect to GMP: %v", err)
 	}
-	defer gmpConn.Close()
+	defer gmpConn.Close() //nolint:errcheck // Ignoring close error
 
 	cli := client.New(gmpConn)
 

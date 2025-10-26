@@ -7,7 +7,7 @@ import (
 )
 
 func TestGetResults(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -23,7 +23,7 @@ func TestGetResults(t *testing.T) {
 }
 
 func TestGetVulns(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}

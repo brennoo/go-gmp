@@ -1,3 +1,5 @@
+//nolint:dupl,errcheck,unparam // Example patterns are intentionally repetitive
+
 package main
 
 import (
@@ -13,7 +15,7 @@ import (
 	"github.com/brennoo/go-gmp/connections"
 )
 
-// Configuration constants
+// Configuration constants.
 const (
 	gvmdHost     = "localhost:9390"
 	username     = "admin"
@@ -27,13 +29,13 @@ const (
 	pollInterval = 10 * time.Second
 )
 
-// GMPClient wraps the GMP client with additional functionality
+// GMPClient wraps the GMP client with additional functionality.
 type GMPClient struct {
 	client gmp.Client
 	conn   gmp.Connection
 }
 
-// NewGMPClient creates a new GMP client with TLS connection
+// NewGMPClient creates a new GMP client with TLS connection.
 func NewGMPClient(host string) (*GMPClient, error) {
 	log.Printf("Connecting to GVMD at %s...", host)
 
@@ -50,12 +52,12 @@ func NewGMPClient(host string) (*GMPClient, error) {
 	}, nil
 }
 
-// Close closes the underlying connection
+// Close closes the underlying connection.
 func (g *GMPClient) Close() error {
 	return g.conn.Close()
 }
 
-// Authenticate authenticates with the GMP server with retry logic
+// Authenticate authenticates with the GMP server with retry logic.
 func (g *GMPClient) Authenticate(ctx context.Context, username, password string) error {
 	log.Printf("Authenticating as user: %s", username)
 
@@ -74,7 +76,7 @@ func (g *GMPClient) Authenticate(ctx context.Context, username, password string)
 	return nil
 }
 
-// GetScanner retrieves a scanner by name
+// GetScanner retrieves a scanner by name.
 func (g *GMPClient) GetScanner(ctx context.Context, name string) (*commands.Scanner, error) {
 	log.Printf("Getting scanner: %s", name)
 
@@ -99,7 +101,7 @@ func (g *GMPClient) GetScanner(ctx context.Context, name string) (*commands.Scan
 	return &resp.Scanner[0], nil
 }
 
-// GetConfig retrieves a configuration by name
+// GetConfig retrieves a configuration by name.
 func (g *GMPClient) GetConfig(ctx context.Context, name string) (string, error) {
 	log.Printf("Getting configuration: %s", name)
 
@@ -124,7 +126,7 @@ func (g *GMPClient) GetConfig(ctx context.Context, name string) (string, error) 
 	return resp.Config[0].ID, nil
 }
 
-// GetPortList retrieves a port list by name
+// GetPortList retrieves a port list by name.
 func (g *GMPClient) GetPortList(ctx context.Context, name string) (string, error) {
 	log.Printf("Getting port list: %s", name)
 
@@ -149,7 +151,7 @@ func (g *GMPClient) GetPortList(ctx context.Context, name string) (string, error
 	return resp.PortLists[0].ID, nil
 }
 
-// GetTarget retrieves a target by name
+// GetTarget retrieves a target by name.
 func (g *GMPClient) GetTarget(ctx context.Context, name string) (*commands.Target, error) {
 	log.Printf("Getting target: %s", name)
 
@@ -174,7 +176,7 @@ func (g *GMPClient) GetTarget(ctx context.Context, name string) (*commands.Targe
 	return &resp.Target[0], nil
 }
 
-// DeleteTarget deletes a target by ID
+// DeleteTarget deletes a target by ID.
 func (g *GMPClient) DeleteTarget(ctx context.Context, targetID string) error {
 	log.Printf("Deleting target: %s", targetID)
 
@@ -196,7 +198,7 @@ func (g *GMPClient) DeleteTarget(ctx context.Context, targetID string) error {
 	return nil
 }
 
-// DeleteTargetWithDependencies deletes a target and all tasks that use it
+// DeleteTargetWithDependencies deletes a target and all tasks that use it.
 func (g *GMPClient) DeleteTargetWithDependencies(ctx context.Context, targetID string) error {
 	log.Printf("Deleting target with dependencies: %s", targetID)
 
@@ -221,7 +223,7 @@ func (g *GMPClient) DeleteTargetWithDependencies(ctx context.Context, targetID s
 	return g.DeleteTarget(ctx, targetID)
 }
 
-// GetTargetByID retrieves a target by ID
+// GetTargetByID retrieves a target by ID.
 func (g *GMPClient) GetTargetByID(ctx context.Context, targetID string) (*commands.Target, error) {
 	log.Printf("Getting target by ID: %s", targetID)
 
@@ -246,7 +248,7 @@ func (g *GMPClient) GetTargetByID(ctx context.Context, targetID string) (*comman
 	return &resp.Target[0], nil
 }
 
-// GetTask retrieves a task by name
+// GetTask retrieves a task by name.
 func (g *GMPClient) GetTask(ctx context.Context, name string) (*commands.GetTasksResponseTask, error) {
 	log.Printf("Getting task: %s", name)
 
@@ -271,7 +273,7 @@ func (g *GMPClient) GetTask(ctx context.Context, name string) (*commands.GetTask
 	return &resp.Task[0], nil
 }
 
-// DeleteTask deletes a task by ID
+// DeleteTask deletes a task by ID.
 func (g *GMPClient) DeleteTask(ctx context.Context, taskID string) error {
 	log.Printf("Deleting task: %s", taskID)
 
@@ -293,7 +295,7 @@ func (g *GMPClient) DeleteTask(ctx context.Context, taskID string) error {
 	return nil
 }
 
-// CreateTarget creates a new target, deleting existing one if it exists
+// CreateTarget creates a new target, deleting existing one if it exists.
 func (g *GMPClient) CreateTarget(ctx context.Context, name, hosts, portListID string) (*commands.CreateTargetResponse, error) {
 	log.Printf("Creating target: %s", name)
 
@@ -324,7 +326,7 @@ func (g *GMPClient) CreateTarget(ctx context.Context, name, hosts, portListID st
 	return resp, nil
 }
 
-// CreateTask creates a new task, deleting existing one if it exists
+// CreateTask creates a new task, deleting existing one if it exists.
 func (g *GMPClient) CreateTask(ctx context.Context, name, configID, targetID, scannerID string) (*commands.CreateTaskResponse, error) {
 	log.Printf("Creating task: %s", name)
 
@@ -362,7 +364,7 @@ func (g *GMPClient) CreateTask(ctx context.Context, name, configID, targetID, sc
 	return resp, nil
 }
 
-// StartTask starts a task
+// StartTask starts a task.
 func (g *GMPClient) StartTask(ctx context.Context, taskID string) error {
 	log.Printf("Starting task: %s", taskID)
 
@@ -383,7 +385,7 @@ func (g *GMPClient) StartTask(ctx context.Context, taskID string) error {
 	return nil
 }
 
-// WaitForTaskCompletion waits for a task to complete
+// WaitForTaskCompletion waits for a task to complete.
 func (g *GMPClient) WaitForTaskCompletion(ctx context.Context, taskID string) error {
 	log.Println("Monitoring task progress...")
 
@@ -416,7 +418,7 @@ func (g *GMPClient) WaitForTaskCompletion(ctx context.Context, taskID string) er
 	}
 }
 
-// getTaskProgress gets the current progress of a task
+// getTaskProgress gets the current progress of a task.
 func (g *GMPClient) getTaskProgress(ctx context.Context, taskID string) (int, error) {
 	cmd := &commands.GetTasks{
 		TaskID: taskID,
@@ -439,7 +441,7 @@ func (g *GMPClient) getTaskProgress(ctx context.Context, taskID string) (int, er
 	return progress, nil
 }
 
-// GetResults retrieves results for a task
+// GetResults retrieves results for a task.
 func (g *GMPClient) GetResults(ctx context.Context, taskID string) ([]commands.Result, error) {
 	log.Printf("Getting results for task: %s", taskID)
 
@@ -461,7 +463,7 @@ func (g *GMPClient) GetResults(ctx context.Context, taskID string) ([]commands.R
 	return resp.Results, nil
 }
 
-// PrintResults prints the results in a formatted way
+// PrintResults prints the results in a formatted way.
 func PrintResults(results []commands.Result) {
 	if len(results) == 0 {
 		log.Println("No results found")
@@ -496,7 +498,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to create GMP client: %v", err)
 	}
-	defer gmpClient.Close()
+	defer gmpClient.Close() //nolint:errcheck // Ignoring close error
 
 	// Authenticate
 	if err := gmpClient.Authenticate(ctx, username, password); err != nil {

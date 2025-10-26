@@ -8,14 +8,14 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
 }
 
 func TestGetPreferences(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -35,7 +35,7 @@ func TestGetPreferences(t *testing.T) {
 // nolint:gocyclo
 // gocyclo:ignore
 func TestGetSystemReports(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -84,7 +84,7 @@ func TestGetSystemReports(t *testing.T) {
 }
 
 func TestGetInfo(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -113,7 +113,7 @@ func TestGetInfo(t *testing.T) {
 }
 
 func TestGetVersion(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -135,7 +135,7 @@ func TestGetVersion(t *testing.T) {
 }
 
 func TestHelp(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -157,7 +157,7 @@ func TestHelp(t *testing.T) {
 }
 
 func TestGetFeeds(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -197,7 +197,7 @@ func TestGetFeeds(t *testing.T) {
 }
 
 func TestModifyLicense(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -220,7 +220,7 @@ func TestModifyLicense(t *testing.T) {
 // nolint:gocyclo
 // gocyclo:ignore
 func TestGetLicense(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -275,7 +275,7 @@ func TestGetLicense(t *testing.T) {
 }
 
 func TestModifySetting(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -297,7 +297,7 @@ func TestModifySetting(t *testing.T) {
 }
 
 func TestGetSettings(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -328,7 +328,7 @@ func TestGetSettings(t *testing.T) {
 }
 
 func TestGetResourceNames(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -365,7 +365,7 @@ func TestGetResourceNames(t *testing.T) {
 }
 
 func TestGetAggregates(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -411,7 +411,7 @@ func TestGetAggregates(t *testing.T) {
 }
 
 func TestGetFeatures(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -439,7 +439,7 @@ func TestGetFeatures(t *testing.T) {
 }
 
 func TestEmptyTrashcan(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -458,7 +458,7 @@ func TestEmptyTrashcan(t *testing.T) {
 }
 
 func TestRestore(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -477,7 +477,7 @@ func TestRestore(t *testing.T) {
 }
 
 func TestRunWizard(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -510,7 +510,7 @@ func TestRunWizard(t *testing.T) {
 }
 
 func TestRawXML(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}

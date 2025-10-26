@@ -7,7 +7,7 @@ import (
 )
 
 func TestCreateTag(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -35,7 +35,7 @@ func TestCreateTag(t *testing.T) {
 }
 
 func TestModifyTag(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -54,7 +54,7 @@ func TestModifyTag(t *testing.T) {
 }
 
 func TestGetTags(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -73,7 +73,7 @@ func TestGetTags(t *testing.T) {
 }
 
 func TestDeleteTag(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}

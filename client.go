@@ -1,6 +1,11 @@
 package gmp
 
-import "github.com/brennoo/go-gmp/commands"
+import (
+	"context"
+
+	"github.com/brennoo/go-gmp/commands"
+	"github.com/brennoo/go-gmp/commands/pagination"
+)
 
 type Client interface {
 	// Authentication
@@ -161,4 +166,22 @@ type Client interface {
 	Restore(cmd *commands.Restore) (resp *commands.RestoreResponse, err error)
 	RunWizard(cmd *commands.RunWizard) (resp *commands.RunWizardResponse, err error)
 	RawXML(xml string) (string, error)
+
+	// Pagination Methods
+	GetTasksPaged(page, pageSize int, filters ...string) (*commands.GetTasksResponse, error)
+	GetResultsPaged(page, pageSize int, filters ...string) (*commands.GetResultsResponse, error)
+	GetAssetsPaged(page, pageSize int, filters ...string) (*commands.GetAssetsResponse, error)
+	GetTargetsPaged(page, pageSize int, filters ...string) (*commands.GetTargetsResponse, error)
+	GetTicketsPaged(page, pageSize int, filters ...string) (*commands.GetTicketsResponse, error)
+	GetPortListsPaged(page, pageSize int, filters ...string) (*commands.GetPortListsResponse, error)
+	GetSettingsPaged(page, pageSize int, filters ...string) (*commands.GetSettingsResponse, error)
+
+	// Iterator Methods
+	GetTasksIter(ctx context.Context, pageSize int, filters ...string) *pagination.TaskIterator
+	GetResultsIter(ctx context.Context, pageSize int, filters ...string) *pagination.ResultIterator
+	GetAssetsIter(ctx context.Context, pageSize int, filters ...string) *pagination.AssetIterator
+	GetTargetsIter(ctx context.Context, pageSize int, filters ...string) *pagination.TargetIterator
+	GetTicketsIter(ctx context.Context, pageSize int, filters ...string) *pagination.TicketIterator
+	GetPortListsIter(ctx context.Context, pageSize int, filters ...string) *pagination.PortListIterator
+	GetSettingsIter(ctx context.Context, pageSize int, filters ...string) *pagination.SettingsIterator
 }

@@ -7,7 +7,7 @@ import (
 )
 
 func TestModifyAgents(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -35,7 +35,7 @@ func TestModifyAgents(t *testing.T) {
 }
 
 func TestGetAgents(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -64,7 +64,7 @@ func TestGetAgents(t *testing.T) {
 }
 
 func TestDeleteAgents(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}

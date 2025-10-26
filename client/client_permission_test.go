@@ -7,7 +7,7 @@ import (
 )
 
 func TestCreatePermission(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -51,7 +51,7 @@ func TestCreatePermission(t *testing.T) {
 }
 
 func TestModifyPermission(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -90,7 +90,7 @@ func TestModifyPermission(t *testing.T) {
 }
 
 func TestGetPermissions(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -110,7 +110,7 @@ func TestGetPermissions(t *testing.T) {
 }
 
 func TestDeletePermission(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}

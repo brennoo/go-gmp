@@ -7,7 +7,7 @@ import (
 )
 
 func TestCreateNote(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -30,7 +30,7 @@ func TestCreateNote(t *testing.T) {
 }
 
 func TestModifyNote(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -50,7 +50,7 @@ func TestModifyNote(t *testing.T) {
 }
 
 func TestGetNotes(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -69,7 +69,7 @@ func TestGetNotes(t *testing.T) {
 }
 
 func TestDeleteNote(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}

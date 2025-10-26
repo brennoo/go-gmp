@@ -7,7 +7,7 @@ import (
 )
 
 func TestCreateScanner(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -33,7 +33,7 @@ func TestCreateScanner(t *testing.T) {
 }
 
 func TestGetScanners(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -51,7 +51,7 @@ func TestGetScanners(t *testing.T) {
 }
 
 func TestCreateScannerFail(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -74,7 +74,7 @@ func TestCreateScannerFail(t *testing.T) {
 }
 
 func TestModifyScanner(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -96,7 +96,7 @@ func TestModifyScanner(t *testing.T) {
 }
 
 func TestModifyScannerFail(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -118,7 +118,7 @@ func TestModifyScannerFail(t *testing.T) {
 }
 
 func TestDeleteScanner(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -137,7 +137,7 @@ func TestDeleteScanner(t *testing.T) {
 }
 
 func TestVerifyScanner(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}

@@ -7,7 +7,7 @@ import (
 )
 
 func TestCreateFilter(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -34,7 +34,7 @@ func TestCreateFilter(t *testing.T) {
 }
 
 func TestModifyFilter(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -56,7 +56,7 @@ func TestModifyFilter(t *testing.T) {
 }
 
 func TestGetFilters(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -94,7 +94,7 @@ func TestGetFilters(t *testing.T) {
 }
 
 func TestDeleteFilter(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}

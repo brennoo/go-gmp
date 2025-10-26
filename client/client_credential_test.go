@@ -7,7 +7,7 @@ import (
 )
 
 func TestCreateCredential(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -47,7 +47,7 @@ func TestCreateCredential(t *testing.T) {
 }
 
 func TestModifyCredential(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -85,7 +85,7 @@ func TestModifyCredential(t *testing.T) {
 }
 
 func TestGetCredentials(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -131,7 +131,7 @@ func TestGetCredentials(t *testing.T) {
 }
 
 func TestDeleteCredential(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}

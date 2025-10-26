@@ -7,7 +7,7 @@ import (
 )
 
 func TestCreateUser(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -44,7 +44,7 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestModifyUser(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -84,7 +84,7 @@ func TestModifyUser(t *testing.T) {
 }
 
 func TestGetUsers(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -115,7 +115,7 @@ func TestGetUsers(t *testing.T) {
 }
 
 func TestDeleteUser(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}

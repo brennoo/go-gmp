@@ -7,7 +7,7 @@ import (
 )
 
 func TestAuthenticate(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -29,7 +29,7 @@ func TestAuthenticate(t *testing.T) {
 }
 
 func TestDescribeAuth(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -64,7 +64,7 @@ func TestDescribeAuth(t *testing.T) {
 }
 
 func TestModifyAuth(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
