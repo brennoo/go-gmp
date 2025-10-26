@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/brennoo/go-gmp"
 	"github.com/brennoo/go-gmp/commands/filtering"
 )
 
@@ -429,90 +430,74 @@ func TestIteratorMethods(t *testing.T) {
 	})
 }
 
-// TestIteratorsWithFilters tests all iterator methods with both string filters and functional options.
-func TestIteratorsWithFilters(t *testing.T) {
+// testIteratorWithFilters is a helper function to test an iterator method with both string and functional filters.
+func testIteratorWithFilters(t *testing.T, cli gmp.Client, ctx context.Context, name string,
+	stringFilter string, funcFilter filtering.FilterArg,
+	iteratorFunc func(context.Context, int, ...filtering.FilterArg) interface{}) {
+
+	// Test with string filter
+	iter := iteratorFunc(ctx, 10, stringFilter)
+	if iter == nil {
+		t.Fatalf("%s with string filters returned nil iterator", name)
+	}
+	if closer, ok := iter.(interface{ Close() }); ok {
+		defer closer.Close()
+	}
+
+	// Test with functional filter
+	iter2 := iteratorFunc(ctx, 10, funcFilter)
+	if iter2 == nil {
+		t.Fatalf("%s with functional options returned nil iterator", name)
+	}
+	if closer, ok := iter2.(interface{ Close() }); ok {
+		defer closer.Close()
+	}
+}
+
+// TestIteratorsWithStringFilters tests all iterator methods with string filters.
+func TestIteratorsWithStringFilters(t *testing.T) {
 	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
-
 	ctx := context.Background()
 
-	// Test Results with filters
-	iter := cli.Results(ctx, 10, "severity>5.0")
-	if iter == nil {
-		t.Fatal("Results with string filters returned nil iterator")
-	}
-	defer iter.Close()
+	testIteratorWithFilters(t, cli, ctx, "Results", "severity>5.0", filtering.WithSeverityGreaterThan(5.0),
+		func(ctx context.Context, pageSize int, args ...filtering.FilterArg) interface{} {
+			return cli.Results(ctx, pageSize, args...)
+		})
+}
 
-	iter2 := cli.Results(ctx, 10, filtering.WithSeverityGreaterThan(5.0))
-	if iter2 == nil {
-		t.Fatal("Results with functional options returned nil iterator")
+// TestIteratorsWithFunctionalFilters tests all iterator methods with functional options.
+func TestIteratorsWithFunctionalFilters(t *testing.T) {
+	cli := New(MockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
 	}
-	defer iter2.Close()
+	ctx := context.Background()
 
-	// Test Assets with filters
-	iter3 := cli.Assets(ctx, 10, "name~localhost")
-	if iter3 == nil {
-		t.Fatal("Assets with string filters returned nil iterator")
-	}
-	defer iter3.Close()
+	testIteratorWithFilters(t, cli, ctx, "Assets", "name~localhost", filtering.WithName("test"),
+		func(ctx context.Context, pageSize int, args ...filtering.FilterArg) interface{} {
+			return cli.Assets(ctx, pageSize, args...)
+		})
 
-	iter4 := cli.Assets(ctx, 10, filtering.WithName("test"))
-	if iter4 == nil {
-		t.Fatal("Assets with functional options returned nil iterator")
-	}
-	defer iter4.Close()
+	testIteratorWithFilters(t, cli, ctx, "Targets", "name~test", filtering.WithName("test"),
+		func(ctx context.Context, pageSize int, args ...filtering.FilterArg) interface{} {
+			return cli.Targets(ctx, pageSize, args...)
+		})
 
-	// Test Targets with filters
-	iter5 := cli.Targets(ctx, 10, "name~test")
-	if iter5 == nil {
-		t.Fatal("Targets with string filters returned nil iterator")
-	}
-	defer iter5.Close()
+	testIteratorWithFilters(t, cli, ctx, "Tickets", "status=Open", filtering.WithStatus("Open"),
+		func(ctx context.Context, pageSize int, args ...filtering.FilterArg) interface{} {
+			return cli.Tickets(ctx, pageSize, args...)
+		})
 
-	iter6 := cli.Targets(ctx, 10, filtering.WithName("test"))
-	if iter6 == nil {
-		t.Fatal("Targets with functional options returned nil iterator")
-	}
-	defer iter6.Close()
+	testIteratorWithFilters(t, cli, ctx, "PortLists", "name~default", filtering.WithName("test"),
+		func(ctx context.Context, pageSize int, args ...filtering.FilterArg) interface{} {
+			return cli.PortLists(ctx, pageSize, args...)
+		})
 
-	// Test Tickets with filters
-	iter7 := cli.Tickets(ctx, 10, "status=Open")
-	if iter7 == nil {
-		t.Fatal("Tickets with string filters returned nil iterator")
-	}
-	defer iter7.Close()
-
-	iter8 := cli.Tickets(ctx, 10, filtering.WithStatus("Open"))
-	if iter8 == nil {
-		t.Fatal("Tickets with functional options returned nil iterator")
-	}
-	defer iter8.Close()
-
-	// Test PortLists with filters
-	iter9 := cli.PortLists(ctx, 10, "name~default")
-	if iter9 == nil {
-		t.Fatal("PortLists with string filters returned nil iterator")
-	}
-	defer iter9.Close()
-
-	iter10 := cli.PortLists(ctx, 10, filtering.WithName("test"))
-	if iter10 == nil {
-		t.Fatal("PortLists with functional options returned nil iterator")
-	}
-	defer iter10.Close()
-
-	// Test Settings with filters
-	iter11 := cli.Settings(ctx, 10, "name~timeout")
-	if iter11 == nil {
-		t.Fatal("Settings with string filters returned nil iterator")
-	}
-	defer iter11.Close()
-
-	iter12 := cli.Settings(ctx, 10, filtering.WithName("test"))
-	if iter12 == nil {
-		t.Fatal("Settings with functional options returned nil iterator")
-	}
-	defer iter12.Close()
+	testIteratorWithFilters(t, cli, ctx, "Settings", "name~timeout", filtering.WithName("test"),
+		func(ctx context.Context, pageSize int, args ...filtering.FilterArg) interface{} {
+			return cli.Settings(ctx, pageSize, args...)
+		})
 }
