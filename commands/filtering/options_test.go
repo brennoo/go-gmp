@@ -332,7 +332,7 @@ func TestWithDescriptionLike(t *testing.T) {
 func TestWithQoD(t *testing.T) {
 	opts := []Option{WithQoD(80)}
 	filter := BuildFilter(opts...)
-	expected := "qod=80"
+	expected := "qod=80.0"
 	if filter != expected {
 		t.Errorf("Expected %q, got %q", expected, filter)
 	}
@@ -341,7 +341,7 @@ func TestWithQoD(t *testing.T) {
 func TestWithQoDGreaterThan(t *testing.T) {
 	opts := []Option{WithQoDGreaterThan(70)}
 	filter := BuildFilter(opts...)
-	expected := "qod>70"
+	expected := "qod>70.0"
 	if filter != expected {
 		t.Errorf("Expected %q, got %q", expected, filter)
 	}
@@ -350,7 +350,7 @@ func TestWithQoDGreaterThan(t *testing.T) {
 func TestWithQoDLessThan(t *testing.T) {
 	opts := []Option{WithQoDLessThan(90)}
 	filter := BuildFilter(opts...)
-	expected := "qod<90"
+	expected := "qod<90.0"
 	if filter != expected {
 		t.Errorf("Expected %q, got %q", expected, filter)
 	}
@@ -359,7 +359,7 @@ func TestWithQoDLessThan(t *testing.T) {
 func TestWithQoDLessThanOrEqual(t *testing.T) {
 	opts := []Option{WithQoDLessThanOrEqual(85)}
 	filter := BuildFilter(opts...)
-	expected := "qod<=85"
+	expected := "qod<=85.0"
 	if filter != expected {
 		t.Errorf("Expected %q, got %q", expected, filter)
 	}
@@ -726,9 +726,9 @@ func TestWithTotalLessThanOrEqual(t *testing.T) {
 }
 
 func TestWithFalsePositive(t *testing.T) {
-	opts := []Option{WithFalsePositive(5)}
+	opts := []Option{WithFalsePositive(true)}
 	filter := BuildFilter(opts...)
-	expected := "false_positive=5"
+	expected := "false_positive=true"
 	if filter != expected {
 		t.Errorf("Expected %q, got %q", expected, filter)
 	}

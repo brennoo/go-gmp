@@ -17,7 +17,7 @@ type Client interface {
 	// User Management
 	CreateUser(cmd *commands.CreateUser) (resp *commands.CreateUserResponse, err error)
 	ModifyUser(cmd *commands.ModifyUser) (resp *commands.ModifyUserResponse, err error)
-	GetUsers(cmd *commands.GetUsers) (resp *commands.GetUsersResponse, err error)
+	GetUsers(ctx context.Context, args ...filtering.FilterArg) (*commands.GetUsersResponse, error)
 	DeleteUser(cmd *commands.DeleteUser) (resp *commands.DeleteUserResponse, err error)
 	CreateRole(cmd *commands.CreateRole) (resp *commands.CreateRoleResponse, err error)
 	ModifyRole(cmd *commands.ModifyRole) (resp *commands.ModifyRoleResponse, err error)
@@ -90,7 +90,7 @@ type Client interface {
 
 	// Results & Vulnerabilities
 	GetResults(ctx context.Context, args ...filtering.FilterArg) (*commands.GetResultsResponse, error)
-	GetVulns(cmd *commands.GetVulns) (resp *commands.GetVulnsResponse, err error)
+	GetVulns(ctx context.Context, args ...filtering.FilterArg) (*commands.GetVulnsResponse, error)
 
 	// Notes, Tags, Filters, Tickets, Overrides
 	CreateNote(cmd *commands.CreateNote) (resp *commands.CreateNoteResponse, err error)
@@ -99,11 +99,11 @@ type Client interface {
 	DeleteNote(cmd *commands.DeleteNote) (resp *commands.DeleteNoteResponse, err error)
 	CreateTag(cmd *commands.CreateTag) (resp *commands.CreateTagResponse, err error)
 	ModifyTag(cmd *commands.ModifyTag) (resp *commands.ModifyTagResponse, err error)
-	GetTags(cmd *commands.GetTags) (resp *commands.GetTagsResponse, err error)
+	GetTags(ctx context.Context, args ...filtering.FilterArg) (*commands.GetTagsResponse, error)
 	DeleteTag(cmd *commands.DeleteTag) (resp *commands.DeleteTagResponse, err error)
 	CreateFilter(cmd *commands.CreateFilter) (resp *commands.CreateFilterResponse, err error)
 	ModifyFilter(cmd *commands.ModifyFilter) (resp *commands.ModifyFilterResponse, err error)
-	GetFilters(cmd *commands.GetFilters) (resp *commands.GetFiltersResponse, err error)
+	GetFilters(ctx context.Context, args ...filtering.FilterArg) (*commands.GetFiltersResponse, error)
 	DeleteFilter(cmd *commands.DeleteFilter) (resp *commands.DeleteFilterResponse, err error)
 	CreateTicket(cmd *commands.CreateTicket) (resp *commands.CreateTicketResponse, err error)
 	ModifyTicket(cmd *commands.ModifyTicket) (resp *commands.ModifyTicketResponse, err error)
@@ -111,11 +111,11 @@ type Client interface {
 	DeleteTicket(cmd *commands.DeleteTicket) (resp *commands.DeleteTicketResponse, err error)
 	CreateOverride(cmd *commands.CreateOverride) (resp *commands.CreateOverrideResponse, err error)
 	DeleteOverride(cmd *commands.DeleteOverride) (resp *commands.DeleteOverrideResponse, err error)
-	GetOverrides(cmd *commands.GetOverrides) (resp *commands.GetOverridesResponse, err error)
+	GetOverrides(ctx context.Context, args ...filtering.FilterArg) (*commands.GetOverridesResponse, error)
 	ModifyOverride(cmd *commands.ModifyOverride) (resp *commands.ModifyOverrideResponse, err error)
 
 	// Configuration, Preferences, Settings
-	GetConfigs(cmd *commands.GetConfigs) (resp *commands.GetConfigsResponse, err error)
+	GetConfigs(ctx context.Context, args ...filtering.FilterArg) (*commands.GetConfigsResponse, error)
 	CreateConfig(cmd *commands.CreateConfig) (resp *commands.CreateConfigResponse, err error)
 	ModifyConfig(cmd *commands.ModifyConfig) (resp *commands.ModifyConfigResponse, err error)
 	DeleteConfig(cmd *commands.DeleteConfig) (resp *commands.DeleteConfigResponse, err error)
@@ -135,14 +135,14 @@ type Client interface {
 	// Scanners
 	CreateScanner(cmd *commands.CreateScanner) (resp *commands.CreateScannerResponse, err error)
 	ModifyScanner(cmd *commands.ModifyScanner) (resp *commands.ModifyScannerResponse, err error)
-	GetScanners(cmd *commands.GetScanners) (resp *commands.GetScannersResponse, err error)
+	GetScanners(ctx context.Context, args ...filtering.FilterArg) (*commands.GetScannersResponse, error)
 	DeleteScanner(cmd *commands.DeleteScanner) (resp *commands.DeleteScannerResponse, err error)
 	VerifyScanner(cmd *commands.VerifyScanner) (resp *commands.VerifyScannerResponse, err error)
 
 	// TLS Certificates
 	CreateTLSCertificate(cmd *commands.CreateTLSCertificate) (resp *commands.CreateTLSCertificateResponse, err error)
 	ModifyTLSCertificate(cmd *commands.ModifyTLSCertificate) (resp *commands.ModifyTLSCertificateResponse, err error)
-	GetTLSCertificates(cmd *commands.GetTLSCertificates) (resp *commands.GetTLSCertificatesResponse, err error)
+	GetTLSCertificates(ctx context.Context, args ...filtering.FilterArg) (*commands.GetTLSCertificatesResponse, error)
 
 	// Agents
 	ModifyAgents(cmd *commands.ModifyAgents) (resp *commands.ModifyAgentsResponse, err error)
@@ -156,8 +156,8 @@ type Client interface {
 	ModifyLicense(cmd *commands.ModifyLicense) (resp *commands.ModifyLicenseResponse, err error)
 	GetLicense(cmd *commands.GetLicense) (resp *commands.GetLicenseResponse, err error)
 	GetFeatures(cmd *commands.GetFeatures) (resp *commands.GetFeaturesResponse, err error)
-	GetAggregates(cmd *commands.GetAggregates) (resp *commands.GetAggregatesResponse, err error)
-	GetResourceNames(cmd *commands.GetResourceNames) (resp *commands.GetResourceNamesResponse, err error)
+	GetAggregates(ctx context.Context, args ...filtering.FilterArg) (*commands.GetAggregatesResponse, error)
+	GetResourceNames(ctx context.Context, args ...filtering.FilterArg) (*commands.GetResourceNamesResponse, error)
 
 	// Miscellaneous
 	GetInfo(cmd *commands.GetInfo) (resp *commands.GetInfoResponse, err error)

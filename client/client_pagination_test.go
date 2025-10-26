@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/brennoo/go-gmp"
 	"github.com/brennoo/go-gmp/commands/filtering"
 )
 
@@ -431,10 +430,10 @@ func TestIteratorMethods(t *testing.T) {
 }
 
 // testIteratorWithFilters is a helper function to test an iterator method with both string and functional filters.
-func testIteratorWithFilters(t *testing.T, cli gmp.Client, ctx context.Context, name string,
+func testIteratorWithFilters(t *testing.T, ctx context.Context, name string,
 	stringFilter string, funcFilter filtering.FilterArg,
-	iteratorFunc func(context.Context, int, ...filtering.FilterArg) interface{}) {
-
+	iteratorFunc func(context.Context, int, ...filtering.FilterArg) interface{},
+) {
 	// Test with string filter
 	iter := iteratorFunc(ctx, 10, stringFilter)
 	if iter == nil {
@@ -462,7 +461,7 @@ func TestIteratorsWithStringFilters(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	testIteratorWithFilters(t, cli, ctx, "Results", "severity>5.0", filtering.WithSeverityGreaterThan(5.0),
+	testIteratorWithFilters(t, ctx, "Results", "severity>5.0", filtering.WithSeverityGreaterThan(5.0),
 		func(ctx context.Context, pageSize int, args ...filtering.FilterArg) interface{} {
 			return cli.Results(ctx, pageSize, args...)
 		})
@@ -476,27 +475,27 @@ func TestIteratorsWithFunctionalFilters(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	testIteratorWithFilters(t, cli, ctx, "Assets", "name~localhost", filtering.WithName("test"),
+	testIteratorWithFilters(t, ctx, "Assets", "name~localhost", filtering.WithName("test"),
 		func(ctx context.Context, pageSize int, args ...filtering.FilterArg) interface{} {
 			return cli.Assets(ctx, pageSize, args...)
 		})
 
-	testIteratorWithFilters(t, cli, ctx, "Targets", "name~test", filtering.WithName("test"),
+	testIteratorWithFilters(t, ctx, "Targets", "name~test", filtering.WithName("test"),
 		func(ctx context.Context, pageSize int, args ...filtering.FilterArg) interface{} {
 			return cli.Targets(ctx, pageSize, args...)
 		})
 
-	testIteratorWithFilters(t, cli, ctx, "Tickets", "status=Open", filtering.WithStatus("Open"),
+	testIteratorWithFilters(t, ctx, "Tickets", "status=Open", filtering.WithStatus("Open"),
 		func(ctx context.Context, pageSize int, args ...filtering.FilterArg) interface{} {
 			return cli.Tickets(ctx, pageSize, args...)
 		})
 
-	testIteratorWithFilters(t, cli, ctx, "PortLists", "name~default", filtering.WithName("test"),
+	testIteratorWithFilters(t, ctx, "PortLists", "name~default", filtering.WithName("test"),
 		func(ctx context.Context, pageSize int, args ...filtering.FilterArg) interface{} {
 			return cli.PortLists(ctx, pageSize, args...)
 		})
 
-	testIteratorWithFilters(t, cli, ctx, "Settings", "name~timeout", filtering.WithName("test"),
+	testIteratorWithFilters(t, ctx, "Settings", "name~timeout", filtering.WithName("test"),
 		func(ctx context.Context, pageSize int, args ...filtering.FilterArg) interface{} {
 			return cli.Settings(ctx, pageSize, args...)
 		})

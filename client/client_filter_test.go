@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"testing"
 
 	"github.com/brennoo/go-gmp/commands"
@@ -61,8 +62,8 @@ func TestGetFilters(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetFilters{}
-	resp, err := cli.GetFilters(cmd)
+	ctx := context.Background()
+	resp, err := cli.GetFilters(ctx, "name=test-filter")
 	if err != nil {
 		t.Fatalf("Unexpected error during GetFilters: %s", err)
 	}
