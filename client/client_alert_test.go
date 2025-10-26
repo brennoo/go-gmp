@@ -7,7 +7,7 @@ import (
 )
 
 func TestCreateAlert(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -52,7 +52,7 @@ func TestCreateAlert(t *testing.T) {
 }
 
 func TestGetAlerts(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -69,7 +69,7 @@ func TestGetAlerts(t *testing.T) {
 }
 
 func TestModifyAlert(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -94,7 +94,7 @@ func TestModifyAlert(t *testing.T) {
 }
 
 func TestDeleteAlert(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -114,7 +114,7 @@ func TestDeleteAlert(t *testing.T) {
 }
 
 func TestTestAlert(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}

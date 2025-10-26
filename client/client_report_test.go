@@ -7,7 +7,7 @@ import (
 )
 
 func TestCreateReport(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -57,7 +57,7 @@ func TestCreateReport(t *testing.T) {
 }
 
 func TestGetReports(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -114,7 +114,7 @@ func TestGetReports(t *testing.T) {
 }
 
 func TestDeleteReport(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -133,7 +133,7 @@ func TestDeleteReport(t *testing.T) {
 }
 
 func TestGetReportFormats(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -169,7 +169,7 @@ func TestGetReportFormats(t *testing.T) {
 }
 
 func TestDeleteReportFormat(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -188,7 +188,7 @@ func TestDeleteReportFormat(t *testing.T) {
 }
 
 func TestVerifyReportFormat(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -207,7 +207,7 @@ func TestVerifyReportFormat(t *testing.T) {
 }
 
 func TestCreateReportConfig(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -253,7 +253,7 @@ func TestCreateReportConfig(t *testing.T) {
 }
 
 func TestModifyReportConfig(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -311,7 +311,7 @@ func TestModifyReportConfig(t *testing.T) {
 }
 
 func TestCreateReportFormat(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -353,7 +353,7 @@ func TestCreateReportFormat(t *testing.T) {
 }
 
 func TestModifyReportFormat(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -411,7 +411,7 @@ func TestModifyReportFormat(t *testing.T) {
 }
 
 func TestGetReportConfigs(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -445,7 +445,7 @@ func TestGetReportConfigs(t *testing.T) {
 }
 
 func TestDeleteReportConfig(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}

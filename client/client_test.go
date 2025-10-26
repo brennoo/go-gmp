@@ -93,8 +93,27 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.GetTargets); ok {
-		if cmd.TargetID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
-			(*response.(*commands.GetTargetsResponse)).Status = "200"
+		if cmd.TargetID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" || cmd.Filter != "" {
+			resp := response.(*commands.GetTargetsResponse)
+			resp.Status = "200"
+			resp.StatusText = "OK"
+			if cmd.Filter != "" {
+				// Return mock data for pagination
+				resp.Target = []commands.Target{
+					{
+						ID:   "target-1",
+						Name: "Test Target 1",
+					},
+					{
+						ID:   "target-2",
+						Name: "Test Target 2",
+					},
+				}
+				resp.TargetCount = &commands.TargetCount{
+					Filtered: 2,
+					Page:     1,
+				}
+			}
 		} else {
 			(*response.(*commands.GetTargetsResponse)).Status = "400"
 		}
@@ -109,8 +128,27 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.GetPortLists); ok {
-		if cmd.PortListID == "33d0cd82-57c6-11e1-8ed1-406186ea4fc5" {
-			(*response.(*commands.GetPortListsResponse)).Status = "200"
+		if cmd.PortListID == "33d0cd82-57c6-11e1-8ed1-406186ea4fc5" || cmd.Filter != "" {
+			resp := response.(*commands.GetPortListsResponse)
+			resp.Status = "200"
+			resp.StatusText = "OK"
+			if cmd.Filter != "" {
+				// Return mock data for pagination
+				resp.PortLists = []commands.PortList{
+					{
+						ID:   "portlist-1",
+						Name: "Test Port List 1",
+					},
+					{
+						ID:   "portlist-2",
+						Name: "Test Port List 2",
+					},
+				}
+				resp.Count = &commands.PortListCount{
+					Filtered: 2,
+					Page:     1,
+				}
+			}
 		} else {
 			(*response.(*commands.GetPortListsResponse)).Status = "400"
 		}
@@ -125,8 +163,29 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.GetTasks); ok {
-		if cmd.TaskID == "e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31" {
-			(*response.(*commands.GetTasksResponse)).Status = "200"
+		if cmd.TaskID == "e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31" || cmd.Filter != "" {
+			resp := response.(*commands.GetTasksResponse)
+			resp.Status = "200"
+			resp.StatusText = "OK"
+			if cmd.Filter != "" {
+				// Return mock data for pagination
+				resp.Task = []commands.GetTasksResponseTask{
+					{
+						ID:     "task-1",
+						Name:   "Test Task 1",
+						Status: "Done",
+					},
+					{
+						ID:     "task-2",
+						Name:   "Test Task 2",
+						Status: "Running",
+					},
+				}
+				resp.TaskCount = commands.GetTasksResponseTaskCount{
+					Filtered: 2,
+					Page:     1,
+				}
+			}
 		} else {
 			(*response.(*commands.GetTasksResponse)).Status = "400"
 		}
@@ -149,8 +208,29 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.GetResults); ok {
-		if cmd.TaskID == "e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31" {
-			(*response.(*commands.GetResultsResponse)).Status = "200"
+		if cmd.TaskID == "e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31" || cmd.Filter != "" {
+			resp := response.(*commands.GetResultsResponse)
+			resp.Status = "200"
+			resp.StatusText = "OK"
+			if cmd.Filter != "" {
+				// Return mock data for pagination
+				resp.Results = []commands.Result{
+					{
+						ID:       "result-1",
+						Name:     "Test Result 1",
+						Severity: 7.5,
+					},
+					{
+						ID:       "result-2",
+						Name:     "Test Result 2",
+						Severity: 5.0,
+					},
+				}
+				resp.Count = &commands.ResultsCount{
+					Filtered: 2,
+					Page:     1,
+				}
+			}
 		} else {
 			(*response.(*commands.GetResultsResponse)).Status = "400"
 		}
@@ -232,18 +312,46 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 	}
 
 	if cmd, ok := command.(*commands.GetAssets); ok {
-		if cmd.AssetID == "b493b7a8-7489-11df-a3ec-002264764cea" {
-			(*response.(*commands.GetAssetsResponse)).Status = "200"
-			(*response.(*commands.GetAssetsResponse)).StatusText = "OK"
-			(*response.(*commands.GetAssetsResponse)).Assets = []commands.Asset{
-				{
-					ID:               "b493b7a8-7489-11df-a3ec-002264764cea",
-					Name:             "Localhost",
-					Comment:          "",
-					CreationTime:     time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
-					ModificationTime: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
-					Type:             "host",
-				},
+		if cmd.AssetID == "b493b7a8-7489-11df-a3ec-002264764cea" || cmd.Filter != "" {
+			resp := response.(*commands.GetAssetsResponse)
+			resp.Status = "200"
+			resp.StatusText = "OK"
+			if cmd.Filter != "" {
+				// Return mock data for pagination
+				resp.Assets = []commands.Asset{
+					{
+						ID:               "asset-1",
+						Name:             "Test Asset 1",
+						Comment:          "Test comment",
+						CreationTime:     time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
+						ModificationTime: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
+						Type:             "host",
+					},
+					{
+						ID:               "asset-2",
+						Name:             "Test Asset 2",
+						Comment:          "Test comment 2",
+						CreationTime:     time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
+						ModificationTime: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
+						Type:             "host",
+					},
+				}
+				resp.AssetCount = &commands.AssetCount{
+					Filtered: 2,
+					Page:     1,
+				}
+			} else {
+				// Return original data for specific asset ID
+				resp.Assets = []commands.Asset{
+					{
+						ID:               "b493b7a8-7489-11df-a3ec-002264764cea",
+						Name:             "Localhost",
+						Comment:          "",
+						CreationTime:     time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
+						ModificationTime: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
+						Type:             "host",
+					},
+				}
 			}
 		} else {
 			(*response.(*commands.GetAssetsResponse)).Status = "400"
@@ -1040,16 +1148,37 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
-	if _, ok := command.(*commands.GetSettings); ok {
+	if cmd, ok := command.(*commands.GetSettings); ok {
 		resp := response.(*commands.GetSettingsResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.Settings = &commands.Settings{
-			Setting: []commands.Setting{{
-				ID:    "5f5a8712-8017-11e1-8556-406186ea4fc5",
-				Name:  "Rows Per Page",
-				Value: "15",
-			}},
+		if cmd.Filter != "" {
+			// Return mock data for pagination
+			resp.SettingsList = []commands.Setting{
+				{
+					ID:    "setting-1",
+					Name:  "Test Setting 1",
+					Value: "value1",
+				},
+				{
+					ID:    "setting-2",
+					Name:  "Test Setting 2",
+					Value: "value2",
+				},
+			}
+			resp.SettingCount = &commands.SettingCount{
+				Filtered: 2,
+				Page:     1,
+			}
+		} else {
+			// Return original data for specific requests
+			resp.Settings = &commands.Settings{
+				Setting: []commands.Setting{{
+					ID:    "5f5a8712-8017-11e1-8556-406186ea4fc5",
+					Name:  "Rows Per Page",
+					Value: "15",
+				}},
+			}
 		}
 	}
 
@@ -1386,22 +1515,43 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
-	if _, ok := command.(*commands.GetTickets); ok {
+	if cmd, ok := command.(*commands.GetTickets); ok {
 		resp := response.(*commands.GetTicketsResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.Tickets = []commands.Ticket{
-			{
-				ID:               "93cd2f71-48c3-4cf2-b542-5b256f59cae0",
-				Name:             "OpenSSH Denial of Service Vulnerability - Jan16",
-				Comment:          "",
-				CreationTime:     time.Date(2018, 11, 29, 16, 18, 56, 0, time.UTC),
-				ModificationTime: time.Date(2018, 11, 29, 16, 18, 56, 0, time.UTC),
-				Writable:         true,
-				InUse:            false,
-				Status:           "Open",
-				OpenNote:         "Probably the new version fixes this",
-			},
+		if cmd.Filter != "" {
+			// Return mock data for pagination
+			resp.Tickets = []commands.Ticket{
+				{
+					ID:     "ticket-1",
+					Name:   "Test Ticket 1",
+					Status: "Open",
+				},
+				{
+					ID:     "ticket-2",
+					Name:   "Test Ticket 2",
+					Status: "Closed",
+				},
+			}
+		} else {
+			// Return original data for specific requests
+			resp.Tickets = []commands.Ticket{
+				{
+					ID:               "93cd2f71-48c3-4cf2-b542-5b256f59cae0",
+					Name:             "OpenSSH Denial of Service Vulnerability - Jan16",
+					Comment:          "",
+					CreationTime:     time.Date(2018, 11, 29, 16, 18, 56, 0, time.UTC),
+					ModificationTime: time.Date(2018, 11, 29, 16, 18, 56, 0, time.UTC),
+					Writable:         true,
+					InUse:            false,
+					Status:           "Open",
+					OpenNote:         "Probably the new version fixes this",
+				},
+			}
+		}
+		resp.TicketCount = &commands.TicketCount{
+			Filtered: len(resp.Tickets),
+			Page:     1,
 		}
 	}
 
@@ -1509,6 +1659,96 @@ func (m *mockConn) Execute(command interface{}, response interface{}) error {
 		}
 	}
 
+	// Pagination commands for iterators
+	if cmd, ok := command.(*commands.GetTasks); ok {
+		resp := response.(*commands.GetTasksResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		if cmd.Filter != "" {
+			// Return mock data for pagination
+			resp.Task = []commands.GetTasksResponseTask{
+				{ID: "task-1", Name: "Test Task 1"},
+				{ID: "task-2", Name: "Test Task 2"},
+				{ID: "task-3", Name: "Test Task 3"},
+			}
+			resp.TaskCount = commands.GetTasksResponseTaskCount{Filtered: 3}
+		}
+	}
+
+	if cmd, ok := command.(*commands.GetResults); ok {
+		resp := response.(*commands.GetResultsResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		if cmd.Filter != "" {
+			// Return mock data for pagination
+			resp.Results = []commands.Result{
+				{ID: "result-1", Name: "Test Result 1"},
+				{ID: "result-2", Name: "Test Result 2"},
+				{ID: "result-3", Name: "Test Result 3"},
+			}
+			resp.Count = &commands.ResultsCount{Filtered: 3}
+		}
+	}
+
+	if cmd, ok := command.(*commands.GetAssets); ok {
+		resp := response.(*commands.GetAssetsResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		if cmd.Filter != "" {
+			// Return mock data for pagination
+			resp.Assets = []commands.Asset{
+				{ID: "asset-1", Name: "Test Asset 1"},
+				{ID: "asset-2", Name: "Test Asset 2"},
+			}
+			resp.AssetCount = &commands.AssetCount{Filtered: 2}
+		}
+	}
+
+	if cmd, ok := command.(*commands.GetTickets); ok {
+		resp := response.(*commands.GetTicketsResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		if cmd.Filter != "" {
+			// Return mock data for pagination
+			resp.Tickets = []commands.Ticket{
+				{ID: "ticket-1", Name: "Test Ticket 1"},
+				{ID: "ticket-2", Name: "Test Ticket 2"},
+				{ID: "ticket-3", Name: "Test Ticket 3"},
+			}
+			resp.TicketCount = &commands.TicketCount{Filtered: 3}
+		}
+	}
+
+	if cmd, ok := command.(*commands.GetPortLists); ok {
+		resp := response.(*commands.GetPortListsResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		if cmd.Filter != "" {
+			// Return mock data for pagination
+			resp.PortLists = []commands.PortList{
+				{ID: "portlist-1", Name: "Test PortList 1"},
+				{ID: "portlist-2", Name: "Test PortList 2"},
+				{ID: "portlist-3", Name: "Test PortList 3"},
+			}
+			resp.Count = &commands.PortListCount{Filtered: 3}
+		}
+	}
+
+	if cmd, ok := command.(*commands.GetSettings); ok {
+		resp := response.(*commands.GetSettingsResponse)
+		resp.Status = "200"
+		resp.StatusText = "OK"
+		if cmd.Filter != "" {
+			// Return mock data for pagination
+			resp.SettingsList = []commands.Setting{
+				{ID: "setting-1", Name: "Test Setting 1"},
+				{ID: "setting-2", Name: "Test Setting 2"},
+				{ID: "setting-3", Name: "Test Setting 3"},
+			}
+			resp.SettingCount = &commands.SettingCount{Filtered: 3}
+		}
+	}
+
 	return nil
 }
 
@@ -1516,6 +1756,6 @@ func (m *mockConn) Close() error {
 	return nil
 }
 
-func mockedConnection() gmp.Connection {
+func MockedConnection() gmp.Connection {
 	return &mockConn{}
 }

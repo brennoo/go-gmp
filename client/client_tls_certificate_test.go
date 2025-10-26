@@ -7,7 +7,7 @@ import (
 )
 
 func TestCreateTLSCertificate(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -32,7 +32,7 @@ func TestCreateTLSCertificate(t *testing.T) {
 }
 
 func TestModifyTLSCertificate(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -54,7 +54,7 @@ func TestModifyTLSCertificate(t *testing.T) {
 }
 
 func TestGetTLSCertificates(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}

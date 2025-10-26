@@ -7,7 +7,7 @@ import (
 )
 
 func TestCreateOverride(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -34,7 +34,7 @@ func TestCreateOverride(t *testing.T) {
 }
 
 func TestDeleteOverride(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -56,7 +56,7 @@ func TestDeleteOverride(t *testing.T) {
 }
 
 func TestGetOverrides(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -83,7 +83,7 @@ func TestGetOverrides(t *testing.T) {
 }
 
 func TestModifyOverride(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}

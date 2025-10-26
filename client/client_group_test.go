@@ -7,7 +7,7 @@ import (
 )
 
 func TestCreateGroup(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -29,7 +29,7 @@ func TestCreateGroup(t *testing.T) {
 }
 
 func TestModifyGroup(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -48,7 +48,7 @@ func TestModifyGroup(t *testing.T) {
 }
 
 func TestGetGroups(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -67,7 +67,7 @@ func TestGetGroups(t *testing.T) {
 }
 
 func TestDeleteGroup(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}

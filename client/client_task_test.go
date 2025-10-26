@@ -7,7 +7,7 @@ import (
 )
 
 func TestCreateTask(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -24,7 +24,7 @@ func TestCreateTask(t *testing.T) {
 }
 
 func TestModifyTask(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -42,7 +42,7 @@ func TestModifyTask(t *testing.T) {
 }
 
 func TestGetTasks(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -59,7 +59,7 @@ func TestGetTasks(t *testing.T) {
 }
 
 func TestStartTask(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -76,7 +76,7 @@ func TestStartTask(t *testing.T) {
 }
 
 func TestStopTask(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -93,7 +93,7 @@ func TestStopTask(t *testing.T) {
 }
 
 func TestDeleteTask(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -110,7 +110,7 @@ func TestDeleteTask(t *testing.T) {
 }
 
 func TestResumeTask(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -132,7 +132,7 @@ func TestResumeTask(t *testing.T) {
 }
 
 func TestMoveTask(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}

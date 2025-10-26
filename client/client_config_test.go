@@ -7,7 +7,7 @@ import (
 )
 
 func TestGetConfigs(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -25,7 +25,7 @@ func TestGetConfigs(t *testing.T) {
 }
 
 func TestCreateConfig(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -43,7 +43,7 @@ func TestCreateConfig(t *testing.T) {
 }
 
 func TestModifyConfig(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -61,7 +61,7 @@ func TestModifyConfig(t *testing.T) {
 }
 
 func TestDeleteConfig(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -83,7 +83,7 @@ func TestDeleteConfig(t *testing.T) {
 }
 
 func TestSyncConfig(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}

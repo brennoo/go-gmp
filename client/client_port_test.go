@@ -7,7 +7,7 @@ import (
 )
 
 func TestGetPortLists(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -25,7 +25,7 @@ func TestGetPortLists(t *testing.T) {
 }
 
 func TestCreatePortList(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -48,7 +48,7 @@ func TestCreatePortList(t *testing.T) {
 }
 
 func TestModifyPortList(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -68,7 +68,7 @@ func TestModifyPortList(t *testing.T) {
 }
 
 func TestDeletePortList(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -87,7 +87,7 @@ func TestDeletePortList(t *testing.T) {
 }
 
 func TestCreatePortRange(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -111,7 +111,7 @@ func TestCreatePortRange(t *testing.T) {
 }
 
 func TestDeletePortRange(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}

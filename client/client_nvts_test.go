@@ -7,7 +7,7 @@ import (
 )
 
 func TestGetNVTsWithDetails(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -37,7 +37,7 @@ func TestGetNVTsWithDetails(t *testing.T) {
 }
 
 func TestGetNVTsSingle(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -67,7 +67,7 @@ func TestGetNVTsSingle(t *testing.T) {
 }
 
 func TestGetNVTFamilies(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}

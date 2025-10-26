@@ -7,7 +7,7 @@ import (
 )
 
 func TestCreateTicket(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -35,7 +35,7 @@ func TestCreateTicket(t *testing.T) {
 }
 
 func TestGetTickets(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -70,7 +70,7 @@ func TestGetTickets(t *testing.T) {
 }
 
 func TestModifyTicket(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -93,7 +93,7 @@ func TestModifyTicket(t *testing.T) {
 }
 
 func TestDeleteTicket(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	cmd := &commands.DeleteTicket{
 		TicketID: "ticket-uuid",
 		Ultimate: true,

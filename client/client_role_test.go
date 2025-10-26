@@ -7,7 +7,7 @@ import (
 )
 
 func TestCreateRole(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -42,7 +42,7 @@ func TestCreateRole(t *testing.T) {
 }
 
 func TestModifyRole(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -83,7 +83,7 @@ func TestModifyRole(t *testing.T) {
 }
 
 func TestGetRoles(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -102,7 +102,7 @@ func TestGetRoles(t *testing.T) {
 }
 
 func TestDeleteRole(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}

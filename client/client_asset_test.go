@@ -7,7 +7,7 @@ import (
 )
 
 func TestCreateAsset(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -35,7 +35,7 @@ func TestCreateAsset(t *testing.T) {
 }
 
 func TestCreateAssetWithReport(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -62,7 +62,7 @@ func TestCreateAssetWithReport(t *testing.T) {
 }
 
 func TestModifyAsset(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -84,7 +84,7 @@ func TestModifyAsset(t *testing.T) {
 }
 
 func TestGetAssets(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
@@ -115,7 +115,7 @@ func TestGetAssets(t *testing.T) {
 }
 
 func TestDeleteAsset(t *testing.T) {
-	cli := New(mockedConnection())
+	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
