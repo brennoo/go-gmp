@@ -4,184 +4,12 @@ import (
 	"context"
 	"testing"
 	"time"
+
+	"github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/commands/filtering"
 )
 
-func TestGetTasksPaged(t *testing.T) {
-	cli := New(MockedConnection())
-	if cli == nil {
-		t.Fatalf("Client is nil")
-	}
-
-	// Test basic pagination
-	resp, err := cli.GetTasksPaged(1, 10)
-	if err != nil {
-		t.Fatalf("Unexpected error during GetTasksPaged: %s", err)
-	}
-	if resp.Status != "200" {
-		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
-	}
-
-	// Test with filters
-	resp, err = cli.GetTasksPaged(1, 5, "status=running", "sort=name")
-	if err != nil {
-		t.Fatalf("Unexpected error during GetTasksPaged with filters: %s", err)
-	}
-	if resp.Status != "200" {
-		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
-	}
-}
-
-func TestGetResultsPaged(t *testing.T) {
-	cli := New(MockedConnection())
-	if cli == nil {
-		t.Fatalf("Client is nil")
-	}
-
-	// Test basic pagination
-	resp, err := cli.GetResultsPaged(1, 10)
-	if err != nil {
-		t.Fatalf("Unexpected error during GetResultsPaged: %s", err)
-	}
-	if resp.Status != "200" {
-		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
-	}
-
-	// Test with filters
-	resp, err = cli.GetResultsPaged(2, 5, "severity>5.0", "status=Done")
-	if err != nil {
-		t.Fatalf("Unexpected error during GetResultsPaged with filters: %s", err)
-	}
-	if resp.Status != "200" {
-		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
-	}
-}
-
-func TestGetAssetsPaged(t *testing.T) {
-	cli := New(MockedConnection())
-	if cli == nil {
-		t.Fatalf("Client is nil")
-	}
-
-	// Test basic pagination
-	resp, err := cli.GetAssetsPaged(1, 10)
-	if err != nil {
-		t.Fatalf("Unexpected error during GetAssetsPaged: %s", err)
-	}
-	if resp.Status != "200" {
-		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
-	}
-
-	// Test with filters
-	resp, err = cli.GetAssetsPaged(1, 5, "name~localhost")
-	if err != nil {
-		t.Fatalf("Unexpected error during GetAssetsPaged with filters: %s", err)
-	}
-	if resp.Status != "200" {
-		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
-	}
-}
-
-func TestGetTargetsPaged(t *testing.T) {
-	cli := New(MockedConnection())
-	if cli == nil {
-		t.Fatalf("Client is nil")
-	}
-
-	// Test basic pagination
-	resp, err := cli.GetTargetsPaged(1, 10)
-	if err != nil {
-		t.Fatalf("Unexpected error during GetTargetsPaged: %s", err)
-	}
-	if resp.Status != "200" {
-		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
-	}
-
-	// Test with filters
-	resp, err = cli.GetTargetsPaged(1, 5, "name~test")
-	if err != nil {
-		t.Fatalf("Unexpected error during GetTargetsPaged with filters: %s", err)
-	}
-	if resp.Status != "200" {
-		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
-	}
-}
-
-func TestGetTicketsPaged(t *testing.T) {
-	cli := New(MockedConnection())
-	if cli == nil {
-		t.Fatalf("Client is nil")
-	}
-
-	// Test basic pagination
-	resp, err := cli.GetTicketsPaged(1, 10)
-	if err != nil {
-		t.Fatalf("Unexpected error during GetTicketsPaged: %s", err)
-	}
-	if resp.Status != "200" {
-		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
-	}
-
-	// Test with filters
-	resp, err = cli.GetTicketsPaged(1, 5, "status=Open")
-	if err != nil {
-		t.Fatalf("Unexpected error during GetTicketsPaged with filters: %s", err)
-	}
-	if resp.Status != "200" {
-		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
-	}
-}
-
-func TestGetPortListsPaged(t *testing.T) {
-	cli := New(MockedConnection())
-	if cli == nil {
-		t.Fatalf("Client is nil")
-	}
-
-	// Test basic pagination
-	resp, err := cli.GetPortListsPaged(1, 10)
-	if err != nil {
-		t.Fatalf("Unexpected error during GetPortListsPaged: %s", err)
-	}
-	if resp.Status != "200" {
-		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
-	}
-
-	// Test with filters
-	resp, err = cli.GetPortListsPaged(1, 5, "name~default")
-	if err != nil {
-		t.Fatalf("Unexpected error during GetPortListsPaged with filters: %s", err)
-	}
-	if resp.Status != "200" {
-		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
-	}
-}
-
-func TestGetSettingsPaged(t *testing.T) {
-	cli := New(MockedConnection())
-	if cli == nil {
-		t.Fatalf("Client is nil")
-	}
-
-	// Test basic pagination
-	resp, err := cli.GetSettingsPaged(1, 10)
-	if err != nil {
-		t.Fatalf("Unexpected error during GetSettingsPaged: %s", err)
-	}
-	if resp.Status != "200" {
-		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
-	}
-
-	// Test with filters
-	resp, err = cli.GetSettingsPaged(1, 5, "name~timeout")
-	if err != nil {
-		t.Fatalf("Unexpected error during GetSettingsPaged with filters: %s", err)
-	}
-	if resp.Status != "200" {
-		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
-	}
-}
-
-func TestGetTasksIter(t *testing.T) {
+func TestTasks(t *testing.T) {
 	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
@@ -191,9 +19,9 @@ func TestGetTasksIter(t *testing.T) {
 	defer cancel()
 
 	// Test basic iteration
-	iter := cli.GetTasksIter(ctx, 10)
+	iter := cli.Tasks(ctx, 10)
 	if iter == nil {
-		t.Fatal("GetTasksIter returned nil iterator")
+		t.Fatal("Tasks returned nil iterator")
 	}
 	defer iter.Close()
 
@@ -220,7 +48,7 @@ func TestGetTasksIter(t *testing.T) {
 	}
 }
 
-func TestGetResultsIter(t *testing.T) {
+func TestResults(t *testing.T) {
 	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
@@ -230,9 +58,9 @@ func TestGetResultsIter(t *testing.T) {
 	defer cancel()
 
 	// Test basic iteration
-	iter := cli.GetResultsIter(ctx, 10)
+	iter := cli.Results(ctx, 10)
 	if iter == nil {
-		t.Fatal("GetResultsIter returned nil iterator")
+		t.Fatal("Results returned nil iterator")
 	}
 	defer iter.Close()
 
@@ -259,7 +87,7 @@ func TestGetResultsIter(t *testing.T) {
 	}
 }
 
-func TestGetAssetsIter(t *testing.T) {
+func TestAssets(t *testing.T) {
 	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
@@ -269,9 +97,9 @@ func TestGetAssetsIter(t *testing.T) {
 	defer cancel()
 
 	// Test basic iteration
-	iter := cli.GetAssetsIter(ctx, 10)
+	iter := cli.Assets(ctx, 10)
 	if iter == nil {
-		t.Fatal("GetAssetsIter returned nil iterator")
+		t.Fatal("Assets returned nil iterator")
 	}
 	defer iter.Close()
 
@@ -298,7 +126,7 @@ func TestGetAssetsIter(t *testing.T) {
 	}
 }
 
-func TestGetTargetsIter(t *testing.T) {
+func TestTargets(t *testing.T) {
 	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
@@ -308,9 +136,9 @@ func TestGetTargetsIter(t *testing.T) {
 	defer cancel()
 
 	// Test basic iteration
-	iter := cli.GetTargetsIter(ctx, 10)
+	iter := cli.Targets(ctx, 10)
 	if iter == nil {
-		t.Fatal("GetTargetsIter returned nil iterator")
+		t.Fatal("Targets returned nil iterator")
 	}
 	defer iter.Close()
 
@@ -337,7 +165,7 @@ func TestGetTargetsIter(t *testing.T) {
 	}
 }
 
-func TestGetTicketsIter(t *testing.T) {
+func TestTickets(t *testing.T) {
 	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
@@ -347,9 +175,9 @@ func TestGetTicketsIter(t *testing.T) {
 	defer cancel()
 
 	// Test basic iteration
-	iter := cli.GetTicketsIter(ctx, 10)
+	iter := cli.Tickets(ctx, 10)
 	if iter == nil {
-		t.Fatal("GetTicketsIter returned nil iterator")
+		t.Fatal("Tickets returned nil iterator")
 	}
 	defer iter.Close()
 
@@ -376,7 +204,7 @@ func TestGetTicketsIter(t *testing.T) {
 	}
 }
 
-func TestGetPortListsIter(t *testing.T) {
+func TestPortLists(t *testing.T) {
 	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
@@ -386,9 +214,9 @@ func TestGetPortListsIter(t *testing.T) {
 	defer cancel()
 
 	// Test basic iteration
-	iter := cli.GetPortListsIter(ctx, 10)
+	iter := cli.PortLists(ctx, 10)
 	if iter == nil {
-		t.Fatal("GetPortListsIter returned nil iterator")
+		t.Fatal("PortLists returned nil iterator")
 	}
 	defer iter.Close()
 
@@ -415,7 +243,7 @@ func TestGetPortListsIter(t *testing.T) {
 	}
 }
 
-func TestGetSettingsIter(t *testing.T) {
+func TestSettings(t *testing.T) {
 	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
@@ -425,9 +253,9 @@ func TestGetSettingsIter(t *testing.T) {
 	defer cancel()
 
 	// Test basic iteration
-	iter := cli.GetSettingsIter(ctx, 10)
+	iter := cli.Settings(ctx, 10)
 	if iter == nil {
-		t.Fatal("GetSettingsIter returned nil iterator")
+		t.Fatal("Settings returned nil iterator")
 	}
 	defer iter.Close()
 
@@ -464,7 +292,7 @@ func TestIteratorWithFilters(t *testing.T) {
 	defer cancel()
 
 	// Test iterator with filters
-	iter := cli.GetTasksIter(ctx, 5, "status=running", "sort=name")
+	iter := cli.Tasks(ctx, 5, "status=running", "sort=name")
 	if iter == nil {
 		t.Fatal("GetTasksIter with filters returned nil iterator")
 	}
@@ -492,9 +320,9 @@ func TestIteratorContextCancellation(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel() // Cancel immediately
 
-	iter := cli.GetTasksIter(ctx, 10)
+	iter := cli.Tasks(ctx, 10)
 	if iter == nil {
-		t.Fatal("GetTasksIter returned nil iterator")
+		t.Fatal("Tasks returned nil iterator")
 	}
 	defer iter.Close()
 
@@ -515,9 +343,9 @@ func TestIteratorClose(t *testing.T) {
 	ctx := context.Background()
 
 	// Test that Close() doesn't panic
-	iter := cli.GetTasksIter(ctx, 10)
+	iter := cli.Tasks(ctx, 10)
 	if iter == nil {
-		t.Fatal("GetTasksIter returned nil iterator")
+		t.Fatal("Tasks returned nil iterator")
 	}
 
 	// Close should not panic
@@ -526,77 +354,6 @@ func TestIteratorClose(t *testing.T) {
 	// Test that HasMore returns false after close
 	if iter.HasMore() {
 		t.Error("HasMore() should return false after Close()")
-	}
-}
-
-func TestPaginationHelperMethods(t *testing.T) {
-	cli := New(MockedConnection())
-	if cli == nil {
-		t.Fatalf("Client is nil")
-	}
-
-	// Test that all pagination helper methods exist and can be called
-	tests := []struct {
-		name string
-		fn   func() error
-	}{
-		{
-			name: "GetTasksPaged",
-			fn: func() error {
-				_, err := cli.GetTasksPaged(1, 10)
-				return err
-			},
-		},
-		{
-			name: "GetResultsPaged",
-			fn: func() error {
-				_, err := cli.GetResultsPaged(1, 10)
-				return err
-			},
-		},
-		{
-			name: "GetAssetsPaged",
-			fn: func() error {
-				_, err := cli.GetAssetsPaged(1, 10)
-				return err
-			},
-		},
-		{
-			name: "GetTargetsPaged",
-			fn: func() error {
-				_, err := cli.GetTargetsPaged(1, 10)
-				return err
-			},
-		},
-		{
-			name: "GetTicketsPaged",
-			fn: func() error {
-				_, err := cli.GetTicketsPaged(1, 10)
-				return err
-			},
-		},
-		{
-			name: "GetPortListsPaged",
-			fn: func() error {
-				_, err := cli.GetPortListsPaged(1, 10)
-				return err
-			},
-		},
-		{
-			name: "GetSettingsPaged",
-			fn: func() error {
-				_, err := cli.GetSettingsPaged(1, 10)
-				return err
-			},
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.fn(); err != nil {
-				t.Errorf("%s failed: %v", tt.name, err)
-			}
-		})
 	}
 }
 
@@ -609,66 +366,138 @@ func TestIteratorMethods(t *testing.T) {
 	ctx := context.Background()
 
 	// Test that all iterator methods exist and can be called
-	t.Run("GetTasksIter", func(t *testing.T) {
-		iter := cli.GetTasksIter(ctx, 10)
+	t.Run("Tasks", func(t *testing.T) {
+		iter := cli.Tasks(ctx, 10)
 		if iter == nil {
-			t.Error("GetTasksIter returned nil iterator")
+			t.Error("Tasks returned nil iterator")
 		} else {
 			iter.Close() // Clean up
 		}
 	})
 
-	t.Run("GetResultsIter", func(t *testing.T) {
-		iter := cli.GetResultsIter(ctx, 10)
+	t.Run("Results", func(t *testing.T) {
+		iter := cli.Results(ctx, 10)
 		if iter == nil {
-			t.Error("GetResultsIter returned nil iterator")
+			t.Error("Results returned nil iterator")
 		} else {
 			iter.Close() // Clean up
 		}
 	})
 
-	t.Run("GetAssetsIter", func(t *testing.T) {
-		iter := cli.GetAssetsIter(ctx, 10)
+	t.Run("Assets", func(t *testing.T) {
+		iter := cli.Assets(ctx, 10)
 		if iter == nil {
-			t.Error("GetAssetsIter returned nil iterator")
+			t.Error("Assets returned nil iterator")
 		} else {
 			iter.Close() // Clean up
 		}
 	})
 
-	t.Run("GetTargetsIter", func(t *testing.T) {
-		iter := cli.GetTargetsIter(ctx, 10)
+	t.Run("Targets", func(t *testing.T) {
+		iter := cli.Targets(ctx, 10)
 		if iter == nil {
-			t.Error("GetTargetsIter returned nil iterator")
+			t.Error("Targets returned nil iterator")
 		} else {
 			iter.Close() // Clean up
 		}
 	})
 
-	t.Run("GetTicketsIter", func(t *testing.T) {
-		iter := cli.GetTicketsIter(ctx, 10)
+	t.Run("Tickets", func(t *testing.T) {
+		iter := cli.Tickets(ctx, 10)
 		if iter == nil {
-			t.Error("GetTicketsIter returned nil iterator")
+			t.Error("Tickets returned nil iterator")
 		} else {
 			iter.Close() // Clean up
 		}
 	})
 
-	t.Run("GetPortListsIter", func(t *testing.T) {
-		iter := cli.GetPortListsIter(ctx, 10)
+	t.Run("PortLists", func(t *testing.T) {
+		iter := cli.PortLists(ctx, 10)
 		if iter == nil {
-			t.Error("GetPortListsIter returned nil iterator")
+			t.Error("PortLists returned nil iterator")
 		} else {
 			iter.Close() // Clean up
 		}
 	})
 
-	t.Run("GetSettingsIter", func(t *testing.T) {
-		iter := cli.GetSettingsIter(ctx, 10)
+	t.Run("Settings", func(t *testing.T) {
+		iter := cli.Settings(ctx, 10)
 		if iter == nil {
-			t.Error("GetSettingsIter returned nil iterator")
+			t.Error("Settings returned nil iterator")
 		} else {
 			iter.Close() // Clean up
 		}
 	})
+}
+
+// testIteratorWithFilters is a helper function to test an iterator method with both string and functional filters.
+func testIteratorWithFilters(t *testing.T, cli gmp.Client, ctx context.Context, name string,
+	stringFilter string, funcFilter filtering.FilterArg,
+	iteratorFunc func(context.Context, int, ...filtering.FilterArg) interface{}) {
+
+	// Test with string filter
+	iter := iteratorFunc(ctx, 10, stringFilter)
+	if iter == nil {
+		t.Fatalf("%s with string filters returned nil iterator", name)
+	}
+	if closer, ok := iter.(interface{ Close() }); ok {
+		defer closer.Close()
+	}
+
+	// Test with functional filter
+	iter2 := iteratorFunc(ctx, 10, funcFilter)
+	if iter2 == nil {
+		t.Fatalf("%s with functional options returned nil iterator", name)
+	}
+	if closer, ok := iter2.(interface{ Close() }); ok {
+		defer closer.Close()
+	}
+}
+
+// TestIteratorsWithStringFilters tests all iterator methods with string filters.
+func TestIteratorsWithStringFilters(t *testing.T) {
+	cli := New(MockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+	ctx := context.Background()
+
+	testIteratorWithFilters(t, cli, ctx, "Results", "severity>5.0", filtering.WithSeverityGreaterThan(5.0),
+		func(ctx context.Context, pageSize int, args ...filtering.FilterArg) interface{} {
+			return cli.Results(ctx, pageSize, args...)
+		})
+}
+
+// TestIteratorsWithFunctionalFilters tests all iterator methods with functional options.
+func TestIteratorsWithFunctionalFilters(t *testing.T) {
+	cli := New(MockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+	ctx := context.Background()
+
+	testIteratorWithFilters(t, cli, ctx, "Assets", "name~localhost", filtering.WithName("test"),
+		func(ctx context.Context, pageSize int, args ...filtering.FilterArg) interface{} {
+			return cli.Assets(ctx, pageSize, args...)
+		})
+
+	testIteratorWithFilters(t, cli, ctx, "Targets", "name~test", filtering.WithName("test"),
+		func(ctx context.Context, pageSize int, args ...filtering.FilterArg) interface{} {
+			return cli.Targets(ctx, pageSize, args...)
+		})
+
+	testIteratorWithFilters(t, cli, ctx, "Tickets", "status=Open", filtering.WithStatus("Open"),
+		func(ctx context.Context, pageSize int, args ...filtering.FilterArg) interface{} {
+			return cli.Tickets(ctx, pageSize, args...)
+		})
+
+	testIteratorWithFilters(t, cli, ctx, "PortLists", "name~default", filtering.WithName("test"),
+		func(ctx context.Context, pageSize int, args ...filtering.FilterArg) interface{} {
+			return cli.PortLists(ctx, pageSize, args...)
+		})
+
+	testIteratorWithFilters(t, cli, ctx, "Settings", "name~timeout", filtering.WithName("test"),
+		func(ctx context.Context, pageSize int, args ...filtering.FilterArg) interface{} {
+			return cli.Settings(ctx, pageSize, args...)
+		})
 }

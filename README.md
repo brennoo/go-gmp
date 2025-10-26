@@ -23,6 +23,7 @@ A Go client for the Greenbone Management Protocol (GMP) to interact with Greenbo
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -32,6 +33,8 @@ import (
 )
 
 func main() {
+	ctx := context.Background()
+
 	// Connect
 	conn, err := connections.NewTLSConnection("gmp.example.com:9390", true)
 	if err != nil {
@@ -52,7 +55,7 @@ func main() {
 	}
 
 	// Query
-	tasksResp, err := cli.GetTasks(&commands.GetTasks{})
+	tasksResp, err := cli.GetTasks(ctx)
 	if err != nil || tasksResp.Status != "200" {
 		log.Fatalf("get tasks failed: %v", err)
 	}
@@ -61,53 +64,55 @@ func main() {
 	}
 }
 ```
-
-## Core Concepts
-
-**Connection**: Create a `gmp.Connection` (TLS or Unix socket) to handle low-level protocol.  
-**Client**: Wrap the connection with `client.New()` to get a `gmp.Client`.  
-**Commands**: Each GMP command is a Go struct (e.g., `GetTasks`, `CreateTask`).  
-**Responses**: Strongly-typed response structs (e.g., `GetTasksResponse`).  
-**Errors**: All methods return `(response, error)`.
-
 ## Filtering
 
-Use the `Filter` field on list/get commands:
+The library provides two filtering approaches:
+
+### String Filters
 
 ```go
-tasksResp, err := cli.GetTasks(&commands.GetTasks{
-	Filter: "status=running sort=name",
-})
+tasksResp, err := cli.GetTasks(ctx, "status=running", "sort=name")
+```
+
+### Functional Options
+
+```go
+import "github.com/brennoo/go-gmp/commands/filtering"
+
+tasksResp, err := cli.GetTasks(ctx,
+	filtering.WithStatus(filtering.StatusRunning),
+	filtering.WithSort(filtering.SortByName, filtering.SortAsc),
+)
 ```
 
 ## Pagination
 
-Three approaches available:
+The library provides two approaches for handling large datasets:
 
-| Resource | Basic | Paged | Iterator |
-|---------|-------|-------|----------|
-| Tasks | `GetTasks` | `GetTasksPaged` | `GetTasksIter` |
-| Results | `GetResults` | `GetResultsPaged` | `GetResultsIter` |
-| Assets | `GetAssets` | `GetAssetsPaged` | `GetAssetsIter` |
-| Targets | `GetTargets` | `GetTargetsPaged` | `GetTargetsIter` |
-| Tickets | `GetTickets` | `GetTicketsPaged` | `GetTicketsIter` |
-| Port Lists | `GetPortLists` | `GetPortListsPaged` | `GetPortListsIter` |
-| Settings | `GetSettings` | `GetSettingsPaged` | `GetSettingsIter` |
+| Resource | One-shot | Iterator |
+|---------|----------|----------|
+| Tasks | `GetTasks` | `Tasks` |
+| Results | `GetResults` | `Results` |
+| Assets | `GetAssets` | `Assets` |
+| Targets | `GetTargets` | `Targets` |
+| Tickets | `GetTickets` | `Tickets` |
+| Port Lists | `GetPortLists` | `PortLists` |
+| Settings | `GetSettings` | `Settings` |
 
-### Paged Helpers
+### One-shot Retrieval
 
 ```go
-// Get page 1 with 10 tasks
-tasksResp, err := cli.GetTasksPaged(1, 10)
+// Get first page with default limit
+tasksResp, err := cli.GetTasks(ctx)
 
-// Get page 2 with filters
-resultsResp, err := cli.GetResultsPaged(2, 5, "severity>5.0", "status=Done")
+// Get with custom limit and filters
+tasksResp, err := cli.GetTasks(ctx, "rows=50", "status=running")
 ```
 
 ### Iterators
 
 ```go
-taskIter := cli.GetTasksIter(ctx, 10)
+taskIter := cli.Tasks(ctx, 10)
 defer taskIter.Close()
 
 for taskIter.Next() {
@@ -138,4 +143,4 @@ All GMP commands are available as typed structs matching the protocol XML. Add n
 
 ## Credits
 
-Based on [github.com/filewalkwithme/go-gmp](https://github.com/filewalkwithme/go-gmp). 
+Based on [github.com/filewalkwithme/go-gmp](https://github.com/filewalkwithme/go-gmp).

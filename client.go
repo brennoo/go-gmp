@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/brennoo/go-gmp/commands"
+	"github.com/brennoo/go-gmp/commands/filtering"
 	"github.com/brennoo/go-gmp/commands/pagination"
 )
 
@@ -34,7 +35,7 @@ type Client interface {
 	// Asset Management
 	CreateAsset(cmd *commands.CreateAsset) (resp *commands.CreateAssetResponse, err error)
 	ModifyAsset(cmd *commands.ModifyAsset) (resp *commands.ModifyAssetResponse, err error)
-	GetAssets(cmd *commands.GetAssets) (resp *commands.GetAssetsResponse, err error)
+	GetAssets(ctx context.Context, args ...filtering.FilterArg) (*commands.GetAssetsResponse, error)
 	DeleteAsset(cmd *commands.DeleteAsset) (resp *commands.DeleteAssetResponse, err error)
 
 	// Credential Management
@@ -46,13 +47,13 @@ type Client interface {
 	// Target Management
 	CreateTarget(cmd *commands.CreateTarget) (resp *commands.CreateTargetResponse, err error)
 	ModifyTarget(cmd *commands.ModifyTarget) (resp *commands.ModifyTargetResponse, err error)
-	GetTargets(cmd *commands.GetTargets) (resp *commands.GetTargetsResponse, err error)
+	GetTargets(ctx context.Context, args ...filtering.FilterArg) (*commands.GetTargetsResponse, error)
 	DeleteTarget(cmd *commands.DeleteTarget) (resp *commands.DeleteTargetResponse, err error)
 
 	// Task Management
 	CreateTask(cmd *commands.CreateTask) (resp *commands.CreateTaskResponse, err error)
 	ModifyTask(cmd *commands.ModifyTask) (resp *commands.ModifyTaskResponse, err error)
-	GetTasks(cmd *commands.GetTasks) (resp *commands.GetTasksResponse, err error)
+	GetTasks(ctx context.Context, args ...filtering.FilterArg) (*commands.GetTasksResponse, error)
 	DeleteTask(cmd *commands.DeleteTask) (resp *commands.DeleteTaskResponse, err error)
 	StartTask(cmd *commands.StartTask) (resp *commands.StartTaskResponse, err error)
 	StopTask(cmd *commands.StopTask) (resp *commands.StopTaskResponse, err error)
@@ -88,7 +89,7 @@ type Client interface {
 	GetSystemReports(cmd *commands.GetSystemReports) (resp *commands.GetSystemReportsResponse, err error)
 
 	// Results & Vulnerabilities
-	GetResults(cmd *commands.GetResults) (resp *commands.GetResultsResponse, err error)
+	GetResults(ctx context.Context, args ...filtering.FilterArg) (*commands.GetResultsResponse, error)
 	GetVulns(cmd *commands.GetVulns) (resp *commands.GetVulnsResponse, err error)
 
 	// Notes, Tags, Filters, Tickets, Overrides
@@ -106,7 +107,7 @@ type Client interface {
 	DeleteFilter(cmd *commands.DeleteFilter) (resp *commands.DeleteFilterResponse, err error)
 	CreateTicket(cmd *commands.CreateTicket) (resp *commands.CreateTicketResponse, err error)
 	ModifyTicket(cmd *commands.ModifyTicket) (resp *commands.ModifyTicketResponse, err error)
-	GetTickets(cmd *commands.GetTickets) (resp *commands.GetTicketsResponse, err error)
+	GetTickets(ctx context.Context, args ...filtering.FilterArg) (*commands.GetTicketsResponse, error)
 	DeleteTicket(cmd *commands.DeleteTicket) (resp *commands.DeleteTicketResponse, err error)
 	CreateOverride(cmd *commands.CreateOverride) (resp *commands.CreateOverrideResponse, err error)
 	DeleteOverride(cmd *commands.DeleteOverride) (resp *commands.DeleteOverrideResponse, err error)
@@ -121,12 +122,12 @@ type Client interface {
 	SyncConfig(cmd *commands.SyncConfig) (resp *commands.SyncConfigResponse, err error)
 	GetPreferences(cmd *commands.GetPreferences) (resp *commands.GetPreferencesResponse, err error)
 	ModifySetting(cmd *commands.ModifySetting) (resp *commands.ModifySettingResponse, err error)
-	GetSettings(cmd *commands.GetSettings) (resp *commands.GetSettingsResponse, err error)
+	GetSettings(ctx context.Context, args ...filtering.FilterArg) (*commands.GetSettingsResponse, error)
 
 	// Port Lists & Ranges
 	CreatePortList(cmd *commands.CreatePortList) (resp *commands.CreatePortListResponse, err error)
 	ModifyPortList(cmd *commands.ModifyPortList) (resp *commands.ModifyPortListResponse, err error)
-	GetPortLists(cmd *commands.GetPortLists) (resp *commands.GetPortListsResponse, err error)
+	GetPortLists(ctx context.Context, args ...filtering.FilterArg) (*commands.GetPortListsResponse, error)
 	DeletePortList(cmd *commands.DeletePortList) (resp *commands.DeletePortListResponse, err error)
 	CreatePortRange(cmd *commands.CreatePortRange) (resp *commands.CreatePortRangeResponse, err error)
 	DeletePortRange(cmd *commands.DeletePortRange) (resp *commands.DeletePortRangeResponse, err error)
@@ -167,21 +168,12 @@ type Client interface {
 	RunWizard(cmd *commands.RunWizard) (resp *commands.RunWizardResponse, err error)
 	RawXML(xml string) (string, error)
 
-	// Pagination Methods
-	GetTasksPaged(page, pageSize int, filters ...string) (*commands.GetTasksResponse, error)
-	GetResultsPaged(page, pageSize int, filters ...string) (*commands.GetResultsResponse, error)
-	GetAssetsPaged(page, pageSize int, filters ...string) (*commands.GetAssetsResponse, error)
-	GetTargetsPaged(page, pageSize int, filters ...string) (*commands.GetTargetsResponse, error)
-	GetTicketsPaged(page, pageSize int, filters ...string) (*commands.GetTicketsResponse, error)
-	GetPortListsPaged(page, pageSize int, filters ...string) (*commands.GetPortListsResponse, error)
-	GetSettingsPaged(page, pageSize int, filters ...string) (*commands.GetSettingsResponse, error)
-
 	// Iterator Methods
-	GetTasksIter(ctx context.Context, pageSize int, filters ...string) *pagination.TaskIterator
-	GetResultsIter(ctx context.Context, pageSize int, filters ...string) *pagination.ResultIterator
-	GetAssetsIter(ctx context.Context, pageSize int, filters ...string) *pagination.AssetIterator
-	GetTargetsIter(ctx context.Context, pageSize int, filters ...string) *pagination.TargetIterator
-	GetTicketsIter(ctx context.Context, pageSize int, filters ...string) *pagination.TicketIterator
-	GetPortListsIter(ctx context.Context, pageSize int, filters ...string) *pagination.PortListIterator
-	GetSettingsIter(ctx context.Context, pageSize int, filters ...string) *pagination.SettingsIterator
+	Tasks(ctx context.Context, pageSize int, args ...filtering.FilterArg) *pagination.TaskIterator
+	Results(ctx context.Context, pageSize int, args ...filtering.FilterArg) *pagination.ResultIterator
+	Assets(ctx context.Context, pageSize int, args ...filtering.FilterArg) *pagination.AssetIterator
+	Targets(ctx context.Context, pageSize int, args ...filtering.FilterArg) *pagination.TargetIterator
+	Tickets(ctx context.Context, pageSize int, args ...filtering.FilterArg) *pagination.TicketIterator
+	PortLists(ctx context.Context, pageSize int, args ...filtering.FilterArg) *pagination.PortListIterator
+	Settings(ctx context.Context, pageSize int, args ...filtering.FilterArg) *pagination.SettingsIterator
 }

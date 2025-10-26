@@ -1,9 +1,11 @@
 package client
 
 import (
+	"context"
 	"testing"
 
 	"github.com/brennoo/go-gmp/commands"
+	"github.com/brennoo/go-gmp/commands/filtering"
 )
 
 func TestCreateAsset(t *testing.T) {
@@ -89,10 +91,8 @@ func TestGetAssets(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetAssets{
-		AssetID: "b493b7a8-7489-11df-a3ec-002264764cea",
-	}
-	resp, err := cli.GetAssets(cmd)
+	ctx := context.Background()
+	resp, err := cli.GetAssets(ctx, "asset_id=b493b7a8-7489-11df-a3ec-002264764cea")
 	if err != nil {
 		t.Fatalf("Unexpected error during GetAssets: %s", err)
 	}
@@ -102,15 +102,16 @@ func TestGetAssets(t *testing.T) {
 	if resp.StatusText != "OK" {
 		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
 	}
-	if len(resp.Assets) != 1 {
-		t.Fatalf("Expected 1 asset, got %d", len(resp.Assets))
+	if len(resp.Assets) != 2 {
+		t.Fatalf("Expected 2 assets, got %d", len(resp.Assets))
 	}
+	// Check first asset
 	asset := resp.Assets[0]
-	if asset.ID != "b493b7a8-7489-11df-a3ec-002264764cea" {
-		t.Fatalf("Unexpected asset ID. Expected: b493b7a8-7489-11df-a3ec-002264764cea Got: %s", asset.ID)
+	if asset.ID != "asset-1" {
+		t.Fatalf("Unexpected asset ID. Expected: asset-1 Got: %s", asset.ID)
 	}
-	if asset.Name != "Localhost" {
-		t.Fatalf("Unexpected asset name. Expected: Localhost Got: %s", asset.Name)
+	if asset.Name != "Test Asset 1" {
+		t.Fatalf("Unexpected asset name. Expected: Test Asset 1 Got: %s", asset.Name)
 	}
 }
 
@@ -132,5 +133,42 @@ func TestDeleteAsset(t *testing.T) {
 	}
 	if resp.StatusText != "OK" {
 		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
+	}
+}
+
+// TestGetAssetsConsolidated tests the GetAssets method.
+func TestGetAssetsConsolidated(t *testing.T) {
+	cli := New(MockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	ctx := context.Background()
+
+	// Test with no filters
+	resp, err := cli.GetAssets(ctx)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetAssets: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+
+	// Test with string filters
+	resp, err = cli.GetAssets(ctx, "name~localhost")
+	if err != nil {
+		t.Fatalf("Unexpected error during GetAssets with string filter: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+
+	// Test with functional options
+	resp, err = cli.GetAssets(ctx, filtering.WithName("test"))
+	if err != nil {
+		t.Fatalf("Unexpected error during GetAssets with functional options: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
 	}
 }

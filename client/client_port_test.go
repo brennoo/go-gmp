@@ -1,9 +1,11 @@
 package client
 
 import (
+	"context"
 	"testing"
 
 	"github.com/brennoo/go-gmp/commands"
+	"github.com/brennoo/go-gmp/commands/filtering"
 )
 
 func TestGetPortLists(t *testing.T) {
@@ -12,9 +14,8 @@ func TestGetPortLists(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetPortLists{}
-	cmd.PortListID = "33d0cd82-57c6-11e1-8ed1-406186ea4fc5"
-	resp, err := cli.GetPortLists(cmd)
+	ctx := context.Background()
+	resp, err := cli.GetPortLists(ctx, "port_list_id=33d0cd82-57c6-11e1-8ed1-406186ea4fc5")
 	if err != nil {
 		t.Fatalf("Unexpected error during GetPortLists: %s", err)
 	}
@@ -122,6 +123,43 @@ func TestDeletePortRange(t *testing.T) {
 	resp, err := cli.DeletePortRange(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during DeletePortRange: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+}
+
+// TestGetPortListsConsolidated tests the GetPortLists method.
+func TestGetPortListsConsolidated(t *testing.T) {
+	cli := New(MockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	ctx := context.Background()
+
+	// Test with no filters
+	resp, err := cli.GetPortLists(ctx)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetPortLists: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+
+	// Test with string filters
+	resp, err = cli.GetPortLists(ctx, "name~default")
+	if err != nil {
+		t.Fatalf("Unexpected error during GetPortLists with string filter: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
+	}
+
+	// Test with functional options
+	resp, err = cli.GetPortLists(ctx, filtering.WithName("test"))
+	if err != nil {
+		t.Fatalf("Unexpected error during GetPortLists with functional options: %s", err)
 	}
 	if resp.Status != "200" {
 		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)

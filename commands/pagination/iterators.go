@@ -20,7 +20,7 @@ func (it *TaskIterator) loadPage() error {
 		Filter: filter,
 	}
 
-	resp, err := it.Client.GetTasks(cmd)
+	resp, err := it.Client.GetTasksRaw(cmd)
 	if err != nil {
 		return err
 	}
@@ -54,7 +54,7 @@ func (it *ResultIterator) loadPage() error {
 		Filter: filter,
 	}
 
-	resp, err := it.Client.GetResults(cmd)
+	resp, err := it.Client.GetResultsRaw(cmd)
 	if err != nil {
 		return err
 	}
@@ -88,7 +88,7 @@ func (it *AssetIterator) loadPage() error {
 		Filter: filter,
 	}
 
-	resp, err := it.Client.GetAssets(cmd)
+	resp, err := it.Client.GetAssetsRaw(cmd)
 	if err != nil {
 		return err
 	}
@@ -122,7 +122,7 @@ func (it *TargetIterator) loadPage() error {
 		Filter: filter,
 	}
 
-	resp, err := it.Client.GetTargets(cmd)
+	resp, err := it.Client.GetTargetsRaw(cmd)
 	if err != nil {
 		return err
 	}
@@ -156,7 +156,7 @@ func (it *TicketIterator) loadPage() error {
 		Filter: filter,
 	}
 
-	resp, err := it.Client.GetTickets(cmd)
+	resp, err := it.Client.GetTicketsRaw(cmd)
 	if err != nil {
 		return err
 	}
@@ -190,7 +190,7 @@ func (it *PortListIterator) loadPage() error {
 		Filter: filter,
 	}
 
-	resp, err := it.Client.GetPortLists(cmd)
+	resp, err := it.Client.GetPortListsRaw(cmd)
 	if err != nil {
 		return err
 	}
@@ -224,7 +224,7 @@ func (it *SettingsIterator) loadPage() error {
 		Filter: filter,
 	}
 
-	resp, err := it.Client.GetSettings(cmd)
+	resp, err := it.Client.GetSettingsRaw(cmd)
 	if err != nil {
 		return err
 	}

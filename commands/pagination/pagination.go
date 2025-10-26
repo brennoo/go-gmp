@@ -11,13 +11,13 @@ import (
 
 // Client defines the minimal interface needed for pagination.
 type Client interface {
-	GetTasks(cmd *commands.GetTasks) (*commands.GetTasksResponse, error)
-	GetResults(cmd *commands.GetResults) (*commands.GetResultsResponse, error)
-	GetAssets(cmd *commands.GetAssets) (*commands.GetAssetsResponse, error)
-	GetTargets(cmd *commands.GetTargets) (*commands.GetTargetsResponse, error)
-	GetTickets(cmd *commands.GetTickets) (*commands.GetTicketsResponse, error)
-	GetPortLists(cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error)
-	GetSettings(cmd *commands.GetSettings) (*commands.GetSettingsResponse, error)
+	GetTasksRaw(cmd *commands.GetTasks) (*commands.GetTasksResponse, error)
+	GetResultsRaw(cmd *commands.GetResults) (*commands.GetResultsResponse, error)
+	GetAssetsRaw(cmd *commands.GetAssets) (*commands.GetAssetsResponse, error)
+	GetTargetsRaw(cmd *commands.GetTargets) (*commands.GetTargetsResponse, error)
+	GetTicketsRaw(cmd *commands.GetTickets) (*commands.GetTicketsResponse, error)
+	GetPortListsRaw(cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error)
+	GetSettingsRaw(cmd *commands.GetSettings) (*commands.GetSettingsResponse, error)
 }
 
 // PaginationOptions represents pagination configuration.
