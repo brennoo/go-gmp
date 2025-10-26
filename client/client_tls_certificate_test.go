@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"testing"
 
 	"github.com/brennoo/go-gmp/commands"
@@ -59,8 +60,8 @@ func TestGetTLSCertificates(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetTLSCertificates{}
-	resp, err := cli.GetTLSCertificates(cmd)
+	ctx := context.Background()
+	resp, err := cli.GetTLSCertificates(ctx, "name=test-cert")
 	if err != nil {
 		t.Fatalf("Unexpected error during GetTLSCertificates: %s", err)
 	}

@@ -335,8 +335,8 @@ func TestGetResourceNames(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetResourceNames{Type: "os"}
-	resp, err := cli.GetResourceNames(cmd)
+	ctx := context.Background()
+	resp, err := cli.GetResourceNames(ctx, "name=test-resource")
 	if err != nil {
 		t.Fatalf("Unexpected error during GetResourceNames: %s", err)
 	}
@@ -372,8 +372,8 @@ func TestGetAggregates(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetAggregates{Type: "nvt", GroupColumn: "family", DataColumn: "severity"}
-	resp, err := cli.GetAggregates(cmd)
+	ctx := context.Background()
+	resp, err := cli.GetAggregates(ctx, "name=test-aggregate")
 	if err != nil {
 		t.Fatalf("Unexpected error during GetAggregates: %s", err)
 	}

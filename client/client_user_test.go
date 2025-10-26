@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"testing"
 
 	"github.com/brennoo/go-gmp/commands"
@@ -90,8 +91,8 @@ func TestGetUsers(t *testing.T) {
 	}
 
 	// Success case
-	cmd := &commands.GetUsers{}
-	resp, err := cli.GetUsers(cmd)
+	ctx := context.Background()
+	resp, err := cli.GetUsers(ctx, "name=test-user")
 	if err != nil {
 		t.Fatalf("Unexpected error during GetUsers: %s", err)
 	}
@@ -103,8 +104,7 @@ func TestGetUsers(t *testing.T) {
 	}
 
 	// Failure case (simulate by using a special test flag)
-	cmdFail := &commands.GetUsers{}
-	respFail, err := cli.GetUsers(cmdFail)
+	respFail, err := cli.GetUsers(ctx, "invalid-filter")
 	if err != nil {
 		t.Fatalf("Unexpected error during GetUsers (fail): %s", err)
 	}

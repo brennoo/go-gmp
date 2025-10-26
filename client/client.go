@@ -28,16 +28,36 @@ func (cli *client) Authenticate(cmd *commands.Authenticate) (resp *commands.Auth
 	return resp, err
 }
 
-func (cli *client) GetConfigs(cmd *commands.GetConfigs) (resp *commands.GetConfigsResponse, err error) {
+// GetConfigsRaw provides the low-level method for direct command execution.
+func (cli *client) GetConfigsRaw(cmd *commands.GetConfigs) (resp *commands.GetConfigsResponse, err error) {
 	resp = new(commands.GetConfigsResponse)
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
 
-func (cli *client) GetScanners(cmd *commands.GetScanners) (resp *commands.GetScannersResponse, err error) {
+// GetConfigs retrieves configs with optional filters.
+func (cli *client) GetConfigs(ctx context.Context, args ...filtering.FilterArg) (*commands.GetConfigsResponse, error) {
+	filter := filtering.BuildFilterFromArgs(args...)
+	cmd := &commands.GetConfigs{
+		Filter: filter,
+	}
+	return cli.GetConfigsRaw(cmd)
+}
+
+// GetScannersRaw provides the low-level method for direct command execution.
+func (cli *client) GetScannersRaw(cmd *commands.GetScanners) (resp *commands.GetScannersResponse, err error) {
 	resp = new(commands.GetScannersResponse)
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
+}
+
+// GetScanners retrieves scanners with optional filters.
+func (cli *client) GetScanners(ctx context.Context, args ...filtering.FilterArg) (*commands.GetScannersResponse, error) {
+	filter := filtering.BuildFilterFromArgs(args...)
+	cmd := &commands.GetScanners{
+		Filter: filter,
+	}
+	return cli.GetScannersRaw(cmd)
 }
 
 func (cli *client) GetPreferences(cmd *commands.GetPreferences) (resp *commands.GetPreferencesResponse, err error) {
@@ -170,10 +190,20 @@ func (cli *client) GetResults(ctx context.Context, args ...filtering.FilterArg) 
 	return cli.GetResultsRaw(cmd)
 }
 
-func (cli *client) GetVulns(cmd *commands.GetVulns) (resp *commands.GetVulnsResponse, err error) {
+// GetVulnsRaw provides the low-level method for direct command execution.
+func (cli *client) GetVulnsRaw(cmd *commands.GetVulns) (resp *commands.GetVulnsResponse, err error) {
 	resp = new(commands.GetVulnsResponse)
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
+}
+
+// GetVulns retrieves vulnerabilities with optional filters.
+func (cli *client) GetVulns(ctx context.Context, args ...filtering.FilterArg) (*commands.GetVulnsResponse, error) {
+	filter := filtering.BuildFilterFromArgs(args...)
+	cmd := &commands.GetVulns{
+		Filter: filter,
+	}
+	return cli.GetVulnsRaw(cmd)
 }
 
 func (cli *client) CreateAlert(cmd *commands.CreateAlert) (resp *commands.CreateAlertResponse, err error) {
@@ -282,10 +312,20 @@ func (cli *client) DeleteOverride(cmd *commands.DeleteOverride) (resp *commands.
 	return resp, err
 }
 
-func (cli *client) GetOverrides(cmd *commands.GetOverrides) (resp *commands.GetOverridesResponse, err error) {
+// GetOverridesRaw provides the low-level method for direct command execution.
+func (cli *client) GetOverridesRaw(cmd *commands.GetOverrides) (resp *commands.GetOverridesResponse, err error) {
 	resp = new(commands.GetOverridesResponse)
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
+}
+
+// GetOverrides retrieves overrides with optional filters.
+func (cli *client) GetOverrides(ctx context.Context, args ...filtering.FilterArg) (*commands.GetOverridesResponse, error) {
+	filter := filtering.BuildFilterFromArgs(args...)
+	cmd := &commands.GetOverrides{
+		Filter: filter,
+	}
+	return cli.GetOverridesRaw(cmd)
 }
 
 func (cli *client) ModifyOverride(cmd *commands.ModifyOverride) (resp *commands.ModifyOverrideResponse, err error) {
@@ -510,10 +550,20 @@ func (cli *client) ModifyTLSCertificate(cmd *commands.ModifyTLSCertificate) (res
 	return resp, err
 }
 
-func (cli *client) GetTLSCertificates(cmd *commands.GetTLSCertificates) (resp *commands.GetTLSCertificatesResponse, err error) {
+// GetTLSCertificatesRaw provides the low-level method for direct command execution.
+func (cli *client) GetTLSCertificatesRaw(cmd *commands.GetTLSCertificates) (resp *commands.GetTLSCertificatesResponse, err error) {
 	resp = new(commands.GetTLSCertificatesResponse)
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
+}
+
+// GetTLSCertificates retrieves TLS certificates with optional filters.
+func (cli *client) GetTLSCertificates(ctx context.Context, args ...filtering.FilterArg) (*commands.GetTLSCertificatesResponse, error) {
+	filter := filtering.BuildFilterFromArgs(args...)
+	cmd := &commands.GetTLSCertificates{
+		Filter: filter,
+	}
+	return cli.GetTLSCertificatesRaw(cmd)
 }
 
 func (cli *client) ModifyAgents(cmd *commands.ModifyAgents) (resp *commands.ModifyAgentsResponse, err error) {
@@ -586,16 +636,36 @@ func (cli *client) GetSettings(ctx context.Context, args ...filtering.FilterArg)
 	return cli.GetSettingsRaw(cmd)
 }
 
-func (cli *client) GetResourceNames(cmd *commands.GetResourceNames) (resp *commands.GetResourceNamesResponse, err error) {
+// GetResourceNamesRaw provides the low-level method for direct command execution.
+func (cli *client) GetResourceNamesRaw(cmd *commands.GetResourceNames) (resp *commands.GetResourceNamesResponse, err error) {
 	resp = new(commands.GetResourceNamesResponse)
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
 }
 
-func (cli *client) GetAggregates(cmd *commands.GetAggregates) (resp *commands.GetAggregatesResponse, err error) {
+// GetResourceNames retrieves resource names with optional filters.
+func (cli *client) GetResourceNames(ctx context.Context, args ...filtering.FilterArg) (*commands.GetResourceNamesResponse, error) {
+	filter := filtering.BuildFilterFromArgs(args...)
+	cmd := &commands.GetResourceNames{
+		Filter: filter,
+	}
+	return cli.GetResourceNamesRaw(cmd)
+}
+
+// GetAggregatesRaw provides the low-level method for direct command execution.
+func (cli *client) GetAggregatesRaw(cmd *commands.GetAggregates) (resp *commands.GetAggregatesResponse, err error) {
 	resp = new(commands.GetAggregatesResponse)
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
+}
+
+// GetAggregates retrieves aggregates with optional filters.
+func (cli *client) GetAggregates(ctx context.Context, args ...filtering.FilterArg) (*commands.GetAggregatesResponse, error) {
+	filter := filtering.BuildFilterFromArgs(args...)
+	cmd := &commands.GetAggregates{
+		Filter: filter,
+	}
+	return cli.GetAggregatesRaw(cmd)
 }
 
 func (cli *client) GetFeatures(cmd *commands.GetFeatures) (resp *commands.GetFeaturesResponse, err error) {
@@ -638,10 +708,20 @@ func (cli *client) ModifyUser(cmd *commands.ModifyUser) (resp *commands.ModifyUs
 	return resp, err
 }
 
-func (cli *client) GetUsers(cmd *commands.GetUsers) (resp *commands.GetUsersResponse, err error) {
+// GetUsersRaw provides the low-level method for direct command execution.
+func (cli *client) GetUsersRaw(cmd *commands.GetUsers) (resp *commands.GetUsersResponse, err error) {
 	resp = new(commands.GetUsersResponse)
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
+}
+
+// GetUsers retrieves users with optional filters.
+func (cli *client) GetUsers(ctx context.Context, args ...filtering.FilterArg) (*commands.GetUsersResponse, error) {
+	filter := filtering.BuildFilterFromArgs(args...)
+	cmd := &commands.GetUsers{
+		Filter: filter,
+	}
+	return cli.GetUsersRaw(cmd)
 }
 
 func (cli *client) DeleteUser(cmd *commands.DeleteUser) (resp *commands.DeleteUserResponse, err error) {
@@ -734,10 +814,20 @@ func (cli *client) ModifyTag(cmd *commands.ModifyTag) (resp *commands.ModifyTagR
 	return resp, err
 }
 
-func (cli *client) GetTags(cmd *commands.GetTags) (resp *commands.GetTagsResponse, err error) {
+// GetTagsRaw provides the low-level method for direct command execution.
+func (cli *client) GetTagsRaw(cmd *commands.GetTags) (resp *commands.GetTagsResponse, err error) {
 	resp = new(commands.GetTagsResponse)
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
+}
+
+// GetTags retrieves tags with optional filters.
+func (cli *client) GetTags(ctx context.Context, args ...filtering.FilterArg) (*commands.GetTagsResponse, error) {
+	filter := filtering.BuildFilterFromArgs(args...)
+	cmd := &commands.GetTags{
+		Filter: filter,
+	}
+	return cli.GetTagsRaw(cmd)
 }
 
 func (cli *client) DeleteTag(cmd *commands.DeleteTag) (resp *commands.DeleteTagResponse, err error) {
@@ -782,10 +872,20 @@ func (cli *client) ModifyFilter(cmd *commands.ModifyFilter) (resp *commands.Modi
 	return resp, err
 }
 
-func (cli *client) GetFilters(cmd *commands.GetFilters) (resp *commands.GetFiltersResponse, err error) {
+// GetFiltersRaw provides the low-level method for direct command execution.
+func (cli *client) GetFiltersRaw(cmd *commands.GetFilters) (resp *commands.GetFiltersResponse, err error) {
 	resp = new(commands.GetFiltersResponse)
 	err = cli.conn.Execute(cmd, resp)
 	return resp, err
+}
+
+// GetFilters retrieves filters with optional filters.
+func (cli *client) GetFilters(ctx context.Context, args ...filtering.FilterArg) (*commands.GetFiltersResponse, error) {
+	filter := filtering.BuildFilterFromArgs(args...)
+	cmd := &commands.GetFilters{
+		Filter: filter,
+	}
+	return cli.GetFiltersRaw(cmd)
 }
 
 func (cli *client) DeleteFilter(cmd *commands.DeleteFilter) (resp *commands.DeleteFilterResponse, err error) {

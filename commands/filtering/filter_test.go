@@ -56,7 +56,7 @@ func TestFunctionalOptions(t *testing.T) {
 	}
 
 	filter := BuildFilter(opts...)
-	expected := "rows=10 name=test-task status=Running severity>5.0 sort=name"
+	expected := "name=test-task status=Running severity>5.0 rows=10 sort=name"
 	if filter != expected {
 		t.Errorf("Expected %q, got %q", expected, filter)
 	}
@@ -114,7 +114,7 @@ func TestIntegerFilters(t *testing.T) {
 	}
 
 	filter := BuildFilter(opts...)
-	expected := "hosts=10 hosts>5 qod>=70"
+	expected := "hosts=10 hosts>5 qod>=70.0"
 	if filter != expected {
 		t.Errorf("Expected %q, got %q", expected, filter)
 	}

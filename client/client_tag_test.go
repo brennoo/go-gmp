@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"testing"
 
 	"github.com/brennoo/go-gmp/commands"
@@ -59,8 +60,8 @@ func TestGetTags(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	cmd := &commands.GetTags{}
-	resp, err := cli.GetTags(cmd)
+	ctx := context.Background()
+	resp, err := cli.GetTags(ctx, "name=test-tag")
 	if err != nil {
 		t.Fatalf("Unexpected error during GetTags: %s", err)
 	}

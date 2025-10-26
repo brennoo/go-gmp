@@ -81,11 +81,7 @@ func (g *GMPClient) Authenticate(ctx context.Context, username, password string)
 func (g *GMPClient) GetScanner(ctx context.Context, name string) (*commands.Scanner, error) {
 	log.Printf("Getting scanner: %s", name)
 
-	cmd := &commands.GetScanners{
-		Filter: fmt.Sprintf(`name="%s"`, name),
-	}
-
-	resp, err := g.client.GetScanners(cmd)
+	resp, err := g.client.GetScanners(ctx, fmt.Sprintf(`name="%s"`, name))
 	if err != nil {
 		return nil, fmt.Errorf("failed to get scanners: %w", err)
 	}
@@ -106,11 +102,7 @@ func (g *GMPClient) GetScanner(ctx context.Context, name string) (*commands.Scan
 func (g *GMPClient) GetConfig(ctx context.Context, name string) (string, error) {
 	log.Printf("Getting configuration: %s", name)
 
-	cmd := &commands.GetConfigs{
-		Filter: fmt.Sprintf(`name="%s"`, name),
-	}
-
-	resp, err := g.client.GetConfigs(cmd)
+	resp, err := g.client.GetConfigs(ctx, fmt.Sprintf(`name="%s"`, name))
 	if err != nil {
 		return "", fmt.Errorf("failed to get configs: %w", err)
 	}
