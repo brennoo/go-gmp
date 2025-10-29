@@ -2,9 +2,12 @@ package implementation
 
 import (
 	"encoding/xml"
+	"errors"
 	"net"
 	"sync"
 	"testing"
+
+	"github.com/brennoo/go-gmp/commands"
 )
 
 func TestSetRawConn(t *testing.T) {
@@ -292,4 +295,119 @@ func TestRawXMLEmptyResponse(t *testing.T) {
 	if resp != "" {
 		t.Errorf("Expected empty string for response, got: %q", resp)
 	}
+}
+
+// TestExecuteWithResponseWithStatus tests the new error handling for ResponseWithStatus.
+func TestExecuteWithResponseWithStatus(t *testing.T) {
+	c1, c2 := net.Pipe()
+
+	conn := Connection{}
+	conn.SetRawConn(c1)
+
+	go func() {
+		buf2 := make([]byte, 150000)
+		nRead, _ := c2.Read(buf2)
+		c2.Write(buf2[:nRead])
+	}()
+
+	cmd := &struct {
+		XMLName xml.Name `xml:"cmd"`
+		Foo     string   `xml:"foo"`
+	}{
+		Foo: "test",
+	}
+
+	// Test with response that implements ResponseWithStatus and returns success
+	response := &mockResponseWithStatus{
+		Status:     "200",
+		StatusText: "OK",
+	}
+
+	err := conn.Execute(cmd, response)
+	if err != nil {
+		t.Fatalf("Unexpected error during Execute with success response: %s", err)
+	}
+}
+
+// TestExecuteWithResponseWithStatusError tests the new error handling for ResponseWithStatus with error.
+func TestExecuteWithResponseWithStatusError(t *testing.T) {
+	c1, c2 := net.Pipe()
+
+	conn := Connection{}
+	conn.SetRawConn(c1)
+
+	go func() {
+		buf2 := make([]byte, 150000)
+		nRead, _ := c2.Read(buf2)
+		c2.Write(buf2[:nRead])
+	}()
+
+	cmd := &struct {
+		XMLName xml.Name `xml:"cmd"`
+		Foo     string   `xml:"foo"`
+	}{
+		Foo: "test",
+	}
+
+	// Test with response that implements ResponseWithStatus and returns error
+	response := &mockResponseWithStatus{
+		Status:     "401",
+		StatusText: "Unauthorized",
+	}
+
+	err := conn.Execute(cmd, response)
+	if err == nil {
+		t.Fatalf("Expected error during Execute with error response, got nil")
+	}
+
+	// Check that it's a GMPError
+	var gmpErr *commands.GMPError
+	if !errors.As(err, &gmpErr) {
+		t.Fatalf("Expected GMPError, got %T", err)
+	}
+
+	if gmpErr.Type != commands.ErrorTypeAuthentication {
+		t.Fatalf("Expected authentication error, got %v", gmpErr.Type)
+	}
+}
+
+// TestExecuteWithResponseWithoutStatus tests that non-ResponseWithStatus responses work normally.
+func TestExecuteWithResponseWithoutStatus(t *testing.T) {
+	c1, c2 := net.Pipe()
+
+	conn := Connection{}
+	conn.SetRawConn(c1)
+
+	go func() {
+		buf2 := make([]byte, 150000)
+		nRead, _ := c2.Read(buf2)
+		c2.Write(buf2[:nRead])
+	}()
+
+	cmd := &struct {
+		XMLName xml.Name `xml:"cmd"`
+		Foo     string   `xml:"foo"`
+	}{
+		Foo: "test",
+	}
+
+	// Test with response that doesn't implement ResponseWithStatus
+	response := &struct {
+		Foo string `xml:"foo"`
+	}{}
+
+	err := conn.Execute(cmd, response)
+	if err != nil {
+		t.Fatalf("Unexpected error during Execute with non-ResponseWithStatus: %s", err)
+	}
+}
+
+// mockResponseWithStatus implements ResponseWithStatus for testing.
+type mockResponseWithStatus struct {
+	Status     string `xml:"status,attr"`
+	StatusText string `xml:"status_text,attr"`
+}
+
+func (r *mockResponseWithStatus) GetStatus() (string, string) {
+	return r.Status, r.StatusText
 }

@@ -28,6 +28,11 @@ type GetOverridesResponse struct {
 	Count      *OverrideCount      `xml:"override_count,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetOverridesResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Override represents an override in the response.
 type Override struct {
 	ID               string               `xml:"id,attr"`

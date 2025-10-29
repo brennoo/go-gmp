@@ -6,10 +6,12 @@ import (
 	"fmt"
 )
 
-// WithTaskID adds a task_id filter condition.
+// WithTaskID adds a uuid filter condition for querying tasks by UUID.
+// Note: Uses "uuid" instead of "task_id" because task_id is a direct attribute
+// and doesn't work properly in filter strings. The uuid filter keyword works correctly.
 func WithTaskID(taskID string) Option {
 	return func(fb *FilterBuilder) {
-		fb.AddCondition("task_id", OpEqual, taskID)
+		fb.AddCondition("uuid", OpEqual, taskID)
 	}
 }
 

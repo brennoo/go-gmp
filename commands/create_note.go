@@ -25,6 +25,11 @@ type CreateNoteResponse struct {
 	ID         string   `xml:"id,attr"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *CreateNoteResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // CreateNoteResult is the <result> element for create_note.
 type CreateNoteResult struct {
 	ID string `xml:"id,attr"`

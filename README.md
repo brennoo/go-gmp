@@ -44,19 +44,19 @@ func main() {
 
 	// Authenticate
 	cli := client.New(conn)
-	authResp, err := cli.Authenticate(&commands.Authenticate{
+	_, err := cli.Authenticate(&commands.Authenticate{
 		Credentials: &commands.AuthenticateCredentials{
 			Username: "admin",
 			Password: "secret",
 		},
 	})
-	if err != nil || authResp.Status != "200" {
+	if err != nil {
 		log.Fatalf("auth failed: %v", err)
 	}
 
 	// Query
 	tasksResp, err := cli.GetTasks(ctx)
-	if err != nil || tasksResp.Status != "200" {
+	if err != nil {
 		log.Fatalf("get tasks failed: %v", err)
 	}
 	for _, task := range tasksResp.Task {
@@ -121,6 +121,94 @@ for taskIter.Next() {
 }
 if err := taskIter.Err(); err != nil {
 	log.Printf("Error: %v", err)
+}
+```
+
+## Error Handling
+
+The library provides structured error handling using Go's `errors.As` pattern for better error management and debugging.
+
+### Error Types
+
+The library defines several error types:
+
+- `GMPError` - Server-side errors from the GMP protocol
+- `NetworkError` - Client-side network and transport errors
+
+### GMP Error Types
+
+| Error Type | Description | HTTP Status |
+|------------|-------------|-------------|
+| `ErrorTypeAuthentication` | Authentication failed | 401 |
+| `ErrorTypeNotFound` | Resource not found | 404 |
+| `ErrorTypePermission` | Insufficient permissions | 403 |
+| `ErrorTypeInvalidRequest` | Invalid request format | 400 |
+| `ErrorTypeServerError` | Server internal error | 500+ |
+| `ErrorTypeNetwork` | Network/transport error | N/A |
+
+### Basic Error Handling
+
+```go
+import (
+	"errors"
+	"log"
+	"github.com/brennoo/go-gmp/commands"
+)
+
+tasksResp, err := cli.GetTasks(ctx)
+if err != nil {
+	var gmpErr *commands.GMPError
+	if errors.As(err, &gmpErr) {
+		switch gmpErr.Type {
+		case commands.ErrorTypeAuthentication:
+			log.Fatal("Authentication failed:", gmpErr.StatusText)
+		case commands.ErrorTypeNotFound:
+			log.Println("No tasks found, continuing...")
+			return nil // Not necessarily an error
+		case commands.ErrorTypeNetwork:
+			log.Println("Network error, will retry...")
+			// Implement retry logic
+		default:
+			log.Printf("GMP error: %v", gmpErr)
+		}
+	} else {
+		// Handle non-GMP errors
+		log.Printf("Unexpected error: %v", err)
+	}
+}
+```
+
+### Error Handling with Iterators
+
+When using iterators for pagination, structured error handling provides better control:
+
+```go
+taskIter := cli.Tasks(ctx, 10)
+defer taskIter.Close()
+
+for taskIter.Next() {
+	task := taskIter.Current()
+	fmt.Printf("Task: %s\n", task.Name)
+}
+
+if err := taskIter.Err(); err != nil {
+	var gmpErr *commands.GMPError
+	if errors.As(err, &gmpErr) {
+		switch gmpErr.Type {
+		case commands.ErrorTypeAuthentication:
+			log.Fatal("Authentication failed:", gmpErr.StatusText)
+		case commands.ErrorTypeNotFound:
+			log.Println("No tasks found, continuing...")
+		case commands.ErrorTypeNetwork:
+			log.Println("Network error, will retry...")
+			// Implement retry logic here
+		default:
+			log.Printf("GMP error: %v", gmpErr)
+		}
+	} else {
+		// Handle non-GMP errors (e.g., network issues)
+		log.Printf("Unexpected error: %v", err)
+	}
 }
 ```
 

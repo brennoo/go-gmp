@@ -27,6 +27,11 @@ type GetVulnsResponse struct {
 	Truncated  string        `xml:"truncated,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetVulnsResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Vuln represents a <vuln> element in the get_vulns response.
 type Vuln struct {
 	XMLName          xml.Name     `xml:"vuln"`

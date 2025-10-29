@@ -27,6 +27,11 @@ type GetSchedulesResponse struct {
 	ScheduleCount *ScheduleCount   `xml:"schedule_count,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetSchedulesResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Schedule represents a <schedule> element in the get_schedules response.
 type Schedule struct {
 	ID               string               `xml:"id,attr"`

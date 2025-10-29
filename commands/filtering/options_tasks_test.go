@@ -7,7 +7,7 @@ import (
 func TestWithTaskID(t *testing.T) {
 	opts := []Option{WithTaskID("task-123")}
 	filter := BuildFilter(opts...)
-	expected := "task_id=task-123"
+	expected := "uuid=task-123"
 	if filter != expected {
 		t.Errorf("Expected %q, got %q", expected, filter)
 	}

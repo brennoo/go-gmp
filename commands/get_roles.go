@@ -18,6 +18,11 @@ type GetRolesResponse struct {
 	Roles      []Role   `xml:"role,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetRolesResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 type Role struct {
 	ID               string    `xml:"id,attr"`
 	Name             string    `xml:"name"`

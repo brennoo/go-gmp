@@ -32,6 +32,9 @@ type GetTasksResponse struct {
 	Truncated      string                    `xml:"truncated,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetTasksResponse) GetStatus() (string, string) { return r.Status, r.StatusText }
+
 // GetTasksResponseTask represents a task element in the get_tasks response.
 type GetTasksResponseTask struct {
 	ID               string               `xml:"id,attr"`
@@ -195,3 +198,5 @@ type TaskReport struct {
 	ScanRunStatus string    `xml:"scan_run_status,omitempty"`
 	Severity      float64   `xml:"severity,omitempty"`
 }
+
+// (duplicate removed) GetStatus implemented earlier in this file.

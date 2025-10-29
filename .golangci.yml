@@ -43,10 +43,7 @@ linters:
         path: _test\.go
       - linters:
           - dupl
-        path: commands/pagination/iterators\.go
-      - linters:
-          - dupl
-        path: commands/pagination/pagination\.go
+        path: commands/pagination/.*\.go
       - linters:
           - dupl
           - errcheck

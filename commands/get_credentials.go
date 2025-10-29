@@ -31,6 +31,11 @@ type GetCredentialsResponse struct {
 	Truncated       string            `xml:"truncated,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetCredentialsResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Credential represents a <credential> element in the get_credentials response.
 type Credential struct {
 	ID               string                     `xml:"id,attr"`

@@ -24,6 +24,11 @@ type GetReportFormatsResponse struct {
 	Count         *ReportFormatsCount      `xml:"report_format_count,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetReportFormatsResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // ReportFormat represents a report_format element in the response.
 type ReportFormat struct {
 	ID               string                 `xml:"id,attr"`

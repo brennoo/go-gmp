@@ -17,6 +17,11 @@ type AuthenticateResponse struct {
 	Timezone   string   `xml:"timezone,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *AuthenticateResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // AuthenticateCredentials contains the username and password for authentication.
 type AuthenticateCredentials struct {
 	Username string `xml:"username"`

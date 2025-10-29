@@ -28,6 +28,11 @@ type GetAggregatesResponse struct {
 	Aggregate  *Aggregate `xml:"aggregate,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetAggregatesResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Aggregate represents an aggregate block containing grouped data.
 type Aggregate struct {
 	DataType       string               `xml:"data_type,omitempty"`

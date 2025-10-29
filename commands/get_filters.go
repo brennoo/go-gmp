@@ -27,6 +27,11 @@ type GetFiltersResponse struct {
 	FilterCount FilterCount `xml:"filter_count"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetFiltersResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Filter represents a <filter> element in the get_filters response.
 type Filter struct {
 	ID               string            `xml:"id,attr"`

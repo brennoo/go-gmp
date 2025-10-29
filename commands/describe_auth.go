@@ -15,6 +15,11 @@ type DescribeAuthResponse struct {
 	Groups     []AuthGroup `xml:"group"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *DescribeAuthResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // AuthGroup represents a group of authentication configuration settings.
 type AuthGroup struct {
 	Name     string        `xml:"name,attr"`

@@ -15,3 +15,8 @@ type VerifyScannerResponse struct {
 	StatusText string   `xml:"status_text,attr"`
 	Version    string   `xml:"version,omitempty"`
 }
+
+// GetStatus returns the status and status text from the response.
+func (r *VerifyScannerResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}

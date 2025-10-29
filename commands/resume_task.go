@@ -15,3 +15,8 @@ type ResumeTaskResponse struct {
 	StatusText string   `xml:"status_text,attr"`
 	ReportID   string   `xml:"report_id,omitempty"`
 }
+
+// GetStatus returns the status and status text from the response.
+func (r *ResumeTaskResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}

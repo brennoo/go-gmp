@@ -19,3 +19,8 @@ type CreatePermissionResponse struct {
 	StatusText string   `xml:"status_text,attr"`
 	ID         string   `xml:"id,attr,omitempty"`
 }
+
+// GetStatus returns the status and status text from the response.
+func (r *CreatePermissionResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}

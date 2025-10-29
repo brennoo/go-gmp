@@ -16,6 +16,11 @@ type GetNVTFamiliesResponse struct {
 	Families   []NVTFamily `xml:"families>family,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetNVTFamiliesResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // NVTFamily represents an NVT family in the response.
 type NVTFamily struct {
 	Name        string `xml:"name"`

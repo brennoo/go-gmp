@@ -31,6 +31,11 @@ type GetNVTsResponse struct {
 	NVTs       []NVT    `xml:"nvt,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetNVTsResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // NVT represents a Network Vulnerability Test in the response.
 type NVT struct {
 	OID              string          `xml:"oid,attr"`

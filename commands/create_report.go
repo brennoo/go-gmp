@@ -17,3 +17,8 @@ type CreateReportResponse struct {
 	StatusText string   `xml:"status_text,attr"`
 	ID         string   `xml:"id,attr"`
 }
+
+// GetStatus returns the status and status text from the response.
+func (r *CreateReportResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}

@@ -28,6 +28,11 @@ type GetScannersResponse struct {
 	Truncate   string          `xml:"truncate,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetScannersResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Scanner represents a <scanner> element in the get_scanners response.
 type Scanner struct {
 	ID               string                 `xml:"id,attr"`

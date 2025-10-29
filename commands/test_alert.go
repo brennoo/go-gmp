@@ -15,3 +15,8 @@ type TestAlertResponse struct {
 	StatusText    string   `xml:"status_text,attr"`
 	StatusDetails string   `xml:"status_details,omitempty"`
 }
+
+// GetStatus returns the status and status text from the response.
+func (r *TestAlertResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}

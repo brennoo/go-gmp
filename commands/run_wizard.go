@@ -73,3 +73,13 @@ type WizardResponse struct {
 	StatusText               string                    `xml:"status_text,omitempty"`
 	InnerXML                 string                    `xml:",innerxml"` // For any unknown or extra content
 }
+
+// GetStatus returns the status and status text from the response.
+func (r *RunWizardResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
+// GetStatus returns the status and status text from the response.
+func (r *WizardResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}

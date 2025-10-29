@@ -29,6 +29,11 @@ type GetResultsResponse struct {
 	Count      *ResultsCount  `xml:"result_count,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetResultsResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Result represents a single result element in the get_results response.
 type Result struct {
 	ID               string           `xml:"id,attr"`
