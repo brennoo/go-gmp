@@ -253,6 +253,9 @@ const (
 	AssetColumnFalsePositive = "false_positive"
 	AssetColumnTag           = "tag"
 	AssetColumnTagID         = "tag_id"
+	AssetColumnType          = "asset_type"
+	AssetColumnHost          = "host"
+	AssetColumnLocation      = "location"
 )
 
 // Common filter columns for targets.
@@ -325,4 +328,22 @@ const (
 	SettingColumnWritable  = "writable"
 	SettingColumnTag       = "tag"
 	SettingColumnTagID     = "tag_id"
+)
+
+// OS-specific filter columns (when type="os").
+const (
+	OSColumnTitle           = "title"
+	OSColumnHosts           = "hosts"
+	OSColumnLatestSeverity  = "latest_severity"
+	OSColumnHighestSeverity = "highest_severity"
+	OSColumnAverageSeverity = "average_severity"
+)
+
+// Host-specific filter columns (when type="host").
+const (
+	HostColumnSeverity = "severity"
+	HostColumnOS       = "os"
+	HostColumnOSS      = "oss"
+	HostColumnHostname = "hostname"
+	HostColumnIP       = "ip"
 )
