@@ -1,5 +1,3 @@
-//nolint:dupl // Similar patterns across filter types are intentional
-
 package filtering
 
 import (
