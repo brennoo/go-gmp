@@ -14,16 +14,19 @@ engines:
       - "**/*_test.go"
       - "commands/filtering/options.go"
       - "commands/filtering/options_test.go"
+      - "commands/pagination/common_test.go"
   function-cognitive-complexity:
     exclude_paths:
       - "**/*_test.go"
       - "commands/filtering/options.go"
       - "commands/filtering/options_test.go"
+      - "commands/pagination/common_test.go"
   function-length:
     exclude_paths:
       - "**/*_test.go"
       - "commands/filtering/options.go"
       - "commands/filtering/options_test.go"
+      - "commands/pagination/common_test.go"
   line-length:
     exclude_paths:
       - "**/*_test.go"
@@ -34,10 +37,14 @@ engines:
       - "**/*_test.go"
       - "commands/filtering/options.go"
       - "commands/filtering/options_test.go"
+      - "commands/getstatus_comprehensive_test.go"
+      - "commands/pagination/common_test.go"
   method-length:
     exclude_paths:
       - "**/*_test.go"
       - "commands/filtering/options.go"
       - "commands/filtering/options_test.go"
+      - "commands/getstatus_comprehensive_test.go"
+      - "commands/pagination/common_test.go"
 exclude_paths:
   - "examples/**"
