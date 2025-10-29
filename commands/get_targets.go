@@ -142,3 +142,8 @@ type GetTargetsResponse struct {
 	TargetCount *TargetCount   `xml:"target_count,omitempty"`
 	Truncated   string         `xml:"truncated,omitempty"`
 }
+
+// GetStatus returns the status and status text from the response.
+func (r *GetTargetsResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}

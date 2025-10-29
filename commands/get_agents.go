@@ -18,6 +18,11 @@ type GetAgentsResponse struct {
 	Agents     []Agent  `xml:"agent"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetAgentsResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Agent represents an agent element in the get_agents response.
 type Agent struct {
 	ID                string            `xml:"id,attr"`

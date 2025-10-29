@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/xml"
 	"net"
+
+	"github.com/brennoo/go-gmp/commands"
 )
 
 type Connection struct {
@@ -40,17 +42,25 @@ func (conn *Connection) performRequest(buffer []byte) ([]byte, error) {
 func (conn *Connection) Execute(command interface{}, response interface{}) error {
 	cmdBuf, err := xml.Marshal(command)
 	if err != nil {
-		return err
+		return &commands.NetworkError{Type: commands.ErrorTypeInvalidRequest, Cause: err}
 	}
 
 	resp, err := conn.performRequest(cmdBuf)
 	if err != nil {
-		return err
+		return &commands.NetworkError{Type: commands.ErrorTypeNetwork, Cause: err}
 	}
 
 	err = xml.Unmarshal(resp, response)
 	if err != nil {
-		return err
+		return &commands.NetworkError{Type: commands.ErrorTypeInvalidRequest, Cause: err}
+	}
+
+	// Check response status if available
+	if rs, ok := response.(commands.ResponseWithStatus); ok {
+		status, statusText := rs.GetStatus()
+		if gmpErr := commands.ValidateResponse(status, statusText); gmpErr != nil {
+			return gmpErr
+		}
 	}
 
 	return nil

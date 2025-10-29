@@ -25,6 +25,11 @@ type GetSystemReportsResponse struct {
 	Truncated     string         `xml:"truncated,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetSystemReportsResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // SystemReport represents a <system_report> element in the get_system_reports response.
 type SystemReport struct {
 	Name   string              `xml:"name"`

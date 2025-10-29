@@ -21,6 +21,11 @@ type GetNotesResponse struct {
 	NoteCount  *NoteCount   `xml:"note_count,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetNotesResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Note represents a <note> element in the get_notes response.
 type Note struct {
 	ID               string    `xml:"id,attr"`

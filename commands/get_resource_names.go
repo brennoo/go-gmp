@@ -19,6 +19,11 @@ type GetResourceNamesResponse struct {
 	Resources  []Resource `xml:"resource"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetResourceNamesResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Resource represents a <resource> element in the response.
 type Resource struct {
 	ID   string `xml:"id,attr"`

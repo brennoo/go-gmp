@@ -14,3 +14,8 @@ type GetVersionResponse struct {
 	StatusText string   `xml:"status_text,attr"`
 	Version    string   `xml:"version"`
 }
+
+// GetStatus returns the status and status text from the response.
+func (r *GetVersionResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}

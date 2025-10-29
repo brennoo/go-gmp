@@ -21,6 +21,11 @@ type GetTagsResponse struct {
 	Truncated  string   `xml:"truncated,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetTagsResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Tag represents a <tag> element in the get_tags response.
 type Tag struct {
 	ID               string          `xml:"id,attr"`

@@ -26,6 +26,11 @@ type GetInfoResponse struct {
 	Details    bool        `xml:"details"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetInfoResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Info represents an <info> element in the get_info response.
 type Info struct {
 	ID               string           `xml:"id,attr"`

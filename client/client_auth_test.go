@@ -18,13 +18,9 @@ func TestAuthenticate(t *testing.T) {
 			Password: "123",
 		},
 	}
-	resp, err := cli.Authenticate(cmd)
+	_, err := cli.Authenticate(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during Authenticate: %s", err)
-	}
-
-	if resp.Status != "200" {
-		t.Fatalf("Unexpected status. \nExpected: 200 \nGot: %s", resp.Status)
 	}
 }
 
@@ -38,12 +34,6 @@ func TestDescribeAuth(t *testing.T) {
 	resp, err := cli.DescribeAuth(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during DescribeAuth: %s", err)
-	}
-	if resp.Status != "200" {
-		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
-	}
-	if resp.StatusText != "OK" {
-		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
 	}
 	if len(resp.Groups) != 1 {
 		t.Fatalf("Expected 1 group, got %d", len(resp.Groups))
@@ -78,14 +68,8 @@ func TestModifyAuth(t *testing.T) {
 			},
 		},
 	}
-	resp, err := cli.ModifyAuth(cmd)
+	_, err := cli.ModifyAuth(cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyAuth: %s", err)
-	}
-	if resp.Status != "200" {
-		t.Fatalf("Unexpected status. Expected: 200 Got: %s", resp.Status)
-	}
-	if resp.StatusText != "OK" {
-		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
 	}
 }

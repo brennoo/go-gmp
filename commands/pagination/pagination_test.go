@@ -51,7 +51,7 @@ func newTestTaskIterator(client Client, ctx context.Context) *TaskIterator {
 		Ctx:         ctx,
 		Opts:        PaginationOptions{Page: 1, PageSize: 2},
 		HasMoreData: true,
-		Page:        1,
+		Page:        0,
 	}
 }
 

@@ -16,3 +16,8 @@ type HelpResponse struct {
 	StatusText string   `xml:"status_text,attr"`
 	Text       string   `xml:",chardata"`
 }
+
+// GetStatus returns the status and status text from the response.
+func (r *HelpResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}

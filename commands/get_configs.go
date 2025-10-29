@@ -31,6 +31,11 @@ type GetConfigsResponse struct {
 	ConfigCount ConfigCount   `xml:"config_count"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetConfigsResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Config represents a config element in the get_configs response.
 type Config struct {
 	ID               string              `xml:"id,attr"`

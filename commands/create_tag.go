@@ -21,6 +21,11 @@ type CreateTagResponse struct {
 	ID         string   `xml:"id,attr"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *CreateTagResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // CreateTagResources represents the <resources> element for create_tag.
 type CreateTagResources struct {
 	Filter    string        `xml:"filter,attr,omitempty"`

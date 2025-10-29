@@ -23,6 +23,11 @@ type CreateAlertResponse struct {
 	ID         string   `xml:"id,attr"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *CreateAlertResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // AlertData represents data for alert condition, event, or method.
 type AlertData struct {
 	Name string `xml:"name"`

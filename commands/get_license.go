@@ -18,6 +18,11 @@ type GetLicenseResponse struct {
 	License    *License `xml:"license,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetLicenseResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // License represents the license element in the response.
 type License struct {
 	Status  string          `xml:"status"`

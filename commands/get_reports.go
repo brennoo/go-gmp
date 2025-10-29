@@ -23,6 +23,11 @@ type GetReportsResponse struct {
 	Reports    []Report `xml:"report"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetReportsResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Report represents the <report> element for create_report and get_reports.
 type Report struct {
 	ID               string           `xml:"id,attr,omitempty"`

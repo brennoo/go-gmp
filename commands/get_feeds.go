@@ -19,6 +19,11 @@ type GetFeedsResponse struct {
 	Feeds               []Feed   `xml:"feed,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetFeedsResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Feed represents a <feed> element in the get_feeds response.
 type Feed struct {
 	Type             string                `xml:"type,omitempty"`

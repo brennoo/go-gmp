@@ -28,6 +28,11 @@ type GetPortListsResponse struct {
 	Count      *PortListCount      `xml:"port_list_count,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetPortListsResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // PortList represents a port_list element in the response.
 type PortList struct {
 	ID               string               `xml:"id,attr"`

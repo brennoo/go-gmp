@@ -15,6 +15,11 @@ type GetFeaturesResponse struct {
 	Features   []Feature `xml:"feature"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetFeaturesResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Feature represents a <feature> element in the get_features response.
 type Feature struct {
 	Enabled bool   `xml:"enabled,attr"`

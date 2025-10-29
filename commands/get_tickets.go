@@ -25,6 +25,11 @@ type GetTicketsResponse struct {
 	Truncated   string         `xml:"truncated,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetTicketsResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Ticket represents a <ticket> element in the get_tickets response.
 type Ticket struct {
 	ID                string             `xml:"id,attr"`

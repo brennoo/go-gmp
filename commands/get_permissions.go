@@ -26,6 +26,11 @@ type GetPermissionsResponse struct {
 	Count       *PermissionCount      `xml:"permission_count,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetPermissionsResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Permission represents a permission in the response.
 type Permission struct {
 	ID               string              `xml:"id,attr"`

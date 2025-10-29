@@ -18,6 +18,11 @@ type GetPreferencesResponse struct {
 	Preference []Preference `xml:"preference"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetPreferencesResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Preference represents a preference element in the get_preferences response.
 type Preference struct {
 	NVT     PreferenceNVT `xml:"nvt"`

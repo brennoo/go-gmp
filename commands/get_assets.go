@@ -28,6 +28,11 @@ type GetAssetsResponse struct {
 	AssetCount *AssetCount   `xml:"asset_count,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetAssetsResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Asset represents a single asset in the response.
 type Asset struct {
 	ID               string            `xml:"id,attr"`

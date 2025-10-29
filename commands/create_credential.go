@@ -30,6 +30,11 @@ type CreateCredentialResponse struct {
 	ID         string   `xml:"id,attr"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *CreateCredentialResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // CreateCredentialKDCs represents a list of Kerberos Key Distribution Centers (KDCs).
 type CreateCredentialKDCs struct {
 	KDC []string `xml:"kdc"`

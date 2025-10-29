@@ -24,6 +24,11 @@ type GetSettingsResponse struct {
 	SettingCount *SettingCount   `xml:"setting_count,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetSettingsResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Settings represents a <settings> element in the get_settings response.
 type Settings struct {
 	Start   int       `xml:"start,attr,omitempty"`

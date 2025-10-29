@@ -36,6 +36,11 @@ type CreateTargetResponse struct {
 	ID         string   `xml:"id,attr"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *CreateTargetResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // AssetHosts is the <asset_hosts> element for create_target.
 type AssetHosts struct {
 	Filter string `xml:"filter,attr,omitempty"`

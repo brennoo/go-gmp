@@ -26,6 +26,11 @@ type GetTLSCertificatesResponse struct {
 	Truncated           string                 `xml:"truncated,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetTLSCertificatesResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // TLSCertificate represents a <tls_certificate> element in the get_tls_certificates response.
 type TLSCertificate struct {
 	ID                string                     `xml:"id,attr"`

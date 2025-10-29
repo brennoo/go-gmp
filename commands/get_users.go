@@ -25,6 +25,11 @@ type GetUsersResponse struct {
 	Truncated  string       `xml:"truncated,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetUsersResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // User represents a <user> element in the get_users response.
 type User struct {
 	ID               string           `xml:"id,attr,omitempty"`

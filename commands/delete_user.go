@@ -17,3 +17,8 @@ type DeleteUserResponse struct {
 	Status     string   `xml:"status,attr"`
 	StatusText string   `xml:"status_text,attr"`
 }
+
+// GetStatus returns the status and status text from the response.
+func (r *DeleteUserResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}

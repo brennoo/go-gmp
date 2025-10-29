@@ -26,6 +26,11 @@ type GetGroupsResponse struct {
 	GroupCount GroupCount   `xml:"group_count"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetGroupsResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Group represents a <group> element in the get_groups response.
 type Group struct {
 	ID               string           `xml:"id,attr"`

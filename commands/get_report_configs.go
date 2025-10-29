@@ -23,6 +23,11 @@ type GetReportConfigsResponse struct {
 	Count         *ReportConfigCount      `xml:"report_config_count,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetReportConfigsResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // ReportConfig represents a report_config element in the response.
 type ReportConfig struct {
 	ID               string                    `xml:"id,attr"`

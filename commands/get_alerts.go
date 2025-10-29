@@ -27,6 +27,11 @@ type GetAlertsResponse struct {
 	AlertCount *AlertCount   `xml:"alert_count,omitempty"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *GetAlertsResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // Alert represents a single alert in the response.
 type Alert struct {
 	ID               string            `xml:"id,attr"`

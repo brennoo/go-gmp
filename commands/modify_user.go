@@ -22,6 +22,11 @@ type ModifyUserResponse struct {
 	StatusText string   `xml:"status_text,attr"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *ModifyUserResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 type UserPassword struct {
 	Modify string `xml:"modify,attr,omitempty"`
 	Text   string `xml:",chardata"`

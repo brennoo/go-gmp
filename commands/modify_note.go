@@ -23,6 +23,11 @@ type ModifyNoteResponse struct {
 	StatusText string   `xml:"status_text,attr"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *ModifyNoteResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // ModifyNoteResult represents the <result> element for modify_note.
 type ModifyNoteResult struct {
 	ID string `xml:"id,attr"`

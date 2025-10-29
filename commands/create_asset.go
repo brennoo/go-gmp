@@ -17,6 +17,11 @@ type CreateAssetResponse struct {
 	ID         string   `xml:"id,attr"`
 }
 
+// GetStatus returns the status and status text from the response.
+func (r *CreateAssetResponse) GetStatus() (string, string) {
+	return r.Status, r.StatusText
+}
+
 // AssetInput represents the <asset> element for create_asset.
 type AssetInput struct {
 	Name    string `xml:"name"`
