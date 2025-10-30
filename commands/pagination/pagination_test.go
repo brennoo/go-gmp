@@ -46,13 +46,7 @@ func (f *fakeClient) GetSettingsRaw(cmd *commands.GetSettings) (*commands.GetSet
 
 // Helper to create a TaskIterator with defaults.
 func newTestTaskIterator(client Client, ctx context.Context) *TaskIterator {
-	return &TaskIterator{
-		Client:      client,
-		Ctx:         ctx,
-		Opts:        PaginationOptions{Page: 1, PageSize: 2},
-		HasMoreData: true,
-		Page:        0,
-	}
+	return NewTaskIterator(client, ctx, PaginationOptions{Page: 1, PageSize: 2})
 }
 
 // Task iterator tests

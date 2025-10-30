@@ -935,15 +935,8 @@ func (cli *client) Tasks(ctx context.Context, pageSize int, args ...filtering.Fi
 	if filter != "" {
 		filters = []string{filter}
 	}
-
-	return &pagination.TaskIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        pagination.PaginationOptions{Page: 1, PageSize: pageSize},
-		Filters:     filters,
-		Page:        1,
-		HasMoreData: true,
-	}
+	opts := pagination.PaginationOptions{Page: 1, PageSize: pageSize}
+	return pagination.NewTaskIterator(cli, ctx, opts, filters...)
 }
 
 // Results returns an iterator for results.
@@ -953,15 +946,8 @@ func (cli *client) Results(ctx context.Context, pageSize int, args ...filtering.
 	if filter != "" {
 		filters = []string{filter}
 	}
-
-	return &pagination.ResultIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        pagination.PaginationOptions{Page: 1, PageSize: pageSize},
-		Filters:     filters,
-		Page:        1,
-		HasMoreData: true,
-	}
+	opts := pagination.PaginationOptions{Page: 1, PageSize: pageSize}
+	return pagination.NewResultIterator(cli, ctx, opts, filters...)
 }
 
 // Assets returns an iterator for assets.
@@ -971,15 +957,8 @@ func (cli *client) Assets(ctx context.Context, pageSize int, args ...filtering.F
 	if filter != "" {
 		filters = []string{filter}
 	}
-
-	return &pagination.AssetIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        pagination.PaginationOptions{Page: 1, PageSize: pageSize},
-		Filters:     filters,
-		Page:        1,
-		HasMoreData: true,
-	}
+	opts := pagination.PaginationOptions{Page: 1, PageSize: pageSize}
+	return pagination.NewAssetIterator(cli, ctx, opts, filters...)
 }
 
 // Targets returns an iterator for targets.
@@ -989,15 +968,8 @@ func (cli *client) Targets(ctx context.Context, pageSize int, args ...filtering.
 	if filter != "" {
 		filters = []string{filter}
 	}
-
-	return &pagination.TargetIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        pagination.PaginationOptions{Page: 1, PageSize: pageSize},
-		Filters:     filters,
-		Page:        1,
-		HasMoreData: true,
-	}
+	opts := pagination.PaginationOptions{Page: 1, PageSize: pageSize}
+	return pagination.NewTargetIterator(cli, ctx, opts, filters...)
 }
 
 // Tickets returns an iterator for tickets.
@@ -1007,15 +979,8 @@ func (cli *client) Tickets(ctx context.Context, pageSize int, args ...filtering.
 	if filter != "" {
 		filters = []string{filter}
 	}
-
-	return &pagination.TicketIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        pagination.PaginationOptions{Page: 1, PageSize: pageSize},
-		Filters:     filters,
-		Page:        1,
-		HasMoreData: true,
-	}
+	opts := pagination.PaginationOptions{Page: 1, PageSize: pageSize}
+	return pagination.NewTicketIterator(cli, ctx, opts, filters...)
 }
 
 // PortLists returns an iterator for port lists.
@@ -1025,15 +990,8 @@ func (cli *client) PortLists(ctx context.Context, pageSize int, args ...filterin
 	if filter != "" {
 		filters = []string{filter}
 	}
-
-	return &pagination.PortListIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        pagination.PaginationOptions{Page: 1, PageSize: pageSize},
-		Filters:     filters,
-		Page:        1,
-		HasMoreData: true,
-	}
+	opts := pagination.PaginationOptions{Page: 1, PageSize: pageSize}
+	return pagination.NewPortListIterator(cli, ctx, opts, filters...)
 }
 
 // Settings returns an iterator for settings.
@@ -1043,13 +1001,6 @@ func (cli *client) Settings(ctx context.Context, pageSize int, args ...filtering
 	if filter != "" {
 		filters = []string{filter}
 	}
-
-	return &pagination.SettingsIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        pagination.PaginationOptions{Page: 1, PageSize: pageSize},
-		Filters:     filters,
-		Page:        1,
-		HasMoreData: true,
-	}
+	opts := pagination.PaginationOptions{Page: 1, PageSize: pageSize}
+	return pagination.NewSettingsIterator(cli, ctx, opts, filters...)
 }

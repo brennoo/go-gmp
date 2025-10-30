@@ -416,14 +416,7 @@ func TestIteratorErrorHandling(t *testing.T) {
 	ctx := context.Background()
 
 	// Test TaskIterator error handling
-	taskIter := &TaskIterator{
-		Client:      errorCli,
-		Ctx:         ctx,
-		Opts:        PaginationOptions{Page: 1, PageSize: 2},
-		Filters:     []string{},
-		Page:        0,
-		HasMoreData: true,
-	}
+	taskIter := NewTaskIterator(errorCli, ctx, PaginationOptions{Page: 1, PageSize: 2})
 
 	if taskIter.Next() {
 		t.Error("Expected Next() to return false when client returns error")
@@ -439,14 +432,7 @@ func TestIteratorEdgeCases(t *testing.T) {
 	ctx := context.Background()
 
 	// Test with large page size
-	iterator := &TaskIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        PaginationOptions{Page: 1, PageSize: 100},
-		Filters:     []string{},
-		Page:        0,
-		HasMoreData: true,
-	}
+	iterator := NewTaskIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 100})
 
 	var tasks []*commands.GetTasksResponseTask
 	for iterator.Next() {
@@ -465,14 +451,7 @@ func TestIteratorWithFilters(t *testing.T) {
 	ctx := context.Background()
 
 	// Test with filters
-	iterator := &TaskIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        PaginationOptions{Page: 1, PageSize: 2},
-		Filters:     []string{"name=Test"},
-		Page:        0,
-		HasMoreData: true,
-	}
+	iterator := NewTaskIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 2}, "name=Test")
 
 	var tasks []*commands.GetTasksResponseTask
 	for iterator.Next() {
@@ -491,14 +470,7 @@ func TestIteratorPagination(t *testing.T) {
 	ctx := context.Background()
 
 	// Test with small page size to trigger pagination
-	iterator := &TaskIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        PaginationOptions{Page: 1, PageSize: 1},
-		Filters:     []string{},
-		Page:        0,
-		HasMoreData: true,
-	}
+	iterator := NewTaskIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 1})
 
 	var tasks []*commands.GetTasksResponseTask
 	for iterator.Next() {
@@ -516,14 +488,7 @@ func TestIteratorStateManagement(t *testing.T) {
 	cli := &testClient{}
 	ctx := context.Background()
 
-	iterator := &TaskIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        PaginationOptions{Page: 1, PageSize: 2},
-		Filters:     []string{},
-		Page:        0,
-		HasMoreData: true,
-	}
+	iterator := NewTaskIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 2})
 
 	// Test first item
 	if !iterator.Next() {
@@ -556,14 +521,7 @@ func TestIteratorErrorScenarios(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel() // Cancel immediately
 
-	iterator := &TaskIterator{
-		Client:      &testClient{},
-		Ctx:         ctx,
-		Opts:        PaginationOptions{Page: 1, PageSize: 2},
-		Filters:     []string{},
-		Page:        0,
-		HasMoreData: true,
-	}
+	iterator := NewTaskIterator(&testClient{}, ctx, PaginationOptions{Page: 1, PageSize: 2})
 
 	if iterator.Next() {
 		t.Error("Expected Next() to return false when context is canceled")
@@ -579,14 +537,7 @@ func TestIteratorEmptyCurrentSlice(t *testing.T) {
 	ctx := context.Background()
 
 	// Test with page size 0 to get empty results
-	iterator := &TaskIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        PaginationOptions{Page: 1, PageSize: 0},
-		Filters:     []string{},
-		Page:        0,
-		HasMoreData: true,
-	}
+	iterator := NewTaskIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 0})
 
 	if iterator.Next() {
 		t.Error("Expected Next() to return false for empty results")
@@ -601,14 +552,7 @@ func TestIteratorContextCancellation(t *testing.T) {
 	cli := &testClient{}
 	ctx, cancel := context.WithCancel(context.Background())
 
-	iterator := &TaskIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        PaginationOptions{Page: 1, PageSize: 2},
-		Filters:     []string{},
-		Page:        0,
-		HasMoreData: true,
-	}
+	iterator := NewTaskIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 2})
 
 	// Cancel context after first item
 	if !iterator.Next() {
@@ -631,14 +575,7 @@ func TestIteratorLoadPageError(t *testing.T) {
 	errorCli := &errorTestClient{}
 	ctx := context.Background()
 
-	iterator := &TaskIterator{
-		Client:      errorCli,
-		Ctx:         ctx,
-		Opts:        PaginationOptions{Page: 1, PageSize: 2},
-		Filters:     []string{},
-		Page:        0,
-		HasMoreData: true,
-	}
+	iterator := NewTaskIterator(errorCli, ctx, PaginationOptions{Page: 1, PageSize: 2})
 
 	if iterator.Next() {
 		t.Error("Expected Next() to return false when loadPage returns error")
@@ -653,14 +590,7 @@ func TestIteratorCurrentBoundaryConditions(t *testing.T) {
 	cli := &testClient{}
 	ctx := context.Background()
 
-	iterator := &TaskIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        PaginationOptions{Page: 1, PageSize: 2},
-		Filters:     []string{},
-		Page:        0,
-		HasMoreData: true,
-	}
+	iterator := NewTaskIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 2})
 
 	// Current() should return nil before any Next() calls
 	if iterator.Current() != nil {
@@ -693,14 +623,7 @@ func TestIteratorNextNoMoreData(t *testing.T) {
 	cli := &testClient{}
 	ctx := context.Background()
 
-	iterator := &TaskIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        PaginationOptions{Page: 1, PageSize: 2},
-		Filters:     []string{},
-		Page:        0,
-		HasMoreData: true,
-	}
+	iterator := NewTaskIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 2})
 
 	// Consume all items
 	for iterator.Next() {
@@ -722,14 +645,7 @@ func TestIteratorNextValidContext(t *testing.T) {
 	cli := &testClient{}
 	ctx := context.Background()
 
-	iterator := &TaskIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        PaginationOptions{Page: 1, PageSize: 2},
-		Filters:     []string{},
-		Page:        0,
-		HasMoreData: true,
-	}
+	iterator := NewTaskIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 2})
 
 	// Next() should work with valid context
 	if !iterator.Next() {
@@ -745,14 +661,7 @@ func TestIteratorNextValidContextAll(t *testing.T) {
 	cli := &testClient{}
 	ctx := context.Background()
 
-	iterator := &TaskIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        PaginationOptions{Page: 1, PageSize: 2},
-		Filters:     []string{},
-		Page:        0,
-		HasMoreData: true,
-	}
+	iterator := NewTaskIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 2})
 
 	// Iterate through all items
 	count := 0

@@ -1,5 +1,4 @@
 //nolint:dupl
-// Similar patterns across iterators are intentional
 
 package pagination
 
@@ -9,123 +8,32 @@ import (
 	"github.com/brennoo/go-gmp/commands"
 )
 
-// AssetIterator provides iteration over assets with automatic pagination.
-type AssetIterator struct {
-	Client      Client
-	Ctx         context.Context
-	Opts        PaginationOptions
-	Filters     []string
-	current     []*commands.Asset
-	index       int
-	Page        int
-	HasMoreData bool
-	total       int
-	err         error
-}
+// AssetIterator is the iterator over assets.
+type AssetIterator = Iterator[*commands.Asset]
 
-// Next advances the iterator to the next item and returns true if successful.
-//
-//nolint:dupl // Similar pattern across iterators is intentional
-func (it *AssetIterator) Next() bool {
-	if it.err != nil {
-		return false
-	}
-
-	// Check context
-	if it.Ctx != nil {
-		select {
-		case <-it.Ctx.Done():
-			it.err = it.Ctx.Err()
-			return false
-		default:
-		}
-	}
-
-	// Check if we need to load more data
-	if it.index >= len(it.current) {
-		if !it.HasMoreData {
-			return false // No more data
-		}
-
-		// Load the next page
-		it.Page++
-		it.index = 0
-		it.err = it.loadPage()
-		if it.err != nil {
-			return false
-		}
-
-		// If we got no items, return false
-		if len(it.current) == 0 {
-			return false
-		}
-	}
-
-	// Return the next item
-	it.index++
-	return true
-}
-
-// Current returns the current asset item.
-func (it *AssetIterator) Current() *commands.Asset {
-	if it.index > 0 && it.index <= len(it.current) {
-		return it.current[it.index-1]
-	}
-	return nil
-}
-
-// Err returns any error that occurred during iteration.
-func (it *AssetIterator) Err() error {
-	return it.err
-}
-
-// HasMore returns true if there are more items available.
-func (it *AssetIterator) HasMore() bool {
-	return it.index < len(it.current) || it.HasMoreData
-}
-
-// Total returns the total number of items available.
-func (it *AssetIterator) Total() int {
-	return it.total
-}
-
-// Close cleans up the iterator.
-func (it *AssetIterator) Close() {
-	it.current = nil
-	it.index = 0
-	it.HasMoreData = false
-}
-
-func (it *AssetIterator) loadPage() error {
-	opts := PaginationOptions{
-		Page:     it.Page,
-		PageSize: it.Opts.PageSize,
-	}
-	filter := BuildPaginationFilter(opts, it.Filters...)
-
-	cmd := &commands.GetAssets{
-		Filter: filter,
-	}
-
-	resp, err := it.Client.GetAssetsRaw(cmd)
-	if err != nil {
-		return err
-	}
-
-	// Convert assets to typed slice
-	it.current = make([]*commands.Asset, len(resp.Assets))
-	for i, asset := range resp.Assets {
-		it.current[i] = &asset
-	}
-
-	// Update total if available
-	if resp.AssetCount.Filtered > 0 {
-		it.total = resp.AssetCount.Filtered
-	}
-
-	// Check if there are more pages - if we got fewer items than PageSize, we're done
-	// If we got exactly PageSize items, there might be more pages
-	it.HasMoreData = len(resp.Assets) == it.Opts.PageSize
-
-	return nil
+// NewAssetIterator constructs an AssetIterator configured for GetAssets.
+func NewAssetIterator(client Client, ctx context.Context, opts PaginationOptions, filters ...string) *AssetIterator {
+	return newIterator[*commands.Asset, *commands.GetAssets, *commands.GetAssetsResponse](
+		client,
+		ctx,
+		opts,
+		filters,
+		func(filter string) *commands.GetAssets { return &commands.GetAssets{Filter: filter} },
+		func(client Client, cmd *commands.GetAssets) (*commands.GetAssetsResponse, error) {
+			return client.GetAssetsRaw(cmd)
+		},
+		func(resp *commands.GetAssetsResponse) []*commands.Asset {
+			items := make([]*commands.Asset, len(resp.Assets))
+			for i := range resp.Assets {
+				items[i] = &resp.Assets[i]
+			}
+			return items
+		},
+		func(resp *commands.GetAssetsResponse) int {
+			if resp.AssetCount != nil {
+				return resp.AssetCount.Filtered
+			}
+			return 0
+		},
+	)
 }
