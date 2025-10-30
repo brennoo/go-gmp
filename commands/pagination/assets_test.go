@@ -14,14 +14,7 @@ func TestAssetIterator(t *testing.T) {
 
 	// Create iterator
 	ctx := context.Background()
-	iterator := &AssetIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        PaginationOptions{Page: 1, PageSize: 2},
-		Filters:     []string{},
-		Page:        0,
-		HasMoreData: true,
-	}
+	iterator := NewAssetIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 2})
 
 	// Test iteration
 	var assets []*commands.Asset
@@ -59,14 +52,7 @@ func TestAssetIterator(t *testing.T) {
 func TestAssetIterator_PaginationSuccess(t *testing.T) {
 	cli := &testClient{}
 	ctx := context.Background()
-	iterator := &AssetIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        PaginationOptions{Page: 1, PageSize: 1},
-		Filters:     []string{},
-		Page:        0,
-		HasMoreData: true,
-	}
+	iterator := NewAssetIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 1})
 
 	// Test first page
 	if !iterator.Next() {
@@ -100,14 +86,7 @@ func TestAssetIterator_PaginationSuccess(t *testing.T) {
 func TestAssetIterator_EmptyFirstPageStops(t *testing.T) {
 	cli := &testClient{}
 	ctx := context.Background()
-	iterator := &AssetIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        PaginationOptions{Page: 1, PageSize: 0},
-		Filters:     []string{},
-		Page:        0,
-		HasMoreData: true,
-	}
+	iterator := NewAssetIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 0})
 
 	// Should not advance on empty page
 	if iterator.Next() {
@@ -122,14 +101,7 @@ func TestAssetIterator_EmptyFirstPageStops(t *testing.T) {
 func TestAssetIterator_ErrorStops(t *testing.T) {
 	cli := &testClient{}
 	ctx := context.Background()
-	iterator := &AssetIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        PaginationOptions{Page: 1, PageSize: 2},
-		Filters:     []string{},
-		Page:        0,
-		HasMoreData: true,
-	}
+	iterator := NewAssetIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 2})
 
 	// Simulate error by setting err field directly
 	iterator.err = errors.New("test error")
@@ -148,14 +120,7 @@ func TestAssetIterator_ContextCanceled(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel() // Cancel immediately
 
-	iterator := &AssetIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        PaginationOptions{Page: 1, PageSize: 2},
-		Filters:     []string{},
-		Page:        0,
-		HasMoreData: true,
-	}
+	iterator := NewAssetIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 2})
 
 	if iterator.Next() {
 		t.Error("Expected Next() to return false when context is canceled")
@@ -169,14 +134,7 @@ func TestAssetIterator_ContextCanceled(t *testing.T) {
 func TestAssetIterator_CurrentBeforeNext(t *testing.T) {
 	cli := &testClient{}
 	ctx := context.Background()
-	iterator := &AssetIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        PaginationOptions{Page: 1, PageSize: 2},
-		Filters:     []string{},
-		Page:        0,
-		HasMoreData: true,
-	}
+	iterator := NewAssetIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 2})
 
 	// Current() should return nil before Next() is called
 	if iterator.Current() != nil {
@@ -187,14 +145,7 @@ func TestAssetIterator_CurrentBeforeNext(t *testing.T) {
 func TestAssetIterator_CloseStopsIteration(t *testing.T) {
 	cli := &testClient{}
 	ctx := context.Background()
-	iterator := &AssetIterator{
-		Client:      cli,
-		Ctx:         ctx,
-		Opts:        PaginationOptions{Page: 1, PageSize: 2},
-		Filters:     []string{},
-		Page:        0,
-		HasMoreData: true,
-	}
+	iterator := NewAssetIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 2})
 
 	// Close the iterator
 	iterator.Close()
