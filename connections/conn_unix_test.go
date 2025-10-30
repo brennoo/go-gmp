@@ -1,6 +1,7 @@
 package connections
 
 import (
+	"context"
 	"encoding/xml"
 	"io/ioutil"
 	"log"
@@ -19,7 +20,8 @@ func TestNewUnixConnection(t *testing.T) {
 	os.Remove(unixSocketFilename)
 	defer os.Remove(unixSocketFilename)
 
-	ln, err := net.Listen("unix", unixSocketFilename)
+	lc := &net.ListenConfig{}
+	ln, err := lc.Listen(context.Background(), "unix", unixSocketFilename)
 	if err != nil {
 		log.Fatal("Listen error: ", err)
 	}
@@ -54,7 +56,7 @@ func TestNewUnixConnection(t *testing.T) {
 		Foo string `xml:"foo"`
 	}{}
 
-	err = conn.Execute(cmd, response)
+	err = conn.Execute(context.Background(), cmd, response)
 	if err != nil {
 		t.Fatalf("Unexpected error during Execute: %s", err)
 	}
@@ -78,7 +80,8 @@ func TestNewUnixConnectionUnixSocketIsNotThere(t *testing.T) {
 	unixSocketFilename := tmpfile.Name()
 	os.Remove(unixSocketFilename)
 
-	ln, err := net.Listen("unix", unixSocketFilename)
+	lc := &net.ListenConfig{}
+	ln, err := lc.Listen(context.Background(), "unix", unixSocketFilename)
 	if err != nil {
 		log.Fatal("Listen error: ", err)
 	}

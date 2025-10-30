@@ -1,6 +1,7 @@
 package connections
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/xml"
 	"log"
@@ -129,7 +130,7 @@ func TestNewTLSConnection(t *testing.T) {
 		Foo string `xml:"foo"`
 	}{}
 
-	err = conn.Execute(cmd, response)
+	err = conn.Execute(context.Background(), cmd, response)
 	if err != nil {
 		t.Fatalf("Unexpected error during Execute: %s", err)
 	}

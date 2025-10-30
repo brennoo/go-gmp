@@ -1,11 +1,13 @@
 package implementation
 
 import (
+	"context"
 	"encoding/xml"
 	"errors"
 	"net"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/brennoo/go-gmp/commands"
 )
@@ -69,7 +71,7 @@ func TestPerformRequest(t *testing.T) {
 		buf[i] = byte(i % 255)
 	}
 
-	bufRead, err := conn.performRequest(buf)
+	bufRead, err := conn.performRequest(context.Background(), buf)
 	if err != nil {
 		t.Fatalf("Unexpected error during write: %s", err)
 	}
@@ -103,7 +105,7 @@ func TestPerformRequestWriteFail(t *testing.T) {
 		buf[i] = byte(i % 255)
 	}
 
-	_, err := conn.performRequest(buf)
+	_, err := conn.performRequest(context.Background(), buf)
 	expectedError := "io: read/write on closed pipe"
 	if err == nil || err.Error() != expectedError {
 		t.Fatalf("Unexpected error during performRequest.\nExpected: %s\n     Got: %s", expectedError, err)
@@ -127,11 +129,100 @@ func TestPerformRequestReadFail(t *testing.T) {
 		buf[i] = byte(i % 255)
 	}
 
-	_, err := conn.performRequest(buf)
+	_, err := conn.performRequest(context.Background(), buf)
 	expectedError := "EOF"
 	if err == nil || err.Error() != expectedError {
 		t.Fatalf("Unexpected error during performRequest.\nExpected: %s\n     Got: %s", expectedError, err)
 	}
+}
+
+// Test that performRequest honors context deadlines via SetWriteDeadline.
+func TestPerformRequestWriteDeadline(t *testing.T) {
+	c1, _ := net.Pipe()
+
+	conn := Connection{}
+	conn.SetRawConn(c1)
+
+	// Very short timeout; no reader on the other end, so Write should time out
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Millisecond)
+	defer cancel()
+
+	buf := []byte("hello")
+	_, err := conn.performRequest(ctx, buf)
+	if err == nil {
+		t.Fatalf("Expected write timeout error, got nil")
+	}
+	var nerr net.Error
+	if !errors.As(err, &nerr) || !nerr.Timeout() {
+		t.Fatalf("Expected net.Error timeout on write, got: %v", err)
+	}
+}
+
+// Test that performRequest honors context deadlines via SetReadDeadline.
+func TestPerformRequestReadDeadline(t *testing.T) {
+	c1, c2 := net.Pipe()
+
+	conn := Connection{}
+	conn.SetRawConn(c1)
+
+	go func() {
+		// Read the request to let write succeed, but never write a response
+		_ = make([]byte, 1024)
+		buf := make([]byte, 1024)
+		_, _ = c2.Read(buf)
+		// do not write back -> read on c1 should block until deadline
+	}()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Millisecond)
+	defer cancel()
+
+	_, err := conn.performRequest(ctx, []byte("request"))
+	if err == nil {
+		t.Fatalf("Expected read timeout error, got nil")
+	}
+	var nerr net.Error
+	if !errors.As(err, &nerr) || !nerr.Timeout() {
+		t.Fatalf("Expected net.Error timeout on read, got: %v", err)
+	}
+}
+
+// Test that Execute closes the raw connection when context is cancelled.
+func TestExecuteClosesOnCancel(t *testing.T) {
+	c1, c2 := net.Pipe()
+
+	conn := Connection{}
+	conn.SetRawConn(c1)
+
+	// Backend just blocks on read to simulate a stalled peer
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		buf := make([]byte, 1024)
+		_, _ = c2.Read(buf)
+	}()
+
+	// Create a context that is cancelled immediately
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	cmd := &struct {
+		XMLName xml.Name `xml:"cmd"`
+		Foo     string   `xml:"foo"`
+	}{Foo: "x"}
+	resp := &struct {
+		Foo string `xml:"foo"`
+	}{}
+
+	// Execute should return quickly and close the underlying connection
+	_ = conn.Execute(ctx, cmd, resp)
+
+	// Subsequent writes should fail due to closed connection
+	if _, err := conn.rawConn.Write([]byte("test")); err == nil {
+		t.Fatalf("Expected error writing to closed connection, got nil")
+	}
+
+	// ensure backend goroutine exits
+	<-done
 }
 
 func TestExecute(t *testing.T) {
@@ -157,7 +248,7 @@ func TestExecute(t *testing.T) {
 		Foo string `xml:"foo"`
 	}{}
 
-	err := conn.Execute(cmd, response)
+	err := conn.Execute(context.Background(), cmd, response)
 	if err != nil {
 		t.Fatalf("Unexpected error during Execute: %s", err)
 	}
@@ -184,7 +275,7 @@ func TestExecuteXMLMarshallFail(t *testing.T) {
 		Foo string `xml:"foo"`
 	}{}
 
-	err := conn.Execute(cmd, response)
+	err := conn.Execute(context.Background(), cmd, response)
 	expectedError := "xml: unsupported type: func()"
 	if err == nil || err.Error() != expectedError {
 		t.Fatalf("Unexpected error during Execute.\nExpected: %s\n     Got: %s", expectedError, err)
@@ -214,7 +305,7 @@ func TestExecuteXMLUnmarshallFail(t *testing.T) {
 		Foo string `xml:"foo"`
 	}{}
 
-	err := conn.Execute(cmd, response)
+	err := conn.Execute(context.Background(), cmd, response)
 	expectedError := "non-pointer passed to Unmarshal"
 	if err == nil || err.Error() != expectedError {
 		t.Fatalf("Unexpected error during Execute.\nExpected: %s\n     Got: %s", expectedError, err)
@@ -245,7 +336,7 @@ func TestExecutePerformRequestFail(t *testing.T) {
 		Foo string `xml:"foo"`
 	}{}
 
-	err := conn.Execute(cmd, response)
+	err := conn.Execute(context.Background(), cmd, response)
 	expectedError := "io: read/write on closed pipe"
 	if err == nil || err.Error() != expectedError {
 		t.Fatalf("Unexpected error during Execute.\nExpected: %s\n     Got: %s", expectedError, err)
@@ -323,7 +414,7 @@ func TestExecuteWithResponseWithStatus(t *testing.T) {
 		StatusText: "OK",
 	}
 
-	err := conn.Execute(cmd, response)
+	err := conn.Execute(context.Background(), cmd, response)
 	if err != nil {
 		t.Fatalf("Unexpected error during Execute with success response: %s", err)
 	}
@@ -355,7 +446,7 @@ func TestExecuteWithResponseWithStatusError(t *testing.T) {
 		StatusText: "Unauthorized",
 	}
 
-	err := conn.Execute(cmd, response)
+	err := conn.Execute(context.Background(), cmd, response)
 	if err == nil {
 		t.Fatalf("Expected error during Execute with error response, got nil")
 	}
@@ -396,7 +487,7 @@ func TestExecuteWithResponseWithoutStatus(t *testing.T) {
 		Foo string `xml:"foo"`
 	}{}
 
-	err := conn.Execute(cmd, response)
+	err := conn.Execute(context.Background(), cmd, response)
 	if err != nil {
 		t.Fatalf("Unexpected error during Execute with non-ResponseWithStatus: %s", err)
 	}

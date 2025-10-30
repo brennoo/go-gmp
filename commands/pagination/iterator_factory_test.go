@@ -20,21 +20,27 @@ type fakeAllClient struct {
 func (f *fakeAllClient) GetTasksRaw(cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
 	return &commands.GetTasksResponse{}, nil
 }
+
 func (f *fakeAllClient) GetResultsRaw(cmd *commands.GetResults) (*commands.GetResultsResponse, error) {
 	return f.resultsResp, nil
 }
+
 func (f *fakeAllClient) GetAssetsRaw(cmd *commands.GetAssets) (*commands.GetAssetsResponse, error) {
 	return f.assetsResp, nil
 }
+
 func (f *fakeAllClient) GetTargetsRaw(cmd *commands.GetTargets) (*commands.GetTargetsResponse, error) {
 	return f.targetsResp, nil
 }
+
 func (f *fakeAllClient) GetTicketsRaw(cmd *commands.GetTickets) (*commands.GetTicketsResponse, error) {
 	return f.ticketsResp, nil
 }
+
 func (f *fakeAllClient) GetPortListsRaw(cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error) {
 	return f.portlistsResp, nil
 }
+
 func (f *fakeAllClient) GetSettingsRaw(cmd *commands.GetSettings) (*commands.GetSettingsResponse, error) {
 	return f.settingsResp, nil
 }

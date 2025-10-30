@@ -1,6 +1,7 @@
 package connections
 
 import (
+	"context"
 	"crypto/tls"
 
 	"github.com/brennoo/go-gmp"
@@ -11,9 +12,11 @@ import (
 // The `address` parameter refers to the host and port where Openvas GVMD is listening.
 // The `insecure` parameter allows the client to accept invalid certificates (ex: self-signed).
 func NewTLSConnection(address string, insecure bool) (gmp.Connection, error) {
-	conn, err := tls.Dial("tcp", address, &tls.Config{
-		InsecureSkipVerify: insecure, // nolint:gosec // Allow user to control certificate verification
-	})
+	d := &tls.Dialer{Config: &tls.Config{
+		InsecureSkipVerify: insecure, // nolint:gosec
+		MinVersion:         tls.VersionTLS13,
+	}}
+	conn, err := d.DialContext(context.Background(), "tcp", address)
 	if err != nil {
 		return nil, err
 	}

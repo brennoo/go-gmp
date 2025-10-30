@@ -23,6 +23,7 @@ linters:
     - unparam
     - unused
     - whitespace
+    - noctx
   settings:
     dupl:
       threshold: 100

@@ -1,6 +1,7 @@
 package connections
 
 import (
+	"context"
 	"encoding/xml"
 	"net"
 	"testing"
@@ -28,7 +29,7 @@ func TestNewConn(t *testing.T) {
 		Foo string `xml:"foo"`
 	}{}
 
-	err := conn.Execute(cmd, response)
+	err := conn.Execute(context.Background(), cmd, response)
 	if err != nil {
 		t.Fatalf("Unexpected error during Execute: %s", err)
 	}
