@@ -2,8 +2,10 @@ package implementation
 
 import (
 	"bytes"
+	"context"
 	"encoding/xml"
 	"net"
+	"time"
 
 	"github.com/brennoo/go-gmp/commands"
 )
@@ -16,7 +18,11 @@ func (conn *Connection) SetRawConn(rawConn net.Conn) {
 	conn.rawConn = rawConn
 }
 
-func (conn *Connection) performRequest(buffer []byte) ([]byte, error) {
+func (conn *Connection) performRequest(ctx context.Context, buffer []byte) ([]byte, error) {
+	// Set deadlines if context has a deadline
+	if deadline, ok := ctx.Deadline(); ok {
+		_ = conn.rawConn.SetWriteDeadline(deadline)
+	}
 	_, err := conn.rawConn.Write(buffer)
 	if err != nil {
 		return nil, err
@@ -24,6 +30,12 @@ func (conn *Connection) performRequest(buffer []byte) ([]byte, error) {
 
 	var resp bytes.Buffer
 	for true {
+		if deadline, ok := ctx.Deadline(); ok {
+			_ = conn.rawConn.SetReadDeadline(deadline)
+		} else {
+			// Clear previous deadlines
+			_ = conn.rawConn.SetReadDeadline(time.Time{})
+		}
 		buf := make([]byte, 1024)
 		n, err := conn.rawConn.Read(buf[:])
 		if err != nil {
@@ -39,13 +51,24 @@ func (conn *Connection) performRequest(buffer []byte) ([]byte, error) {
 	return resp.Bytes(), nil
 }
 
-func (conn *Connection) Execute(command interface{}, response interface{}) error {
+func (conn *Connection) Execute(ctx context.Context, command interface{}, response interface{}) error {
 	cmdBuf, err := xml.Marshal(command)
 	if err != nil {
 		return &commands.NetworkError{Type: commands.ErrorTypeInvalidRequest, Cause: err}
 	}
 
-	resp, err := conn.performRequest(cmdBuf)
+	// Handle context cancellation by closing the connection in a separate goroutine
+	done := make(chan struct{})
+	defer close(done)
+	go func() {
+		select {
+		case <-ctx.Done():
+			_ = conn.rawConn.Close()
+		case <-done:
+		}
+	}()
+
+	resp, err := conn.performRequest(ctx, cmdBuf)
 	if err != nil {
 		return &commands.NetworkError{Type: commands.ErrorTypeNetwork, Cause: err}
 	}
@@ -67,7 +90,7 @@ func (conn *Connection) Execute(command interface{}, response interface{}) error
 }
 
 func (conn *Connection) RawXML(xmlStr string) (string, error) {
-	resp, err := conn.performRequest([]byte(xmlStr))
+	resp, err := conn.performRequest(context.Background(), []byte(xmlStr))
 	if err != nil {
 		return "", err
 	}

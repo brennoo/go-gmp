@@ -18,7 +18,7 @@ type testClient struct {
 type testConnection struct{}
 
 //nolint:gocyclo // Mock connection handles all GMP commands
-func (tc *testConnection) Execute(command interface{}, response interface{}) error {
+func (tc *testConnection) Execute(ctx context.Context, command interface{}, response interface{}) error {
 	// Handle pagination commands
 	if cmd, ok := command.(*commands.GetTasks); ok {
 		resp := response.(*commands.GetTasksResponse)
@@ -338,43 +338,43 @@ func (tc *testConnection) Execute(command interface{}, response interface{}) err
 
 func (tc *testClient) GetTasksRaw(cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
 	resp := &commands.GetTasksResponse{}
-	err := tc.conn.Execute(cmd, resp)
+	err := tc.conn.Execute(context.Background(), cmd, resp)
 	return resp, err
 }
 
 func (tc *testClient) GetResultsRaw(cmd *commands.GetResults) (*commands.GetResultsResponse, error) {
 	resp := &commands.GetResultsResponse{}
-	err := tc.conn.Execute(cmd, resp)
+	err := tc.conn.Execute(context.Background(), cmd, resp)
 	return resp, err
 }
 
 func (tc *testClient) GetAssetsRaw(cmd *commands.GetAssets) (*commands.GetAssetsResponse, error) {
 	resp := &commands.GetAssetsResponse{}
-	err := tc.conn.Execute(cmd, resp)
+	err := tc.conn.Execute(context.Background(), cmd, resp)
 	return resp, err
 }
 
 func (tc *testClient) GetTargetsRaw(cmd *commands.GetTargets) (*commands.GetTargetsResponse, error) {
 	resp := &commands.GetTargetsResponse{}
-	err := tc.conn.Execute(cmd, resp)
+	err := tc.conn.Execute(context.Background(), cmd, resp)
 	return resp, err
 }
 
 func (tc *testClient) GetTicketsRaw(cmd *commands.GetTickets) (*commands.GetTicketsResponse, error) {
 	resp := &commands.GetTicketsResponse{}
-	err := tc.conn.Execute(cmd, resp)
+	err := tc.conn.Execute(context.Background(), cmd, resp)
 	return resp, err
 }
 
 func (tc *testClient) GetPortListsRaw(cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error) {
 	resp := &commands.GetPortListsResponse{}
-	err := tc.conn.Execute(cmd, resp)
+	err := tc.conn.Execute(context.Background(), cmd, resp)
 	return resp, err
 }
 
 func (tc *testClient) GetSettingsRaw(cmd *commands.GetSettings) (*commands.GetSettingsResponse, error) {
 	resp := &commands.GetSettingsResponse{}
-	err := tc.conn.Execute(cmd, resp)
+	err := tc.conn.Execute(context.Background(), cmd, resp)
 	return resp, err
 }
 

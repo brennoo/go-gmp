@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"time"
 
 	"github.com/brennoo/go-gmp"
@@ -11,7 +12,7 @@ type mockConn struct{}
 
 // nolint:gocyclo // This mock handles all GMP commands
 // gocyclo:ignore
-func (m *mockConn) Execute(command interface{}, response interface{}) error {
+func (m *mockConn) Execute(ctx context.Context, command interface{}, response interface{}) error {
 	if cmd, ok := command.(*commands.Authenticate); ok {
 		if cmd.Credentials.Username == "openvas" && cmd.Credentials.Password == "123" {
 			(*response.(*commands.AuthenticateResponse)).Status = "200"
