@@ -19,8 +19,8 @@ func NewAssetIterator(client Client, ctx context.Context, opts PaginationOptions
 		opts,
 		filters,
 		func(filter string) *commands.GetAssets { return &commands.GetAssets{Filter: filter} },
-		func(client Client, cmd *commands.GetAssets) (*commands.GetAssetsResponse, error) {
-			return client.GetAssetsRaw(cmd)
+		func(client Client, ctx context.Context, cmd *commands.GetAssets) (*commands.GetAssetsResponse, error) {
+			return client.GetAssetsRaw(ctx, cmd)
 		},
 		func(resp *commands.GetAssetsResponse) []*commands.Asset {
 			items := make([]*commands.Asset, len(resp.Assets))

@@ -336,76 +336,76 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 	return nil
 }
 
-func (tc *testClient) GetTasksRaw(cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
+func (tc *testClient) GetTasksRaw(ctx context.Context, cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
 	resp := &commands.GetTasksResponse{}
-	err := tc.conn.Execute(context.Background(), cmd, resp)
+	err := tc.conn.Execute(ctx, cmd, resp)
 	return resp, err
 }
 
-func (tc *testClient) GetResultsRaw(cmd *commands.GetResults) (*commands.GetResultsResponse, error) {
+func (tc *testClient) GetResultsRaw(ctx context.Context, cmd *commands.GetResults) (*commands.GetResultsResponse, error) {
 	resp := &commands.GetResultsResponse{}
-	err := tc.conn.Execute(context.Background(), cmd, resp)
+	err := tc.conn.Execute(ctx, cmd, resp)
 	return resp, err
 }
 
-func (tc *testClient) GetAssetsRaw(cmd *commands.GetAssets) (*commands.GetAssetsResponse, error) {
+func (tc *testClient) GetAssetsRaw(ctx context.Context, cmd *commands.GetAssets) (*commands.GetAssetsResponse, error) {
 	resp := &commands.GetAssetsResponse{}
-	err := tc.conn.Execute(context.Background(), cmd, resp)
+	err := tc.conn.Execute(ctx, cmd, resp)
 	return resp, err
 }
 
-func (tc *testClient) GetTargetsRaw(cmd *commands.GetTargets) (*commands.GetTargetsResponse, error) {
+func (tc *testClient) GetTargetsRaw(ctx context.Context, cmd *commands.GetTargets) (*commands.GetTargetsResponse, error) {
 	resp := &commands.GetTargetsResponse{}
-	err := tc.conn.Execute(context.Background(), cmd, resp)
+	err := tc.conn.Execute(ctx, cmd, resp)
 	return resp, err
 }
 
-func (tc *testClient) GetTicketsRaw(cmd *commands.GetTickets) (*commands.GetTicketsResponse, error) {
+func (tc *testClient) GetTicketsRaw(ctx context.Context, cmd *commands.GetTickets) (*commands.GetTicketsResponse, error) {
 	resp := &commands.GetTicketsResponse{}
-	err := tc.conn.Execute(context.Background(), cmd, resp)
+	err := tc.conn.Execute(ctx, cmd, resp)
 	return resp, err
 }
 
-func (tc *testClient) GetPortListsRaw(cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error) {
+func (tc *testClient) GetPortListsRaw(ctx context.Context, cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error) {
 	resp := &commands.GetPortListsResponse{}
-	err := tc.conn.Execute(context.Background(), cmd, resp)
+	err := tc.conn.Execute(ctx, cmd, resp)
 	return resp, err
 }
 
-func (tc *testClient) GetSettingsRaw(cmd *commands.GetSettings) (*commands.GetSettingsResponse, error) {
+func (tc *testClient) GetSettingsRaw(ctx context.Context, cmd *commands.GetSettings) (*commands.GetSettingsResponse, error) {
 	resp := &commands.GetSettingsResponse{}
-	err := tc.conn.Execute(context.Background(), cmd, resp)
+	err := tc.conn.Execute(ctx, cmd, resp)
 	return resp, err
 }
 
 // Test error client that returns errors.
 type errorTestClient struct{}
 
-func (etc *errorTestClient) GetTasksRaw(cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
+func (etc *errorTestClient) GetTasksRaw(ctx context.Context, cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
 	return nil, errors.New("test error")
 }
 
-func (etc *errorTestClient) GetResultsRaw(cmd *commands.GetResults) (*commands.GetResultsResponse, error) {
+func (etc *errorTestClient) GetResultsRaw(ctx context.Context, cmd *commands.GetResults) (*commands.GetResultsResponse, error) {
 	return nil, errors.New("test error")
 }
 
-func (etc *errorTestClient) GetAssetsRaw(cmd *commands.GetAssets) (*commands.GetAssetsResponse, error) {
+func (etc *errorTestClient) GetAssetsRaw(ctx context.Context, cmd *commands.GetAssets) (*commands.GetAssetsResponse, error) {
 	return nil, errors.New("test error")
 }
 
-func (etc *errorTestClient) GetTargetsRaw(cmd *commands.GetTargets) (*commands.GetTargetsResponse, error) {
+func (etc *errorTestClient) GetTargetsRaw(ctx context.Context, cmd *commands.GetTargets) (*commands.GetTargetsResponse, error) {
 	return nil, errors.New("test error")
 }
 
-func (etc *errorTestClient) GetTicketsRaw(cmd *commands.GetTickets) (*commands.GetTicketsResponse, error) {
+func (etc *errorTestClient) GetTicketsRaw(ctx context.Context, cmd *commands.GetTickets) (*commands.GetTicketsResponse, error) {
 	return nil, errors.New("test error")
 }
 
-func (etc *errorTestClient) GetPortListsRaw(cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error) {
+func (etc *errorTestClient) GetPortListsRaw(ctx context.Context, cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error) {
 	return nil, errors.New("test error")
 }
 
-func (etc *errorTestClient) GetSettingsRaw(cmd *commands.GetSettings) (*commands.GetSettingsResponse, error) {
+func (etc *errorTestClient) GetSettingsRaw(ctx context.Context, cmd *commands.GetSettings) (*commands.GetSettingsResponse, error) {
 	return nil, errors.New("test error")
 }
 

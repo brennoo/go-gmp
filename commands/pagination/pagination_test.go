@@ -13,34 +13,34 @@ type fakeClient struct {
 	getTasksFunc func(*commands.GetTasks) (*commands.GetTasksResponse, error)
 }
 
-func (f *fakeClient) GetTasksRaw(cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
+func (f *fakeClient) GetTasksRaw(ctx context.Context, cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
 	if f.getTasksFunc != nil {
 		return f.getTasksFunc(cmd)
 	}
 	panic("GetTasksRaw called unexpectedly")
 }
 
-func (f *fakeClient) GetResultsRaw(cmd *commands.GetResults) (*commands.GetResultsResponse, error) {
+func (f *fakeClient) GetResultsRaw(ctx context.Context, cmd *commands.GetResults) (*commands.GetResultsResponse, error) {
 	panic("GetResultsRaw not implemented for this test")
 }
 
-func (f *fakeClient) GetAssetsRaw(cmd *commands.GetAssets) (*commands.GetAssetsResponse, error) {
+func (f *fakeClient) GetAssetsRaw(ctx context.Context, cmd *commands.GetAssets) (*commands.GetAssetsResponse, error) {
 	panic("GetAssetsRaw not implemented for this test")
 }
 
-func (f *fakeClient) GetTargetsRaw(cmd *commands.GetTargets) (*commands.GetTargetsResponse, error) {
+func (f *fakeClient) GetTargetsRaw(ctx context.Context, cmd *commands.GetTargets) (*commands.GetTargetsResponse, error) {
 	panic("GetTargetsRaw not implemented for this test")
 }
 
-func (f *fakeClient) GetTicketsRaw(cmd *commands.GetTickets) (*commands.GetTicketsResponse, error) {
+func (f *fakeClient) GetTicketsRaw(ctx context.Context, cmd *commands.GetTickets) (*commands.GetTicketsResponse, error) {
 	panic("GetTicketsRaw not implemented for this test")
 }
 
-func (f *fakeClient) GetPortListsRaw(cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error) {
+func (f *fakeClient) GetPortListsRaw(ctx context.Context, cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error) {
 	panic("GetPortListsRaw not implemented for this test")
 }
 
-func (f *fakeClient) GetSettingsRaw(cmd *commands.GetSettings) (*commands.GetSettingsResponse, error) {
+func (f *fakeClient) GetSettingsRaw(ctx context.Context, cmd *commands.GetSettings) (*commands.GetSettingsResponse, error) {
 	panic("GetSettingsRaw not implemented for this test")
 }
 

@@ -19,8 +19,8 @@ func NewSettingsIterator(client Client, ctx context.Context, opts PaginationOpti
 		opts,
 		filters,
 		func(filter string) *commands.GetSettings { return &commands.GetSettings{Filter: filter} },
-		func(client Client, cmd *commands.GetSettings) (*commands.GetSettingsResponse, error) {
-			return client.GetSettingsRaw(cmd)
+		func(client Client, ctx context.Context, cmd *commands.GetSettings) (*commands.GetSettingsResponse, error) {
+			return client.GetSettingsRaw(ctx, cmd)
 		},
 		func(resp *commands.GetSettingsResponse) []*commands.Setting {
 			var list []commands.Setting

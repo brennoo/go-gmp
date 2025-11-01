@@ -19,8 +19,8 @@ func NewTaskIterator(client Client, ctx context.Context, opts PaginationOptions,
 		opts,
 		filters,
 		func(filter string) *commands.GetTasks { return &commands.GetTasks{Filter: filter} },
-		func(client Client, cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
-			return client.GetTasksRaw(cmd)
+		func(client Client, ctx context.Context, cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
+			return client.GetTasksRaw(ctx, cmd)
 		},
 		func(resp *commands.GetTasksResponse) []*commands.GetTasksResponseTask {
 			items := make([]*commands.GetTasksResponseTask, len(resp.Task))
