@@ -19,8 +19,8 @@ func NewResultIterator(client Client, ctx context.Context, opts PaginationOption
 		opts,
 		filters,
 		func(filter string) *commands.GetResults { return &commands.GetResults{Filter: filter} },
-		func(client Client, cmd *commands.GetResults) (*commands.GetResultsResponse, error) {
-			return client.GetResultsRaw(cmd)
+		func(client Client, ctx context.Context, cmd *commands.GetResults) (*commands.GetResultsResponse, error) {
+			return client.GetResultsRaw(ctx, cmd)
 		},
 		func(resp *commands.GetResultsResponse) []*commands.Result {
 			items := make([]*commands.Result, len(resp.Results))

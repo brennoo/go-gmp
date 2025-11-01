@@ -17,31 +17,31 @@ type fakeAllClient struct {
 	settingsResp  *commands.GetSettingsResponse
 }
 
-func (f *fakeAllClient) GetTasksRaw(cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
+func (f *fakeAllClient) GetTasksRaw(ctx context.Context, cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
 	return &commands.GetTasksResponse{}, nil
 }
 
-func (f *fakeAllClient) GetResultsRaw(cmd *commands.GetResults) (*commands.GetResultsResponse, error) {
+func (f *fakeAllClient) GetResultsRaw(ctx context.Context, cmd *commands.GetResults) (*commands.GetResultsResponse, error) {
 	return f.resultsResp, nil
 }
 
-func (f *fakeAllClient) GetAssetsRaw(cmd *commands.GetAssets) (*commands.GetAssetsResponse, error) {
+func (f *fakeAllClient) GetAssetsRaw(ctx context.Context, cmd *commands.GetAssets) (*commands.GetAssetsResponse, error) {
 	return f.assetsResp, nil
 }
 
-func (f *fakeAllClient) GetTargetsRaw(cmd *commands.GetTargets) (*commands.GetTargetsResponse, error) {
+func (f *fakeAllClient) GetTargetsRaw(ctx context.Context, cmd *commands.GetTargets) (*commands.GetTargetsResponse, error) {
 	return f.targetsResp, nil
 }
 
-func (f *fakeAllClient) GetTicketsRaw(cmd *commands.GetTickets) (*commands.GetTicketsResponse, error) {
+func (f *fakeAllClient) GetTicketsRaw(ctx context.Context, cmd *commands.GetTickets) (*commands.GetTicketsResponse, error) {
 	return f.ticketsResp, nil
 }
 
-func (f *fakeAllClient) GetPortListsRaw(cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error) {
+func (f *fakeAllClient) GetPortListsRaw(ctx context.Context, cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error) {
 	return f.portlistsResp, nil
 }
 
-func (f *fakeAllClient) GetSettingsRaw(cmd *commands.GetSettings) (*commands.GetSettingsResponse, error) {
+func (f *fakeAllClient) GetSettingsRaw(ctx context.Context, cmd *commands.GetSettings) (*commands.GetSettingsResponse, error) {
 	return f.settingsResp, nil
 }
 

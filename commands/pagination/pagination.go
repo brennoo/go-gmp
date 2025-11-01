@@ -1,6 +1,7 @@
 package pagination
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/brennoo/go-gmp/commands"
@@ -8,13 +9,13 @@ import (
 
 // Client is the minimal interface required by the pagination package.
 type Client interface {
-	GetTasksRaw(cmd *commands.GetTasks) (*commands.GetTasksResponse, error)
-	GetResultsRaw(cmd *commands.GetResults) (*commands.GetResultsResponse, error)
-	GetAssetsRaw(cmd *commands.GetAssets) (*commands.GetAssetsResponse, error)
-	GetTargetsRaw(cmd *commands.GetTargets) (*commands.GetTargetsResponse, error)
-	GetTicketsRaw(cmd *commands.GetTickets) (*commands.GetTicketsResponse, error)
-	GetPortListsRaw(cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error)
-	GetSettingsRaw(cmd *commands.GetSettings) (*commands.GetSettingsResponse, error)
+	GetTasksRaw(ctx context.Context, cmd *commands.GetTasks) (*commands.GetTasksResponse, error)
+	GetResultsRaw(ctx context.Context, cmd *commands.GetResults) (*commands.GetResultsResponse, error)
+	GetAssetsRaw(ctx context.Context, cmd *commands.GetAssets) (*commands.GetAssetsResponse, error)
+	GetTargetsRaw(ctx context.Context, cmd *commands.GetTargets) (*commands.GetTargetsResponse, error)
+	GetTicketsRaw(ctx context.Context, cmd *commands.GetTickets) (*commands.GetTicketsResponse, error)
+	GetPortListsRaw(ctx context.Context, cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error)
+	GetSettingsRaw(ctx context.Context, cmd *commands.GetSettings) (*commands.GetSettingsResponse, error)
 }
 
 // PaginationOptions configures paging behavior.

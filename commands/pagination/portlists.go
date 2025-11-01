@@ -19,8 +19,8 @@ func NewPortListIterator(client Client, ctx context.Context, opts PaginationOpti
 		opts,
 		filters,
 		func(filter string) *commands.GetPortLists { return &commands.GetPortLists{Filter: filter} },
-		func(client Client, cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error) {
-			return client.GetPortListsRaw(cmd)
+		func(client Client, ctx context.Context, cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error) {
+			return client.GetPortListsRaw(ctx, cmd)
 		},
 		func(resp *commands.GetPortListsResponse) []*commands.PortList {
 			items := make([]*commands.PortList, len(resp.PortLists))

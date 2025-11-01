@@ -15,7 +15,7 @@ func newIterator[T any, CmdT interface{}, RespT interface{}](
 	opts PaginationOptions,
 	filters []string,
 	buildCommand func(filter string) CmdT,
-	executeCommand func(client Client, cmd CmdT) (RespT, error),
+	executeCommand func(client Client, ctx context.Context, cmd CmdT) (RespT, error),
 	extractItems func(resp RespT) []T,
 	extractTotal func(resp RespT) int,
 ) *Iterator[T] {
@@ -50,7 +50,7 @@ func newIterator[T any, CmdT interface{}, RespT interface{}](
 			}
 
 			// Call the specific execute func
-			resp, err := executeCommand(client, typedCmd)
+			resp, err := executeCommand(client, ctx, typedCmd)
 			if err != nil {
 				return nil, 0, false, err
 			}
