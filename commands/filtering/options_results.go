@@ -41,16 +41,12 @@ func WithSeverityLessThanOrEqual(severity float64) Option {
 
 // WithThreat adds a threat filter condition.
 func WithThreat(threat string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("threat", OpEqual, threat)
-	}
+	return WithField("threat", threat)
 }
 
 // WithTrend adds a trend filter condition.
 func WithTrend(trend string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("trend", OpEqual, trend)
-	}
+	return WithField("trend", trend)
 }
 
 // WithQoD adds a quality of detection filter condition.
@@ -90,105 +86,75 @@ func WithQoDLessThanOrEqual(qod float64) Option {
 
 // WithHost adds a host filter condition.
 func WithHost(host string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("host", OpEqual, host)
-	}
+	return WithField("host", host)
 }
 
 // WithHostLike adds a host filter condition using LIKE operator.
 func WithHostLike(pattern string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("host", OpLike, pattern)
-	}
+	return WithFieldLike("host", pattern)
 }
 
 // WithPort adds a port filter condition.
 func WithPort(port string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("port", OpEqual, port)
-	}
+	return WithField("port", port)
 }
 
 // WithPortLike adds a port filter condition using LIKE operator.
 func WithPortLike(pattern string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("port", OpLike, pattern)
-	}
+	return WithFieldLike("port", pattern)
 }
 
 // WithNVT adds an NVT filter condition.
 func WithNVT(nvt string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("nvt", OpEqual, nvt)
-	}
+	return WithField("nvt", nvt)
 }
 
 // WithNVTLike adds an NVT filter condition using LIKE operator.
 func WithNVTLike(pattern string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("nvt", OpLike, pattern)
-	}
+	return WithFieldLike("nvt", pattern)
 }
 
 // WithTask adds a task filter condition.
 func WithTask(task string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("task", OpEqual, task)
-	}
+	return WithField("task", task)
 }
 
 // WithTaskLike adds a task filter condition using LIKE operator.
 func WithTaskLike(pattern string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("task", OpLike, pattern)
-	}
+	return WithFieldLike("task", pattern)
 }
 
 // WithResult adds a result filter condition.
 func WithResult(result string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("result", OpEqual, result)
-	}
+	return WithField("result", result)
 }
 
 // WithResultLike adds a result filter condition using LIKE operator.
 func WithResultLike(pattern string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("result", OpLike, pattern)
-	}
+	return WithFieldLike("result", pattern)
 }
 
 // WithFalsePositive adds a false_positive filter condition.
 func WithFalsePositive(fp bool) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("false_positive", OpEqual, fmt.Sprintf("%t", fp))
-	}
+	return WithBooleanField("false_positive", fp)
 }
 
 // WithFalsePositiveGreaterThan adds a false_positive filter condition.
 func WithFalsePositiveGreaterThan(count int) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("false_positive", OpGreaterThan, fmt.Sprintf("%d", count))
-	}
+	return WithNumericFieldGreaterThan("false_positive", count)
 }
 
 // WithFalsePositiveGreaterThanOrEqual adds a false_positive filter condition.
 func WithFalsePositiveGreaterThanOrEqual(count int) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("false_positive", OpGreaterThanOrEqual, fmt.Sprintf("%d", count))
-	}
+	return WithNumericFieldGreaterThanOrEqual("false_positive", count)
 }
 
 // WithFalsePositiveLessThan adds a false_positive filter condition.
 func WithFalsePositiveLessThan(count int) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("false_positive", OpLessThan, fmt.Sprintf("%d", count))
-	}
+	return WithNumericFieldLessThan("false_positive", count)
 }
 
 // WithFalsePositiveLessThanOrEqual adds a false_positive filter condition.
 func WithFalsePositiveLessThanOrEqual(count int) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("false_positive", OpLessThanOrEqual, fmt.Sprintf("%d", count))
-	}
+	return WithNumericFieldLessThanOrEqual("false_positive", count)
 }

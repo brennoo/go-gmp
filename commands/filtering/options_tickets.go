@@ -1,154 +1,106 @@
 package filtering
 
-import (
-	"fmt"
-)
-
 // WithTicketID adds a ticket_id filter condition.
 func WithTicketID(ticketID string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("ticket_id", OpEqual, ticketID)
-	}
+	return WithField("ticket_id", ticketID)
 }
 
 // WithTicketName adds a ticket name filter condition.
 func WithTicketName(name string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("ticket_name", OpEqual, name)
-	}
+	return WithField("ticket_name", name)
 }
 
 // WithTicketNameLike adds a ticket name filter condition using LIKE operator.
 func WithTicketNameLike(pattern string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("ticket_name", OpLike, pattern)
-	}
+	return WithFieldLike("ticket_name", pattern)
 }
 
 // WithTicketStatus adds a ticket status filter condition.
 func WithTicketStatus(status string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("ticket_status", OpEqual, status)
-	}
+	return WithField("ticket_status", status)
 }
 
 // WithTicketStatusIn adds a ticket status filter condition for multiple values.
 func WithTicketStatusIn(statuses ...string) Option {
-	return func(fb *FilterBuilder) {
-		for _, status := range statuses {
-			fb.AddCondition("ticket_status", OpEqual, status)
-		}
-	}
+	return WithFieldIn("ticket_status", statuses...)
 }
 
 // WithTicketAssignedTo adds an assigned_to filter condition.
 func WithTicketAssignedTo(assignedTo string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("assigned_to", OpEqual, assignedTo)
-	}
+	return WithField("assigned_to", assignedTo)
 }
 
 // WithTicketAssignedBy adds an assigned_by filter condition.
 func WithTicketAssignedBy(assignedBy string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("assigned_by", OpEqual, assignedBy)
-	}
+	return WithField("assigned_by", assignedBy)
 }
 
 // WithTicketResult adds a result filter condition.
 func WithTicketResult(result string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("result", OpEqual, result)
-	}
+	return WithField("result", result)
 }
 
 // WithTicketResultLike adds a result filter condition using LIKE operator.
 func WithTicketResultLike(pattern string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("result", OpLike, pattern)
-	}
+	return WithFieldLike("result", pattern)
 }
 
 // WithTicketTask adds a task filter condition.
 func WithTicketTask(task string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("task", OpEqual, task)
-	}
+	return WithField("task", task)
 }
 
 // WithTicketTaskLike adds a task filter condition using LIKE operator.
 func WithTicketTaskLike(pattern string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("task", OpLike, pattern)
-	}
+	return WithFieldLike("task", pattern)
 }
 
 // WithTicketHost adds a host filter condition.
 func WithTicketHost(host string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("host", OpEqual, host)
-	}
+	return WithField("host", host)
 }
 
 // WithTicketHostLike adds a host filter condition using LIKE operator.
 func WithTicketHostLike(pattern string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("host", OpLike, pattern)
-	}
+	return WithFieldLike("host", pattern)
 }
 
 // WithTicketPort adds a port filter condition.
 func WithTicketPort(port string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("port", OpEqual, port)
-	}
+	return WithField("port", port)
 }
 
 // WithTicketPortLike adds a port filter condition using LIKE operator.
 func WithTicketPortLike(pattern string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("port", OpLike, pattern)
-	}
+	return WithFieldLike("port", pattern)
 }
 
 // WithTicketNVT adds an NVT filter condition.
 func WithTicketNVT(nvt string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("nvt", OpEqual, nvt)
-	}
+	return WithField("nvt", nvt)
 }
 
 // WithTicketNVTLike adds an NVT filter condition using LIKE operator.
 func WithTicketNVTLike(pattern string) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("nvt", OpLike, pattern)
-	}
+	return WithFieldLike("nvt", pattern)
 }
 
 // WithTicketAlterable adds an alterable filter condition.
 func WithTicketAlterable(alterable bool) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("alterable", OpEqual, fmt.Sprintf("%t", alterable))
-	}
+	return WithBooleanField("alterable", alterable)
 }
 
 // WithTicketWritable adds a writable filter condition.
 func WithTicketWritable(writable bool) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("writable", OpEqual, fmt.Sprintf("%t", writable))
-	}
+	return WithBooleanField("writable", writable)
 }
 
 // WithTicketInUse adds an in_use filter condition.
 func WithTicketInUse(inUse bool) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("in_use", OpEqual, fmt.Sprintf("%t", inUse))
-	}
+	return WithBooleanField("in_use", inUse)
 }
 
 // WithTicketTrash adds a trash filter condition.
 func WithTicketTrash(trash bool) Option {
-	return func(fb *FilterBuilder) {
-		fb.AddCondition("trash", OpEqual, fmt.Sprintf("%t", trash))
-	}
+	return WithBooleanField("trash", trash)
 }
