@@ -44,7 +44,7 @@ func main() {
 
 	// Authenticate
 	cli := client.New(conn)
-	_, err := cli.Authenticate(&commands.Authenticate{
+	_, err := cli.Authenticate(ctx, &commands.Authenticate{
 		Credentials: &commands.AuthenticateCredentials{
 			Username: "admin",
 			Password: "secret",
@@ -218,7 +218,7 @@ Send custom or unsupported commands:
 
 ```go
 raw := `<get_custom_resource foo="bar"/>`
-resp, err := cli.RawXML(raw)
+resp, err := cli.RawXML(ctx, raw)
 ```
 
 ## Extending

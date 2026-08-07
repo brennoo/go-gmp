@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"testing"
 
 	"github.com/brennoo/go-gmp/commands"
@@ -18,7 +19,7 @@ func TestAuthenticate(t *testing.T) {
 			Password: "123",
 		},
 	}
-	_, err := cli.Authenticate(cmd)
+	_, err := cli.Authenticate(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during Authenticate: %s", err)
 	}
@@ -31,7 +32,7 @@ func TestDescribeAuth(t *testing.T) {
 	}
 
 	cmd := &commands.DescribeAuth{}
-	resp, err := cli.DescribeAuth(cmd)
+	resp, err := cli.DescribeAuth(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during DescribeAuth: %s", err)
 	}
@@ -68,7 +69,7 @@ func TestModifyAuth(t *testing.T) {
 			},
 		},
 	}
-	_, err := cli.ModifyAuth(cmd)
+	_, err := cli.ModifyAuth(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyAuth: %s", err)
 	}

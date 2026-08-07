@@ -21,7 +21,7 @@ func TestCreateTicket(t *testing.T) {
 		},
 		OpenNote: "Please fix today.",
 	}
-	resp, err := cli.CreateTicket(cmd)
+	resp, err := cli.CreateTicket(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateTicket: %s", err)
 	}
@@ -82,7 +82,7 @@ func TestModifyTicket(t *testing.T) {
 		Status:     "Closed",
 		ClosedNote: "Resolved with January update",
 	}
-	resp, err := cli.ModifyTicket(cmd)
+	resp, err := cli.ModifyTicket(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyTicket: %s", err)
 	}
@@ -100,7 +100,7 @@ func TestDeleteTicket(t *testing.T) {
 		TicketID: "ticket-uuid",
 		Ultimate: true,
 	}
-	resp, err := cli.DeleteTicket(cmd)
+	resp, err := cli.DeleteTicket(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("expected no error, got: %v", err)
 	}

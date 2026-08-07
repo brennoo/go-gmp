@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"testing"
 
 	"github.com/brennoo/go-gmp/commands"
@@ -17,7 +18,7 @@ func TestCreateNote(t *testing.T) {
 		NVT:    &commands.NoteNVT{OID: "1.3.6.1.4.1.25623.1.0.10330"},
 		Result: &commands.CreateNoteResult{ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"},
 	}
-	resp, err := cli.CreateNote(cmd)
+	resp, err := cli.CreateNote(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateNote: %s", err)
 	}
@@ -40,7 +41,7 @@ func TestModifyNote(t *testing.T) {
 		Text:   "This issue should be resolved after the upgrade.",
 		Result: &commands.ModifyNoteResult{ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"},
 	}
-	resp, err := cli.ModifyNote(cmd)
+	resp, err := cli.ModifyNote(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyNote: %s", err)
 	}
@@ -56,7 +57,7 @@ func TestGetNotes(t *testing.T) {
 	}
 
 	cmd := &commands.GetNotes{}
-	resp, err := cli.GetNotes(cmd)
+	resp, err := cli.GetNotes(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetNotes: %s", err)
 	}
@@ -78,7 +79,7 @@ func TestDeleteNote(t *testing.T) {
 		NoteID:   "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 		Ultimate: false,
 	}
-	resp, err := cli.DeleteNote(cmd)
+	resp, err := cli.DeleteNote(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during DeleteNote: %s", err)
 	}

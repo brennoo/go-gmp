@@ -17,8 +17,5 @@ func NewUnixConnection(socket string) (gmp.Connection, error) {
 		return nil, err
 	}
 
-	c := &implementation.Connection{}
-	c.SetRawConn(conn)
-
-	return c, nil
+	return implementation.New(conn), nil
 }

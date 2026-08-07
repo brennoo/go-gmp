@@ -33,7 +33,7 @@ func TestCreateConfig(t *testing.T) {
 
 	cmd := &commands.CreateConfig{}
 	cmd.Name = "New Config"
-	resp, err := cli.CreateConfig(cmd)
+	resp, err := cli.CreateConfig(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateConfig: %s", err)
 	}
@@ -51,7 +51,7 @@ func TestModifyConfig(t *testing.T) {
 
 	cmd := &commands.ModifyConfig{}
 	cmd.Name = "Modified Config"
-	resp, err := cli.ModifyConfig(cmd)
+	resp, err := cli.ModifyConfig(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyConfig: %s", err)
 	}
@@ -71,7 +71,7 @@ func TestDeleteConfig(t *testing.T) {
 		ConfigID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
 		Ultimate: true,
 	}
-	resp, err := cli.DeleteConfig(cmd)
+	resp, err := cli.DeleteConfig(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during DeleteConfig: %s", err)
 	}
@@ -91,7 +91,7 @@ func TestSyncConfig(t *testing.T) {
 	}
 
 	cmd := &commands.SyncConfig{}
-	resp, err := cli.SyncConfig(cmd)
+	resp, err := cli.SyncConfig(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during SyncConfig: %s", err)
 	}

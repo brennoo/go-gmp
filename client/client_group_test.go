@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"testing"
 
 	"github.com/brennoo/go-gmp/commands"
@@ -16,7 +17,7 @@ func TestCreateGroup(t *testing.T) {
 		Name:  "Managers",
 		Users: "sarah, bob",
 	}
-	resp, err := cli.CreateGroup(cmd)
+	resp, err := cli.CreateGroup(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateGroup: %s", err)
 	}
@@ -38,7 +39,7 @@ func TestModifyGroup(t *testing.T) {
 		GroupID: "d94211b6-ba40-11e3-bcb1-406186ea4fc5",
 		Name:    "Line Managers",
 	}
-	resp, err := cli.ModifyGroup(cmd)
+	resp, err := cli.ModifyGroup(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyGroup: %s", err)
 	}
@@ -54,7 +55,7 @@ func TestGetGroups(t *testing.T) {
 	}
 
 	cmd := &commands.GetGroups{}
-	resp, err := cli.GetGroups(cmd)
+	resp, err := cli.GetGroups(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetGroups: %s", err)
 	}
@@ -76,7 +77,7 @@ func TestDeleteGroup(t *testing.T) {
 		GroupID:  "d94211b6-ba40-11e3-bcb1-406186ea4fc5",
 		Ultimate: true,
 	}
-	resp, err := cli.DeleteGroup(cmd)
+	resp, err := cli.DeleteGroup(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during DeleteGroup: %s", err)
 	}

@@ -64,7 +64,7 @@ func (g *GMPClient) Authenticate(ctx context.Context, username, password string)
 
 	auth := &commands.Authenticate{Credentials: &commands.AuthenticateCredentials{Username: username, Password: password}}
 
-	resp, err := g.client.Authenticate(auth)
+	resp, err := g.client.Authenticate(ctx, auth)
 	if err != nil {
 		return fmt.Errorf("authentication failed: %w", err)
 	}
@@ -170,7 +170,7 @@ func (g *GMPClient) DeleteTarget(ctx context.Context, targetID string) error {
 		Ultimate: true, // Delete permanently, not just to trash
 	}
 
-	resp, err := g.client.DeleteTarget(cmd)
+	resp, err := g.client.DeleteTarget(ctx, cmd)
 	if err != nil {
 		return fmt.Errorf("failed to delete target: %w", err)
 	}
@@ -259,7 +259,7 @@ func (g *GMPClient) DeleteTask(ctx context.Context, taskID string) error {
 		Ultimate: true,
 	}
 
-	resp, err := g.client.DeleteTask(cmd)
+	resp, err := g.client.DeleteTask(ctx, cmd)
 	if err != nil {
 		return fmt.Errorf("failed to delete task: %w", err)
 	}
@@ -290,7 +290,7 @@ func (g *GMPClient) CreateTarget(ctx context.Context, name, hosts, portListID st
 		PortList: &commands.TargetPortList{ID: portListID},
 	}
 
-	resp, err := g.client.CreateTarget(cmd)
+	resp, err := g.client.CreateTarget(ctx, cmd)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create target: %w", err)
 	}
@@ -328,7 +328,7 @@ func (g *GMPClient) CreateTask(ctx context.Context, name, configID, targetID, sc
 		},
 	}
 
-	resp, err := g.client.CreateTask(cmd)
+	resp, err := g.client.CreateTask(ctx, cmd)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create task: %w", err)
 	}
@@ -349,7 +349,7 @@ func (g *GMPClient) StartTask(ctx context.Context, taskID string) error {
 		TaskID: taskID,
 	}
 
-	resp, err := g.client.StartTask(cmd)
+	resp, err := g.client.StartTask(ctx, cmd)
 	if err != nil {
 		return fmt.Errorf("failed to start task: %w", err)
 	}

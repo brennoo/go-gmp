@@ -21,7 +21,7 @@ func TestCreateAsset(t *testing.T) {
 			Type:    "host",
 		},
 	}
-	resp, err := cli.CreateAsset(cmd)
+	resp, err := cli.CreateAsset(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateAsset: %s", err)
 	}
@@ -48,7 +48,7 @@ func TestCreateAssetWithReport(t *testing.T) {
 			Filter: &commands.AssetFilter{Term: "term"},
 		},
 	}
-	resp, err := cli.CreateAsset(cmdWithReport)
+	resp, err := cli.CreateAsset(context.Background(), cmdWithReport)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateAsset (report): %s", err)
 	}
@@ -73,7 +73,7 @@ func TestModifyAsset(t *testing.T) {
 		AssetID: "914b59f8-25f5-4c8f-832c-2379cd625236",
 		Comment: "New comment",
 	}
-	resp, err := cli.ModifyAsset(cmd)
+	resp, err := cli.ModifyAsset(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyAsset: %s", err)
 	}
@@ -124,7 +124,7 @@ func TestDeleteAsset(t *testing.T) {
 	cmd := &commands.DeleteAsset{
 		AssetID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
 	}
-	resp, err := cli.DeleteAsset(cmd)
+	resp, err := cli.DeleteAsset(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during DeleteAsset: %s", err)
 	}

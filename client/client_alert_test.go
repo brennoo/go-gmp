@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"testing"
 
 	"github.com/brennoo/go-gmp/commands"
@@ -33,7 +34,7 @@ func TestCreateAlert(t *testing.T) {
 		Filter:    nil,   // filter
 		Active:    false, // active
 	}
-	resp, err := cli.CreateAlert(cmd)
+	resp, err := cli.CreateAlert(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateAlert: %s", err)
 	}
@@ -58,7 +59,7 @@ func TestGetAlerts(t *testing.T) {
 	}
 
 	cmd := &commands.GetAlerts{}
-	resp, err := cli.GetAlerts(cmd)
+	resp, err := cli.GetAlerts(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -84,7 +85,7 @@ func TestModifyAlert(t *testing.T) {
 		Comment: &comment,
 		Filter:  filter,
 	}
-	resp, err := cli.ModifyAlert(cmd)
+	resp, err := cli.ModifyAlert(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -104,7 +105,7 @@ func TestDeleteAlert(t *testing.T) {
 		AlertID:  alertID,
 		Ultimate: true,
 	}
-	resp, err := cli.DeleteAlert(cmd)
+	resp, err := cli.DeleteAlert(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -123,7 +124,7 @@ func TestTestAlert(t *testing.T) {
 	cmd := &commands.TestAlert{
 		AlertID: alertID,
 	}
-	resp, err := cli.TestAlert(cmd)
+	resp, err := cli.TestAlert(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

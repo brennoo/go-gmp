@@ -3,6 +3,7 @@ package main
 //nolint:errcheck // Ignoring Close errors in example
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -12,6 +13,8 @@ import (
 )
 
 func main() {
+	ctx := context.Background()
+
 	// Connect to GMP over TLS
 	gmpConn, err := connections.NewTLSConnection("localhost:9390", true) // true = skip cert verification for demo
 	if err != nil {
@@ -23,7 +26,7 @@ func main() {
 
 	// Authenticate as admin:admin
 	auth := &commands.Authenticate{Credentials: &commands.AuthenticateCredentials{Username: "admin", Password: "admin"}}
-	respAuth, err := cli.Authenticate(auth)
+	respAuth, err := cli.Authenticate(ctx, auth)
 	if err != nil {
 		log.Fatalf("Authentication failed: %v", err)
 	}
@@ -44,7 +47,7 @@ func main() {
 		AllowInsecure: false,
 	}
 
-	resp, err := cli.CreateCredential(cmd)
+	resp, err := cli.CreateCredential(ctx, cmd)
 	if err != nil {
 		log.Fatalf("CreateCredential failed: %v", err)
 	}

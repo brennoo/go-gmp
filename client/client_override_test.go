@@ -19,7 +19,7 @@ func TestCreateOverride(t *testing.T) {
 		NewThreat: "Low",
 		Result:    "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 	}
-	resp, err := cli.CreateOverride(cmd)
+	resp, err := cli.CreateOverride(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateOverride: %s", err)
 	}
@@ -44,7 +44,7 @@ func TestDeleteOverride(t *testing.T) {
 		OverrideID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
 		Ultimate:   false,
 	}
-	resp, err := cli.DeleteOverride(cmd)
+	resp, err := cli.DeleteOverride(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during DeleteOverride: %s", err)
 	}
@@ -93,7 +93,7 @@ func TestModifyOverride(t *testing.T) {
 		Text:       "This issue is less important in our setup.",
 		NewThreat:  "Low",
 	}
-	resp, err := cli.ModifyOverride(cmd)
+	resp, err := cli.ModifyOverride(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyOverride: %s", err)
 	}

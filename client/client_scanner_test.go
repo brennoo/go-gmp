@@ -21,7 +21,7 @@ func TestCreateScanner(t *testing.T) {
 		CAPub:      "dummy-ca-pub",
 		Credential: &commands.ScannerCredential{ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"},
 	}
-	resp, err := cli.CreateScanner(cmd)
+	resp, err := cli.CreateScanner(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateScanner: %s", err)
 	}
@@ -65,7 +65,7 @@ func TestCreateScannerFail(t *testing.T) {
 		CAPub:      "dummy-ca-pub",
 		Credential: &commands.ScannerCredential{ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"},
 	}
-	resp, err := cli.CreateScanner(cmd)
+	resp, err := cli.CreateScanner(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateScanner (fail): %s", err)
 	}
@@ -84,7 +84,7 @@ func TestModifyScanner(t *testing.T) {
 		ScannerID: "scanner-uuid",
 		Name:      "Updated Scanner",
 	}
-	resp, err := cli.ModifyScanner(cmd)
+	resp, err := cli.ModifyScanner(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyScanner: %s", err)
 	}
@@ -106,7 +106,7 @@ func TestModifyScannerFail(t *testing.T) {
 		ScannerID: "",
 		Name:      "",
 	}
-	resp, err := cli.ModifyScanner(cmd)
+	resp, err := cli.ModifyScanner(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyScanner (fail): %s", err)
 	}
@@ -125,7 +125,7 @@ func TestDeleteScanner(t *testing.T) {
 	}
 
 	cmd := &commands.DeleteScanner{ScannerID: "scanner-uuid", Ultimate: true}
-	resp, err := cli.DeleteScanner(cmd)
+	resp, err := cli.DeleteScanner(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
@@ -144,7 +144,7 @@ func TestVerifyScanner(t *testing.T) {
 	}
 
 	cmd := &commands.VerifyScanner{ScannerID: "scanner-uuid"}
-	resp, err := cli.VerifyScanner(cmd)
+	resp, err := cli.VerifyScanner(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}

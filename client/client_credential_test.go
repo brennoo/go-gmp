@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"testing"
 
 	"github.com/brennoo/go-gmp/commands"
@@ -19,7 +20,7 @@ func TestCreateCredential(t *testing.T) {
 		Key:     &commands.CreateCredentialKey{Phrase: "passphrase", Private: "private-key", Public: "public-key"},
 		Privacy: &commands.CreateCredentialPrivacy{Algorithm: "AES", Password: "snmp-password"},
 	}
-	resp, err := cli.CreateCredential(cmd)
+	resp, err := cli.CreateCredential(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateCredential: %s", err)
 	}
@@ -37,7 +38,7 @@ func TestCreateCredential(t *testing.T) {
 		Key:     &commands.CreateCredentialKey{},
 		Privacy: &commands.CreateCredentialPrivacy{},
 	}
-	respFail, err := cli.CreateCredential(cmdFail)
+	respFail, err := cli.CreateCredential(context.Background(), cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateCredential (fail): %s", err)
 	}
@@ -57,7 +58,7 @@ func TestModifyCredential(t *testing.T) {
 		CredentialID: "cred-uuid",
 		Name:         "Updated Credential",
 	}
-	resp, err := cli.ModifyCredential(cmd)
+	resp, err := cli.ModifyCredential(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyCredential: %s", err)
 	}
@@ -72,7 +73,7 @@ func TestModifyCredential(t *testing.T) {
 	cmdFail := &commands.ModifyCredential{
 		CredentialID: "",
 	}
-	respFail, err := cli.ModifyCredential(cmdFail)
+	respFail, err := cli.ModifyCredential(context.Background(), cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyCredential (fail): %s", err)
 	}
@@ -92,7 +93,7 @@ func TestGetCredentials(t *testing.T) {
 
 	// List all credentials
 	cmd := &commands.GetCredentials{}
-	resp, err := cli.GetCredentials(cmd)
+	resp, err := cli.GetCredentials(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetCredentials: %s", err)
 	}
@@ -108,7 +109,7 @@ func TestGetCredentials(t *testing.T) {
 
 	// Fetch single credential
 	cmdSingle := &commands.GetCredentials{CredentialID: "cred-uuid-1"}
-	respSingle, err := cli.GetCredentials(cmdSingle)
+	respSingle, err := cli.GetCredentials(context.Background(), cmdSingle)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetCredentials (single): %s", err)
 	}
@@ -121,7 +122,7 @@ func TestGetCredentials(t *testing.T) {
 
 	// Failure case
 	cmdFail := &commands.GetCredentials{CredentialID: "notfound"}
-	respFail, err := cli.GetCredentials(cmdFail)
+	respFail, err := cli.GetCredentials(context.Background(), cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetCredentials (fail): %s", err)
 	}
@@ -137,7 +138,7 @@ func TestDeleteCredential(t *testing.T) {
 	}
 
 	cmd := &commands.DeleteCredential{CredentialID: "cred-uuid-1", Ultimate: true}
-	resp, err := cli.DeleteCredential(cmd)
+	resp, err := cli.DeleteCredential(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}

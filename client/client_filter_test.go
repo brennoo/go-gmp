@@ -19,7 +19,7 @@ func TestCreateFilter(t *testing.T) {
 		Term:    "ips=1 first=1 rows=-2",
 		Type:    "target",
 	}
-	resp, err := cli.CreateFilter(cmd)
+	resp, err := cli.CreateFilter(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateFilter: %s", err)
 	}
@@ -44,7 +44,7 @@ func TestModifyFilter(t *testing.T) {
 		FilterID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c7",
 		Term:     "name=local",
 	}
-	resp, err := cli.ModifyFilter(cmd)
+	resp, err := cli.ModifyFilter(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyFilter: %s", err)
 	}
@@ -104,7 +104,7 @@ func TestDeleteFilter(t *testing.T) {
 		FilterID: "b493b7a8-7489-11df-a3ec-001164764cea",
 		Ultimate: false,
 	}
-	resp, err := cli.DeleteFilter(cmd)
+	resp, err := cli.DeleteFilter(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during DeleteFilter: %s", err)
 	}

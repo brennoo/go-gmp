@@ -24,7 +24,7 @@ func TestGetPreferences(t *testing.T) {
 
 	cmd := &commands.GetPreferences{}
 	cmd.ConfigID = "4b49617e-d1d8-44b8-af81-f4675b56f837"
-	resp, err := cli.GetPreferences(cmd)
+	resp, err := cli.GetPreferences(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetPreferences: %s", err)
 	}
@@ -46,7 +46,7 @@ func TestGetSystemReports(t *testing.T) {
 	cmd := &commands.GetSystemReports{
 		Name: "proc",
 	}
-	resp, err := cli.GetSystemReports(cmd)
+	resp, err := cli.GetSystemReports(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("GetSystemReports failed: %v", err)
 	}
@@ -64,7 +64,7 @@ func TestGetSystemReports(t *testing.T) {
 	cmd = &commands.GetSystemReports{
 		Brief: true,
 	}
-	resp, err = cli.GetSystemReports(cmd)
+	resp, err = cli.GetSystemReports(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("GetSystemReports failed: %v", err)
 	}
@@ -76,7 +76,7 @@ func TestGetSystemReports(t *testing.T) {
 	cmd = &commands.GetSystemReports{
 		Name: "notfound",
 	}
-	resp, err = cli.GetSystemReports(cmd)
+	resp, err = cli.GetSystemReports(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("GetSystemReports failed: %v", err)
 	}
@@ -95,7 +95,7 @@ func TestGetInfo(t *testing.T) {
 		Name: "CVE-2011-0018",
 		Type: "cve",
 	}
-	resp, err := cli.GetInfo(cmd)
+	resp, err := cli.GetInfo(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetInfo: %s", err)
 	}
@@ -121,7 +121,7 @@ func TestGetVersion(t *testing.T) {
 	}
 
 	cmd := &commands.GetVersion{}
-	resp, err := cli.GetVersion(cmd)
+	resp, err := cli.GetVersion(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetVersion: %s", err)
 	}
@@ -143,7 +143,7 @@ func TestHelp(t *testing.T) {
 	}
 
 	cmd := &commands.Help{}
-	resp, err := cli.Help(cmd)
+	resp, err := cli.Help(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during Help: %s", err)
 	}
@@ -165,7 +165,7 @@ func TestGetFeeds(t *testing.T) {
 	}
 
 	cmd := &commands.GetFeeds{}
-	resp, err := cli.GetFeeds(cmd)
+	resp, err := cli.GetFeeds(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetFeeds: %s", err)
 	}
@@ -207,7 +207,7 @@ func TestModifyLicense(t *testing.T) {
 	cmd := &commands.ModifyLicense{
 		File: "YmFzZTY0bGljZW5zZQ==", // "baselicenses" in base64
 	}
-	resp, err := cli.ModifyLicense(cmd)
+	resp, err := cli.ModifyLicense(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyLicense: %s", err)
 	}
@@ -228,7 +228,7 @@ func TestGetLicense(t *testing.T) {
 	}
 
 	cmd := &commands.GetLicense{}
-	resp, err := cli.GetLicense(cmd)
+	resp, err := cli.GetLicense(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetLicense: %s", err)
 	}
@@ -286,7 +286,7 @@ func TestModifySetting(t *testing.T) {
 		Name:  "Timezone",
 		Value: "QWZyaWNhL0pvaGFubmVzYnVyZw==", // "Africa/Johannesburg" in base64
 	}
-	resp, err := cli.ModifySetting(cmd)
+	resp, err := cli.ModifySetting(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifySetting: %s", err)
 	}
@@ -419,7 +419,7 @@ func TestGetFeatures(t *testing.T) {
 	}
 
 	cmd := &commands.GetFeatures{}
-	resp, err := cli.GetFeatures(cmd)
+	resp, err := cli.GetFeatures(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetFeatures: %s", err)
 	}
@@ -447,7 +447,7 @@ func TestEmptyTrashcan(t *testing.T) {
 	}
 
 	cmd := &commands.EmptyTrashcan{}
-	resp, err := cli.EmptyTrashcan(cmd)
+	resp, err := cli.EmptyTrashcan(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during EmptyTrashcan: %s", err)
 	}
@@ -466,7 +466,7 @@ func TestRestore(t *testing.T) {
 	}
 
 	cmd := &commands.Restore{ID: "97390ade-e075-11df-9973-002264764cea"}
-	resp, err := cli.Restore(cmd)
+	resp, err := cli.Restore(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during Restore: %s", err)
 	}
@@ -493,7 +493,7 @@ func TestRunWizard(t *testing.T) {
 			}},
 		},
 	}
-	resp, err := cli.RunWizard(cmd)
+	resp, err := cli.RunWizard(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during RunWizard: %s", err)
 	}
@@ -519,7 +519,7 @@ func TestRawXML(t *testing.T) {
 
 	// Test a generic command
 	xml := `<get_version/>`
-	resp, err := cli.RawXML(xml)
+	resp, err := cli.RawXML(context.Background(), xml)
 	if err != nil {
 		t.Fatalf("Unexpected error from RawXML: %v", err)
 	}
@@ -529,7 +529,7 @@ func TestRawXML(t *testing.T) {
 
 	// Test an undocumented command
 	undoc := `<undocumented_command/>`
-	resp, err = cli.RawXML(undoc)
+	resp, err = cli.RawXML(context.Background(), undoc)
 	if err != nil {
 		t.Fatalf("Unexpected error from RawXML (undocumented): %v", err)
 	}
@@ -579,7 +579,7 @@ func TestGetSettingsConsolidated(t *testing.T) {
 	}
 }
 
-func (m *mockConn) RawXML(xmlStr string) (string, error) {
+func (m *mockConn) RawXML(ctx context.Context, xmlStr string) (string, error) {
 	// For testing, just echo back a canned response or the input for now.
 	if strings.Contains(xmlStr, "undocumented_command") {
 		return `<undocumented_command_response status="200" status_text="OK">mocked</undocumented_command_response>`, nil

@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"testing"
 
 	"github.com/brennoo/go-gmp/commands"
@@ -23,7 +24,7 @@ func TestCreateReport(t *testing.T) {
 		Task:     &commands.ReportTask{ID: "task-uuid"},
 		InAssets: nil,
 	}
-	resp, err := cli.CreateReport(cmd)
+	resp, err := cli.CreateReport(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateReport: %s", err)
 	}
@@ -44,7 +45,7 @@ func TestCreateReport(t *testing.T) {
 		},
 		Task: &commands.ReportTask{ID: "wrong-task"},
 	}
-	respFail, err := cli.CreateReport(cmdFail)
+	respFail, err := cli.CreateReport(context.Background(), cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateReport (fail): %s", err)
 	}
@@ -69,7 +70,7 @@ func TestGetReports(t *testing.T) {
 		Extension:   "xml",
 		ContentType: "text/xml",
 	}
-	resp, err := cli.GetReports(cmd)
+	resp, err := cli.GetReports(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetReports: %s", err)
 	}
@@ -101,7 +102,7 @@ func TestGetReports(t *testing.T) {
 	cmdFail := &commands.GetReports{
 		ReportID: "wrong-id",
 	}
-	respFail, err := cli.GetReports(cmdFail)
+	respFail, err := cli.GetReports(context.Background(), cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetReports (fail): %s", err)
 	}
@@ -120,7 +121,7 @@ func TestDeleteReport(t *testing.T) {
 	}
 
 	cmd := &commands.DeleteReport{ReportID: "report-uuid"}
-	resp, err := cli.DeleteReport(cmd)
+	resp, err := cli.DeleteReport(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
@@ -140,7 +141,7 @@ func TestGetReportFormats(t *testing.T) {
 
 	// Success case
 	cmd := &commands.GetReportFormats{ReportFormatID: "format-uuid"}
-	resp, err := cli.GetReportFormats(cmd)
+	resp, err := cli.GetReportFormats(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetReportFormats: %s", err)
 	}
@@ -156,7 +157,7 @@ func TestGetReportFormats(t *testing.T) {
 
 	// Failure case
 	cmdFail := &commands.GetReportFormats{ReportFormatID: "notfound"}
-	respFail, err := cli.GetReportFormats(cmdFail)
+	respFail, err := cli.GetReportFormats(context.Background(), cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetReportFormats (fail): %s", err)
 	}
@@ -175,7 +176,7 @@ func TestDeleteReportFormat(t *testing.T) {
 	}
 
 	cmd := &commands.DeleteReportFormat{ReportFormatID: "format-uuid", Ultimate: true}
-	resp, err := cli.DeleteReportFormat(cmd)
+	resp, err := cli.DeleteReportFormat(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
@@ -194,7 +195,7 @@ func TestVerifyReportFormat(t *testing.T) {
 	}
 
 	cmd := &commands.VerifyReportFormat{ReportFormatID: "format-uuid"}
-	resp, err := cli.VerifyReportFormat(cmd)
+	resp, err := cli.VerifyReportFormat(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
@@ -219,7 +220,7 @@ func TestCreateReportConfig(t *testing.T) {
 			ID: "format-uuid",
 		},
 	}
-	resp, err := cli.CreateReportConfig(cmd)
+	resp, err := cli.CreateReportConfig(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateReportConfig: %s", err)
 	}
@@ -240,7 +241,7 @@ func TestCreateReportConfig(t *testing.T) {
 			ID: "wrong-uuid",
 		},
 	}
-	respFail, err := cli.CreateReportConfig(cmdFail)
+	respFail, err := cli.CreateReportConfig(context.Background(), cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateReportConfig (fail): %s", err)
 	}
@@ -262,7 +263,7 @@ func TestModifyReportConfig(t *testing.T) {
 	cmd := &commands.ModifyReportConfig{
 		Name: "Renamed config",
 	}
-	resp, err := cli.ModifyReportConfig(cmd)
+	resp, err := cli.ModifyReportConfig(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyReportConfig: %s", err)
 	}
@@ -280,7 +281,7 @@ func TestModifyReportConfig(t *testing.T) {
 	cmdParam := &commands.ModifyReportConfig{
 		Params: []commands.ReportConfigParam{{Name: "Node Distance", UsingDefault: true}},
 	}
-	respParam, err := cli.ModifyReportConfig(cmdParam)
+	respParam, err := cli.ModifyReportConfig(context.Background(), cmdParam)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyReportConfig (param): %s", err)
 	}
@@ -298,7 +299,7 @@ func TestModifyReportConfig(t *testing.T) {
 	cmdFail := &commands.ModifyReportConfig{
 		Name: "Invalid",
 	}
-	respFail, err := cli.ModifyReportConfig(cmdFail)
+	respFail, err := cli.ModifyReportConfig(context.Background(), cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyReportConfig (fail): %s", err)
 	}
@@ -321,7 +322,7 @@ func TestCreateReportFormat(t *testing.T) {
 		Name: "Test Format",
 		Copy: "copy-uuid",
 	}
-	resp, err := cli.CreateReportFormat(cmd)
+	resp, err := cli.CreateReportFormat(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateReportFormat: %s", err)
 	}
@@ -340,7 +341,7 @@ func TestCreateReportFormat(t *testing.T) {
 		Name: "Wrong Format",
 		Copy: "wrong-copy",
 	}
-	respFail, err := cli.CreateReportFormat(cmdFail)
+	respFail, err := cli.CreateReportFormat(context.Background(), cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateReportFormat (fail): %s", err)
 	}
@@ -363,7 +364,7 @@ func TestModifyReportFormat(t *testing.T) {
 		ReportFormatID: "format-uuid",
 		Name:           "New Name",
 	}
-	resp, err := cli.ModifyReportFormat(cmd)
+	resp, err := cli.ModifyReportFormat(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyReportFormat: %s", err)
 	}
@@ -382,7 +383,7 @@ func TestModifyReportFormat(t *testing.T) {
 			Value: "red",
 		},
 	}
-	respParam, err := cli.ModifyReportFormat(cmdParam)
+	respParam, err := cli.ModifyReportFormat(context.Background(), cmdParam)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyReportFormat (param): %s", err)
 	}
@@ -398,7 +399,7 @@ func TestModifyReportFormat(t *testing.T) {
 		ReportFormatID: "wrong-uuid",
 		Name:           "Invalid",
 	}
-	respFail, err := cli.ModifyReportFormat(cmdFail)
+	respFail, err := cli.ModifyReportFormat(context.Background(), cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyReportFormat (fail): %s", err)
 	}
@@ -420,7 +421,7 @@ func TestGetReportConfigs(t *testing.T) {
 	cmd := &commands.GetReportConfigs{
 		ReportConfigID: "config-uuid",
 	}
-	resp, err := cli.GetReportConfigs(cmd)
+	resp, err := cli.GetReportConfigs(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("GetReportConfigs failed: %v", err)
 	}
@@ -435,7 +436,7 @@ func TestGetReportConfigs(t *testing.T) {
 	cmd = &commands.GetReportConfigs{
 		ReportConfigID: "notfound",
 	}
-	resp, err = cli.GetReportConfigs(cmd)
+	resp, err = cli.GetReportConfigs(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("GetReportConfigs failed: %v", err)
 	}
@@ -455,7 +456,7 @@ func TestDeleteReportConfig(t *testing.T) {
 		ReportConfigID: "config-uuid",
 		Ultimate:       true,
 	}
-	resp, err := cli.DeleteReportConfig(cmd)
+	resp, err := cli.DeleteReportConfig(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("DeleteReportConfig failed: %v", err)
 	}
@@ -468,7 +469,7 @@ func TestDeleteReportConfig(t *testing.T) {
 		ReportConfigID: "notfound",
 		Ultimate:       true,
 	}
-	resp, err = cli.DeleteReportConfig(cmd)
+	resp, err = cli.DeleteReportConfig(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("DeleteReportConfig failed: %v", err)
 	}

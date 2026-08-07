@@ -22,17 +22,22 @@ func New(conn gmp.Connection) gmp.Client {
 	return cli
 }
 
-func (cli *client) Authenticate(cmd *commands.Authenticate) (resp *commands.AuthenticateResponse, err error) {
-	resp = new(commands.AuthenticateResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
+// execute runs cmd against conn and decodes the response into a freshly
+// allocated *Resp, collapsing the repetitive "new response, execute, return"
+// pattern shared by nearly every wrapper method below.
+func execute[Resp any](ctx context.Context, conn gmp.Connection, cmd any) (*Resp, error) {
+	resp := new(Resp)
+	err := conn.Execute(ctx, cmd, resp)
 	return resp, err
 }
 
+func (cli *client) Authenticate(ctx context.Context, cmd *commands.Authenticate) (*commands.AuthenticateResponse, error) {
+	return execute[commands.AuthenticateResponse](ctx, cli.conn, cmd)
+}
+
 // GetConfigsRaw provides the low-level method for direct command execution.
-func (cli *client) GetConfigsRaw(ctx context.Context, cmd *commands.GetConfigs) (resp *commands.GetConfigsResponse, err error) {
-	resp = new(commands.GetConfigsResponse)
-	err = cli.conn.Execute(ctx, cmd, resp)
-	return resp, err
+func (cli *client) GetConfigsRaw(ctx context.Context, cmd *commands.GetConfigs) (*commands.GetConfigsResponse, error) {
+	return execute[commands.GetConfigsResponse](ctx, cli.conn, cmd)
 }
 
 // GetConfigs retrieves configs with optional filters.
@@ -45,10 +50,8 @@ func (cli *client) GetConfigs(ctx context.Context, args ...filtering.FilterArg) 
 }
 
 // GetScannersRaw provides the low-level method for direct command execution.
-func (cli *client) GetScannersRaw(ctx context.Context, cmd *commands.GetScanners) (resp *commands.GetScannersResponse, err error) {
-	resp = new(commands.GetScannersResponse)
-	err = cli.conn.Execute(ctx, cmd, resp)
-	return resp, err
+func (cli *client) GetScannersRaw(ctx context.Context, cmd *commands.GetScanners) (*commands.GetScannersResponse, error) {
+	return execute[commands.GetScannersResponse](ctx, cli.conn, cmd)
 }
 
 // GetScanners retrieves scanners with optional filters.
@@ -60,53 +63,37 @@ func (cli *client) GetScanners(ctx context.Context, args ...filtering.FilterArg)
 	return cli.GetScannersRaw(ctx, cmd)
 }
 
-func (cli *client) GetPreferences(cmd *commands.GetPreferences) (resp *commands.GetPreferencesResponse, err error) {
-	resp = new(commands.GetPreferencesResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) GetPreferences(ctx context.Context, cmd *commands.GetPreferences) (*commands.GetPreferencesResponse, error) {
+	return execute[commands.GetPreferencesResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) CreateConfig(cmd *commands.CreateConfig) (resp *commands.CreateConfigResponse, err error) {
-	resp = new(commands.CreateConfigResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) CreateConfig(ctx context.Context, cmd *commands.CreateConfig) (*commands.CreateConfigResponse, error) {
+	return execute[commands.CreateConfigResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ModifyConfig(cmd *commands.ModifyConfig) (resp *commands.ModifyConfigResponse, err error) {
-	resp = new(commands.ModifyConfigResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifyConfig(ctx context.Context, cmd *commands.ModifyConfig) (*commands.ModifyConfigResponse, error) {
+	return execute[commands.ModifyConfigResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) CreateTask(cmd *commands.CreateTask) (resp *commands.CreateTaskResponse, err error) {
-	resp = new(commands.CreateTaskResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) CreateTask(ctx context.Context, cmd *commands.CreateTask) (*commands.CreateTaskResponse, error) {
+	return execute[commands.CreateTaskResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ModifyTask(cmd *commands.ModifyTask) (resp *commands.ModifyTaskResponse, err error) {
-	resp = new(commands.ModifyTaskResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifyTask(ctx context.Context, cmd *commands.ModifyTask) (*commands.ModifyTaskResponse, error) {
+	return execute[commands.ModifyTaskResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) CreateTarget(cmd *commands.CreateTarget) (resp *commands.CreateTargetResponse, err error) {
-	resp = new(commands.CreateTargetResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) CreateTarget(ctx context.Context, cmd *commands.CreateTarget) (*commands.CreateTargetResponse, error) {
+	return execute[commands.CreateTargetResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ModifyTarget(cmd *commands.ModifyTarget) (resp *commands.ModifyTargetResponse, err error) {
-	resp = new(commands.ModifyTargetResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifyTarget(ctx context.Context, cmd *commands.ModifyTarget) (*commands.ModifyTargetResponse, error) {
+	return execute[commands.ModifyTargetResponse](ctx, cli.conn, cmd)
 }
 
 // GetTargetsRaw provides the low-level method for direct command execution.
-func (cli *client) GetTargetsRaw(ctx context.Context, cmd *commands.GetTargets) (resp *commands.GetTargetsResponse, err error) {
-	resp = new(commands.GetTargetsResponse)
-	err = cli.conn.Execute(ctx, cmd, resp)
-	return resp, err
+func (cli *client) GetTargetsRaw(ctx context.Context, cmd *commands.GetTargets) (*commands.GetTargetsResponse, error) {
+	return execute[commands.GetTargetsResponse](ctx, cli.conn, cmd)
 }
 
 // GetTargets retrieves targets with optional filters.
@@ -118,17 +105,13 @@ func (cli *client) GetTargets(ctx context.Context, args ...filtering.FilterArg) 
 	return cli.GetTargetsRaw(ctx, cmd)
 }
 
-func (cli *client) DeleteTarget(cmd *commands.DeleteTarget) (resp *commands.DeleteTargetResponse, err error) {
-	resp = new(commands.DeleteTargetResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DeleteTarget(ctx context.Context, cmd *commands.DeleteTarget) (*commands.DeleteTargetResponse, error) {
+	return execute[commands.DeleteTargetResponse](ctx, cli.conn, cmd)
 }
 
 // GetPortListsRaw provides the low-level method for direct command execution.
-func (cli *client) GetPortListsRaw(ctx context.Context, cmd *commands.GetPortLists) (resp *commands.GetPortListsResponse, err error) {
-	resp = new(commands.GetPortListsResponse)
-	err = cli.conn.Execute(ctx, cmd, resp)
-	return resp, err
+func (cli *client) GetPortListsRaw(ctx context.Context, cmd *commands.GetPortLists) (*commands.GetPortListsResponse, error) {
+	return execute[commands.GetPortListsResponse](ctx, cli.conn, cmd)
 }
 
 // GetPortLists retrieves port lists with optional filters.
@@ -140,17 +123,13 @@ func (cli *client) GetPortLists(ctx context.Context, args ...filtering.FilterArg
 	return cli.GetPortListsRaw(ctx, cmd)
 }
 
-func (cli *client) StartTask(cmd *commands.StartTask) (resp *commands.StartTaskResponse, err error) {
-	resp = new(commands.StartTaskResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) StartTask(ctx context.Context, cmd *commands.StartTask) (*commands.StartTaskResponse, error) {
+	return execute[commands.StartTaskResponse](ctx, cli.conn, cmd)
 }
 
 // GetTasksRaw provides the low-level method for direct command execution.
-func (cli *client) GetTasksRaw(ctx context.Context, cmd *commands.GetTasks) (resp *commands.GetTasksResponse, err error) {
-	resp = new(commands.GetTasksResponse)
-	err = cli.conn.Execute(ctx, cmd, resp)
-	return resp, err
+func (cli *client) GetTasksRaw(ctx context.Context, cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
+	return execute[commands.GetTasksResponse](ctx, cli.conn, cmd)
 }
 
 // GetTasks retrieves tasks with optional filters.
@@ -162,23 +141,17 @@ func (cli *client) GetTasks(ctx context.Context, args ...filtering.FilterArg) (*
 	return cli.GetTasksRaw(ctx, cmd)
 }
 
-func (cli *client) StopTask(cmd *commands.StopTask) (resp *commands.StopTaskResponse, err error) {
-	resp = new(commands.StopTaskResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) StopTask(ctx context.Context, cmd *commands.StopTask) (*commands.StopTaskResponse, error) {
+	return execute[commands.StopTaskResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) DeleteTask(cmd *commands.DeleteTask) (resp *commands.DeleteTaskResponse, err error) {
-	resp = new(commands.DeleteTaskResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DeleteTask(ctx context.Context, cmd *commands.DeleteTask) (*commands.DeleteTaskResponse, error) {
+	return execute[commands.DeleteTaskResponse](ctx, cli.conn, cmd)
 }
 
 // GetResultsRaw provides the low-level method for direct command execution.
-func (cli *client) GetResultsRaw(ctx context.Context, cmd *commands.GetResults) (resp *commands.GetResultsResponse, err error) {
-	resp = new(commands.GetResultsResponse)
-	err = cli.conn.Execute(ctx, cmd, resp)
-	return resp, err
+func (cli *client) GetResultsRaw(ctx context.Context, cmd *commands.GetResults) (*commands.GetResultsResponse, error) {
+	return execute[commands.GetResultsResponse](ctx, cli.conn, cmd)
 }
 
 // GetResults retrieves results with optional filters.
@@ -191,10 +164,8 @@ func (cli *client) GetResults(ctx context.Context, args ...filtering.FilterArg) 
 }
 
 // GetVulnsRaw provides the low-level method for direct command execution.
-func (cli *client) GetVulnsRaw(ctx context.Context, cmd *commands.GetVulns) (resp *commands.GetVulnsResponse, err error) {
-	resp = new(commands.GetVulnsResponse)
-	err = cli.conn.Execute(ctx, cmd, resp)
-	return resp, err
+func (cli *client) GetVulnsRaw(ctx context.Context, cmd *commands.GetVulns) (*commands.GetVulnsResponse, error) {
+	return execute[commands.GetVulnsResponse](ctx, cli.conn, cmd)
 }
 
 // GetVulns retrieves vulnerabilities with optional filters.
@@ -206,59 +177,41 @@ func (cli *client) GetVulns(ctx context.Context, args ...filtering.FilterArg) (*
 	return cli.GetVulnsRaw(ctx, cmd)
 }
 
-func (cli *client) CreateAlert(cmd *commands.CreateAlert) (resp *commands.CreateAlertResponse, err error) {
-	resp = new(commands.CreateAlertResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) CreateAlert(ctx context.Context, cmd *commands.CreateAlert) (*commands.CreateAlertResponse, error) {
+	return execute[commands.CreateAlertResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetAlerts(cmd *commands.GetAlerts) (resp *commands.GetAlertsResponse, err error) {
-	resp = new(commands.GetAlertsResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) GetAlerts(ctx context.Context, cmd *commands.GetAlerts) (*commands.GetAlertsResponse, error) {
+	return execute[commands.GetAlertsResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ModifyAlert(cmd *commands.ModifyAlert) (resp *commands.ModifyAlertResponse, err error) {
-	resp = new(commands.ModifyAlertResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifyAlert(ctx context.Context, cmd *commands.ModifyAlert) (*commands.ModifyAlertResponse, error) {
+	return execute[commands.ModifyAlertResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) DeleteAlert(cmd *commands.DeleteAlert) (resp *commands.DeleteAlertResponse, err error) {
-	resp = new(commands.DeleteAlertResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DeleteAlert(ctx context.Context, cmd *commands.DeleteAlert) (*commands.DeleteAlertResponse, error) {
+	return execute[commands.DeleteAlertResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) TestAlert(cmd *commands.TestAlert) (resp *commands.TestAlertResponse, err error) {
-	resp = new(commands.TestAlertResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) TestAlert(ctx context.Context, cmd *commands.TestAlert) (*commands.TestAlertResponse, error) {
+	return execute[commands.TestAlertResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ResumeTask(cmd *commands.ResumeTask) (resp *commands.ResumeTaskResponse, err error) {
-	resp = new(commands.ResumeTaskResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ResumeTask(ctx context.Context, cmd *commands.ResumeTask) (*commands.ResumeTaskResponse, error) {
+	return execute[commands.ResumeTaskResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) CreateAsset(cmd *commands.CreateAsset) (resp *commands.CreateAssetResponse, err error) {
-	resp = new(commands.CreateAssetResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) CreateAsset(ctx context.Context, cmd *commands.CreateAsset) (*commands.CreateAssetResponse, error) {
+	return execute[commands.CreateAssetResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ModifyAsset(cmd *commands.ModifyAsset) (resp *commands.ModifyAssetResponse, err error) {
-	resp = new(commands.ModifyAssetResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifyAsset(ctx context.Context, cmd *commands.ModifyAsset) (*commands.ModifyAssetResponse, error) {
+	return execute[commands.ModifyAssetResponse](ctx, cli.conn, cmd)
 }
 
 // GetAssetsRaw provides the low-level method for direct command execution.
-func (cli *client) GetAssetsRaw(ctx context.Context, cmd *commands.GetAssets) (resp *commands.GetAssetsResponse, err error) {
-	resp = new(commands.GetAssetsResponse)
-	err = cli.conn.Execute(ctx, cmd, resp)
-	return resp, err
+func (cli *client) GetAssetsRaw(ctx context.Context, cmd *commands.GetAssets) (*commands.GetAssetsResponse, error) {
+	return execute[commands.GetAssetsResponse](ctx, cli.conn, cmd)
 }
 
 // GetAssets retrieves assets with optional filters.
@@ -270,53 +223,37 @@ func (cli *client) GetAssets(ctx context.Context, args ...filtering.FilterArg) (
 	return cli.GetAssetsRaw(ctx, cmd)
 }
 
-func (cli *client) DeleteAsset(cmd *commands.DeleteAsset) (resp *commands.DeleteAssetResponse, err error) {
-	resp = new(commands.DeleteAssetResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DeleteAsset(ctx context.Context, cmd *commands.DeleteAsset) (*commands.DeleteAssetResponse, error) {
+	return execute[commands.DeleteAssetResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) CreateSchedule(cmd *commands.CreateSchedule) (resp *commands.CreateScheduleResponse, err error) {
-	resp = new(commands.CreateScheduleResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) CreateSchedule(ctx context.Context, cmd *commands.CreateSchedule) (*commands.CreateScheduleResponse, error) {
+	return execute[commands.CreateScheduleResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ModifySchedule(cmd *commands.ModifySchedule) (resp *commands.ModifyScheduleResponse, err error) {
-	resp = new(commands.ModifyScheduleResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifySchedule(ctx context.Context, cmd *commands.ModifySchedule) (*commands.ModifyScheduleResponse, error) {
+	return execute[commands.ModifyScheduleResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetSchedules(cmd *commands.GetSchedules) (resp *commands.GetSchedulesResponse, err error) {
-	resp = new(commands.GetSchedulesResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) GetSchedules(ctx context.Context, cmd *commands.GetSchedules) (*commands.GetSchedulesResponse, error) {
+	return execute[commands.GetSchedulesResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) DeleteSchedule(cmd *commands.DeleteSchedule) (resp *commands.DeleteScheduleResponse, err error) {
-	resp = new(commands.DeleteScheduleResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DeleteSchedule(ctx context.Context, cmd *commands.DeleteSchedule) (*commands.DeleteScheduleResponse, error) {
+	return execute[commands.DeleteScheduleResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) CreateOverride(cmd *commands.CreateOverride) (resp *commands.CreateOverrideResponse, err error) {
-	resp = new(commands.CreateOverrideResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) CreateOverride(ctx context.Context, cmd *commands.CreateOverride) (*commands.CreateOverrideResponse, error) {
+	return execute[commands.CreateOverrideResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) DeleteOverride(cmd *commands.DeleteOverride) (resp *commands.DeleteOverrideResponse, err error) {
-	resp = new(commands.DeleteOverrideResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DeleteOverride(ctx context.Context, cmd *commands.DeleteOverride) (*commands.DeleteOverrideResponse, error) {
+	return execute[commands.DeleteOverrideResponse](ctx, cli.conn, cmd)
 }
 
 // GetOverridesRaw provides the low-level method for direct command execution.
-func (cli *client) GetOverridesRaw(ctx context.Context, cmd *commands.GetOverrides) (resp *commands.GetOverridesResponse, err error) {
-	resp = new(commands.GetOverridesResponse)
-	err = cli.conn.Execute(ctx, cmd, resp)
-	return resp, err
+func (cli *client) GetOverridesRaw(ctx context.Context, cmd *commands.GetOverrides) (*commands.GetOverridesResponse, error) {
+	return execute[commands.GetOverridesResponse](ctx, cli.conn, cmd)
 }
 
 // GetOverrides retrieves overrides with optional filters.
@@ -328,233 +265,157 @@ func (cli *client) GetOverrides(ctx context.Context, args ...filtering.FilterArg
 	return cli.GetOverridesRaw(ctx, cmd)
 }
 
-func (cli *client) ModifyOverride(cmd *commands.ModifyOverride) (resp *commands.ModifyOverrideResponse, err error) {
-	resp = new(commands.ModifyOverrideResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifyOverride(ctx context.Context, cmd *commands.ModifyOverride) (*commands.ModifyOverrideResponse, error) {
+	return execute[commands.ModifyOverrideResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) CreateReport(cmd *commands.CreateReport) (resp *commands.CreateReportResponse, err error) {
-	resp = new(commands.CreateReportResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) CreateReport(ctx context.Context, cmd *commands.CreateReport) (*commands.CreateReportResponse, error) {
+	return execute[commands.CreateReportResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetReports(cmd *commands.GetReports) (resp *commands.GetReportsResponse, err error) {
-	resp = new(commands.GetReportsResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) GetReports(ctx context.Context, cmd *commands.GetReports) (*commands.GetReportsResponse, error) {
+	return execute[commands.GetReportsResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) DeleteReport(cmd *commands.DeleteReport) (resp *commands.DeleteReportResponse, err error) {
-	resp = new(commands.DeleteReportResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DeleteReport(ctx context.Context, cmd *commands.DeleteReport) (*commands.DeleteReportResponse, error) {
+	return execute[commands.DeleteReportResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) CreateReportFormat(cmd *commands.CreateReportFormat) (resp *commands.CreateReportFormatResponse, err error) {
-	resp = new(commands.CreateReportFormatResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) CreateReportFormat(ctx context.Context, cmd *commands.CreateReportFormat) (*commands.CreateReportFormatResponse, error) {
+	return execute[commands.CreateReportFormatResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ModifyReportFormat(cmd *commands.ModifyReportFormat) (resp *commands.ModifyReportFormatResponse, err error) {
-	resp = new(commands.ModifyReportFormatResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifyReportFormat(ctx context.Context, cmd *commands.ModifyReportFormat) (*commands.ModifyReportFormatResponse, error) {
+	return execute[commands.ModifyReportFormatResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetReportFormats(cmd *commands.GetReportFormats) (resp *commands.GetReportFormatsResponse, err error) {
-	resp = new(commands.GetReportFormatsResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) GetReportFormats(ctx context.Context, cmd *commands.GetReportFormats) (*commands.GetReportFormatsResponse, error) {
+	return execute[commands.GetReportFormatsResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) DeleteReportFormat(cmd *commands.DeleteReportFormat) (resp *commands.DeleteReportFormatResponse, err error) {
-	resp = new(commands.DeleteReportFormatResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DeleteReportFormat(ctx context.Context, cmd *commands.DeleteReportFormat) (*commands.DeleteReportFormatResponse, error) {
+	return execute[commands.DeleteReportFormatResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) VerifyReportFormat(cmd *commands.VerifyReportFormat) (resp *commands.VerifyReportFormatResponse, err error) {
-	resp = new(commands.VerifyReportFormatResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) VerifyReportFormat(ctx context.Context, cmd *commands.VerifyReportFormat) (*commands.VerifyReportFormatResponse, error) {
+	return execute[commands.VerifyReportFormatResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) CreateReportConfig(cmd *commands.CreateReportConfig) (resp *commands.CreateReportConfigResponse, err error) {
-	resp = new(commands.CreateReportConfigResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) CreateReportConfig(ctx context.Context, cmd *commands.CreateReportConfig) (*commands.CreateReportConfigResponse, error) {
+	return execute[commands.CreateReportConfigResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ModifyReportConfig(cmd *commands.ModifyReportConfig) (resp *commands.ModifyReportConfigResponse, err error) {
-	resp = new(commands.ModifyReportConfigResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifyReportConfig(ctx context.Context, cmd *commands.ModifyReportConfig) (*commands.ModifyReportConfigResponse, error) {
+	return execute[commands.ModifyReportConfigResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetReportConfigs(cmd *commands.GetReportConfigs) (resp *commands.GetReportConfigsResponse, err error) {
-	resp = new(commands.GetReportConfigsResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) GetReportConfigs(ctx context.Context, cmd *commands.GetReportConfigs) (*commands.GetReportConfigsResponse, error) {
+	return execute[commands.GetReportConfigsResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) DeleteReportConfig(cmd *commands.DeleteReportConfig) (resp *commands.DeleteReportConfigResponse, err error) {
-	resp = new(commands.DeleteReportConfigResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DeleteReportConfig(ctx context.Context, cmd *commands.DeleteReportConfig) (*commands.DeleteReportConfigResponse, error) {
+	return execute[commands.DeleteReportConfigResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetSystemReports(cmd *commands.GetSystemReports) (resp *commands.GetSystemReportsResponse, err error) {
-	resp = new(commands.GetSystemReportsResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) GetSystemReports(ctx context.Context, cmd *commands.GetSystemReports) (*commands.GetSystemReportsResponse, error) {
+	return execute[commands.GetSystemReportsResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) CreateCredential(cmd *commands.CreateCredential) (resp *commands.CreateCredentialResponse, err error) {
-	resp = new(commands.CreateCredentialResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) CreateCredential(ctx context.Context, cmd *commands.CreateCredential) (*commands.CreateCredentialResponse, error) {
+	return execute[commands.CreateCredentialResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ModifyCredential(cmd *commands.ModifyCredential) (resp *commands.ModifyCredentialResponse, err error) {
-	resp = new(commands.ModifyCredentialResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifyCredential(ctx context.Context, cmd *commands.ModifyCredential) (*commands.ModifyCredentialResponse, error) {
+	return execute[commands.ModifyCredentialResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetCredentials(cmd *commands.GetCredentials) (resp *commands.GetCredentialsResponse, err error) {
-	resp = new(commands.GetCredentialsResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) GetCredentials(ctx context.Context, cmd *commands.GetCredentials) (*commands.GetCredentialsResponse, error) {
+	return execute[commands.GetCredentialsResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) DeleteCredential(cmd *commands.DeleteCredential) (resp *commands.DeleteCredentialResponse, err error) {
-	resp = new(commands.DeleteCredentialResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DeleteCredential(ctx context.Context, cmd *commands.DeleteCredential) (*commands.DeleteCredentialResponse, error) {
+	return execute[commands.DeleteCredentialResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) CreateScanner(cmd *commands.CreateScanner) (resp *commands.CreateScannerResponse, err error) {
-	resp = new(commands.CreateScannerResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) CreateScanner(ctx context.Context, cmd *commands.CreateScanner) (*commands.CreateScannerResponse, error) {
+	return execute[commands.CreateScannerResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ModifyScanner(cmd *commands.ModifyScanner) (resp *commands.ModifyScannerResponse, err error) {
-	resp = new(commands.ModifyScannerResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifyScanner(ctx context.Context, cmd *commands.ModifyScanner) (*commands.ModifyScannerResponse, error) {
+	return execute[commands.ModifyScannerResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) DeleteScanner(cmd *commands.DeleteScanner) (resp *commands.DeleteScannerResponse, err error) {
-	resp = new(commands.DeleteScannerResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DeleteScanner(ctx context.Context, cmd *commands.DeleteScanner) (*commands.DeleteScannerResponse, error) {
+	return execute[commands.DeleteScannerResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) VerifyScanner(cmd *commands.VerifyScanner) (resp *commands.VerifyScannerResponse, err error) {
-	resp = new(commands.VerifyScannerResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) VerifyScanner(ctx context.Context, cmd *commands.VerifyScanner) (*commands.VerifyScannerResponse, error) {
+	return execute[commands.VerifyScannerResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) CreatePortList(cmd *commands.CreatePortList) (resp *commands.CreatePortListResponse, err error) {
-	resp = new(commands.CreatePortListResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) CreatePortList(ctx context.Context, cmd *commands.CreatePortList) (*commands.CreatePortListResponse, error) {
+	return execute[commands.CreatePortListResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ModifyPortList(cmd *commands.ModifyPortList) (resp *commands.ModifyPortListResponse, err error) {
-	resp = new(commands.ModifyPortListResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifyPortList(ctx context.Context, cmd *commands.ModifyPortList) (*commands.ModifyPortListResponse, error) {
+	return execute[commands.ModifyPortListResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) DeletePortList(cmd *commands.DeletePortList) (resp *commands.DeletePortListResponse, err error) {
-	resp = new(commands.DeletePortListResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DeletePortList(ctx context.Context, cmd *commands.DeletePortList) (*commands.DeletePortListResponse, error) {
+	return execute[commands.DeletePortListResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) CreatePortRange(cmd *commands.CreatePortRange) (resp *commands.CreatePortRangeResponse, err error) {
-	resp = new(commands.CreatePortRangeResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) CreatePortRange(ctx context.Context, cmd *commands.CreatePortRange) (*commands.CreatePortRangeResponse, error) {
+	return execute[commands.CreatePortRangeResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) DeletePortRange(cmd *commands.DeletePortRange) (resp *commands.DeletePortRangeResponse, err error) {
-	resp = new(commands.DeletePortRangeResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DeletePortRange(ctx context.Context, cmd *commands.DeletePortRange) (*commands.DeletePortRangeResponse, error) {
+	return execute[commands.DeletePortRangeResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) DescribeAuth(cmd *commands.DescribeAuth) (resp *commands.DescribeAuthResponse, err error) {
-	resp = new(commands.DescribeAuthResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DescribeAuth(ctx context.Context, cmd *commands.DescribeAuth) (*commands.DescribeAuthResponse, error) {
+	return execute[commands.DescribeAuthResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ModifyAuth(cmd *commands.ModifyAuth) (resp *commands.ModifyAuthResponse, err error) {
-	resp = new(commands.ModifyAuthResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifyAuth(ctx context.Context, cmd *commands.ModifyAuth) (*commands.ModifyAuthResponse, error) {
+	return execute[commands.ModifyAuthResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetInfo(cmd *commands.GetInfo) (resp *commands.GetInfoResponse, err error) {
-	resp = new(commands.GetInfoResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) GetInfo(ctx context.Context, cmd *commands.GetInfo) (*commands.GetInfoResponse, error) {
+	return execute[commands.GetInfoResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetVersion(cmd *commands.GetVersion) (resp *commands.GetVersionResponse, err error) {
-	resp = new(commands.GetVersionResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) GetVersion(ctx context.Context, cmd *commands.GetVersion) (*commands.GetVersionResponse, error) {
+	return execute[commands.GetVersionResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) Help(cmd *commands.Help) (resp *commands.HelpResponse, err error) {
-	resp = new(commands.HelpResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) Help(ctx context.Context, cmd *commands.Help) (*commands.HelpResponse, error) {
+	return execute[commands.HelpResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) DeleteConfig(cmd *commands.DeleteConfig) (resp *commands.DeleteConfigResponse, err error) {
-	resp = new(commands.DeleteConfigResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DeleteConfig(ctx context.Context, cmd *commands.DeleteConfig) (*commands.DeleteConfigResponse, error) {
+	return execute[commands.DeleteConfigResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) SyncConfig(cmd *commands.SyncConfig) (resp *commands.SyncConfigResponse, err error) {
-	resp = new(commands.SyncConfigResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) SyncConfig(ctx context.Context, cmd *commands.SyncConfig) (*commands.SyncConfigResponse, error) {
+	return execute[commands.SyncConfigResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) MoveTask(cmd *commands.MoveTask) (resp *commands.MoveTaskResponse, err error) {
-	resp = new(commands.MoveTaskResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) MoveTask(ctx context.Context, cmd *commands.MoveTask) (*commands.MoveTaskResponse, error) {
+	return execute[commands.MoveTaskResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) CreateTLSCertificate(cmd *commands.CreateTLSCertificate) (resp *commands.CreateTLSCertificateResponse, err error) {
-	resp = new(commands.CreateTLSCertificateResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) CreateTLSCertificate(ctx context.Context, cmd *commands.CreateTLSCertificate) (*commands.CreateTLSCertificateResponse, error) {
+	return execute[commands.CreateTLSCertificateResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ModifyTLSCertificate(cmd *commands.ModifyTLSCertificate) (resp *commands.ModifyTLSCertificateResponse, err error) {
-	resp = new(commands.ModifyTLSCertificateResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifyTLSCertificate(ctx context.Context, cmd *commands.ModifyTLSCertificate) (*commands.ModifyTLSCertificateResponse, error) {
+	return execute[commands.ModifyTLSCertificateResponse](ctx, cli.conn, cmd)
 }
 
 // GetTLSCertificatesRaw provides the low-level method for direct command execution.
-func (cli *client) GetTLSCertificatesRaw(ctx context.Context, cmd *commands.GetTLSCertificates) (resp *commands.GetTLSCertificatesResponse, err error) {
-	resp = new(commands.GetTLSCertificatesResponse)
-	err = cli.conn.Execute(ctx, cmd, resp)
-	return resp, err
+func (cli *client) GetTLSCertificatesRaw(ctx context.Context, cmd *commands.GetTLSCertificates) (*commands.GetTLSCertificatesResponse, error) {
+	return execute[commands.GetTLSCertificatesResponse](ctx, cli.conn, cmd)
 }
 
 // GetTLSCertificates retrieves TLS certificates with optional filters.
@@ -566,65 +427,45 @@ func (cli *client) GetTLSCertificates(ctx context.Context, args ...filtering.Fil
 	return cli.GetTLSCertificatesRaw(ctx, cmd)
 }
 
-func (cli *client) ModifyAgents(cmd *commands.ModifyAgents) (resp *commands.ModifyAgentsResponse, err error) {
-	resp = new(commands.ModifyAgentsResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifyAgents(ctx context.Context, cmd *commands.ModifyAgents) (*commands.ModifyAgentsResponse, error) {
+	return execute[commands.ModifyAgentsResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetAgents(cmd *commands.GetAgents) (resp *commands.GetAgentsResponse, err error) {
-	resp = new(commands.GetAgentsResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) GetAgents(ctx context.Context, cmd *commands.GetAgents) (*commands.GetAgentsResponse, error) {
+	return execute[commands.GetAgentsResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) DeleteAgents(cmd *commands.DeleteAgents) (resp *commands.DeleteAgentsResponse, err error) {
-	resp = new(commands.DeleteAgentsResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DeleteAgents(ctx context.Context, cmd *commands.DeleteAgents) (*commands.DeleteAgentsResponse, error) {
+	return execute[commands.DeleteAgentsResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetNVTs(cmd *commands.GetNVTs) (resp *commands.GetNVTsResponse, err error) {
-	resp = new(commands.GetNVTsResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) GetNVTs(ctx context.Context, cmd *commands.GetNVTs) (*commands.GetNVTsResponse, error) {
+	return execute[commands.GetNVTsResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetNVTFamilies(cmd *commands.GetNVTFamilies) (resp *commands.GetNVTFamiliesResponse, err error) {
-	resp = new(commands.GetNVTFamiliesResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) GetNVTFamilies(ctx context.Context, cmd *commands.GetNVTFamilies) (*commands.GetNVTFamiliesResponse, error) {
+	return execute[commands.GetNVTFamiliesResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetFeeds(cmd *commands.GetFeeds) (resp *commands.GetFeedsResponse, err error) {
-	resp = new(commands.GetFeedsResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) GetFeeds(ctx context.Context, cmd *commands.GetFeeds) (*commands.GetFeedsResponse, error) {
+	return execute[commands.GetFeedsResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ModifyLicense(cmd *commands.ModifyLicense) (resp *commands.ModifyLicenseResponse, err error) {
-	resp = new(commands.ModifyLicenseResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifyLicense(ctx context.Context, cmd *commands.ModifyLicense) (*commands.ModifyLicenseResponse, error) {
+	return execute[commands.ModifyLicenseResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetLicense(cmd *commands.GetLicense) (resp *commands.GetLicenseResponse, err error) {
-	resp = new(commands.GetLicenseResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) GetLicense(ctx context.Context, cmd *commands.GetLicense) (*commands.GetLicenseResponse, error) {
+	return execute[commands.GetLicenseResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ModifySetting(cmd *commands.ModifySetting) (resp *commands.ModifySettingResponse, err error) {
-	resp = new(commands.ModifySettingResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifySetting(ctx context.Context, cmd *commands.ModifySetting) (*commands.ModifySettingResponse, error) {
+	return execute[commands.ModifySettingResponse](ctx, cli.conn, cmd)
 }
 
 // GetSettingsRaw provides the low-level method for direct command execution.
-func (cli *client) GetSettingsRaw(ctx context.Context, cmd *commands.GetSettings) (resp *commands.GetSettingsResponse, err error) {
-	resp = new(commands.GetSettingsResponse)
-	err = cli.conn.Execute(ctx, cmd, resp)
-	return resp, err
+func (cli *client) GetSettingsRaw(ctx context.Context, cmd *commands.GetSettings) (*commands.GetSettingsResponse, error) {
+	return execute[commands.GetSettingsResponse](ctx, cli.conn, cmd)
 }
 
 // GetSettings retrieves settings with optional filters.
@@ -637,10 +478,8 @@ func (cli *client) GetSettings(ctx context.Context, args ...filtering.FilterArg)
 }
 
 // GetResourceNamesRaw provides the low-level method for direct command execution.
-func (cli *client) GetResourceNamesRaw(ctx context.Context, cmd *commands.GetResourceNames) (resp *commands.GetResourceNamesResponse, err error) {
-	resp = new(commands.GetResourceNamesResponse)
-	err = cli.conn.Execute(ctx, cmd, resp)
-	return resp, err
+func (cli *client) GetResourceNamesRaw(ctx context.Context, cmd *commands.GetResourceNames) (*commands.GetResourceNamesResponse, error) {
+	return execute[commands.GetResourceNamesResponse](ctx, cli.conn, cmd)
 }
 
 // GetResourceNames retrieves resource names with optional filters.
@@ -653,10 +492,8 @@ func (cli *client) GetResourceNames(ctx context.Context, args ...filtering.Filte
 }
 
 // GetAggregatesRaw provides the low-level method for direct command execution.
-func (cli *client) GetAggregatesRaw(ctx context.Context, cmd *commands.GetAggregates) (resp *commands.GetAggregatesResponse, err error) {
-	resp = new(commands.GetAggregatesResponse)
-	err = cli.conn.Execute(ctx, cmd, resp)
-	return resp, err
+func (cli *client) GetAggregatesRaw(ctx context.Context, cmd *commands.GetAggregates) (*commands.GetAggregatesResponse, error) {
+	return execute[commands.GetAggregatesResponse](ctx, cli.conn, cmd)
 }
 
 // GetAggregates retrieves aggregates with optional filters.
@@ -668,51 +505,37 @@ func (cli *client) GetAggregates(ctx context.Context, args ...filtering.FilterAr
 	return cli.GetAggregatesRaw(ctx, cmd)
 }
 
-func (cli *client) GetFeatures(cmd *commands.GetFeatures) (resp *commands.GetFeaturesResponse, err error) {
-	resp = new(commands.GetFeaturesResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) GetFeatures(ctx context.Context, cmd *commands.GetFeatures) (*commands.GetFeaturesResponse, error) {
+	return execute[commands.GetFeaturesResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) EmptyTrashcan(cmd *commands.EmptyTrashcan) (resp *commands.EmptyTrashcanResponse, err error) {
-	resp = new(commands.EmptyTrashcanResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) EmptyTrashcan(ctx context.Context, cmd *commands.EmptyTrashcan) (*commands.EmptyTrashcanResponse, error) {
+	return execute[commands.EmptyTrashcanResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) Restore(cmd *commands.Restore) (resp *commands.RestoreResponse, err error) {
-	resp = new(commands.RestoreResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) Restore(ctx context.Context, cmd *commands.Restore) (*commands.RestoreResponse, error) {
+	return execute[commands.RestoreResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) RunWizard(cmd *commands.RunWizard) (resp *commands.RunWizardResponse, err error) {
-	resp = new(commands.RunWizardResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) RunWizard(ctx context.Context, cmd *commands.RunWizard) (*commands.RunWizardResponse, error) {
+	return execute[commands.RunWizardResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) RawXML(xmlStr string) (string, error) {
-	return cli.conn.RawXML(xmlStr)
+func (cli *client) RawXML(ctx context.Context, xmlStr string) (string, error) {
+	return cli.conn.RawXML(ctx, xmlStr)
 }
 
-func (cli *client) CreateUser(cmd *commands.CreateUser) (resp *commands.CreateUserResponse, err error) {
-	resp = new(commands.CreateUserResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) CreateUser(ctx context.Context, cmd *commands.CreateUser) (*commands.CreateUserResponse, error) {
+	return execute[commands.CreateUserResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ModifyUser(cmd *commands.ModifyUser) (resp *commands.ModifyUserResponse, err error) {
-	resp = new(commands.ModifyUserResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifyUser(ctx context.Context, cmd *commands.ModifyUser) (*commands.ModifyUserResponse, error) {
+	return execute[commands.ModifyUserResponse](ctx, cli.conn, cmd)
 }
 
 // GetUsersRaw provides the low-level method for direct command execution.
-func (cli *client) GetUsersRaw(ctx context.Context, cmd *commands.GetUsers) (resp *commands.GetUsersResponse, err error) {
-	resp = new(commands.GetUsersResponse)
-	err = cli.conn.Execute(ctx, cmd, resp)
-	return resp, err
+func (cli *client) GetUsersRaw(ctx context.Context, cmd *commands.GetUsers) (*commands.GetUsersResponse, error) {
+	return execute[commands.GetUsersResponse](ctx, cli.conn, cmd)
 }
 
 // GetUsers retrieves users with optional filters.
@@ -724,101 +547,69 @@ func (cli *client) GetUsers(ctx context.Context, args ...filtering.FilterArg) (*
 	return cli.GetUsersRaw(ctx, cmd)
 }
 
-func (cli *client) DeleteUser(cmd *commands.DeleteUser) (resp *commands.DeleteUserResponse, err error) {
-	resp = new(commands.DeleteUserResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DeleteUser(ctx context.Context, cmd *commands.DeleteUser) (*commands.DeleteUserResponse, error) {
+	return execute[commands.DeleteUserResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) CreateRole(cmd *commands.CreateRole) (resp *commands.CreateRoleResponse, err error) {
-	resp = new(commands.CreateRoleResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) CreateRole(ctx context.Context, cmd *commands.CreateRole) (*commands.CreateRoleResponse, error) {
+	return execute[commands.CreateRoleResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ModifyRole(cmd *commands.ModifyRole) (resp *commands.ModifyRoleResponse, err error) {
-	resp = new(commands.ModifyRoleResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifyRole(ctx context.Context, cmd *commands.ModifyRole) (*commands.ModifyRoleResponse, error) {
+	return execute[commands.ModifyRoleResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetRoles(cmd *commands.GetRoles) (resp *commands.GetRolesResponse, err error) {
-	resp = new(commands.GetRolesResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) GetRoles(ctx context.Context, cmd *commands.GetRoles) (*commands.GetRolesResponse, error) {
+	return execute[commands.GetRolesResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) DeleteRole(cmd *commands.DeleteRole) (resp *commands.DeleteRoleResponse, err error) {
-	resp = new(commands.DeleteRoleResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DeleteRole(ctx context.Context, cmd *commands.DeleteRole) (*commands.DeleteRoleResponse, error) {
+	return execute[commands.DeleteRoleResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) CreatePermission(cmd *commands.CreatePermission) (resp *commands.CreatePermissionResponse, err error) {
-	resp = new(commands.CreatePermissionResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) CreatePermission(ctx context.Context, cmd *commands.CreatePermission) (*commands.CreatePermissionResponse, error) {
+	return execute[commands.CreatePermissionResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ModifyPermission(cmd *commands.ModifyPermission) (resp *commands.ModifyPermissionResponse, err error) {
-	resp = new(commands.ModifyPermissionResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifyPermission(ctx context.Context, cmd *commands.ModifyPermission) (*commands.ModifyPermissionResponse, error) {
+	return execute[commands.ModifyPermissionResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetPermissions(cmd *commands.GetPermissions) (resp *commands.GetPermissionsResponse, err error) {
-	resp = new(commands.GetPermissionsResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) GetPermissions(ctx context.Context, cmd *commands.GetPermissions) (*commands.GetPermissionsResponse, error) {
+	return execute[commands.GetPermissionsResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) DeletePermission(cmd *commands.DeletePermission) (resp *commands.DeletePermissionResponse, err error) {
-	resp = new(commands.DeletePermissionResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DeletePermission(ctx context.Context, cmd *commands.DeletePermission) (*commands.DeletePermissionResponse, error) {
+	return execute[commands.DeletePermissionResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) CreateGroup(cmd *commands.CreateGroup) (resp *commands.CreateGroupResponse, err error) {
-	resp = new(commands.CreateGroupResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) CreateGroup(ctx context.Context, cmd *commands.CreateGroup) (*commands.CreateGroupResponse, error) {
+	return execute[commands.CreateGroupResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ModifyGroup(cmd *commands.ModifyGroup) (resp *commands.ModifyGroupResponse, err error) {
-	resp = new(commands.ModifyGroupResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifyGroup(ctx context.Context, cmd *commands.ModifyGroup) (*commands.ModifyGroupResponse, error) {
+	return execute[commands.ModifyGroupResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetGroups(cmd *commands.GetGroups) (resp *commands.GetGroupsResponse, err error) {
-	resp = new(commands.GetGroupsResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) GetGroups(ctx context.Context, cmd *commands.GetGroups) (*commands.GetGroupsResponse, error) {
+	return execute[commands.GetGroupsResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) DeleteGroup(cmd *commands.DeleteGroup) (resp *commands.DeleteGroupResponse, err error) {
-	resp = new(commands.DeleteGroupResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DeleteGroup(ctx context.Context, cmd *commands.DeleteGroup) (*commands.DeleteGroupResponse, error) {
+	return execute[commands.DeleteGroupResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) CreateTag(cmd *commands.CreateTag) (resp *commands.CreateTagResponse, err error) {
-	resp = new(commands.CreateTagResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) CreateTag(ctx context.Context, cmd *commands.CreateTag) (*commands.CreateTagResponse, error) {
+	return execute[commands.CreateTagResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ModifyTag(cmd *commands.ModifyTag) (resp *commands.ModifyTagResponse, err error) {
-	resp = new(commands.ModifyTagResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifyTag(ctx context.Context, cmd *commands.ModifyTag) (*commands.ModifyTagResponse, error) {
+	return execute[commands.ModifyTagResponse](ctx, cli.conn, cmd)
 }
 
 // GetTagsRaw provides the low-level method for direct command execution.
-func (cli *client) GetTagsRaw(ctx context.Context, cmd *commands.GetTags) (resp *commands.GetTagsResponse, err error) {
-	resp = new(commands.GetTagsResponse)
-	err = cli.conn.Execute(ctx, cmd, resp)
-	return resp, err
+func (cli *client) GetTagsRaw(ctx context.Context, cmd *commands.GetTags) (*commands.GetTagsResponse, error) {
+	return execute[commands.GetTagsResponse](ctx, cli.conn, cmd)
 }
 
 // GetTags retrieves tags with optional filters.
@@ -830,53 +621,37 @@ func (cli *client) GetTags(ctx context.Context, args ...filtering.FilterArg) (*c
 	return cli.GetTagsRaw(ctx, cmd)
 }
 
-func (cli *client) DeleteTag(cmd *commands.DeleteTag) (resp *commands.DeleteTagResponse, err error) {
-	resp = new(commands.DeleteTagResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DeleteTag(ctx context.Context, cmd *commands.DeleteTag) (*commands.DeleteTagResponse, error) {
+	return execute[commands.DeleteTagResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) CreateNote(cmd *commands.CreateNote) (resp *commands.CreateNoteResponse, err error) {
-	resp = new(commands.CreateNoteResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) CreateNote(ctx context.Context, cmd *commands.CreateNote) (*commands.CreateNoteResponse, error) {
+	return execute[commands.CreateNoteResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ModifyNote(cmd *commands.ModifyNote) (resp *commands.ModifyNoteResponse, err error) {
-	resp = new(commands.ModifyNoteResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifyNote(ctx context.Context, cmd *commands.ModifyNote) (*commands.ModifyNoteResponse, error) {
+	return execute[commands.ModifyNoteResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetNotes(cmd *commands.GetNotes) (resp *commands.GetNotesResponse, err error) {
-	resp = new(commands.GetNotesResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) GetNotes(ctx context.Context, cmd *commands.GetNotes) (*commands.GetNotesResponse, error) {
+	return execute[commands.GetNotesResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) DeleteNote(cmd *commands.DeleteNote) (resp *commands.DeleteNoteResponse, err error) {
-	resp = new(commands.DeleteNoteResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DeleteNote(ctx context.Context, cmd *commands.DeleteNote) (*commands.DeleteNoteResponse, error) {
+	return execute[commands.DeleteNoteResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) CreateFilter(cmd *commands.CreateFilter) (resp *commands.CreateFilterResponse, err error) {
-	resp = new(commands.CreateFilterResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) CreateFilter(ctx context.Context, cmd *commands.CreateFilter) (*commands.CreateFilterResponse, error) {
+	return execute[commands.CreateFilterResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ModifyFilter(cmd *commands.ModifyFilter) (resp *commands.ModifyFilterResponse, err error) {
-	resp = new(commands.ModifyFilterResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifyFilter(ctx context.Context, cmd *commands.ModifyFilter) (*commands.ModifyFilterResponse, error) {
+	return execute[commands.ModifyFilterResponse](ctx, cli.conn, cmd)
 }
 
 // GetFiltersRaw provides the low-level method for direct command execution.
-func (cli *client) GetFiltersRaw(ctx context.Context, cmd *commands.GetFilters) (resp *commands.GetFiltersResponse, err error) {
-	resp = new(commands.GetFiltersResponse)
-	err = cli.conn.Execute(ctx, cmd, resp)
-	return resp, err
+func (cli *client) GetFiltersRaw(ctx context.Context, cmd *commands.GetFilters) (*commands.GetFiltersResponse, error) {
+	return execute[commands.GetFiltersResponse](ctx, cli.conn, cmd)
 }
 
 // GetFilters retrieves filters with optional filters.
@@ -888,29 +663,21 @@ func (cli *client) GetFilters(ctx context.Context, args ...filtering.FilterArg) 
 	return cli.GetFiltersRaw(ctx, cmd)
 }
 
-func (cli *client) DeleteFilter(cmd *commands.DeleteFilter) (resp *commands.DeleteFilterResponse, err error) {
-	resp = new(commands.DeleteFilterResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DeleteFilter(ctx context.Context, cmd *commands.DeleteFilter) (*commands.DeleteFilterResponse, error) {
+	return execute[commands.DeleteFilterResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) CreateTicket(cmd *commands.CreateTicket) (resp *commands.CreateTicketResponse, err error) {
-	resp = new(commands.CreateTicketResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) CreateTicket(ctx context.Context, cmd *commands.CreateTicket) (*commands.CreateTicketResponse, error) {
+	return execute[commands.CreateTicketResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) ModifyTicket(cmd *commands.ModifyTicket) (resp *commands.ModifyTicketResponse, err error) {
-	resp = new(commands.ModifyTicketResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) ModifyTicket(ctx context.Context, cmd *commands.ModifyTicket) (*commands.ModifyTicketResponse, error) {
+	return execute[commands.ModifyTicketResponse](ctx, cli.conn, cmd)
 }
 
 // GetTicketsRaw provides the low-level method for direct command execution.
-func (cli *client) GetTicketsRaw(ctx context.Context, cmd *commands.GetTickets) (resp *commands.GetTicketsResponse, err error) {
-	resp = new(commands.GetTicketsResponse)
-	err = cli.conn.Execute(ctx, cmd, resp)
-	return resp, err
+func (cli *client) GetTicketsRaw(ctx context.Context, cmd *commands.GetTickets) (*commands.GetTicketsResponse, error) {
+	return execute[commands.GetTicketsResponse](ctx, cli.conn, cmd)
 }
 
 // GetTickets retrieves tickets with optional filters.
@@ -922,10 +689,8 @@ func (cli *client) GetTickets(ctx context.Context, args ...filtering.FilterArg) 
 	return cli.GetTicketsRaw(ctx, cmd)
 }
 
-func (cli *client) DeleteTicket(cmd *commands.DeleteTicket) (resp *commands.DeleteTicketResponse, err error) {
-	resp = new(commands.DeleteTicketResponse)
-	err = cli.conn.Execute(context.Background(), cmd, resp)
-	return resp, err
+func (cli *client) DeleteTicket(ctx context.Context, cmd *commands.DeleteTicket) (*commands.DeleteTicketResponse, error) {
+	return execute[commands.DeleteTicketResponse](ctx, cli.conn, cmd)
 }
 
 // Tasks returns an iterator for tasks.

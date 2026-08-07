@@ -17,7 +17,7 @@ func TestCreateTLSCertificate(t *testing.T) {
 		Name:        "Example Certificate",
 		Certificate: "MIIDNjCCAp+gAwIBAgIBATANBgkqhkiG9w0BAQQFADCBqTELM[...]",
 	}
-	resp, err := cli.CreateTLSCertificate(cmd)
+	resp, err := cli.CreateTLSCertificate(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateTLSCertificate: %s", err)
 	}
@@ -42,7 +42,7 @@ func TestModifyTLSCertificate(t *testing.T) {
 		TLSCertificateID: "8a925978-59d0-494b-a837-40b271569727",
 		Name:             "Renamed Example Certificate",
 	}
-	resp, err := cli.ModifyTLSCertificate(cmd)
+	resp, err := cli.ModifyTLSCertificate(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyTLSCertificate: %s", err)
 	}

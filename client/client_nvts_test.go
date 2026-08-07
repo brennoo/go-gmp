@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"testing"
 
 	"github.com/brennoo/go-gmp/commands"
@@ -15,7 +16,7 @@ func TestGetNVTsWithDetails(t *testing.T) {
 	cmd := &commands.GetNVTs{
 		Details: "1",
 	}
-	resp, err := cli.GetNVTs(cmd)
+	resp, err := cli.GetNVTs(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetNVTs: %s", err)
 	}
@@ -45,7 +46,7 @@ func TestGetNVTsSingle(t *testing.T) {
 	cmd := &commands.GetNVTs{
 		NvtOID: "1.3.6.1.4.1.25623.1.0.10330",
 	}
-	resp, err := cli.GetNVTs(cmd)
+	resp, err := cli.GetNVTs(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetNVTs: %s", err)
 	}
@@ -73,7 +74,7 @@ func TestGetNVTFamilies(t *testing.T) {
 	}
 
 	cmd := &commands.GetNVTFamilies{}
-	resp, err := cli.GetNVTFamilies(cmd)
+	resp, err := cli.GetNVTFamilies(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetNVTFamilies: %s", err)
 	}

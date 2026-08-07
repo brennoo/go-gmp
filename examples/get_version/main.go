@@ -3,6 +3,7 @@ package main
 //nolint:errcheck // Ignoring Close errors in example
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -12,6 +13,8 @@ import (
 )
 
 func main() {
+	ctx := context.Background()
+
 	conn, err := connections.NewTLSConnection("localhost:9390", true)
 	if err != nil {
 		log.Fatalf("failed to connect: %v", err)
@@ -19,7 +22,7 @@ func main() {
 	defer conn.Close() //nolint:errcheck // Ignoring close error
 
 	cli := client.New(conn)
-	resp, err := cli.GetVersion(&commands.GetVersion{})
+	resp, err := cli.GetVersion(ctx, &commands.GetVersion{})
 	if err != nil {
 		log.Fatalf("get version failed: %v", err)
 	}
