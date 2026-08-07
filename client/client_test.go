@@ -724,7 +724,8 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.GetCredentials); ok {
-		if cmd.CredentialID == "" {
+		switch cmd.CredentialID {
+		case "":
 			(*response.(*commands.GetCredentialsResponse)).Status = "200"
 			(*response.(*commands.GetCredentialsResponse)).StatusText = "OK"
 			(*response.(*commands.GetCredentialsResponse)).Credentials = []commands.Credential{
@@ -749,7 +750,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 					Formats:  &commands.CredentialFormats{Formats: []string{"exe"}},
 				},
 			}
-		} else if cmd.CredentialID == "cred-uuid-1" {
+		case "cred-uuid-1":
 			(*response.(*commands.GetCredentialsResponse)).Status = "200"
 			(*response.(*commands.GetCredentialsResponse)).StatusText = "OK"
 			(*response.(*commands.GetCredentialsResponse)).Credentials = []commands.Credential{
@@ -764,7 +765,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 					Formats:  &commands.CredentialFormats{Formats: []string{"key", "rpm", "deb"}},
 				},
 			}
-		} else {
+		default:
 			(*response.(*commands.GetCredentialsResponse)).Status = "404"
 			(*response.(*commands.GetCredentialsResponse)).StatusText = "Not found"
 		}

@@ -504,7 +504,7 @@ func TestExecuteXMLMarshallFail(t *testing.T) {
 	response := &simpleResp{}
 
 	err := conn.Execute(context.Background(), cmd, response)
-	expectedError := "xml: unsupported type: func()"
+	expectedError := "encode request: xml: unsupported type: func()"
 	if err == nil || err.Error() != expectedError {
 		t.Fatalf("Unexpected error during Execute.\nExpected: %s\n     Got: %s", expectedError, err)
 	}
@@ -521,7 +521,7 @@ func TestExecuteXMLUnmarshallFail(t *testing.T) {
 	mustFinish(t, 5*time.Second, "Execute", func() {
 		err = conn.Execute(context.Background(), cmd, response)
 	})
-	expectedError := "non-pointer passed to Unmarshal"
+	expectedError := "decode response: non-pointer passed to Unmarshal"
 	if err == nil || err.Error() != expectedError {
 		t.Fatalf("Unexpected error during Execute.\nExpected: %s\n     Got: %s", expectedError, err)
 	}
@@ -543,7 +543,7 @@ func TestExecutePerformRequestFail(t *testing.T) {
 	response := &simpleResp{}
 
 	err := conn.Execute(context.Background(), cmd, response)
-	expectedError := "io: read/write on closed pipe"
+	expectedError := "transport: io: read/write on closed pipe"
 	if err == nil || err.Error() != expectedError {
 		t.Fatalf("Unexpected error during Execute.\nExpected: %s\n     Got: %s", expectedError, err)
 	}
@@ -955,9 +955,12 @@ func TestUnmarshalFailureLeavesConnectionUsable(t *testing.T) {
 	if errors.Is(err, ErrConnectionBroken) || errors.Is(err, ErrConnectionClosed) {
 		t.Fatalf("A clean frame that failed to decode must not poison the connection, got: %v", err)
 	}
-	var netErr *commands.NetworkError
-	if !errors.As(err, &netErr) || netErr.Type != commands.ErrorTypeInvalidRequest {
-		t.Fatalf("Expected an invalid_request NetworkError, got %#v", err)
+	var protoErr *commands.ProtocolError
+	if !errors.As(err, &protoErr) {
+		t.Fatalf("Expected a *commands.ProtocolError, got %#v", err)
+	}
+	if protoErr.DocumentSize <= 0 {
+		t.Fatalf("Expected DocumentSize > 0, got %d", protoErr.DocumentSize)
 	}
 
 	// The connection must still be open and usable.
@@ -1170,7 +1173,7 @@ func TestCancelWhileInFlight(t *testing.T) {
 	if !errors.Is(err, context.Canceled) {
 		t.Fatalf("Expected the error to wrap context.Canceled, got: %v", err)
 	}
-	if err.Error() == "io: read/write on closed pipe" {
+	if err.Error() == "transport: io: read/write on closed pipe" {
 		t.Fatalf("Expected the cancellation to be reported, not the bare platform error")
 	}
 
@@ -1390,12 +1393,26 @@ func TestClosedConnectionRefusesBeforeWriting(t *testing.T) {
 // TestExecuteWithoutRawConn: a bare Connection literal, built without going
 // through New, must report the missing socket clearly instead of panicking on
 // a nil one.
+//
+// It is reported as ConnectionNotInitializedError rather than a TransportError:
+// no transport was ever established, so neither answer to "is this connection
+// still usable" is honest. Calling it usable invites a retry loop that cannot
+// terminate; calling it unusable implies a live stream was retired.
 func TestExecuteWithoutRawConn(t *testing.T) {
 	conn := &Connection{}
 
 	err := conn.Execute(context.Background(), &simpleCmd{Foo: "x"}, &simpleResp{})
 	if !errors.Is(err, ErrNoRawConn) {
 		t.Fatalf("Expected ErrNoRawConn, got: %v", err)
+	}
+
+	var notInit *commands.ConnectionNotInitializedError
+	if !errors.As(err, &notInit) {
+		t.Fatalf("Expected a *commands.ConnectionNotInitializedError, got %#v", err)
+	}
+	var te *commands.TransportError
+	if errors.As(err, &te) {
+		t.Fatalf("A never-initialized connection must not be classified as a transport failure")
 	}
 
 	if _, err := conn.RawXML(context.Background(), "<a/>"); !errors.Is(err, ErrNoRawConn) {
@@ -1659,5 +1676,141 @@ func TestClosedConnectionCannotBeReopened(t *testing.T) {
 	// And the retired one stays retired.
 	if err := followUpExecute(t, conn, "Execute on the retired connection"); !errors.Is(err, ErrConnectionClosed) {
 		t.Fatalf("Expected the retired connection to stay closed, got: %v", err)
+	}
+}
+
+// ---------------------------------------------------------------------------
+// retired vs refused
+// ---------------------------------------------------------------------------
+
+// transportErrorFrom extracts the TransportError from err, failing the test if
+// there isn't one.
+func transportErrorFrom(t *testing.T, err error) *commands.TransportError {
+	t.Helper()
+	var te *commands.TransportError
+	if !errors.As(err, &te) {
+		t.Fatalf("Expected a *commands.TransportError, got %#v", err)
+	}
+	return te
+}
+
+// TestRefusedRequestLeavesTheConnectionUsable is the load-bearing case:
+// a caller whose context was already done is turned away without the socket
+// being touched. Connections are shared, so reporting that as a retired
+// connection would have every other user discard a healthy transport over one
+// caller's stale context.
+func TestRefusedRequestLeavesTheConnectionUsable(t *testing.T) {
+	conn, server := newPipeConn(t)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	var err error
+	mustFinish(t, 5*time.Second, "Execute with a pre-cancelled context", func() {
+		err = conn.Execute(ctx, &simpleCmd{Foo: "x"}, &simpleResp{})
+	})
+
+	te := transportErrorFrom(t, err)
+	if !te.ConnectionUsable {
+		t.Fatalf("A request refused before the socket was touched must leave the connection usable")
+	}
+	if !errors.Is(err, context.Canceled) {
+		t.Fatalf("Expected context.Canceled, got: %v", err)
+	}
+
+	// And the claim holds: the connection really is still usable.
+	echoServer(server)
+	resp := &simpleResp{}
+	mustFinish(t, 5*time.Second, "Execute after the refusal", func() {
+		err = conn.Execute(context.Background(), &simpleCmd{Foo: "alive"}, resp)
+	})
+	if err != nil || resp.Foo != "alive" {
+		t.Fatalf("ConnectionUsable=true promised a working connection; got err=%v resp=%q", err, resp.Foo)
+	}
+}
+
+// TestCancelWhileWaitingLeavesTheConnectionUsable covers the other
+// refusal path: turned away at the admission gate while another goroutine owns
+// the transaction.
+func TestCancelWhileWaitingLeavesTheConnectionUsable(t *testing.T) {
+	conn, server := newPipeConn(t)
+
+	admitted := make(chan struct{})
+	release := make(chan struct{})
+	go func() {
+		buf := make([]byte, 65536)
+		_, _ = server.Read(buf)
+		close(admitted)
+		<-release
+		_, _ = server.Write([]byte(`<r><foo>held</foo></r>`))
+	}()
+
+	holderDone := make(chan error, 1)
+	go func() {
+		_, err := conn.RawXML(context.Background(), "<hold/>")
+		holderDone <- err
+	}()
+	<-admitted // the holder provably owns the transaction
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	var err error
+	mustFinish(t, 5*time.Second, "Execute while another caller holds admission", func() {
+		err = conn.Execute(ctx, &simpleCmd{Foo: "waiting"}, &simpleResp{})
+	})
+
+	te := transportErrorFrom(t, err)
+	if !te.ConnectionUsable {
+		t.Fatalf("A caller turned away at the admission gate must leave the connection usable")
+	}
+
+	close(release)
+	if holderErr := <-holderDone; holderErr != nil {
+		t.Fatalf("The holder should have been undisturbed, got: %v", holderErr)
+	}
+}
+
+// TestRealTransportFailureMarksTheConnectionUnusable is the contrasting case:
+// an I/O failure leaves the boundary position unknown, so the connection is
+// gone and the error must say so.
+func TestRealTransportFailureMarksTheConnectionUnusable(t *testing.T) {
+	conn, server := newPipeConn(t)
+
+	go func() {
+		buf := make([]byte, 65536)
+		_, _ = server.Read(buf)
+		_, _ = server.Write([]byte("<r><d>truncated"))
+		_ = server.Close()
+	}()
+
+	var err error
+	mustFinish(t, 5*time.Second, "Execute against a truncated response", func() {
+		err = conn.Execute(context.Background(), &simpleCmd{Foo: "x"}, &simpleResp{})
+	})
+
+	te := transportErrorFrom(t, err)
+	if te.ConnectionUsable {
+		t.Fatalf("A truncated response leaves the boundary unknown; the connection must not be reported usable")
+	}
+}
+
+// TestAlreadyRetiredConnectionIsNotUsable: closed and broken connections
+// refuse later calls, and those refusals must report the connection retired
+// even though they too are decided before the socket is touched. The flag
+// describes the connection, not how early the refusal happened.
+func TestAlreadyRetiredConnectionIsNotUsable(t *testing.T) {
+	conn, _ := newPipeConn(t)
+	if err := conn.Close(); err != nil {
+		t.Fatalf("Unexpected error from Close: %v", err)
+	}
+
+	err := followUpExecute(t, conn, "Execute after Close")
+	te := transportErrorFrom(t, err)
+	if te.ConnectionUsable {
+		t.Fatalf("A closed connection must not be reported usable")
+	}
+	if !errors.Is(err, ErrConnectionClosed) {
+		t.Fatalf("Expected ErrConnectionClosed, got: %v", err)
 	}
 }

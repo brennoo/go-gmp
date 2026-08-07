@@ -19,6 +19,7 @@ linters:
     - govet
     - misspell
     - nilerr
+    - staticcheck
     - tparallel
     - unparam
     - unused

@@ -37,10 +37,12 @@ type GMPClient struct {
 }
 
 // NewGMPClient creates a new GMP client with TLS connection.
-func NewGMPClient(host string) (*GMPClient, error) {
+func NewGMPClient(ctx context.Context, host string) (*GMPClient, error) {
 	log.Printf("Connecting to GVMD at %s...", host)
 
-	conn, err := connections.NewTLSConnection(host, true)
+	// WithInsecureSkipVerify disables certificate verification and must not be used in
+	// production; use connections.WithRootCAFile with a trusted CA instead.
+	conn, err := connections.NewTLSConnection(ctx, host, connections.WithInsecureSkipVerify())
 	if err != nil {
 		return nil, fmt.Errorf("failed to create TLS connection: %w", err)
 	}
@@ -551,7 +553,7 @@ func main() {
 	defer cancel()
 
 	// Create GMP client
-	gmpClient, err := NewGMPClient(gvmdHost)
+	gmpClient, err := NewGMPClient(ctx, gvmdHost)
 	if err != nil {
 		log.Fatalf("Failed to create GMP client: %v", err)
 	}

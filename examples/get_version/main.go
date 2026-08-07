@@ -15,7 +15,9 @@ import (
 func main() {
 	ctx := context.Background()
 
-	conn, err := connections.NewTLSConnection("localhost:9390", true)
+	// WithInsecureSkipVerify disables certificate verification and must not be used in
+	// production; use connections.WithRootCAFile with a trusted CA instead.
+	conn, err := connections.NewTLSConnection(ctx, "localhost:9390", connections.WithInsecureSkipVerify())
 	if err != nil {
 		log.Fatalf("failed to connect: %v", err)
 	}

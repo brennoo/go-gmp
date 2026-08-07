@@ -3,7 +3,6 @@ package connections
 import (
 	"context"
 	"encoding/xml"
-	"io/ioutil"
 	"log"
 	"net"
 	"os"
@@ -12,7 +11,7 @@ import (
 )
 
 func TestNewUnixConnection(t *testing.T) {
-	tmpfile, err := ioutil.TempFile("", "testunixsocket")
+	tmpfile, err := os.CreateTemp("", "testunixsocket")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -40,7 +39,7 @@ func TestNewUnixConnection(t *testing.T) {
 		}
 	}()
 
-	conn, err := NewUnixConnection(unixSocketFilename)
+	conn, err := NewUnixConnection(context.Background(), unixSocketFilename)
 	if err != nil {
 		t.Fatalf("Unexpected error during NewUnixConnection: %s", err)
 	}
@@ -73,7 +72,7 @@ func TestNewUnixConnection(t *testing.T) {
 }
 
 func TestNewUnixConnectionUnixSocketIsNotThere(t *testing.T) {
-	tmpfile, err := ioutil.TempFile("", "testunixsocket")
+	tmpfile, err := os.CreateTemp("", "testunixsocket")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -101,7 +100,7 @@ func TestNewUnixConnectionUnixSocketIsNotThere(t *testing.T) {
 	}()
 
 	os.Remove(unixSocketFilename)
-	_, err = NewUnixConnection(unixSocketFilename)
+	_, err = NewUnixConnection(context.Background(), unixSocketFilename)
 	expectedError := "dial unix FILEPATH: connect: no such file or directory"
 	expectedError = strings.ReplaceAll(expectedError, "FILEPATH", unixSocketFilename)
 	if err == nil || err.Error() != expectedError {

@@ -15,8 +15,10 @@ import (
 func main() {
 	ctx := context.Background()
 
-	// Connect to GMP over TLS
-	gmpConn, err := connections.NewTLSConnection("localhost:9390", true) // true = skip cert verification for demo
+	// Connect to GMP over TLS.
+	// WithInsecureSkipVerify disables certificate verification and must not be used in
+	// production; use connections.WithRootCAFile with a trusted CA instead.
+	gmpConn, err := connections.NewTLSConnection(ctx, "localhost:9390", connections.WithInsecureSkipVerify())
 	if err != nil {
 		log.Fatalf("failed to connect to GMP: %v", err)
 	}

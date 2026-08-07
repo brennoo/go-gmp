@@ -31,7 +31,7 @@ const (
 )
 
 // Sentinel errors describing why a Connection refused to run a transaction.
-// They are returned wrapped in *commands.NetworkError, so errors.Is works.
+// They are returned wrapped in *commands.TransportError, so errors.Is works.
 var (
 	// ErrConnectionClosed is returned once Close has been called.
 	ErrConnectionClosed = errors.New("connection closed")
@@ -55,15 +55,14 @@ var (
 // queue, with no starvation bound. Callers needing fairness must arrange it
 // above this type.
 //
-// Two independent synchronization primitives are used, deliberately:
+// Two synchronization primitives are used, deliberately separate:
 //
-//   - admission, a size-one buffered channel used as a semaphore, serializes
-//     whole transactions. A channel rather than a sync.Mutex because a mutex
-//     cannot be acquired under a context, so a waiting caller could not honor
-//     its own deadline.
-//   - mu, a sync.Mutex, guards state together with rawConn and reader. It is
-//     separate from admission so that Close can act while another goroutine
-//     holds the transaction, and is never held across blocking socket I/O.
+//   - admission, a size-one buffered channel semaphore, serializes whole
+//     transactions. A channel not a mutex, because a mutex cannot be acquired
+//     under a context, so a waiting caller could not honor its own deadline.
+//   - mu guards state, rawConn and reader. Separate from admission so Close can
+//     act while another goroutine holds the transaction, and never held across
+//     blocking socket I/O.
 //
 // A Connection must not be copied after first use.
 type Connection struct {
@@ -140,7 +139,8 @@ func (conn *Connection) checkUsable(ctx context.Context) error {
 		return err
 	}
 	if err := ctx.Err(); err != nil {
-		return transportError(err)
+		// Refused, not retired: nothing has been written.
+		return refusedError(err)
 	}
 	return nil
 }
@@ -155,25 +155,28 @@ func (conn *Connection) poison() {
 	conn.mu.Unlock()
 }
 
+// transportError reports a failure that leaves the connection unusable.
 func transportError(cause error) error {
-	return &commands.NetworkError{Type: commands.ErrorTypeNetwork, Cause: cause}
+	return &commands.TransportError{Cause: cause}
+}
+
+// refusedError reports a request turned away before the socket was touched.
+// Connections are shared, so reporting this as fatal would have every other
+// user discard a transport that is byte-for-byte where it was.
+func refusedError(cause error) error {
+	return &commands.TransportError{Cause: cause, ConnectionUsable: true}
 }
 
 // transact runs one complete request/response exchange and returns the raw
 // bytes of the framed response document.
 //
-// The sequence is fixed and is the acceptance criterion for the race detector:
-//
-//  1. acquire admission, context-aware;
-//  2. under the state lock, verify state is open and snapshot rawConn/reader;
-//  3. release the state lock;
-//  4. perform all socket I/O through the snapshot, never the struct fields;
-//  5. reacquire the state lock only to classify the outcome;
-//  6. release admission.
+// The order is fixed, and is the acceptance criterion for the race detector:
+// acquire admission; under the state lock verify open and snapshot
+// rawConn/reader; drop the lock; do all I/O through the snapshot, never the
+// struct fields; retake the lock only to classify; release admission.
 //
 // Every error returned here is boundary-unknown and has already poisoned the
-// connection. Boundary-known failures (a document that framed cleanly but did
-// not decode into the caller's type) are the caller's to classify.
+// connection. Boundary-known failures are the caller's to classify.
 func (conn *Connection) transact(ctx context.Context, request []byte) ([]byte, error) {
 	// Refuse a closed or broken connection, or an already-cancelled context,
 	// before waiting for admission the caller could not use anyway.
@@ -229,9 +232,9 @@ func (conn *Connection) acquire(ctx context.Context) error {
 	case sem <- struct{}{}:
 		return nil
 	case <-ctx.Done():
-		// Cancelled while queued: the socket was never touched, so there is no
-		// state transition to make.
-		return transportError(ctx.Err())
+		// Cancelled while waiting: the socket was never touched, so there is no
+		// state transition to make and the connection is not retired.
+		return refusedError(ctx.Err())
 	}
 }
 
@@ -251,7 +254,7 @@ func (conn *Connection) snapshot() (net.Conn, *bufio.Reader, error) {
 		return nil, nil, err
 	}
 	if conn.rawConn == nil || conn.reader == nil {
-		return nil, nil, transportError(ErrNoRawConn)
+		return nil, nil, &commands.ConnectionNotInitializedError{Cause: ErrNoRawConn}
 	}
 	return conn.rawConn, conn.reader, nil
 }
@@ -400,15 +403,13 @@ func performRequest(ctx context.Context, c net.Conn, r *bufio.Reader, request []
 // readDocument frames exactly one XML document off r and returns every byte
 // consumed while doing so.
 //
-// Framing is done on the document structure rather than on read lengths. The
-// previous implementation treated a short read as end-of-message, which hung
-// forever on any response whose length was an exact multiple of the read
-// buffer.
+// Framing is structural, not length-based: treating a short read as
+// end-of-message hangs forever on a response that is an exact multiple of the
+// buffer size.
 //
 // A fresh xml.Decoder per call is fine; the *persistent* reader is what
-// matters. xml.NewDecoder consumes directly from anything implementing
-// io.ByteReader instead of wrapping it in a private bufio.Reader, so
-// discarding the decoder after one document strands no bytes.
+// matters. xml.NewDecoder consumes directly from an io.ByteReader rather than
+// wrapping it, so discarding the decoder strands no bytes.
 func readDocument(r *bufio.Reader) ([]byte, error) {
 	rec := &recordingByteReader{src: r}
 	dec := xml.NewDecoder(rec)
@@ -482,15 +483,12 @@ func (r *recordingByteReader) Read(p []byte) (int, error) {
 //
 // A closed or broken connection, or an already-cancelled context, is refused
 // before command is marshalled. That ordering is contractual: the lifecycle
-// error is what the caller sees even if the command would also have failed to
-// marshal, and a custom MarshalXML — with its side effects — never runs on a
-// connection that has stopped accepting work.
+// error wins over a marshalling error, and a custom MarshalXML never runs its
+// side effects on a connection that has stopped accepting work.
 //
-// A response that frames cleanly but fails to decode into response leaves the
-// connection open and usable: the stream position is known and correct for the
-// next call, and the failure is schema/version drift rather than a transport
-// fault. Transport failures, by contrast, leave the boundary unknown and
-// permanently break the connection.
+// A response that frames cleanly but fails to decode leaves the connection
+// usable and is reported as *commands.ProtocolError — the stream position is
+// known, and the failure is schema drift, not a transport fault.
 func (conn *Connection) Execute(ctx context.Context, command interface{}, response interface{}) error {
 	// Rechecked inside transact, where the state may have moved on. Here it only
 	// establishes precedence over marshalling.
@@ -500,7 +498,7 @@ func (conn *Connection) Execute(ctx context.Context, command interface{}, respon
 
 	cmdBuf, err := xml.Marshal(command)
 	if err != nil {
-		return &commands.NetworkError{Type: commands.ErrorTypeInvalidRequest, Cause: err}
+		return &commands.RequestEncodingError{Cause: err}
 	}
 
 	doc, err := conn.transact(ctx, cmdBuf)
@@ -511,7 +509,7 @@ func (conn *Connection) Execute(ctx context.Context, command interface{}, respon
 	// Boundary-known from here on: the root element's matching EndElement was
 	// consumed, so nothing below may poison the connection.
 	if err := xml.Unmarshal(doc, response); err != nil {
-		return &commands.NetworkError{Type: commands.ErrorTypeInvalidRequest, Cause: err}
+		return commands.NewProtocolError(doc, err)
 	}
 
 	if rs, ok := response.(commands.ResponseWithStatus); ok {
@@ -526,20 +524,14 @@ func (conn *Connection) Execute(ctx context.Context, command interface{}, respon
 
 // RawXML sends xmlStr verbatim and returns the response as a wire segment.
 //
-// The returned string is every byte consumed while locating and framing the
-// response document. Concretely, it includes any leading XML declaration,
-// comments, directives and whitespace that preceded the root element, and
-// excludes trailing whitespace after the root's closing tag, which is left in
-// the reader for the next call. Leading and trailing whitespace are therefore
-// treated asymmetrically; no trimming of any kind is applied, because trimming
-// would be neither exact wire fidelity nor clean document extraction.
+// The result is every byte consumed while locating and framing the response:
+// any leading declaration, comments, directives and whitespace before the root
+// are included, trailing whitespace after it is not. That asymmetry is
+// deliberate — nothing is trimmed, since trimming would be neither exact wire
+// fidelity nor clean document extraction — but it means the result is not
+// guaranteed to be a standalone well-formed document.
 //
-// Caveat: because leading inter-document bytes are included, the result is not
-// guaranteed to be a standalone well-formed document — for example it may
-// begin with whitespace left over from a previous response.
-//
-// RawXML shares the same admission gate and the same critical-section shape as
-// Execute, so mixing the two across goroutines is safe.
+// RawXML shares Execute's admission gate, so mixing the two is safe.
 func (conn *Connection) RawXML(ctx context.Context, xmlStr string) (string, error) {
 	doc, err := conn.transact(ctx, []byte(xmlStr))
 	if err != nil {
@@ -550,16 +542,14 @@ func (conn *Connection) RawXML(ctx context.Context, xmlStr string) (string, erro
 
 // Close marks the connection closed and closes the socket.
 //
-// It is safe to call while a request is in flight and does not wait for that
-// request: it publishes the state transition under the lock and performs the
-// socket close outside it, since net.Conn.Close is itself I/O and a custom
-// net.Conn may block or re-enter. The in-flight request's socket operation
-// fails and it returns a transport error; queued and subsequent callers get
-// ErrConnectionClosed before any write is attempted.
+// Safe to call while a request is in flight, and does not wait for it: the
+// state transition is published under the lock and the socket closed outside
+// it, since net.Conn.Close is itself I/O and may block or re-enter. The
+// in-flight request fails; later callers get ErrConnectionClosed before any
+// write.
 //
-// Close is idempotent and never panics on repeated calls. An already-closed
-// socket — for instance one closed by the close-on-cancel watchdog — is not
-// reported as a Close failure.
+// Idempotent. An already-closed socket, e.g. one the cancel watchdog closed,
+// is not reported as a Close failure.
 func (conn *Connection) Close() error {
 	conn.mu.Lock()
 	previous := conn.state
