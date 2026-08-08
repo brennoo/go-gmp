@@ -7,8 +7,8 @@ type GetSettings struct {
 	XMLName   xml.Name `xml:"get_settings"`
 	SettingID string   `xml:"setting_id,attr,omitempty"`
 	Filter    string   `xml:"filter,attr,omitempty"`
-	First     int      `xml:"first,attr,omitempty"`
-	Max       int      `xml:"max,attr,omitempty"`
+	First     *int     `xml:"first,attr,omitempty"`
+	Max       *int     `xml:"max,attr,omitempty"`
 	SortOrder string   `xml:"sort_order,attr,omitempty"`
 	SortField string   `xml:"sort_field,attr,omitempty"`
 }

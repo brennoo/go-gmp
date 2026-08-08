@@ -31,7 +31,7 @@ them, so response-side optionality is trusted and request-side is not.
 commands compared:            122
 fully conformant:             44
 with actionable findings:     78
-actionable findings:          712  (request 320, response 392)
+actionable findings:          692  (request 300, response 392)
 suppressed findings:          824
 confirmed by fidelity corpus: 77
 in the schema, not in Go:     0
@@ -42,7 +42,7 @@ in Go, not in the schema:     0
                  actionable suppressed
   MISSING               255          0
   EXTRA                 244          0
-  CARDINALITY            63          0
+  CARDINALITY            43          0
   KIND                   17          0
   OMITEMPTY              10        824
   TYPE                  123          0
@@ -83,18 +83,18 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_report_formats           28   MISSING=17  EXTRA=2  CARDINALITY=1  KIND=2  TYPE=6
   get_notes                    23   MISSING=19  TYPE=4
   get_info                     21   MISSING=12  EXTRA=6  TYPE=3
-  modify_agents                21   EXTRA=18  CARDINALITY=3
   modify_target                19   EXTRA=19
   delete_agents                18   EXTRA=18
   get_tags                     18   MISSING=8  EXTRA=2  CARDINALITY=4  TYPE=4
+  modify_agents                18   EXTRA=18
   create_target                17   EXTRA=17
-  create_task                  17   EXTRA=15  CARDINALITY=2
   get_nvts                     17   MISSING=5  EXTRA=1  CARDINALITY=7  TYPE=4
   get_report_configs           17   MISSING=11  EXTRA=2  KIND=2  TYPE=2
+  create_task                  16   EXTRA=15  CARDINALITY=1
   get_tickets                  15   MISSING=5  EXTRA=4  KIND=3  TYPE=3
-  get_aggregates               14   MISSING=5  EXTRA=5  CARDINALITY=4
   get_tls_certificates         14   MISSING=5  EXTRA=4  KIND=2  TYPE=3
   modify_config                14   EXTRA=6  CARDINALITY=3  OMITEMPTY=2  TYPE=3
+  get_roles                    13   MISSING=11  TYPE=2
   ... and 58 more with fewer
 
 ### Confirmed by both oracles
@@ -244,18 +244,14 @@ SCHEMA-DEFECT=1
 
 ### create_note  (command_create_note.xml)
 
-EXTRA=1  CARDINALITY=2
+EXTRA=1
 
   EXTRA         request  /create_note/nvt/name
                 Go field Name string has no counterpart in the schema
-  CARDINALITY   request  /create_note/active
-                schema says optional; Active int cannot express absence (zero is a legal value)
-  CARDINALITY   request  /create_note/severity
-                schema says optional; Severity float64 cannot express absence (zero is a legal value)
 
 ### create_override  (command_create_override.xml)
 
-MISSING=2  EXTRA=2  CARDINALITY=2
+MISSING=2  EXTRA=2
 
   MISSING       request  /create_override/result/*
                 schema declares 1 children; Go models this as scalar string
@@ -265,10 +261,6 @@ MISSING=2  EXTRA=2  CARDINALITY=2
                 Go field Name string has no counterpart in the schema
   EXTRA         request  /create_override/nvt/type
                 Go field Type string has no counterpart in the schema
-  CARDINALITY   request  /create_override/new_severity
-                schema says optional; NewSeverity float64 cannot express absence (zero is a legal value)
-  CARDINALITY   request  /create_override/severity
-                schema says optional; Severity float64 cannot express absence (zero is a legal value)
 
 ### create_permission  (command_create_permission.xml)
 
@@ -748,7 +740,7 @@ conformant
 
 ### create_scanner  (command_create_scanner.xml)
 
-EXTRA=3  CARDINALITY=1  TYPE=2
+EXTRA=3  TYPE=2
 
   EXTRA         request  /create_scanner/credential/login
                 Go field Login string has no counterpart in the schema
@@ -756,8 +748,6 @@ EXTRA=3  CARDINALITY=1  TYPE=2
                 Go field Name string has no counterpart in the schema
   EXTRA         request  /create_scanner/credential/trash
                 Go field Trash bool has no counterpart in the schema
-  CARDINALITY   request  /create_scanner/relay_port
-                schema says optional; RelayPort int cannot express absence (zero is a legal value)
   TYPE          request  /create_scanner/port
                 schema type text is text, Go Port is int
   TYPE          request  /create_scanner/relay_port
@@ -847,7 +837,7 @@ EXTRA=17  OMITEMPTY=12
 
 ### create_task  (command_create_task.xml)
 
-EXTRA=15  CARDINALITY=2  OMITEMPTY=4
+EXTRA=15  CARDINALITY=1  OMITEMPTY=4
 
   EXTRA         request  /create_task/alert/name
                 Go field Name string has no counterpart in the schema
@@ -881,8 +871,6 @@ EXTRA=15  CARDINALITY=2  OMITEMPTY=4
                 Go field Trash bool has no counterpart in the schema
   CARDINALITY   request  /create_task/alert
                 schema says zero-or-more, Go has a single *commands.TaskAlert (Alert)
-  CARDINALITY   request  /create_task/schedule_periods
-                schema says optional; SchedulePeriods int cannot express absence (zero is a legal value)
   OMITEMPTY     request  /create_task/config
                 schema says required, Config is tagged omitempty  [suppressed: request-side over-constraint]
   OMITEMPTY     request  /create_task/name
@@ -1237,7 +1225,7 @@ MISSING=7  OMITEMPTY=17  TYPE=2  SCHEMA-DEFECT=23
 
 ### get_aggregates  (command_get_aggregates.xml)
 
-MISSING=5  EXTRA=5  CARDINALITY=4  OMITEMPTY=30
+MISSING=5  EXTRA=5  CARDINALITY=2  OMITEMPTY=30
 
   MISSING       request  /get_aggregates/data_column
                 repeated elem data_column is not modelled
@@ -1245,10 +1233,6 @@ MISSING=5  EXTRA=5  CARDINALITY=4  OMITEMPTY=30
                 repeated elem sort is not modelled
   MISSING       request  /get_aggregates/text_column
                 repeated elem text_column is not modelled
-  CARDINALITY   request  /get_aggregates/@first_group
-                schema says optional; FirstGroup int cannot express absence (zero is a legal value)
-  CARDINALITY   request  /get_aggregates/@max_groups
-                schema says optional; MaxGroups int cannot express absence (zero is a legal value)
   MISSING       response /get_aggregates_response/aggregate/overall/text
                 repeated elem text is not modelled
   MISSING       response /get_aggregates_response/filters
@@ -2929,12 +2913,8 @@ OMITEMPTY=17  TYPE=2  SCHEMA-DEFECT=1
 
 ### get_settings  (command_get_settings.xml)
 
-EXTRA=2  CARDINALITY=2  OMITEMPTY=11
+EXTRA=2  OMITEMPTY=11
 
-  CARDINALITY   request  /get_settings/@first
-                schema says optional; First int cannot express absence (zero is a legal value)
-  CARDINALITY   request  /get_settings/@max
-                schema says optional; Max int cannot express absence (zero is a legal value)
   EXTRA         response /get_settings_response/setting/@id
                 Go field ID string has no counterpart in the schema
   EXTRA         response /get_settings_response/settings/setting
@@ -2964,10 +2944,8 @@ EXTRA=2  CARDINALITY=2  OMITEMPTY=11
 
 ### get_system_reports  (command_get_system_reports.xml)
 
-EXTRA=1  CARDINALITY=1
+EXTRA=1
 
-  CARDINALITY   request  /get_system_reports/@duration
-                schema says optional; Duration int cannot express absence (zero is a legal value)
   EXTRA         response /get_system_reports_response/truncated
                 Go field Truncated string has no counterpart in the schema
 
@@ -3632,7 +3610,7 @@ MISSING=1  SCHEMA-DEFECT=6
 
 ### modify_agents  (command_modify_agents.xml)
 
-EXTRA=18  CARDINALITY=3
+EXTRA=18
 
   EXTRA         request  /modify_agents/agents/agent/agent_id
                 Go field AgentID string has no counterpart in the schema
@@ -3670,12 +3648,6 @@ EXTRA=18  CARDINALITY=3
                 Go field Schedule string has no counterpart in the schema
   EXTRA         request  /modify_agents/agents/agent/writable
                 Go field Writable bool has no counterpart in the schema
-  CARDINALITY   request  /modify_agents/authorized
-                schema says optional; Authorized int cannot express absence (zero is a legal value)
-  CARDINALITY   request  /modify_agents/heartbeat_interval
-                schema says optional; HeartbeatInterval int cannot express absence (zero is a legal value)
-  CARDINALITY   request  /modify_agents/min_interval
-                schema says optional; MinInterval int cannot express absence (zero is a legal value)
 
 ### modify_alert  (command_modify_alert.xml)
 
@@ -3756,20 +3728,16 @@ conformant
 
 ### modify_note  (command_modify_note.xml)
 
-EXTRA=1  CARDINALITY=2  OMITEMPTY=1
+EXTRA=1  OMITEMPTY=1
 
   EXTRA         request  /modify_note/nvt/name
                 Go field Name string has no counterpart in the schema
-  CARDINALITY   request  /modify_note/active
-                schema says optional; Active int cannot express absence (zero is a legal value)
-  CARDINALITY   request  /modify_note/severity
-                schema says optional; Severity float64 cannot express absence (zero is a legal value)
   OMITEMPTY     request  /modify_note/text
                 schema says required, Text is tagged omitempty  [suppressed: request-side over-constraint]
 
 ### modify_override  (command_modify_override.xml)
 
-MISSING=2  EXTRA=2  CARDINALITY=2
+MISSING=2  EXTRA=2
 
   MISSING       request  /modify_override/result/*
                 schema declares 1 children; Go models this as scalar string
@@ -3779,10 +3747,6 @@ MISSING=2  EXTRA=2  CARDINALITY=2
                 Go field Name string has no counterpart in the schema
   EXTRA         request  /modify_override/nvt/type
                 Go field Type string has no counterpart in the schema
-  CARDINALITY   request  /modify_override/new_severity
-                schema says optional; NewSeverity float64 cannot express absence (zero is a legal value)
-  CARDINALITY   request  /modify_override/severity
-                schema says optional; Severity float64 cannot express absence (zero is a legal value)
 
 ### modify_permission  (command_modify_permission.xml)
 
@@ -3843,7 +3807,7 @@ conformant
 
 ### modify_scanner  (command_modify_scanner.xml)
 
-EXTRA=3  CARDINALITY=1  OMITEMPTY=3  TYPE=2
+EXTRA=3  OMITEMPTY=3  TYPE=2
 
   EXTRA         request  /modify_scanner/credential/login
                 Go field Login string has no counterpart in the schema
@@ -3851,8 +3815,6 @@ EXTRA=3  CARDINALITY=1  OMITEMPTY=3  TYPE=2
                 Go field Name string has no counterpart in the schema
   EXTRA         request  /modify_scanner/credential/trash
                 Go field Trash bool has no counterpart in the schema
-  CARDINALITY   request  /modify_scanner/relay_port
-                schema says optional; RelayPort int cannot express absence (zero is a legal value)
   OMITEMPTY     request  /modify_scanner/host
                 schema says required, Host is tagged omitempty  [suppressed: request-side over-constraint]
   OMITEMPTY     request  /modify_scanner/port
@@ -3952,7 +3914,7 @@ EXTRA=19  OMITEMPTY=10
 
 ### modify_task  (command_modify_task.xml)
 
-MISSING=1  EXTRA=12  CARDINALITY=1
+MISSING=1  EXTRA=12
 
   MISSING       request  /modify_task/file
                 optional elem file is not modelled
@@ -3980,8 +3942,6 @@ MISSING=1  EXTRA=12  CARDINALITY=1
                 Go field Name string has no counterpart in the schema
   EXTRA         request  /modify_task/target/trash
                 Go field Trash bool has no counterpart in the schema
-  CARDINALITY   request  /modify_task/schedule_periods
-                schema says optional; SchedulePeriods int cannot express absence (zero is a legal value)
 
 ### modify_ticket  (command_modify_ticket.xml)
 

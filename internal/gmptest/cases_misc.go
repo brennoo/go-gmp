@@ -27,6 +27,18 @@ func init() {
 		Brief: commands.Bool(false),
 	})
 
+	// GetSystemReports.Duration is *int: unset, a nonzero value, and an
+	// explicit zero all round-trip distinctly.
+	RegisterRequestCase("get_system_reports", "duration_set", &commands.GetSystemReports{
+		Name:     "load",
+		Duration: commands.Int(3600),
+	})
+
+	RegisterRequestCase("get_system_reports", "duration_zero", &commands.GetSystemReports{
+		Name:     "load",
+		Duration: commands.Int(0),
+	})
+
 	// GetTLSCertificates.IncludeCertificateData is *bool: unset, true, and an
 	// explicit false all round-trip distinctly.
 	RegisterRequestCase("get_tls_certificates", "include_data_true", &commands.GetTLSCertificates{

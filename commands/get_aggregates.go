@@ -14,8 +14,8 @@ type GetAggregates struct {
 	SortField      string   `xml:"sort_field,attr,omitempty"`
 	SortOrder      string   `xml:"sort_order,attr,omitempty"`
 	SortStat       string   `xml:"sort_stat,attr,omitempty"`
-	FirstGroup     int      `xml:"first_group,attr,omitempty"`
-	MaxGroups      int      `xml:"max_groups,attr,omitempty"`
+	FirstGroup     *int     `xml:"first_group,attr,omitempty"`
+	MaxGroups      *int     `xml:"max_groups,attr,omitempty"`
 	Mode           string   `xml:"mode,attr,omitempty"`
 	UsageType      string   `xml:"usage_type,attr,omitempty"`
 }

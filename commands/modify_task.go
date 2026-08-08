@@ -13,7 +13,7 @@ type ModifyTask struct {
 	Scanner         *TaskScanner     `xml:"scanner,omitempty"`
 	Alert           []*TaskAlert     `xml:"alert,omitempty"`
 	Schedule        *TaskSchedule    `xml:"schedule,omitempty"`
-	SchedulePeriods int              `xml:"schedule_periods,omitempty"`
+	SchedulePeriods *int             `xml:"schedule_periods,omitempty"`
 	Observers       string           `xml:"observers,omitempty"`
 	Preferences     *TaskPreferences `xml:"preferences,omitempty"`
 }

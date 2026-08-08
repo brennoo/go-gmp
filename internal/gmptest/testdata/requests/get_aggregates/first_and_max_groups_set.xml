@@ -1,0 +1,1 @@
+<get_aggregates type="task" group_column="severity" first_group="1" max_groups="10"></get_aggregates>

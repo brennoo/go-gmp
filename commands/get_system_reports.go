@@ -9,7 +9,7 @@ import (
 type GetSystemReports struct {
 	XMLName   xml.Name  `xml:"get_system_reports"`
 	Name      string    `xml:"name,attr,omitempty"`
-	Duration  int       `xml:"duration,attr,omitempty"`
+	Duration  *int      `xml:"duration,attr,omitempty"`
 	StartTime time.Time `xml:"start_time,attr,omitempty"`
 	EndTime   time.Time `xml:"end_time,attr,omitempty"`
 	Brief     *GMPBool  `xml:"brief,attr,omitempty"`

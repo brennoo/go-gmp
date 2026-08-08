@@ -912,7 +912,7 @@ func (r *captureRun) annotationOverride(st *captureState) {
 		&commands.CreateOverride{
 			Text:        "go-gmp fixture override. " + captureComment,
 			NVT:         &commands.OverrideNVT{OID: st.nvtOID},
-			NewSeverity: 2.0,
+			NewSeverity: commands.Float64(2.0),
 		},
 		func(id string) {
 			r.send("delete_override", "teardown: delete_override ultimate",

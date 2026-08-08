@@ -14,7 +14,7 @@ type CreateScanner struct {
 	CAPub      string             `xml:"ca_pub"`
 	Credential *ScannerCredential `xml:"credential"`
 	RelayHost  string             `xml:"relay_host,omitempty"`
-	RelayPort  int                `xml:"relay_port,omitempty"`
+	RelayPort  *int               `xml:"relay_port,omitempty"`
 }
 
 // ScannerCredential is reused from get_scanners.go for both create and get scanner commands.

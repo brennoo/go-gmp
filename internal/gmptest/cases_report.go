@@ -34,4 +34,38 @@ func init() {
 		SortField:   "severity",
 		SortOrder:   "descending",
 	})
+
+	// GetAggregates.FirstGroup/MaxGroups are *int: unset (the case above),
+	// a nonzero value, and an explicit zero all round-trip distinctly.
+	RegisterRequestCase("get_aggregates", "first_and_max_groups_set", &commands.GetAggregates{
+		Type:        "task",
+		GroupColumn: "severity",
+		FirstGroup:  commands.Int(1),
+		MaxGroups:   commands.Int(10),
+	})
+
+	RegisterRequestCase("get_aggregates", "first_and_max_groups_zero", &commands.GetAggregates{
+		Type:        "task",
+		GroupColumn: "severity",
+		FirstGroup:  commands.Int(0),
+		MaxGroups:   commands.Int(0),
+	})
+
+	// GetSettings.First/Max are *int: unset, a nonzero value, and an
+	// explicit zero all round-trip distinctly.
+	RegisterRequestCase("get_settings", "unset", &commands.GetSettings{
+		Filter: "rows=-1",
+	})
+
+	RegisterRequestCase("get_settings", "first_and_max_set", &commands.GetSettings{
+		Filter: "rows=-1",
+		First:  commands.Int(1),
+		Max:    commands.Int(50),
+	})
+
+	RegisterRequestCase("get_settings", "first_and_max_zero", &commands.GetSettings{
+		Filter: "rows=-1",
+		First:  commands.Int(0),
+		Max:    commands.Int(0),
+	})
 }
