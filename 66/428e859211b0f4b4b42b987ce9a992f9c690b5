@@ -1,0 +1,25 @@
+commands/errors_test.go
+  s_e6c12615fe680c::t_c37f6fc5c1fe8d 140-178
+commands/response.go
+  s_e6c12615fe680c::t_2f63aa07efae44 3-6,30-62
+connections/internal/implementation/conn.go
+  s_e6c12615fe680c::t_14ec60ba975b16 512-517
+connections/internal/implementation/conn_test.go
+  s_e6c12615fe680c::t_6b3114e80058a0 931-1038
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "66428e859211b0f4b4b42b987ce9a992f9c690b5",
+  "prompts": {},
+  "sessions": {
+    "s_e6c12615fe680c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_e6c12615fe680c",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
