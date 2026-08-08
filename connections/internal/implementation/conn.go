@@ -509,6 +509,12 @@ func (conn *Connection) Execute(ctx context.Context, command interface{}, respon
 	// Boundary-known from here on: the root element's matching EndElement was
 	// consumed, so nothing below may poison the connection.
 	if err := xml.Unmarshal(doc, response); err != nil {
+		// gvmd sometimes reports failures under a generic <gmp_response/> root
+		// instead of the command's own typed one (T-7b). ErrorFromDocument only
+		// matches that root, so it's safe to try unconditionally here.
+		if gmpErr := commands.ErrorFromDocument(doc); gmpErr != nil {
+			return gmpErr
+		}
 		return commands.NewProtocolError(doc, err)
 	}
 

@@ -137,6 +137,45 @@ func TestValidateResponse_EdgeCases(t *testing.T) {
 	}
 }
 
+func TestErrorFromDocument_RootMismatchWithError(t *testing.T) {
+	// gvmd's actual shape for this case, captured live: an unrelated command
+	// name rejected under a generic root instead of the caller's typed one.
+	doc := []byte(`<gmp_response status="400" status_text="Bogus command name"/>`)
+	ge := ErrorFromDocument(doc)
+	if ge == nil {
+		t.Fatalf("expected a *GMPError, got nil")
+	}
+	if ge.Type != ErrorTypeInvalidRequest || ge.Status != "400" || ge.StatusText != "Bogus command name" {
+		t.Fatalf("got %+v, want status=400 statusText=%q type=%v", ge, "Bogus command name", ErrorTypeInvalidRequest)
+	}
+}
+
+func TestErrorFromDocument_EnvelopeWithoutError(t *testing.T) {
+	// Correct root, but the status does not indicate an error: must not be
+	// misreported as an error.
+	doc := []byte(`<gmp_response status="200" status_text="OK"/>`)
+	if ge := ErrorFromDocument(doc); ge != nil {
+		t.Fatalf("expected nil for a non-error status, got %+v", ge)
+	}
+}
+
+func TestErrorFromDocument_UndecodableDocument(t *testing.T) {
+	if ge := ErrorFromDocument([]byte("not xml at all")); ge != nil {
+		t.Fatalf("expected nil for a document that does not decode, got %+v", ge)
+	}
+}
+
+func TestErrorFromDocument_RejectsNonGenericRootEvenWithErrorStatus(t *testing.T) {
+	// A root that is not gvmd's generic envelope must be rejected outright,
+	// regardless of what its status attribute says. Accepting any root would
+	// also match a document that decoded under its own correctly-typed root
+	// but failed deeper in — an unrelated bug this must not paper over.
+	doc := []byte(`<typed_response status="400" status_text="Bad request"/>`)
+	if ge := ErrorFromDocument(doc); ge != nil {
+		t.Fatalf("expected nil for a non-generic root, got %+v", ge)
+	}
+}
+
 func TestErrorType_String(t *testing.T) {
 	testCases := []struct {
 		errorType ErrorType

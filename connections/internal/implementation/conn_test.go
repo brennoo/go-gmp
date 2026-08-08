@@ -929,6 +929,114 @@ func TestFramingTruncatedXMLErrorsAndPoisons(t *testing.T) {
 }
 
 // ---------------------------------------------------------------------------
+// T-7b: gvmd's generic failure envelope
+// ---------------------------------------------------------------------------
+
+// typedResp has its own XMLName, like every real commands.*Response, so
+// decoding it against a <gmp_response/> root triggers an XMLName mismatch.
+type typedResp struct {
+	XMLName    xml.Name `xml:"typed_response"`
+	Status     string   `xml:"status,attr"`
+	StatusText string   `xml:"status_text,attr"`
+	Foo        string   `xml:"foo"`
+}
+
+func (r *typedResp) GetStatus() (string, string) { return r.Status, r.StatusText }
+
+// newScriptedConn hands back a fixed response regardless of what was written.
+func newScriptedConn(t *testing.T, response string) *Connection {
+	t.Helper()
+	client, server := net.Pipe()
+	t.Cleanup(func() {
+		_ = client.Close()
+		_ = server.Close()
+	})
+	go func() {
+		buf := make([]byte, 65536)
+		_, _ = server.Read(buf)
+		_, _ = server.Write([]byte(response))
+	}()
+	return New(client)
+}
+
+// TestExecuteRootMismatchRecoversGMPError is the T-7b regression test: gvmd
+// reported this exact document live (see
+// internal/gmptest/testdata/live/sync_config and /get_agents).
+func TestExecuteRootMismatchRecoversGMPError(t *testing.T) {
+	conn := newScriptedConn(t, `<gmp_response status="400" status_text="Bogus command name"/>`)
+
+	response := &typedResp{}
+	var err error
+	mustFinish(t, 5*time.Second, "Execute", func() {
+		err = conn.Execute(context.Background(), &simpleCmd{Foo: "x"}, response)
+	})
+
+	var gmpErr *commands.GMPError
+	if !errors.As(err, &gmpErr) {
+		t.Fatalf("Expected a *commands.GMPError, got %#v", err)
+	}
+	if gmpErr.Type != commands.ErrorTypeInvalidRequest || gmpErr.Status != "400" {
+		t.Fatalf("Got %+v, want status=400 type=%v", gmpErr, commands.ErrorTypeInvalidRequest)
+	}
+
+	// The connection framed a complete document; it must remain usable.
+	if errors.Is(err, ErrConnectionBroken) || errors.Is(err, ErrConnectionClosed) {
+		t.Fatalf("A root-mismatched but well-framed response must not poison the connection, got: %v", err)
+	}
+}
+
+// TestExecuteRootMismatchWithoutErrorStatusFallsBackToProtocolError: a root
+// mismatch whose recovered envelope isn't an error must not be swallowed as
+// a false success.
+func TestExecuteRootMismatchWithoutErrorStatusFallsBackToProtocolError(t *testing.T) {
+	conn := newScriptedConn(t, `<other_response status="200" status_text="OK"/>`)
+
+	response := &typedResp{}
+	var err error
+	mustFinish(t, 5*time.Second, "Execute", func() {
+		err = conn.Execute(context.Background(), &simpleCmd{Foo: "x"}, response)
+	})
+
+	var protoErr *commands.ProtocolError
+	if !errors.As(err, &protoErr) {
+		t.Fatalf("Expected a *commands.ProtocolError, got %#v", err)
+	}
+	var gmpErr *commands.GMPError
+	if errors.As(err, &gmpErr) {
+		t.Fatalf("Did not expect a GMPError for a non-error envelope, got %+v", gmpErr)
+	}
+}
+
+// TestExecuteCorrectRootWithNestedDecodeFailureStaysProtocolError: a
+// correctly-rooted response that fails to decode deeper in must not be
+// reclassified as a GMPError just because its status attribute is an error
+// code — that would hide the real decode bug.
+func TestExecuteCorrectRootWithNestedDecodeFailureStaysProtocolError(t *testing.T) {
+	conn := newScriptedConn(t, `<typed_response status="400" status_text="Bad request"><count>not-an-int</count></typed_response>`)
+
+	type respWithCount struct {
+		XMLName    xml.Name `xml:"typed_response"`
+		Status     string   `xml:"status,attr"`
+		StatusText string   `xml:"status_text,attr"`
+		Count      int      `xml:"count"`
+	}
+	response := &respWithCount{}
+	var err error
+	mustFinish(t, 5*time.Second, "Execute", func() {
+		err = conn.Execute(context.Background(), &simpleCmd{Foo: "x"}, response)
+	})
+
+	var protoErr *commands.ProtocolError
+	if !errors.As(err, &protoErr) {
+		t.Fatalf("Expected a *commands.ProtocolError, got %#v", err)
+	}
+	var gmpErr *commands.GMPError
+	if errors.As(err, &gmpErr) {
+		t.Fatalf("A correctly-rooted document that failed to decode deeper in must not be reclassified as a GMPError, got %+v", gmpErr)
+	}
+}
+
+// ---------------------------------------------------------------------------
 // T-13: poisoning classification
 // ---------------------------------------------------------------------------
 
