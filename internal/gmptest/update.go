@@ -74,6 +74,8 @@ func allowedUpdatePath(path string) error {
 		return nil
 	case slash == "FIDELITY-SUMMARY.txt":
 		return nil
+	case slash == "REQUEST-FIDELITY.txt":
+		return nil
 	case strings.HasPrefix(slash, requestsDir+"/"):
 		return nil
 	}

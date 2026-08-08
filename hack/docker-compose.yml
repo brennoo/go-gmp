@@ -72,8 +72,8 @@ services:
     ports:
       - 127.0.0.1:9390:9390
     volumes:
-      - $PWD/CA/private:/var/lib/gvm/private/CA
-      - $PWD/CA:/var/lib/gvm/CA
+      - ./CA/private:/var/lib/gvm/private/CA
+      - ./CA:/var/lib/gvm/CA
       - gvmd_data_vol:/var/lib/gvm
       - scap_data_vol:/var/lib/gvm/scap-data/
       - cert_data_vol:/var/lib/gvm/cert-data
@@ -106,8 +106,8 @@ services:
       - GSAD_ARGS=--mlisten gvmd --no-redirect --http-sts --gnutls-priorities=SECURE256:-VERS-TLS-ALL:+VERS-TLS1.2:+VERS-TLS1.3
     volumes:
       - gvmd_socket_vol:/run/gvmd
-      - $PWD/CA/private:/var/lib/gvm/private/CA
-      - $PWD/CA:/var/lib/gvm/CA
+      - ./CA/private:/var/lib/gvm/private/CA
+      - ./CA:/var/lib/gvm/CA
     depends_on:
       - gvmd
   # Sets log level of openvas to the set LOG_LEVEL within the env

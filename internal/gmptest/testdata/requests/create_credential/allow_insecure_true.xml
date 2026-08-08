@@ -1,0 +1,1 @@
+<create_credential><name>Legacy SNMP credential</name><comment>Needed for older scan targets that only speak SNMPv1</comment><allow_insecure>true</allow_insecure><login>svc-scan</login><password>s3cr3t-password</password><type>up</type></create_credential>
