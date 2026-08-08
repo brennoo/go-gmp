@@ -1,0 +1,11 @@
+{
+  "command": "authenticate",
+  "provenance": "live",
+  "source": "pre-auth: authenticate with a deliberately wrong password",
+  "byte_faithful": false,
+  "captured_at": "2026-08-08T13:52:53Z",
+  "gvmd_version": "22.7",
+  "redactions": [
+    "/authenticate/credentials/password/#text"
+  ]
+}

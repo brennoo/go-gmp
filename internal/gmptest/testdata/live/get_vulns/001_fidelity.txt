@@ -1,0 +1,20 @@
+# fidelity: get_vulns / live / 001
+# provenance: read-only: get_vulns bare
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_vulns_response/sort/field/#text                                     x1
+  /get_vulns_response/vuln_count/#text                                     x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

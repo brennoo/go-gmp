@@ -1,0 +1,8 @@
+{
+  "command": "verify_report_format",
+  "provenance": "live",
+  "source": "verify_report_format against a feed report format",
+  "byte_faithful": true,
+  "captured_at": "2026-08-08T13:53:03Z",
+  "gvmd_version": "22.7"
+}

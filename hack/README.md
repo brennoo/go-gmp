@@ -71,9 +71,17 @@ docker compose up -d gvmd
 `gvmd`'s own `depends_on` already names the minimum dependency set —
 `pg-gvm` plus the five one-shot data loaders (`scap-data`, `cert-bund-data`,
 `dfn-cert-data`, `data-objects`, `report-formats`) — so this starts nothing
-scanner-side. To also start `vulnerability-tests` (needed for `get_nvts` to
-return anything), add it explicitly: `docker compose up -d gvmd
-vulnerability-tests`.
+scanner-side. To also start the scanner stack, add `ospd-openvas` explicitly:
+`docker compose up -d gvmd ospd-openvas` (this pulls in `vulnerability-tests`,
+`redis-server`, `gpg-data` and `configure-openvas` automatically via its own
+`depends_on`). Starting `vulnerability-tests` alone is not enough: it only
+seeds the raw VT data files onto a shared volume, and it is `ospd-openvas`
+that reads them and answers `gvmd`'s periodic feed-version query over
+`/run/ospd/ospd-openvas.sock`. Without `ospd-openvas` running, `gvmd` logs
+`osp_scanner_feed_version: failed to connect to /run/ospd/ospd-openvas.sock`
+on a loop, the NVT feed never gets a version, and `<get_feeds/>` — and
+anything polling it for readiness — waits forever. `hack/gvmd-up.sh
+SCAN_DATA=1` does this for you.
 
 There are no healthchecks anywhere in `docker-compose.yml`. Readiness has to
 be polled; see "Waiting for it to be ready" below.
@@ -118,7 +126,7 @@ non-empty `<version>` and none should have `<currently_syncing>` set.
 
 ```bash
 go test -tags integration ./internal/gmptest/... \
-  -gmp.pass=<password> -gmp.servername=<CN, see below>
+  -gmp.pass=<password> -gmp.insecure
 ```
 
 ## Connecting over TLS
@@ -127,18 +135,16 @@ Port `9390` requires TLS 1.2 or 1.3 (`GVMD_ARGS` sets
 `--gnutls-priorities=SECURE256:-VERS-TLS-ALL:+VERS-TLS1.2:+VERS-TLS1.3`),
 which this library's default `tls.Config` already satisfies.
 
-The server certificate's Subject Alternative Name very likely does not
-include `127.0.0.1`, since `gvm-manage-certs` sets the CN from the
-generating container's hostname rather than anything related to how you'll
-dial it. Verification against the CA generated above therefore needs an
-explicit server name matching that CN:
-
-```bash
-openssl x509 -in CA/servercert.pem -noout -subject
-```
-
-and pass the resulting CN to `connections.WithServerName(...)` (or
-`-gmp.servername` for the test suite above).
+`gvm-manage-certs` gives the server certificate a CN but no Subject
+Alternative Names at all. Confirmed empirically: Go's `crypto/x509` refuses
+to fall back to CN for hostname verification on a SAN-less certificate
+(`certificate relies on legacy Common Name field, use SANs instead`), so
+`connections.WithServerName(...)` (or `-gmp.servername` for the test suite
+above) can **never** pass verification against this cert, regardless of what
+CN you pass it — there is no SAN to match against. Against this locally
+generated, throwaway CA, `connections.WithInsecureSkipVerify()` (or
+`-gmp.insecure`) is the only option that works. This is fine for a disposable
+local dev stack; do not do this against a real deployment's certificate.
 
 ### Validate the certs
 

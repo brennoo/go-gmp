@@ -1,0 +1,22 @@
+# fidelity: get_tags / live / 002
+# provenance: read-only: get_tags with filter="rows=2 first=1"
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_tags_response/filters                                               x1  (+11 descendant paths)
+  /get_tags_response/sort                                                  x1  (+4 descendant paths)
+  /get_tags_response/tag_count                                             x1  (+5 descendant paths)
+  /get_tags_response/tags                                                  x1  (+2 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

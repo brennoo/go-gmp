@@ -1,0 +1,11 @@
+{
+  "command": "modify_credential",
+  "provenance": "live",
+  "source": "lifecycle: modify_credential, new password redacted",
+  "byte_faithful": false,
+  "captured_at": "2026-08-08T13:53:03Z",
+  "gvmd_version": "22.7",
+  "redactions": [
+    "/modify_credential/password/#text"
+  ]
+}

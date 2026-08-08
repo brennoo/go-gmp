@@ -1,0 +1,8 @@
+{
+  "command": "move_task",
+  "provenance": "live",
+  "source": "expected failure: move_task to a nonexistent slave",
+  "byte_faithful": true,
+  "captured_at": "2026-08-08T13:53:03Z",
+  "gvmd_version": "22.7"
+}

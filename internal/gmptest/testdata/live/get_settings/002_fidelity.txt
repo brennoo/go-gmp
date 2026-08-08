@@ -1,0 +1,19 @@
+# fidelity: get_settings / live / 002
+# provenance: read-only: get_settings with filter="rows=2 first=1"
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  /get_settings_response/setting/value                                     20 -> 18
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

@@ -1,0 +1,4 @@
+# fidelity: modify_license / live / 001
+# provenance: expected failure: modify_license without an Enterprise appliance
+decode: error
+error: expected element type <modify_license_response> but have <gmp_response>

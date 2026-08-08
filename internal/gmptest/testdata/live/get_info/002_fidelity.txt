@@ -1,0 +1,33 @@
+# fidelity: get_info / live / 002
+# provenance: failure: get_info with no type attribute, which GMP requires
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_info_response/details                                               x1
+  /get_info_response/details/#text                                         x1
+  /get_info_response/filters                                               x1
+  /get_info_response/filters/@id                                           x1
+  /get_info_response/filters/keywords                                      x1
+  /get_info_response/filters/name                                          x1
+  /get_info_response/filters/term                                          x1
+  /get_info_response/info_count                                            x1
+  /get_info_response/info_count/filtered                                   x1
+  /get_info_response/info_count/filtered/#text                             x1
+  /get_info_response/info_count/page                                       x1
+  /get_info_response/info_count/page/#text                                 x1
+  /get_info_response/sort                                                  x1
+  /get_info_response/sort/field                                            x1
+  /get_info_response/sort/field/order                                      x1
+
+DUPLICATED
+  (none)

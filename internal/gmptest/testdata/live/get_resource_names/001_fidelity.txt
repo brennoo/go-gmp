@@ -1,0 +1,19 @@
+# fidelity: get_resource_names / live / 001
+# provenance: read-only: get_resource_names bare
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

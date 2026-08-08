@@ -1,0 +1,8 @@
+{
+  "command": "get_overrides",
+  "provenance": "live",
+  "source": "annotations: get_overrides for the override just created",
+  "byte_faithful": true,
+  "captured_at": "2026-08-08T13:53:03Z",
+  "gvmd_version": "22.7"
+}

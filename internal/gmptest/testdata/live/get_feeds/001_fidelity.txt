@@ -1,0 +1,21 @@
+# fidelity: get_feeds / live / 001
+# provenance: read-only: get_feeds bare
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_feeds_response/feed_owner_set/#text                                 "1" -> "true"
+  /get_feeds_response/feed_resources_access/#text                          "1" -> "true"
+  /get_feeds_response/feed_roles_set/#text                                 "1" -> "true"
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

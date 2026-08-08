@@ -1,0 +1,24 @@
+# fidelity: get_targets / live / 001
+# provenance: read-only: get_targets bare
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_targets_response/filters/@id                                        x1
+  /get_targets_response/filters/keywords                                   x1  (+7 descendant paths)
+  /get_targets_response/sort/field/order                                   x1  (+1 descendant paths)
+  /get_targets_response/target_count/#text                                 x1
+  /get_targets_response/target_count/filtered                              x1  (+1 descendant paths)
+  /get_targets_response/target_count/page                                  x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

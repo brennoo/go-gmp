@@ -81,9 +81,18 @@ fi
 # gvmd's own `depends_on` in hack/docker-compose.yml already names the
 # minimum set: pg-gvm plus the five one-shot data loaders. Nothing
 # scanner-side starts unless asked for below.
+#
+# SCAN_DATA=1 starts ospd-openvas, not just vulnerability-tests: gvmd polls
+# ospd-openvas over /run/ospd/ospd-openvas.sock for the NVT feed's version,
+# and until that socket exists get_feeds reports an empty-named feed with no
+# version forever. vulnerability-tests only seeds the raw VT data files onto
+# the shared volume; it is ospd-openvas that reads them and answers gvmd's
+# osp_scanner_feed_version query. Compose's depends_on still starts
+# vulnerability-tests (and redis-server, gpg-data, configure-openvas) first,
+# so naming ospd-openvas here is sufficient.
 if [ "${SCAN_DATA:-0}" = "1" ]; then
-	log "SCAN_DATA=1: also starting vulnerability-tests (needed for get_nvts to return anything)."
-	dc up -d gvmd vulnerability-tests
+	log "SCAN_DATA=1: also starting ospd-openvas (and its vulnerability-tests/redis-server/gpg-data/configure-openvas dependencies), needed for get_feeds to ever report the NVT feed ready, and for get_nvts to return anything."
+	dc up -d gvmd ospd-openvas
 else
 	dc up -d gvmd
 fi
@@ -138,32 +147,22 @@ log "Feed import owner set to 'admin' ($admin_uuid)."
 log ""
 log "gvmd is up. Feed sync (SCAP/CERT/NVT data) runs in the background and"
 log "takes 20-45 minutes on a first boot; internal/gmptest's readiness ladder"
-log "polls get_feeds and blocks until it is done."
+log "polls get_feeds and blocks until it is done. Without SCAN_DATA=1, the NVT"
+log "feed never gets a version (ospd-openvas never started to report one), so"
+log "get_feeds — and the readiness ladder — waits the full budget and never"
+log "succeeds."
 log ""
-# The server certificate's CN is needed for TLS verification: gvm-manage-certs
-# takes it from the hostname of whichever container generated it — effectively a
-# random container id — and the certificate very likely has no 127.0.0.1 SAN, so
-# there is nothing to guess. Read it here rather than making the reader run
-# openssl themselves; the same extraction runs in .github/workflows/integration.yml.
-server_cn=""
-if [ -f "$CA_DIR/servercert.pem" ] && command -v openssl >/dev/null 2>&1; then
-	server_cn="$(openssl x509 -in "$CA_DIR/servercert.pem" -noout -subject -nameopt multiline 2>/dev/null |
-		sed -n 's/^[[:space:]]*commonName[[:space:]]*=[[:space:]]*//p')"
-fi
-
+# gvm-manage-certs sets the server certificate's CN but does not give it any
+# Subject Alternative Names. Confirmed empirically (not just suspected): Go's
+# crypto/x509 refuses to fall back to CN for hostname verification on a
+# SAN-less certificate ("certificate relies on legacy Common Name field, use
+# SANs instead"), so -gmp.servername=<CN> cannot ever pass verification
+# against this cert, no matter how the CN was obtained. -gmp.insecure is the
+# only option that works against this locally generated, throwaway CA.
 log "Next steps:"
-if [ -n "$server_cn" ]; then
-	log "  Run the integration suite:"
-	log "    go test -tags integration ./internal/gmptest/... \\"
-	log "      -gmp.pass=\"$GVMD_ADMIN_PASSWORD\" -gmp.servername=\"$server_cn\""
-else
-	log "  1. Could not read the server certificate's CN automatically."
-	log "     Find it with:"
-	log "       openssl x509 -in hack/CA/servercert.pem -noout -subject -nameopt multiline"
-	log "  2. Run the integration suite:"
-	log "       go test -tags integration ./internal/gmptest/... \\"
-	log "         -gmp.pass=\"$GVMD_ADMIN_PASSWORD\" -gmp.servername=<CN from step 1>"
-fi
+log "  Run the integration suite:"
+log "    go test -tags integration ./internal/gmptest/... \\"
+log "      -gmp.pass=\"$GVMD_ADMIN_PASSWORD\" -gmp.insecure"
 log ""
 log "To stop: hack/gvmd-down.sh (add --purge to also delete the data"
 log "volumes, which throws away this boot's feed sync)."

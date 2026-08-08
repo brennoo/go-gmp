@@ -1,0 +1,1 @@
+<create_target><name>go-gmp-fixture-20260808t135253-96c7c8-target</name><comment>Created by go-gmp fixture capture. Safe to delete.</comment><hosts>127.0.0.1</hosts><ssh_credential id="a2ab1b27-2538-4f44-8920-25fc0fa7aa78"><port>22</port></ssh_credential><alive_tests>Consider Alive</alive_tests><port_list id="a81f7a11-5a08-4c84-9be6-33553c09de64"></port_list></create_target>

@@ -1,0 +1,19 @@
+# fidelity: get_version / live / 001
+# provenance: pre-auth: get_version on a fresh unauthenticated connection
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

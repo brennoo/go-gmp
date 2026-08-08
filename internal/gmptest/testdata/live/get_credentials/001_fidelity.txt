@@ -1,0 +1,20 @@
+# fidelity: get_credentials / live / 001
+# provenance: read-only: get_credentials bare
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_credentials_response/credential_count/#text                         x1
+  /get_credentials_response/sort/field/#text                               x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_credentials_response/filters/name                                   x1
+
+DUPLICATED
+  (none)

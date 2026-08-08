@@ -1,0 +1,11 @@
+{
+  "command": "modify_user",
+  "provenance": "live",
+  "source": "lifecycle: modify_user, new password redacted",
+  "byte_faithful": false,
+  "captured_at": "2026-08-08T13:53:03Z",
+  "gvmd_version": "22.7",
+  "redactions": [
+    "/modify_user/password/#text"
+  ]
+}

@@ -1,0 +1,21 @@
+# fidelity: get_schedules / live / 003
+# provenance: lifecycle: get_schedules for the schedule just created
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_schedules_response/filters/@id                                      x1
+  /get_schedules_response/schedule_count/#text                             x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_schedules_response/schedule/in_use/#text                            "0" -> "false"
+  /get_schedules_response/schedule/writable/#text                          "1" -> "true"
+
+ADDED
+  /get_schedules_response/schedule/tasks                                   x1
+
+DUPLICATED
+  (none)

@@ -1,0 +1,8 @@
+{
+  "command": "get_tags",
+  "provenance": "live",
+  "source": "read-only: get_tags bare",
+  "byte_faithful": true,
+  "captured_at": "2026-08-08T13:53:03Z",
+  "gvmd_version": "22.7"
+}

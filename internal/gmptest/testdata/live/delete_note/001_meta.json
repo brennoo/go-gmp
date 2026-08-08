@@ -1,0 +1,8 @@
+{
+  "command": "delete_note",
+  "provenance": "live",
+  "source": "teardown: delete_note ultimate",
+  "byte_faithful": true,
+  "captured_at": "2026-08-08T13:53:03Z",
+  "gvmd_version": "22.7"
+}

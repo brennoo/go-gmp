@@ -1,0 +1,4 @@
+# fidelity: delete_agents / live / 001
+# provenance: expected failure: delete_agents with no agents
+decode: error
+error: expected element type <delete_agents_response> but have <gmp_response>

@@ -1,0 +1,19 @@
+# fidelity: create_target / live / 001
+# provenance: lifecycle: create_target using the created port list and credential
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

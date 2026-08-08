@@ -1,0 +1,20 @@
+# fidelity: get_groups / live / 001
+# provenance: read-only: get_groups bare
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_groups_response/group_count/#text                                   x1
+  /get_groups_response/sort/field/#text                                    x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_groups_response/filters/name                                        x1
+
+DUPLICATED
+  (none)

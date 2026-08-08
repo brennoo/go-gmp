@@ -1,0 +1,22 @@
+# fidelity: get_reports / live / 001
+# provenance: read-only: get_reports bare
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_reports_response/filters                                            x1  (+11 descendant paths)
+  /get_reports_response/report_count                                       x1  (+5 descendant paths)
+  /get_reports_response/reports                                            x1  (+2 descendant paths)
+  /get_reports_response/sort                                               x1  (+4 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

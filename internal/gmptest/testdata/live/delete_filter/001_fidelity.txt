@@ -1,0 +1,19 @@
+# fidelity: delete_filter / live / 001
+# provenance: lifecycle: delete_filter into the trashcan, not ultimate
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

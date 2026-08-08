@@ -1,0 +1,11 @@
+{
+  "command": "describe_auth",
+  "provenance": "live",
+  "source": "read-only: describe_auth, auth_conf_setting values redacted",
+  "byte_faithful": false,
+  "captured_at": "2026-08-08T13:52:54Z",
+  "gvmd_version": "22.7",
+  "redactions": [
+    "/describe_auth_response/group/auth_conf_setting/value/#text"
+  ]
+}

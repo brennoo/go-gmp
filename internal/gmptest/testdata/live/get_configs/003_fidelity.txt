@@ -1,0 +1,27 @@
+# fidelity: get_configs / live / 003
+# provenance: lifecycle: get_configs to choose a config to copy
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_configs_response/config_count/filtered                              x1  (+1 descendant paths)
+  /get_configs_response/sort/field/#text                                   x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_configs_response/config/known_nvt_count                             x2
+  /get_configs_response/config/known_nvt_count/#text                       x2
+  /get_configs_response/config/max_nvt_count                               x2
+  /get_configs_response/config/max_nvt_count/#text                         x2
+  /get_configs_response/config/user_tags                                   x2
+  /get_configs_response/config/user_tags/count                             x2
+  /get_configs_response/config/user_tags/count/#text                       x2
+  /get_configs_response/filters/name                                       x1
+
+DUPLICATED
+  (none)

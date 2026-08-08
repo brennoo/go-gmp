@@ -1,0 +1,19 @@
+# fidelity: create_alert / live / 001
+# provenance: lifecycle: create_alert with a Syslog method
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

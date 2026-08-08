@@ -1,0 +1,19 @@
+# fidelity: get_features / live / 001
+# provenance: read-only: get_features bare
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_features_response/feature/@compiled_in                              x8
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

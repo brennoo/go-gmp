@@ -1,0 +1,24 @@
+# fidelity: get_tickets / live / 002
+# provenance: read-only: get_tickets with filter="rows=2 first=1"
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_tickets_response/filters/@id                                        x1
+  /get_tickets_response/filters/keywords                                   x1  (+7 descendant paths)
+  /get_tickets_response/sort/field/order                                   x1  (+1 descendant paths)
+  /get_tickets_response/ticket_count/#text                                 x1
+  /get_tickets_response/ticket_count/filtered                              x1  (+1 descendant paths)
+  /get_tickets_response/ticket_count/page                                  x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

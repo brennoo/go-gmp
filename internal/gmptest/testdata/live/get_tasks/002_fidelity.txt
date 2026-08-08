@@ -1,0 +1,20 @@
+# fidelity: get_tasks / live / 002
+# provenance: read-only: get_tasks with filter="rows=2 first=1"
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_tasks_response/sort/field/#text                                     x1
+  /get_tasks_response/task_count/#text                                     x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_tasks_response/filters/name                                         x1
+
+DUPLICATED
+  (none)

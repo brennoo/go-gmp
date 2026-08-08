@@ -1,0 +1,56 @@
+# fidelity: get_scanners / live / 001
+# provenance: read-only: get_scanners bare
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_scanners_response/scanner/credential/type                           x2
+  /get_scanners_response/scanner_count/#text                               x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_scanners_response/filters/name                                      x1
+  /get_scanners_response/scanner/ca_pub_info                               x2
+  /get_scanners_response/scanner/ca_pub_info/activation_time               x2
+  /get_scanners_response/scanner/ca_pub_info/activation_time/#text         x2
+  /get_scanners_response/scanner/ca_pub_info/expiration_time               x2
+  /get_scanners_response/scanner/ca_pub_info/expiration_time/#text         x2
+  /get_scanners_response/scanner/ca_pub_info/issuer                        x2
+  /get_scanners_response/scanner/ca_pub_info/md5_fingerprint               x2
+  /get_scanners_response/scanner/ca_pub_info/time_status                   x2
+  /get_scanners_response/scanner/certificate_info                          x2
+  /get_scanners_response/scanner/certificate_info/activation_time          x2
+  /get_scanners_response/scanner/certificate_info/activation_time/#text    x2
+  /get_scanners_response/scanner/certificate_info/expiration_time          x2
+  /get_scanners_response/scanner/certificate_info/expiration_time/#text    x2
+  /get_scanners_response/scanner/certificate_info/issuer                   x2
+  /get_scanners_response/scanner/certificate_info/md5_fingerprint          x2
+  /get_scanners_response/scanner/certificate_info/time_status              x2
+  /get_scanners_response/scanner/configs                                   x2
+  /get_scanners_response/scanner/copy                                      x2
+  /get_scanners_response/scanner/credential/login                          x2
+  /get_scanners_response/scanner/info                                      x2
+  /get_scanners_response/scanner/info/daemon                               x2
+  /get_scanners_response/scanner/info/daemon/name                          x2
+  /get_scanners_response/scanner/info/daemon/version                       x2
+  /get_scanners_response/scanner/info/description                          x2
+  /get_scanners_response/scanner/info/params                               x2
+  /get_scanners_response/scanner/info/protocol                             x2
+  /get_scanners_response/scanner/info/protocol/name                        x2
+  /get_scanners_response/scanner/info/protocol/version                     x2
+  /get_scanners_response/scanner/info/scanner                              x2
+  /get_scanners_response/scanner/info/scanner/name                         x2
+  /get_scanners_response/scanner/info/scanner/version                      x2
+  /get_scanners_response/scanner/key_pub                                   x2
+  /get_scanners_response/scanner/tasks                                     x2
+  /get_scanners_response/scanner/user_tags                                 x2
+  /get_scanners_response/scanner/user_tags/count                           x2
+  /get_scanners_response/scanner/user_tags/count/#text                     x2
+
+DUPLICATED
+  (none)

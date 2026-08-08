@@ -1,0 +1,25 @@
+# fidelity: get_tags / live / 003
+# provenance: lifecycle: get_tags for the tag just created
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_tags_response/filters                                               x1  (+11 descendant paths)
+  /get_tags_response/sort                                                  x1  (+4 descendant paths)
+  /get_tags_response/tag/in_use                                            x1  (+1 descendant paths)
+  /get_tags_response/tag/resources                                         x1  (+5 descendant paths)
+  /get_tags_response/tag_count                                             x1  (+5 descendant paths)
+  /get_tags_response/tags                                                  x1  (+2 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_tags_response/tag/active/#text                                      "1" -> "true"
+  /get_tags_response/tag/writable/#text                                    "1" -> "true"
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

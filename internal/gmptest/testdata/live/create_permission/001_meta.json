@@ -1,0 +1,8 @@
+{
+  "command": "create_permission",
+  "provenance": "live",
+  "source": "lifecycle: create_permission granting get_tasks to the created user",
+  "byte_faithful": true,
+  "captured_at": "2026-08-08T13:53:03Z",
+  "gvmd_version": "22.7"
+}

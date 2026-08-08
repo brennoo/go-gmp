@@ -1,0 +1,8 @@
+{
+  "command": "get_info",
+  "provenance": "live",
+  "source": "failure: get_info with no type attribute, which GMP requires",
+  "byte_faithful": true,
+  "captured_at": "2026-08-08T13:53:03Z",
+  "gvmd_version": "22.7"
+}

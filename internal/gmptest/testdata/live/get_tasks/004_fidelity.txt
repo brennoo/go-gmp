@@ -1,0 +1,4 @@
+# fidelity: get_tasks / live / 004
+# provenance: failure: get_tasks on an unauthenticated connection
+decode: error
+error: expected element type <get_tasks_response> but have <gmp_response>

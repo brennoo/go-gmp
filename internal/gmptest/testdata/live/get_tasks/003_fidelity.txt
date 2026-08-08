@@ -1,0 +1,30 @@
+# fidelity: get_tasks / live / 003
+# provenance: lifecycle: get_tasks for the container task
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_tasks_response/sort/field/#text                                     x1
+  /get_tasks_response/task/alterable                                       x1  (+1 descendant paths)
+  /get_tasks_response/task/config/trash                                    x1  (+1 descendant paths)
+  /get_tasks_response/task/in_use                                          x1  (+1 descendant paths)
+  /get_tasks_response/task/report_count                                    x1  (+3 descendant paths)
+  /get_tasks_response/task/scanner/trash                                   x1  (+1 descendant paths)
+  /get_tasks_response/task/schedule/trash                                  x1  (+1 descendant paths)
+  /get_tasks_response/task/schedule_periods/#text                          x1
+  /get_tasks_response/task/target/trash                                    x1  (+1 descendant paths)
+  /get_tasks_response/task/trend                                           x1
+  /get_tasks_response/task_count/#text                                     x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_tasks_response/task/writable/#text                                  "1" -> "true"
+
+ADDED
+  /get_tasks_response/filters/name                                         x1
+  /get_tasks_response/task/config/type                                     x1
+
+DUPLICATED
+  (none)

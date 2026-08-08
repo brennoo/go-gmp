@@ -1,0 +1,4 @@
+# fidelity: get_license / live / 001
+# provenance: read-only: get_license bare
+decode: error
+error: expected element type <get_license_response> but have <gmp_response>

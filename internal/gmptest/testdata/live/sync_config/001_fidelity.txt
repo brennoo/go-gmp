@@ -1,0 +1,4 @@
+# fidelity: sync_config / live / 001
+# provenance: expected failure: sync_config with no feed sync configured
+decode: error
+error: expected element type <sync_config_response> but have <gmp_response>

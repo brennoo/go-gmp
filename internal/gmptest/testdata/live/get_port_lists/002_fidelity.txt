@@ -1,0 +1,26 @@
+# fidelity: get_port_lists / live / 002
+# provenance: read-only: get_port_lists with filter="rows=2 first=1"
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_port_lists_response/filters/@id                                     x1
+  /get_port_lists_response/filters/keywords                                x1  (+7 descendant paths)
+  /get_port_lists_response/port_list/in_use                                x2  (+1 descendant paths)
+  /get_port_lists_response/port_list_count/#text                           x1
+  /get_port_lists_response/port_list_count/filtered                        x1  (+1 descendant paths)
+  /get_port_lists_response/port_list_count/page                            x1  (+1 descendant paths)
+  /get_port_lists_response/sort/field/order                                x1  (+1 descendant paths)
+
+TRUNCATED
+  /get_port_lists_response/port_list/port_count/udp                        2 -> 1
+  /get_port_lists_response/port_list/port_count/udp/#text                  2 -> 1
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

@@ -1,0 +1,4 @@
+# fidelity: get_info / live / 001
+# provenance: read-only: get_info bare
+decode: error
+error: parsing time "2026-08-07T02:59:00.000+0000" as "2006-01-02T15:04:05Z07:00": cannot parse "+0000" as "Z07:00"

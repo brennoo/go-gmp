@@ -1,0 +1,8 @@
+{
+  "command": "sync_config",
+  "provenance": "live",
+  "source": "expected failure: sync_config with no feed sync configured",
+  "byte_faithful": true,
+  "captured_at": "2026-08-08T13:53:03Z",
+  "gvmd_version": "22.7"
+}

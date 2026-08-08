@@ -1,0 +1,58 @@
+# fidelity: get_scanners / live / 003
+# provenance: lifecycle: get_scanners for the scanner just created, ca_pub redacted
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_scanners_response/scanner/credential/type                           x1  (+1 descendant paths)
+  /get_scanners_response/scanner_count/#text                               x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_scanners_response/scanner/credential/trash/#text                    "0" -> "false"
+  /get_scanners_response/scanner/in_use/#text                              "0" -> "false"
+  /get_scanners_response/scanner/writable/#text                            "1" -> "true"
+
+ADDED
+  /get_scanners_response/filters/name                                      x1
+  /get_scanners_response/scanner/ca_pub_info                               x1
+  /get_scanners_response/scanner/ca_pub_info/activation_time               x1
+  /get_scanners_response/scanner/ca_pub_info/activation_time/#text         x1
+  /get_scanners_response/scanner/ca_pub_info/expiration_time               x1
+  /get_scanners_response/scanner/ca_pub_info/expiration_time/#text         x1
+  /get_scanners_response/scanner/ca_pub_info/issuer                        x1
+  /get_scanners_response/scanner/ca_pub_info/md5_fingerprint               x1
+  /get_scanners_response/scanner/ca_pub_info/time_status                   x1
+  /get_scanners_response/scanner/certificate_info                          x1
+  /get_scanners_response/scanner/certificate_info/activation_time          x1
+  /get_scanners_response/scanner/certificate_info/activation_time/#text    x1
+  /get_scanners_response/scanner/certificate_info/expiration_time          x1
+  /get_scanners_response/scanner/certificate_info/expiration_time/#text    x1
+  /get_scanners_response/scanner/certificate_info/issuer                   x1
+  /get_scanners_response/scanner/certificate_info/md5_fingerprint          x1
+  /get_scanners_response/scanner/certificate_info/time_status              x1
+  /get_scanners_response/scanner/configs                                   x1
+  /get_scanners_response/scanner/copy                                      x1
+  /get_scanners_response/scanner/credential/login                          x1
+  /get_scanners_response/scanner/info                                      x1
+  /get_scanners_response/scanner/info/daemon                               x1
+  /get_scanners_response/scanner/info/daemon/name                          x1
+  /get_scanners_response/scanner/info/daemon/version                       x1
+  /get_scanners_response/scanner/info/description                          x1
+  /get_scanners_response/scanner/info/params                               x1
+  /get_scanners_response/scanner/info/protocol                             x1
+  /get_scanners_response/scanner/info/protocol/name                        x1
+  /get_scanners_response/scanner/info/protocol/version                     x1
+  /get_scanners_response/scanner/info/scanner                              x1
+  /get_scanners_response/scanner/info/scanner/name                         x1
+  /get_scanners_response/scanner/info/scanner/version                      x1
+  /get_scanners_response/scanner/key_pub                                   x1
+  /get_scanners_response/scanner/tasks                                     x1
+  /get_scanners_response/scanner/user_tags                                 x1
+  /get_scanners_response/scanner/user_tags/count                           x1
+  /get_scanners_response/scanner/user_tags/count/#text                     x1
+
+DUPLICATED
+  (none)

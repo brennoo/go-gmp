@@ -1,0 +1,25 @@
+# fidelity: get_overrides / live / 003
+# provenance: annotations: get_overrides for the override just created
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_overrides_response/override/in_use                                  x1  (+1 descendant paths)
+  /get_overrides_response/override/orphan                                  x1  (+1 descendant paths)
+  /get_overrides_response/override/severity                                x1
+  /get_overrides_response/override/threat                                  x1
+  /get_overrides_response/override_count/#text                             x1
+  /get_overrides_response/sort/field/#text                                 x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_overrides_response/override/active/#text                            "1" -> "true"
+  /get_overrides_response/override/writable/#text                          "1" -> "true"
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

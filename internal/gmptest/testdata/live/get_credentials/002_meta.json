@@ -1,0 +1,8 @@
+{
+  "command": "get_credentials",
+  "provenance": "live",
+  "source": "read-only: get_credentials with filter=\"rows=2 first=1\"",
+  "byte_faithful": true,
+  "captured_at": "2026-08-08T13:52:54Z",
+  "gvmd_version": "22.7"
+}

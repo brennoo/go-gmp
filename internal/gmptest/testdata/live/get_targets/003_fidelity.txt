@@ -1,0 +1,48 @@
+# fidelity: get_targets / live / 003
+# provenance: lifecycle: get_targets for the target just created
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_targets_response/filters/@id                                        x1
+  /get_targets_response/filters/keywords                                   x1  (+7 descendant paths)
+  /get_targets_response/sort/field/order                                   x1  (+1 descendant paths)
+  /get_targets_response/target/alive_tests/alive_test                      x1  (+1 descendant paths)
+  /get_targets_response/target/esxi_credential/@id                         x1
+  /get_targets_response/target/esxi_credential/name                        x1
+  /get_targets_response/target/esxi_credential/trash                       x1  (+1 descendant paths)
+  /get_targets_response/target/exclude_hosts                               x1
+  /get_targets_response/target/in_use                                      x1  (+1 descendant paths)
+  /get_targets_response/target/krb5_credential/@id                         x1
+  /get_targets_response/target/krb5_credential/name                        x1
+  /get_targets_response/target/krb5_credential/trash                       x1  (+1 descendant paths)
+  /get_targets_response/target/port_list/name                              x1
+  /get_targets_response/target/port_list/trash                             x1  (+1 descendant paths)
+  /get_targets_response/target/reverse_lookup_only                         x1  (+1 descendant paths)
+  /get_targets_response/target/reverse_lookup_unify                        x1  (+1 descendant paths)
+  /get_targets_response/target/smb_credential/@id                          x1
+  /get_targets_response/target/smb_credential/name                         x1
+  /get_targets_response/target/smb_credential/trash                        x1  (+1 descendant paths)
+  /get_targets_response/target/snmp_credential/@id                         x1
+  /get_targets_response/target/snmp_credential/name                        x1
+  /get_targets_response/target/snmp_credential/trash                       x1  (+1 descendant paths)
+  /get_targets_response/target/ssh_credential/trash                        x1  (+1 descendant paths)
+  /get_targets_response/target/ssh_elevate_credential/@id                  x1
+  /get_targets_response/target/ssh_elevate_credential/name                 x1
+  /get_targets_response/target/ssh_elevate_credential/trash                x1  (+1 descendant paths)
+  /get_targets_response/target_count/#text                                 x1
+  /get_targets_response/target_count/filtered                              x1  (+1 descendant paths)
+  /get_targets_response/target_count/page                                  x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_targets_response/target/allow_simultaneous_ips/#text                "1" -> "true"
+  /get_targets_response/target/writable/#text                              "1" -> "true"
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

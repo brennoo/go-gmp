@@ -1,0 +1,25 @@
+# fidelity: get_users / live / 001
+# provenance: read-only: get_users bare
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_users_response/filters/@id                                          x1
+  /get_users_response/sort/field/#text                                     x1
+  /get_users_response/user/comment                                         x1
+  /get_users_response/user/in_use                                          x1  (+1 descendant paths)
+  /get_users_response/user_count/#text                                     x1
+  /get_users_response/user_count/filtered                                  x1  (+1 descendant paths)
+  /get_users_response/user_count/page                                      x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_users_response/user/writable/#text                                  "1" -> "true"
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

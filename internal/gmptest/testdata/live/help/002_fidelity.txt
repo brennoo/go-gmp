@@ -1,0 +1,19 @@
+# fidelity: help / live / 002
+# provenance: read-only: help in gvmd's default format
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

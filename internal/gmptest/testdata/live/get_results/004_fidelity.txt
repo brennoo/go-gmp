@@ -1,0 +1,20 @@
+# fidelity: get_results / live / 004
+# provenance: container task: get_results to pick a result id
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_results_response/result_count/#text                                 x1
+  /get_results_response/sort/field/#text                                   x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

@@ -1,0 +1,11 @@
+{
+  "command": "get_scanners",
+  "provenance": "live",
+  "source": "lifecycle: get_scanners for the scanner just created, ca_pub redacted",
+  "byte_faithful": false,
+  "captured_at": "2026-08-08T13:53:03Z",
+  "gvmd_version": "22.7",
+  "redactions": [
+    "/get_scanners_response/scanner/ca_pub/#text"
+  ]
+}

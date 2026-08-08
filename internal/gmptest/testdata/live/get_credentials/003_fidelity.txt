@@ -1,0 +1,22 @@
+# fidelity: get_credentials / live / 003
+# provenance: lifecycle: get_credentials for the username/password credential
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_credentials_response/credential_count/#text                         x1
+  /get_credentials_response/sort/field/#text                               x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_credentials_response/credential/allow_insecure/#text                "0" -> "false"
+  /get_credentials_response/credential/in_use/#text                        "0" -> "false"
+  /get_credentials_response/credential/writable/#text                      "1" -> "true"
+
+ADDED
+  /get_credentials_response/filters/name                                   x1
+
+DUPLICATED
+  (none)

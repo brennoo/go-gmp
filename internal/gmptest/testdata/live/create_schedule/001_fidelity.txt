@@ -1,0 +1,19 @@
+# fidelity: create_schedule / live / 001
+# provenance: lifecycle: create_schedule with a past one-shot event
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /create_schedule_response/status_details                                 x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

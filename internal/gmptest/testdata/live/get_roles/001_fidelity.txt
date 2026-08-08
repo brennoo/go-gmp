@@ -1,0 +1,26 @@
+# fidelity: get_roles / live / 001
+# provenance: read-only: get_roles bare
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_roles_response/filters                                              x1  (+11 descendant paths)
+  /get_roles_response/role/in_use                                          x6  (+1 descendant paths)
+  /get_roles_response/role/owner                                           x6  (+1 descendant paths)
+  /get_roles_response/role/permissions                                     x6  (+3 descendant paths)
+  /get_roles_response/role/writable                                        x6  (+1 descendant paths)
+  /get_roles_response/role_count                                           x1  (+5 descendant paths)
+  /get_roles_response/roles                                                x1  (+2 descendant paths)
+  /get_roles_response/sort                                                 x1  (+4 descendant paths)
+
+TRUNCATED
+  /get_roles_response/role/users                                           6 -> 1
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

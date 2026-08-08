@@ -7,6 +7,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/xml"
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -18,6 +19,7 @@ import (
 	"time"
 
 	gmp "github.com/brennoo/go-gmp"
+	"github.com/brennoo/go-gmp/client"
 	"github.com/brennoo/go-gmp/commands"
 	"github.com/brennoo/go-gmp/connections"
 )
@@ -89,6 +91,7 @@ type captureRun struct {
 
 	runID       string
 	gvmdVersion string
+	reconnects  int
 
 	seq     map[string]int
 	written map[string]bool
@@ -131,6 +134,21 @@ func newCaptureRun(t *testing.T) *captureRun {
 
 	if liveConn == nil {
 		t.Fatal("liveConn is nil; the readiness ladder did not complete")
+	}
+	if *livePass == *liveUser {
+		// The sweep matches by value, not by which field the value came from.
+		// gvmd echoes the username in <owner><name> on nearly every
+		// authenticated response, so if the password is the same string, the
+		// fatal -gmp.pass term matches that legitimate, unredacted text and
+		// aborts the run — hack/gvmd-up.sh's own documented default
+		// (admin/admin) triggers this. Failing here, before anything is
+		// written, turns that into an actionable message instead of a
+		// mid-run abort with a captured-but-orphaned partial fixture set.
+		t.Fatalf("-gmp.pass (%q) must not equal -gmp.user (%q): the redaction sweep cannot tell "+
+			"the password's own text apart from the username being legitimately echoed elsewhere "+
+			"once they're the same string; set GVMD_ADMIN_PASSWORD to something else before running "+
+			"hack/gvmd-up.sh, or pass a different -gmp.pass here if the account already has one",
+			*livePass, *liveUser)
 	}
 
 	red := NewRedactor()
@@ -270,22 +288,82 @@ func (r *captureRun) sendWithFallbacks(command, desc string, req any, fallbacks 
 }
 
 // exchange runs one request/response and records the outcome.
+//
+// gvmd is observed to close the socket outright after answering some
+// requests (e.g. a disabled command's 503), which the client correctly
+// treats as an unrecoverable stream-boundary ambiguity rather than resuming
+// it — see TransportError.ConnectionUsable. Left unhandled, that turns one
+// command's connection loss into a cascade of "connection broken" for every
+// command after it in the sequence, which is exactly the outcome
+// TestCaptureLive's own doc comment says must never happen. So when the
+// broken connection is the shared r.conn (not a throwaway pre-auth dial),
+// reconnect once and retry this exchange on the fresh, reauthenticated
+// connection before giving up on it.
 func (r *captureRun) exchange(conn gmp.Connection, command, desc, reqXML string) (string, bool) {
 	if _, known := Registry[command]; !known {
 		r.fail(command, desc, "not a registered GMP command; the corpus has no directory for it")
 		return "", false
 	}
 
-	ctx, cancel := context.WithTimeout(r.ctx, *captureCommandTimeout)
-	defer cancel()
-
-	resp, err := conn.RawXML(ctx, reqXML)
+	resp, err := r.rawXML(conn, reqXML)
+	if err != nil && conn == r.conn && unusableTransport(err) {
+		if rerr := r.reconnect(); rerr != nil {
+			r.fail(command, desc, fmt.Sprintf(
+				"transport: %v (reconnect failed, giving up: %v)", err, rerr))
+			return "", false
+		}
+		r.reconnects++
+		resp, err = r.rawXML(r.conn, reqXML)
+	}
 	if err != nil {
 		r.fail(command, desc, "transport: "+err.Error())
 		return "", false
 	}
 	r.write(command, desc, reqXML, resp)
 	return resp, true
+}
+
+// rawXML runs one request/response with the per-command timeout, without any
+// retry policy — exchange is the only caller that needs one.
+func (r *captureRun) rawXML(conn gmp.Connection, reqXML string) (string, error) {
+	ctx, cancel := context.WithTimeout(r.ctx, *captureCommandTimeout)
+	defer cancel()
+	return conn.RawXML(ctx, reqXML)
+}
+
+// unusableTransport reports whether err is a TransportError that has already
+// retired the connection it came from, as opposed to one where the request
+// was merely refused (e.g. an already-cancelled context) with the connection
+// left exactly as it was.
+func unusableTransport(err error) bool {
+	var te *commands.TransportError
+	return errors.As(err, &te) && !te.ConnectionUsable
+}
+
+// reconnect replaces r.conn with a freshly dialed, reauthenticated
+// connection, closing the old one. Used after exchange sees a TransportError
+// with ConnectionUsable false on the shared connection: a new Connection is
+// the only way to recover, per its own doc comment ("a stream that failed
+// ambiguously must never be resumed").
+func (r *captureRun) reconnect() error {
+	opts, err := dialOptions()
+	if err != nil {
+		return fmt.Errorf("dial options: %w", err)
+	}
+	conn, err := connections.NewTLSConnection(r.ctx, *liveAddr, opts...)
+	if err != nil {
+		return fmt.Errorf("dial: %w", err)
+	}
+	creds := &commands.AuthenticateCredentials{Username: *liveUser, Password: *livePass}
+	if _, err := client.New(conn).Authenticate(r.ctx, &commands.Authenticate{Credentials: creds}); err != nil {
+		_ = conn.Close()
+		return fmt.Errorf("authenticate: %w", err)
+	}
+	if r.conn != nil {
+		_ = r.conn.Close()
+	}
+	r.conn = conn
+	return nil
 }
 
 // unfiled sends a request that has no home in the corpus and records only what
@@ -521,9 +599,9 @@ func (r *captureRun) reportSummary() {
 
 	var b strings.Builder
 	fmt.Fprintf(&b, "\ncapture summary (run %s, gvmd %s)\n", r.runID, r.gvmdVersion)
-	fmt.Fprintf(&b, "captured=%d failed=%d skipped=%d probes=%d exchanges=%d\n\n",
+	fmt.Fprintf(&b, "captured=%d failed=%d skipped=%d probes=%d exchanges=%d reconnects=%d\n\n",
 		counts[outcomeCaptured], counts[outcomeFailed], counts[outcomeSkipped],
-		counts[outcomeProbe], len(r.results))
+		counts[outcomeProbe], len(r.results), r.reconnects)
 
 	for _, res := range r.results {
 		fmt.Fprintf(&b, "%-10s %-24s %-3s %-5s %8dB  %s\n",

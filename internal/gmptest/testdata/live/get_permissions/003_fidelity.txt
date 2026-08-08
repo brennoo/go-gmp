@@ -1,0 +1,26 @@
+# fidelity: get_permissions / live / 003
+# provenance: lifecycle: get_permissions for the permission just created
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_permissions_response/permission/in_use                              x1  (+1 descendant paths)
+  /get_permissions_response/permission/resource/deleted                    x1  (+1 descendant paths)
+  /get_permissions_response/permission/resource/name                       x1
+  /get_permissions_response/permission/resource/trash                      x1  (+1 descendant paths)
+  /get_permissions_response/permission/resource/type                       x1
+  /get_permissions_response/permission/subject/trash                       x1  (+1 descendant paths)
+  /get_permissions_response/permission_count/#text                         x1
+  /get_permissions_response/sort/field/#text                               x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_permissions_response/permission/writable/#text                      "1" -> "true"
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

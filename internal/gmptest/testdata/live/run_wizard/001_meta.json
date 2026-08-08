@@ -1,0 +1,8 @@
+{
+  "command": "run_wizard",
+  "provenance": "live",
+  "source": "expected failure: run_wizard for a wizard that does not exist",
+  "byte_faithful": true,
+  "captured_at": "2026-08-08T13:53:03Z",
+  "gvmd_version": "22.7"
+}

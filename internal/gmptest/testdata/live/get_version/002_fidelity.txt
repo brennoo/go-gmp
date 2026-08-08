@@ -1,0 +1,19 @@
+# fidelity: get_version / live / 002
+# provenance: read-only: get_version bare
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

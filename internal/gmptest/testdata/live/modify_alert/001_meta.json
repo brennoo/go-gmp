@@ -1,0 +1,8 @@
+{
+  "command": "modify_alert",
+  "provenance": "live",
+  "source": "lifecycle: modify_alert comment",
+  "byte_faithful": true,
+  "captured_at": "2026-08-08T13:53:03Z",
+  "gvmd_version": "22.7"
+}

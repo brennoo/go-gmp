@@ -1,0 +1,19 @@
+# fidelity: create_report / live / 001
+# provenance: container task: create_report uploading a synthetic report
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

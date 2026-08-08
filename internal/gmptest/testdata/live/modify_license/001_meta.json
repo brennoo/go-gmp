@@ -1,0 +1,8 @@
+{
+  "command": "modify_license",
+  "provenance": "live",
+  "source": "expected failure: modify_license without an Enterprise appliance",
+  "byte_faithful": true,
+  "captured_at": "2026-08-08T13:53:03Z",
+  "gvmd_version": "22.7"
+}

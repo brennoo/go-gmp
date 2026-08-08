@@ -1,0 +1,19 @@
+# fidelity: create_port_range / live / 002
+# provenance: lifecycle: create_port_range with <port_list id="…"/> instead of the struct's text form
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

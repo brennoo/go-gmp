@@ -1,0 +1,8 @@
+{
+  "command": "create_target",
+  "provenance": "live",
+  "source": "failure: create_target with neither hosts nor asset_hosts",
+  "byte_faithful": true,
+  "captured_at": "2026-08-08T13:53:03Z",
+  "gvmd_version": "22.7"
+}

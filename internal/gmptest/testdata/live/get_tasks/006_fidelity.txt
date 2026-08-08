@@ -1,0 +1,4 @@
+# fidelity: get_tasks / live / 006
+# provenance: failure: malformed XML with a mismatched end tag
+decode: error
+error: expected element type <get_tasks_response> but have <gmp_response>

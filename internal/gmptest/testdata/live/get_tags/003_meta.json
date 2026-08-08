@@ -1,0 +1,8 @@
+{
+  "command": "get_tags",
+  "provenance": "live",
+  "source": "lifecycle: get_tags for the tag just created",
+  "byte_faithful": true,
+  "captured_at": "2026-08-08T13:53:03Z",
+  "gvmd_version": "22.7"
+}

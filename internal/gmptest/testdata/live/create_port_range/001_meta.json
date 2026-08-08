@@ -1,0 +1,8 @@
+{
+  "command": "create_port_range",
+  "provenance": "live",
+  "source": "lifecycle: create_port_range",
+  "byte_faithful": true,
+  "captured_at": "2026-08-08T13:53:03Z",
+  "gvmd_version": "22.7"
+}

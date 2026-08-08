@@ -1,0 +1,19 @@
+# fidelity: create_task / live / 001
+# provenance: lifecycle: create_task as a container task
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

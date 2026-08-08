@@ -1,0 +1,25 @@
+# fidelity: get_alerts / live / 003
+# provenance: lifecycle: get_alerts for the alert just created
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_alerts_response/alert_count/#text                                   x1
+  /get_alerts_response/sort/field/#text                                    x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_alerts_response/alert/active/#text                                  "1" -> "true"
+  /get_alerts_response/alert/in_use/#text                                  "0" -> "false"
+  /get_alerts_response/alert/writable/#text                                "1" -> "true"
+
+ADDED
+  /get_alerts_response/alert/filter                                        x1
+  /get_alerts_response/alert/filter/@id                                    x1
+  /get_alerts_response/alert/filter/name                                   x1
+  /get_alerts_response/alert/tasks                                         x1
+
+DUPLICATED
+  (none)

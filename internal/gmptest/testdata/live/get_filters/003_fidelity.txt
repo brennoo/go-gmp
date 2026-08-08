@@ -1,0 +1,26 @@
+# fidelity: get_filters / live / 003
+# provenance: lifecycle: get_filters for the filter just created
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_filters_response/filter_count/#text                                 x1
+  /get_filters_response/filters/@max                                       x1
+  /get_filters_response/filters/@start                                     x1
+  /get_filters_response/sort/field/#text                                   x1
+
+TRUNCATED
+  /get_filters_response/filters                                            2 -> 1
+
+CHANGED
+  /get_filters_response/filter/in_use/#text                                "0" -> "false"
+  /get_filters_response/filter/writable/#text                              "1" -> "true"
+
+ADDED
+  /get_filters_response/filters/name                                       x1
+  /get_filters_response/filters2                                           x1
+  /get_filters_response/filters2/@max                                      x1
+  /get_filters_response/filters2/@start                                    x1
+
+DUPLICATED
+  (none)

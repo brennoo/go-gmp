@@ -1,0 +1,19 @@
+# fidelity: delete_override / live / 001
+# provenance: teardown: delete_override ultimate
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

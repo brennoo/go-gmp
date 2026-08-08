@@ -1,0 +1,11 @@
+{
+  "command": "create_tls_certificate",
+  "provenance": "live",
+  "source": "lifecycle: create_tls_certificate from the generated certificate, redacted",
+  "byte_faithful": false,
+  "captured_at": "2026-08-08T13:53:03Z",
+  "gvmd_version": "22.7",
+  "redactions": [
+    "/create_tls_certificate/certificate/#text"
+  ]
+}

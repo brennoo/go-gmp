@@ -1,0 +1,19 @@
+# fidelity: get_aggregates / live / 003
+# provenance: container task: get_aggregates over results
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_aggregates_response/filters                                         x1  (+11 descendant paths)
+
+TRUNCATED
+  /get_aggregates_response/aggregate/column_info/aggregate_column/column   3 -> 1
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

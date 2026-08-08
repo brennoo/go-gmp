@@ -1,0 +1,8 @@
+{
+  "command": "verify_scanner",
+  "provenance": "live",
+  "source": "expected failure: verify_scanner against a scanner with nothing behind it",
+  "byte_faithful": true,
+  "captured_at": "2026-08-08T13:53:03Z",
+  "gvmd_version": "22.7"
+}

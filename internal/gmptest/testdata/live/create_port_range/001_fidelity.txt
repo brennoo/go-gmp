@@ -1,0 +1,19 @@
+# fidelity: create_port_range / live / 001
+# provenance: lifecycle: create_port_range
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /create_port_range_response/@id                                          x1
+
+DUPLICATED
+  (none)
