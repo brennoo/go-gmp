@@ -19,13 +19,13 @@ type CreateTarget struct {
 	SMBLSCCredential     *TargetCredential `xml:"smb_lsc_credential,omitempty"`
 	ESXILSCCredential    *TargetCredential `xml:"esxi_lsc_credential,omitempty"`
 	AliveTests           string            `xml:"alive_tests,omitempty"`
-	ReverseLookupOnly    *bool             `xml:"reverse_lookup_only,omitempty"`
-	ReverseLookupUnify   *bool             `xml:"reverse_lookup_unify,omitempty"`
+	ReverseLookupOnly    *GMPBool          `xml:"reverse_lookup_only,omitempty"`
+	ReverseLookupUnify   *GMPBool          `xml:"reverse_lookup_unify,omitempty"`
 	PortRange            string            `xml:"port_range,omitempty"`
 	PortList             *TargetPortList   `xml:"port_list,omitempty"`
 	Krb5Credential       *TargetCredential `xml:"krb5_credential,omitempty"`
 	SSHElevateCredential *TargetCredential `xml:"ssh_elevate_credential,omitempty"`
-	AllowSimultaneousIPs *bool             `xml:"allow_simultaneous_ips,omitempty"`
+	AllowSimultaneousIPs *GMPBool          `xml:"allow_simultaneous_ips,omitempty"`
 }
 
 // CreateTargetResponse is a create_target command response.

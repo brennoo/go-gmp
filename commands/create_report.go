@@ -7,7 +7,7 @@ type CreateReport struct {
 	XMLName  xml.Name    `xml:"create_report"`
 	Report   *Report     `xml:"report"`
 	Task     *ReportTask `xml:"task,omitempty"`
-	InAssets *bool       `xml:"in_assets,omitempty"`
+	InAssets *GMPBool    `xml:"in_assets,omitempty"`
 }
 
 // CreateReportResponse represents a create_report command response.

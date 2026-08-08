@@ -12,7 +12,7 @@ type GetSystemReports struct {
 	Duration  int       `xml:"duration,attr,omitempty"`
 	StartTime time.Time `xml:"start_time,attr,omitempty"`
 	EndTime   time.Time `xml:"end_time,attr,omitempty"`
-	Brief     *bool     `xml:"brief,attr,omitempty"`
+	Brief     *GMPBool  `xml:"brief,attr,omitempty"`
 	SlaveID   string    `xml:"slave_id,attr,omitempty"`
 }
 

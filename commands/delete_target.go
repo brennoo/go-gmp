@@ -8,7 +8,7 @@ import (
 type DeleteTarget struct {
 	XMLName  xml.Name `xml:"delete_target"`
 	TargetID string   `xml:"target_id,attr,omitempty"`
-	Ultimate *bool    `xml:"ultimate,attr,omitempty"`
+	Ultimate *GMPBool `xml:"ultimate,attr,omitempty"`
 }
 
 // DeleteTargetResponse represents a delete_target command response.

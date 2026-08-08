@@ -11,8 +11,8 @@ type GetAlerts struct {
 	AlertID string   `xml:"alert_id,attr,omitempty"`
 	Filter  string   `xml:"filter,attr,omitempty"`
 	FiltID  string   `xml:"filt_id,attr,omitempty"`
-	Trash   *bool    `xml:"trash,attr,omitempty"`
-	Tasks   *bool    `xml:"tasks,attr,omitempty"`
+	Trash   *GMPBool `xml:"trash,attr,omitempty"`
+	Tasks   *GMPBool `xml:"tasks,attr,omitempty"`
 }
 
 // GetAlertsResponse represents a get_alerts command response.

@@ -438,7 +438,7 @@ func (r *captureRun) lifecycleTarget(st *captureState) {
 		"lifecycle: create_target using the created port list and credential", req,
 		func(id string) {
 			r.send("delete_target", "teardown: delete_target ultimate",
-				&commands.DeleteTarget{TargetID: id, Ultimate: true})
+				&commands.DeleteTarget{TargetID: id, Ultimate: commands.Bool(true)})
 		})
 	if st.targetID == "" {
 		return
@@ -780,7 +780,7 @@ func (r *captureRun) lifecycleTask(st *captureState) {
 
 	st.taskID = r.acceptCreated("create_task", "lifecycle: create_task", resp, func(id string) {
 		r.send("delete_task", "teardown: delete_task ultimate",
-			&commands.DeleteTask{TaskID: id, Ultimate: true})
+			&commands.DeleteTask{TaskID: id, Ultimate: commands.Bool(true)})
 	})
 	if st.taskID == "" {
 		return
@@ -858,7 +858,7 @@ func (r *captureRun) captureContainerReport(st *captureState) {
 
 	r.getByID("get_reports", "ReportID", st.reportID, "container task: get_reports for the imported report")
 	r.send("get_results", "container task: get_results for the container task",
-		&commands.GetResults{TaskID: st.taskID, Details: true})
+		&commands.GetResults{TaskID: st.taskID, Details: commands.Bool(true)})
 	r.send("get_aggregates", "container task: get_aggregates over results",
 		&commands.GetAggregates{Type: "result", GroupColumn: "severity"})
 

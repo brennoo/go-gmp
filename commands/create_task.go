@@ -8,7 +8,7 @@ type CreateTask struct {
 	Name            string           `xml:"name,omitempty"`
 	Comment         string           `xml:"comment,omitempty"`
 	Copy            string           `xml:"copy,omitempty"`
-	Alterable       *bool            `xml:"alterable,omitempty"`
+	Alterable       *GMPBool         `xml:"alterable,omitempty"`
 	UsageType       string           `xml:"usage_type,omitempty"`
 	Config          *TaskConfig      `xml:"config,omitempty"`
 	Target          *TaskTarget      `xml:"target,omitempty"`

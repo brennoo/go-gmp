@@ -29,9 +29,9 @@ them, so response-side optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             36
-with actionable findings:     86
-actionable findings:          752  (request 360, response 392)
+fully conformant:             44
+with actionable findings:     78
+actionable findings:          712  (request 320, response 392)
 suppressed findings:          824
 confirmed by fidelity corpus: 77
 in the schema, not in Go:     0
@@ -45,7 +45,7 @@ in Go, not in the schema:     0
   CARDINALITY            63          0
   KIND                   17          0
   OMITEMPTY              10        824
-  TYPE                  163          0
+  TYPE                  123          0
   SCHEMA-DEFECT         109          0
 
 ### Schema defects by class
@@ -76,26 +76,26 @@ taken against upstream main (155 commands). Two reasons, both expected:
 ### Commands by actionable findings
 
   get_reports                  64   MISSING=49  EXTRA=6  CARDINALITY=5  TYPE=4
-  create_report                47   MISSING=32  EXTRA=5  CARDINALITY=5  TYPE=5
-  get_tasks                    45   MISSING=10  EXTRA=15  CARDINALITY=7  TYPE=13
+  create_report                46   MISSING=32  EXTRA=5  CARDINALITY=5  TYPE=4
+  get_tasks                    41   MISSING=10  EXTRA=15  CARDINALITY=7  TYPE=9
   get_overrides                36   MISSING=27  EXTRA=3  TYPE=6
-  get_targets                  32   MISSING=11  EXTRA=10  KIND=3  TYPE=8
+  get_targets                  29   MISSING=11  EXTRA=10  KIND=3  TYPE=5
   get_report_formats           28   MISSING=17  EXTRA=2  CARDINALITY=1  KIND=2  TYPE=6
   get_notes                    23   MISSING=19  TYPE=4
-  modify_target                22   EXTRA=19  TYPE=3
   get_info                     21   MISSING=12  EXTRA=6  TYPE=3
   modify_agents                21   EXTRA=18  CARDINALITY=3
-  create_target                20   EXTRA=17  TYPE=3
-  create_task                  18   EXTRA=15  CARDINALITY=2  TYPE=1
+  modify_target                19   EXTRA=19
   delete_agents                18   EXTRA=18
   get_tags                     18   MISSING=8  EXTRA=2  CARDINALITY=4  TYPE=4
+  create_target                17   EXTRA=17
+  create_task                  17   EXTRA=15  CARDINALITY=2
   get_nvts                     17   MISSING=5  EXTRA=1  CARDINALITY=7  TYPE=4
   get_report_configs           17   MISSING=11  EXTRA=2  KIND=2  TYPE=2
   get_tickets                  15   MISSING=5  EXTRA=4  KIND=3  TYPE=3
-  get_tls_certificates         15   MISSING=5  EXTRA=4  KIND=2  TYPE=4
   get_aggregates               14   MISSING=5  EXTRA=5  CARDINALITY=4
+  get_tls_certificates         14   MISSING=5  EXTRA=4  KIND=2  TYPE=3
   modify_config                14   EXTRA=6  CARDINALITY=3  OMITEMPTY=2  TYPE=3
-  ... and 66 more with fewer
+  ... and 58 more with fewer
 
 ### Confirmed by both oracles
 
@@ -199,12 +199,10 @@ OMITEMPTY=2
 
 ### create_alert  (command_create_alert.xml)
 
-OMITEMPTY=1  TYPE=1
+OMITEMPTY=1
 
   OMITEMPTY     request  /create_alert/filter
                 schema says required, Filter is tagged omitempty  [suppressed: request-side over-constraint]
-  TYPE          request  /create_alert/active
-                schema type boolean is text ("" is true), Go Active is bool: '7' fails to decode and '1' re-emits as 'true'
 
 ### create_asset  (command_create_asset.xml)
 
@@ -226,14 +224,12 @@ EXTRA=1  OMITEMPTY=1  SCHEMA-DEFECT=1
 
 ### create_credential  (command_create_credential.xml)
 
-OMITEMPTY=2  TYPE=1
+OMITEMPTY=2
 
   OMITEMPTY     request  /create_credential/privacy/algorithm
                 schema says required, Algorithm is tagged omitempty  [suppressed: request-side over-constraint]
   OMITEMPTY     request  /create_credential/privacy/password
                 schema says required, Password is tagged omitempty  [suppressed: request-side over-constraint]
-  TYPE          request  /create_credential/allow_insecure
-                schema type boolean is text ("" is true), Go AllowInsecure is bool: '7' fails to decode and '1' re-emits as 'true'
 
 ### create_filter  (command_create_filter.xml)
 
@@ -321,7 +317,7 @@ MISSING=1
 
 ### create_report  (command_create_report.xml)
 
-MISSING=32  EXTRA=5  CARDINALITY=5  OMITEMPTY=144  TYPE=5  SCHEMA-DEFECT=10
+MISSING=32  EXTRA=5  CARDINALITY=5  OMITEMPTY=144  TYPE=4  SCHEMA-DEFECT=10
 
   MISSING       request  /create_report/report/report/compliance_count/incomplete/*
                 schema declares 2 children; Go models this as scalar int
@@ -695,8 +691,6 @@ MISSING=32  EXTRA=5  CARDINALITY=5  OMITEMPTY=144  TYPE=5  SCHEMA-DEFECT=10
                 schema says required, Writable is tagged omitempty  [suppressed: request-side over-constraint]
   OMITEMPTY     request  /create_report/task
                 schema says required, Task is tagged omitempty  [suppressed: request-side over-constraint]
-  TYPE          request  /create_report/in_assets
-                schema type boolean is text ("" is true), Go InAssets is bool: '7' fails to decode and '1' re-emits as 'true'
   TYPE          request  /create_report/report/in_use
                 schema type boolean is text ("" is true), Go InUse is bool: '7' fails to decode and '1' re-emits as 'true'
   TYPE          request  /create_report/report/report/task/target/trash
@@ -775,7 +769,7 @@ conformant
 
 ### create_tag  (command_create_tag.xml)
 
-EXTRA=3  OMITEMPTY=2  TYPE=1
+EXTRA=3  OMITEMPTY=2
 
   EXTRA         request  /create_tag/resources/resource/name
                 Go field Name string has no counterpart in the schema
@@ -787,12 +781,10 @@ EXTRA=3  OMITEMPTY=2  TYPE=1
                 schema says required, Resources is tagged omitempty  [suppressed: request-side over-constraint]
   OMITEMPTY     request  /create_tag/resources/resource/@id
                 schema says optional, ID string has no omitempty and is always emitted
-  TYPE          request  /create_tag/active
-                schema type boolean is text ("" is true), Go Active is bool: '7' fails to decode and '1' re-emits as 'true'
 
 ### create_target  (command_create_target.xml)
 
-EXTRA=17  OMITEMPTY=12  TYPE=3
+EXTRA=17  OMITEMPTY=12
 
   EXTRA         request  /create_target/esxi_credential/name
                 Go field Name string has no counterpart in the schema
@@ -852,16 +844,10 @@ EXTRA=17  OMITEMPTY=12  TYPE=3
                 schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
   OMITEMPTY     request  /create_target/ssh_lsc_credential/@id
                 schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
-  TYPE          request  /create_target/allow_simultaneous_ips
-                schema type boolean is text ("" is true), Go AllowSimultaneousIPs is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          request  /create_target/reverse_lookup_only
-                schema type boolean is text ("" is true), Go ReverseLookupOnly is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          request  /create_target/reverse_lookup_unify
-                schema type boolean is text ("" is true), Go ReverseLookupUnify is bool: '7' fails to decode and '1' re-emits as 'true'
 
 ### create_task  (command_create_task.xml)
 
-EXTRA=15  CARDINALITY=2  OMITEMPTY=4  TYPE=1
+EXTRA=15  CARDINALITY=2  OMITEMPTY=4
 
   EXTRA         request  /create_task/alert/name
                 Go field Name string has no counterpart in the schema
@@ -905,8 +891,6 @@ EXTRA=15  CARDINALITY=2  OMITEMPTY=4  TYPE=1
                 schema says required, Scanner is tagged omitempty  [suppressed: request-side over-constraint]
   OMITEMPTY     request  /create_task/target
                 schema says required, Target is tagged omitempty  [suppressed: request-side over-constraint]
-  TYPE          request  /create_task/alterable
-                schema type boolean is text ("" is true), Go Alterable is bool: '7' fails to decode and '1' re-emits as 'true'
 
 ### create_ticket  (command_create_ticket.xml)
 
@@ -1094,25 +1078,21 @@ TYPE=1
 
 ### delete_target  (command_delete_target.xml)
 
-OMITEMPTY=2  TYPE=1
+OMITEMPTY=2
 
   OMITEMPTY     request  /delete_target/@target_id
                 schema says required, TargetID is tagged omitempty  [suppressed: request-side over-constraint]
   OMITEMPTY     request  /delete_target/@ultimate
                 schema says required, Ultimate is tagged omitempty  [suppressed: request-side over-constraint]
-  TYPE          request  /delete_target/@ultimate
-                schema type boolean is text ("" is true), Go Ultimate is bool: '7' fails to decode and '1' re-emits as 'true'
 
 ### delete_task  (command_delete_task.xml)
 
-OMITEMPTY=2  TYPE=1
+OMITEMPTY=2
 
   OMITEMPTY     request  /delete_task/@task_id
                 schema says required, TaskID is tagged omitempty  [suppressed: request-side over-constraint]
   OMITEMPTY     request  /delete_task/@ultimate
                 schema says required, Ultimate is tagged omitempty  [suppressed: request-side over-constraint]
-  TYPE          request  /delete_task/@ultimate
-                schema type boolean is text ("" is true), Go Ultimate is bool: '7' fails to decode and '1' re-emits as 'true'
 
 ### delete_ticket  (command_delete_ticket.xml)
 
@@ -1350,12 +1330,8 @@ MISSING=5  EXTRA=5  CARDINALITY=4  OMITEMPTY=30
 
 ### get_alerts  (command_get_alerts.xml)
 
-MISSING=2  OMITEMPTY=7  TYPE=6  SCHEMA-DEFECT=2
+MISSING=2  OMITEMPTY=7  TYPE=4  SCHEMA-DEFECT=2
 
-  TYPE          request  /get_alerts/@tasks
-                schema type boolean is text ("" is true), Go Tasks is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          request  /get_alerts/@trash
-                schema type boolean is text ("" is true), Go Trash is bool: '7' fails to decode and '1' re-emits as 'true'
   MISSING       response /get_alerts_response/alert/method/data/certificate_info
                 optional elem certificate_info is not modelled
   MISSING       response /get_alerts_response/alert/method/data/credential
@@ -1459,16 +1435,8 @@ MISSING=2  EXTRA=1  OMITEMPTY=3  TYPE=2  SCHEMA-DEFECT=1
 
 ### get_credentials  (command_get_credentials.xml)
 
-MISSING=2  EXTRA=1  OMITEMPTY=2  TYPE=7  SCHEMA-DEFECT=2
+MISSING=2  EXTRA=1  OMITEMPTY=2  TYPE=3  SCHEMA-DEFECT=2
 
-  TYPE          request  /get_credentials/@details
-                schema type boolean is text ("" is true), Go Details is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          request  /get_credentials/@scanners
-                schema type boolean is text ("" is true), Go Scanners is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          request  /get_credentials/@targets
-                schema type boolean is text ("" is true), Go Targets is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          request  /get_credentials/@trash
-                schema type boolean is text ("" is true), Go Trash is bool: '7' fails to decode and '1' re-emits as 'true'
   MISSING       response /get_credentials_response/credential/certificate_info/*
                 schema declares 8 children; Go models this as scalar *commands.CredentialCertificateInfo
   MISSING       response /get_credentials_response/credential/privacy/*
@@ -1528,12 +1496,8 @@ OMITEMPTY=7  TYPE=3  SCHEMA-DEFECT=1
 
 ### get_filters  (command_get_filters.xml)
 
-OMITEMPTY=1  TYPE=4  SCHEMA-DEFECT=3
+OMITEMPTY=1  TYPE=2  SCHEMA-DEFECT=3
 
-  TYPE          request  /get_filters/@alerts
-                schema type boolean is text ("" is true), Go Alerts is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          request  /get_filters/@trash
-                schema type boolean is text ("" is true), Go Trash is bool: '7' fails to decode and '1' re-emits as 'true'
   OMITEMPTY     response /get_filters_response/filters/name
                 schema says optional, Name string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
   TYPE          response /get_filters_response/filter/in_use
@@ -1549,10 +1513,8 @@ OMITEMPTY=1  TYPE=4  SCHEMA-DEFECT=3
 
 ### get_groups  (command_get_groups.xml)
 
-OMITEMPTY=1  TYPE=3
+OMITEMPTY=1  TYPE=2
 
-  TYPE          request  /get_groups/@trash
-                schema type boolean is text ("" is true), Go Trash is bool: '7' fails to decode and '1' re-emits as 'true'
   OMITEMPTY     response /get_groups_response/filters/name
                 schema says optional, Name string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
   TYPE          response /get_groups_response/group/in_use
@@ -2757,16 +2719,8 @@ OMITEMPTY=2  TYPE=1  SCHEMA-DEFECT=1
 
 ### get_results  (command_get_results.xml)
 
-MISSING=1  EXTRA=4  CARDINALITY=1  OMITEMPTY=20  TYPE=4  SCHEMA-DEFECT=2
+MISSING=1  EXTRA=4  CARDINALITY=1  OMITEMPTY=20  SCHEMA-DEFECT=2
 
-  TYPE          request  /get_results/@details
-                schema type boolean is text ("" is true), Go Details is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          request  /get_results/@get_counts
-                schema type boolean is text ("" is true), Go GetCounts is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          request  /get_results/@notes_details
-                schema type boolean is text ("" is true), Go NotesDetails is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          request  /get_results/@overrides_details
-                schema type boolean is text ("" is true), Go OverridesDetails is bool: '7' fails to decode and '1' re-emits as 'true'
   MISSING       response /get_results_response/result/nvt/severities/severity
                 repeated elem severity is not modelled  [fidelity]
   EXTRA         response /get_results_response/result/delta/notes/note/result/*
@@ -3010,12 +2964,10 @@ EXTRA=2  CARDINALITY=2  OMITEMPTY=11
 
 ### get_system_reports  (command_get_system_reports.xml)
 
-EXTRA=1  CARDINALITY=1  TYPE=1
+EXTRA=1  CARDINALITY=1
 
   CARDINALITY   request  /get_system_reports/@duration
                 schema says optional; Duration int cannot express absence (zero is a legal value)
-  TYPE          request  /get_system_reports/@brief
-                schema type boolean is text ("" is true), Go Brief is bool: '7' fails to decode and '1' re-emits as 'true'
   EXTRA         response /get_system_reports_response/truncated
                 Go field Truncated string has no counterpart in the schema
 
@@ -3068,14 +3020,8 @@ MISSING=8  EXTRA=2  CARDINALITY=4  OMITEMPTY=2  TYPE=4  SCHEMA-DEFECT=1
 
 ### get_targets  (command_get_targets.xml)
 
-MISSING=11  EXTRA=10  KIND=3  OMITEMPTY=55  TYPE=8  SCHEMA-DEFECT=8
+MISSING=11  EXTRA=10  KIND=3  OMITEMPTY=55  TYPE=5  SCHEMA-DEFECT=8
 
-  TYPE          request  /get_targets/@details
-                schema type boolean is text ("" is true), Go Details is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          request  /get_targets/@tasks
-                schema type boolean is text ("" is true), Go Tasks is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          request  /get_targets/@trash
-                schema type boolean is text ("" is true), Go Trash is bool: '7' fails to decode and '1' re-emits as 'true'
   MISSING       response /get_targets_response/filters/keywords
                 required elem keywords is not modelled  [fidelity]
   MISSING       response /get_targets_response/sort/field/*
@@ -3263,16 +3209,8 @@ MISSING=11  EXTRA=10  KIND=3  OMITEMPTY=55  TYPE=8  SCHEMA-DEFECT=8
 
 ### get_tasks  (command_get_tasks.xml)
 
-MISSING=10  EXTRA=15  CARDINALITY=7  OMITEMPTY=9  TYPE=13  SCHEMA-DEFECT=4
+MISSING=10  EXTRA=15  CARDINALITY=7  OMITEMPTY=9  TYPE=9  SCHEMA-DEFECT=4
 
-  TYPE          request  /get_tasks/@details
-                schema type boolean is text ("" is true), Go Details is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          request  /get_tasks/@ignore_pagination
-                schema type boolean is text ("" is true), Go IgnorePagination is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          request  /get_tasks/@schedules_only
-                schema type boolean is text ("" is true), Go SchedulesOnly is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          request  /get_tasks/@trash
-                schema type boolean is text ("" is true), Go Trash is bool: '7' fails to decode and '1' re-emits as 'true'
   MISSING       response /get_tasks_response/task/alert/trash
                 required elem trash is not modelled
   MISSING       response /get_tasks_response/task/current_report/report
@@ -3465,12 +3403,10 @@ MISSING=5  EXTRA=4  KIND=3  OMITEMPTY=23  TYPE=3
 
 ### get_tls_certificates  (command_get_tls_certificates.xml)
 
-MISSING=5  EXTRA=4  KIND=2  OMITEMPTY=33  TYPE=4
+MISSING=5  EXTRA=4  KIND=2  OMITEMPTY=33  TYPE=3
 
   MISSING       request  /get_tls_certificates/@filt_id
                 optional attr filt_id is not modelled
-  TYPE          request  /get_tls_certificates/@include_certificate_data
-                schema type boolean is text ("" is true), Go IncludeCertificateData is bool: '7' fails to decode and '1' re-emits as 'true'
   MISSING       response /get_tls_certificates_response/tls_certificate/sources/source/location
                 optional elem location is not modelled
   MISSING       response /get_tls_certificates_response/tls_certificate/sources/source/origin
@@ -3653,7 +3589,7 @@ SCHEMA-DEFECT=1
 EXTRA=3  OMITEMPTY=8
 
   EXTRA         request  /get_vulns/@trash
-                Go field Trash *bool has no counterpart in the schema
+                Go field Trash *commands.GMPBool has no counterpart in the schema
   EXTRA         response /get_vulns_response/truncated
                 Go field Truncated string has no counterpart in the schema
   EXTRA         response /get_vulns_response/vuln/type
@@ -3799,14 +3735,12 @@ EXTRA=6  CARDINALITY=3  OMITEMPTY=6  TYPE=3
 
 ### modify_credential  (command_modify_credential.xml)
 
-OMITEMPTY=2  TYPE=1
+OMITEMPTY=2
 
   OMITEMPTY     request  /modify_credential/privacy/algorithm
                 schema says required, Algorithm is tagged omitempty  [suppressed: request-side over-constraint]
   OMITEMPTY     request  /modify_credential/privacy/password
                 schema says required, Password is tagged omitempty  [suppressed: request-side over-constraint]
-  TYPE          request  /modify_credential/allow_insecure
-                schema type boolean is text ("" is true), Go AllowInsecure is bool: '7' fails to decode and '1' re-emits as 'true'
 
 ### modify_filter  (command_modify_filter.xml)
 
@@ -3818,10 +3752,7 @@ conformant
 
 ### modify_license  (command_modify_license.xml)
 
-TYPE=1
-
-  TYPE          request  /modify_license/@allow_empty
-                schema type boolean is text ("" is true), Go AllowEmpty is bool: '7' fails to decode and '1' re-emits as 'true'
+conformant
 
 ### modify_note  (command_modify_note.xml)
 
@@ -3901,12 +3832,10 @@ MISSING=1  EXTRA=3
 
 ### modify_report_format  (command_modify_report_format.xml)
 
-OMITEMPTY=1  TYPE=1
+OMITEMPTY=1
 
   OMITEMPTY     request  /modify_report_format/param/name
                 schema says required, Name is tagged omitempty  [suppressed: request-side over-constraint]
-  TYPE          request  /modify_report_format/active
-                schema type boolean is text ("" is true), Go Active is bool: '7' fails to decode and '1' re-emits as 'true'
 
 ### modify_role  (command_modify_role.xml)
 
@@ -3945,7 +3874,7 @@ conformant
 
 ### modify_tag  (command_modify_tag.xml)
 
-MISSING=1  EXTRA=3  OMITEMPTY=1  TYPE=1
+MISSING=1  EXTRA=3  OMITEMPTY=1
 
   MISSING       request  /modify_tag/resources/@action
                 optional attr action is not modelled
@@ -3957,12 +3886,10 @@ MISSING=1  EXTRA=3  OMITEMPTY=1  TYPE=1
                 Go field Type string has no counterpart in the schema
   OMITEMPTY     request  /modify_tag/resources/resource/@id
                 schema says optional, ID string has no omitempty and is always emitted
-  TYPE          request  /modify_tag/active
-                schema type boolean is text ("" is true), Go Active is bool: '7' fails to decode and '1' re-emits as 'true'
 
 ### modify_target  (command_modify_target.xml)
 
-EXTRA=19  OMITEMPTY=10  TYPE=3
+EXTRA=19  OMITEMPTY=10
 
   EXTRA         request  /modify_target/esxi_credential/name
                 Go field Name string has no counterpart in the schema
@@ -4022,12 +3949,6 @@ EXTRA=19  OMITEMPTY=10  TYPE=3
                 schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
   OMITEMPTY     request  /modify_target/ssh_lsc_credential/@id
                 schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
-  TYPE          request  /modify_target/allow_simultaneous_ips
-                schema type boolean is text ("" is true), Go AllowSimultaneousIPs is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          request  /modify_target/reverse_lookup_only
-                schema type boolean is text ("" is true), Go ReverseLookupOnly is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          request  /modify_target/reverse_lookup_unify
-                schema type boolean is text ("" is true), Go ReverseLookupUnify is bool: '7' fails to decode and '1' re-emits as 'true'
 
 ### modify_task  (command_modify_task.xml)
 
@@ -4098,12 +4019,10 @@ OMITEMPTY=1
 
 ### run_wizard  (command_run_wizard.xml)
 
-OMITEMPTY=1  TYPE=1  SCHEMA-DEFECT=1
+OMITEMPTY=1  SCHEMA-DEFECT=1
 
   OMITEMPTY     request  /run_wizard/params
                 schema says required, Params is tagged omitempty  [suppressed: request-side over-constraint]
-  TYPE          request  /run_wizard/@read_only
-                schema type boolean is text ("" is true), Go ReadOnly is bool: '7' fails to decode and '1' re-emits as 'true'
   SCHEMA-DEFECT response /run_wizard_response/response
                 empty-pattern: pattern declares no content
 

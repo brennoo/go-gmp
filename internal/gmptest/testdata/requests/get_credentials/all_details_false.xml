@@ -1,1 +1,1 @@
-<get_credentials filter="rows=-1" details="false" scanners="false" trash="false" targets="false"></get_credentials>
+<get_credentials filter="rows=-1" details="0" scanners="0" trash="0" targets="0"></get_credentials>

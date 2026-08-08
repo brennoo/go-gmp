@@ -11,10 +11,10 @@ type GetTasks struct {
 	TaskID           string   `xml:"task_id,attr,omitempty"`
 	Filter           string   `xml:"filter,attr,omitempty"`
 	FiltID           string   `xml:"filt_id,attr,omitempty"`
-	Trash            *bool    `xml:"trash,attr,omitempty"`
-	Details          *bool    `xml:"details,attr,omitempty"`
-	IgnorePagination *bool    `xml:"ignore_pagination,attr,omitempty"`
-	SchedulesOnly    *bool    `xml:"schedules_only,attr,omitempty"`
+	Trash            *GMPBool `xml:"trash,attr,omitempty"`
+	Details          *GMPBool `xml:"details,attr,omitempty"`
+	IgnorePagination *GMPBool `xml:"ignore_pagination,attr,omitempty"`
+	SchedulesOnly    *GMPBool `xml:"schedules_only,attr,omitempty"`
 	UsageType        string   `xml:"usage_type,attr,omitempty"`
 }
 

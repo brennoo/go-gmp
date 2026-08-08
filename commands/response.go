@@ -2,6 +2,7 @@ package commands
 
 import (
 	"encoding/xml"
+	"errors"
 	"strconv"
 )
 
@@ -52,11 +53,16 @@ const gvmdGenericResponseRoot = "gmp_response"
 // it didn't decode as one, or it did but wasn't an error — not that doc was fine.
 func ErrorFromDocument(doc []byte) *GMPError {
 	var env genericEnvelope
-	if xml.Unmarshal(doc, &env) != nil || env.XMLName.Local != gvmdGenericResponseRoot {
+	if err := xml.Unmarshal(doc, &env); err != nil {
+		return nil //nolint:nilerr // malformed/non-envelope documents are intentionally not recoverable here
+	}
+	if env.XMLName.Local != gvmdGenericResponseRoot {
 		return nil
 	}
-	if err := ValidateResponse(env.Status, env.StatusText); err != nil {
-		return err.(*GMPError)
+
+	var gmpErr *GMPError
+	if errors.As(ValidateResponse(env.Status, env.StatusText), &gmpErr) {
+		return gmpErr
 	}
 	return nil
 }

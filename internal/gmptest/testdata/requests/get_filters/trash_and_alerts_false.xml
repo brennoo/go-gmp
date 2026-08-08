@@ -1,1 +1,1 @@
-<get_filters filter="type=task" trash="false" alerts="false"></get_filters>
+<get_filters filter="type=task" trash="0" alerts="0"></get_filters>

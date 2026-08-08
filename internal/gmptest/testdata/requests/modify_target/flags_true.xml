@@ -1,1 +1,1 @@
-<modify_target target_id="1a2b3c4d-5e6f-7081-92a3-b4c5d6e7f8a9"><reverse_lookup_only>true</reverse_lookup_only><reverse_lookup_unify>true</reverse_lookup_unify><allow_simultaneous_ips>true</allow_simultaneous_ips></modify_target>
+<modify_target target_id="1a2b3c4d-5e6f-7081-92a3-b4c5d6e7f8a9"><reverse_lookup_only>1</reverse_lookup_only><reverse_lookup_unify>1</reverse_lookup_unify><allow_simultaneous_ips>1</allow_simultaneous_ips></modify_target>

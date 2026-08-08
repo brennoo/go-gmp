@@ -1,1 +1,1 @@
-<get_targets filter="rows=-1" trash="true" tasks="true" details="true"></get_targets>
+<get_targets filter="rows=-1" trash="1" tasks="1" details="1"></get_targets>

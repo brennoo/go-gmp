@@ -8,8 +8,8 @@
 # silently fails to ever emit).
 # Regenerate with: go test ./internal/gmptest -run TestRequestRoundTrip -update
 
-requests-compared: 320   clean: 297   with-loss: 21   decode-errors: 2   advisory: 0   skipped-no-request: 0
-commands with a recorded request: 122 of 122   commands with loss: 19
+requests-compared: 320   clean: 299   with-loss: 19   decode-errors: 2   advisory: 0   skipped-no-request: 0
+commands with a recorded request: 122 of 122   commands with loss: 17
 
 ## Per fixture
 
@@ -46,7 +46,7 @@ create_port_list             upstream  001 clean         dropped=0   truncated=0
 create_port_range            live      001 clean         dropped=0   truncated=0   changed=0   added=0  
 create_port_range            live      002 ok            dropped=1   truncated=0   changed=0   added=0  
 create_port_range            upstream  001 ok            dropped=1   truncated=0   changed=0   added=0  
-create_report                live      001 ok            dropped=1   truncated=0   changed=3   added=10 
+create_report                live      001 ok            dropped=1   truncated=0   changed=2   added=10 
 create_report                upstream  001 ok            dropped=4   truncated=0   changed=1   added=12 
 create_report_config         upstream  001 clean         dropped=0   truncated=0   changed=0   added=4  
 create_report_format         upstream  001 ok            dropped=1   truncated=0   changed=0   added=0  
@@ -107,9 +107,9 @@ delete_schedule              live      001 clean         dropped=0   truncated=0
 delete_schedule              upstream  001 clean         dropped=0   truncated=0   changed=0   added=1  
 delete_tag                   live      001 clean         dropped=0   truncated=0   changed=0   added=0  
 delete_tag                   upstream  001 ok            dropped=1   truncated=0   changed=0   added=2  
-delete_target                live      001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_target                live      001 ok            dropped=0   truncated=0   changed=1   added=0  
 delete_target                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
-delete_task                  live      001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_task                  live      001 ok            dropped=0   truncated=0   changed=1   added=0  
 delete_task                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
 delete_ticket                upstream  001 clean         dropped=0   truncated=0   changed=0   added=1  
 delete_user                  live      001 clean         dropped=0   truncated=0   changed=0   added=0  
@@ -143,7 +143,7 @@ get_credentials              live      002 clean         dropped=0   truncated=0
 get_credentials              live      003 clean         dropped=0   truncated=0   changed=0   added=0  
 get_credentials              live      004 clean         dropped=0   truncated=0   changed=0   added=0  
 get_credentials              upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
-get_credentials              upstream  002 ok            dropped=0   truncated=0   changed=1   added=0  
+get_credentials              upstream  002 clean         dropped=0   truncated=0   changed=0   added=0  
 get_credentials              upstream  003 clean         dropped=0   truncated=0   changed=0   added=0  
 get_features                 live      001 clean         dropped=0   truncated=0   changed=0   added=0  
 get_features                 upstream  001 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  
@@ -204,7 +204,7 @@ get_resource_names           live      002 clean         dropped=0   truncated=0
 get_resource_names           upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
 get_results                  live      001 clean         dropped=0   truncated=0   changed=0   added=0  
 get_results                  live      002 clean         dropped=0   truncated=0   changed=0   added=0  
-get_results                  live      003 clean         dropped=0   truncated=0   changed=0   added=0  
+get_results                  live      003 ok            dropped=0   truncated=0   changed=1   added=0  
 get_results                  live      004 clean         dropped=0   truncated=0   changed=0   added=0  
 get_results                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
 get_results                  upstream  002 clean         dropped=0   truncated=0   changed=0   added=0  
@@ -223,7 +223,7 @@ get_settings                 live      002 clean         dropped=0   truncated=0
 get_settings                 live      003 clean         dropped=0   truncated=0   changed=0   added=0  
 get_settings                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
 get_system_reports           live      001 clean         dropped=0   truncated=0   changed=0   added=0  
-get_system_reports           upstream  001 ok            dropped=0   truncated=0   changed=1   added=2  
+get_system_reports           upstream  001 clean         dropped=0   truncated=0   changed=0   added=2  
 get_system_reports           upstream  002 clean         dropped=0   truncated=0   changed=0   added=2  
 get_tags                     live      001 clean         dropped=0   truncated=0   changed=0   added=0  
 get_tags                     live      002 clean         dropped=0   truncated=0   changed=0   added=0  
@@ -233,7 +233,7 @@ get_targets                  live      001 clean         dropped=0   truncated=0
 get_targets                  live      002 clean         dropped=0   truncated=0   changed=0   added=0  
 get_targets                  live      003 clean         dropped=0   truncated=0   changed=0   added=0  
 get_targets                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
-get_targets                  upstream  002 ok            dropped=0   truncated=0   changed=1   added=0  
+get_targets                  upstream  002 clean         dropped=0   truncated=0   changed=0   added=0  
 get_tasks                    live      001 clean         dropped=0   truncated=0   changed=0   added=0  
 get_tasks                    live      002 clean         dropped=0   truncated=0   changed=0   added=0  
 get_tasks                    live      003 clean         dropped=0   truncated=0   changed=0   added=0  
@@ -241,7 +241,7 @@ get_tasks                    live      004 clean         dropped=0   truncated=0
 get_tasks                    live      005 clean         dropped=0   truncated=0   changed=0   added=0  
 get_tasks                    live      006 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  
 get_tasks                    upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
-get_tasks                    upstream  002 ok            dropped=0   truncated=0   changed=1   added=0  
+get_tasks                    upstream  002 clean         dropped=0   truncated=0   changed=0   added=0  
 get_tasks                    upstream  003 clean         dropped=0   truncated=0   changed=0   added=0  
 get_tickets                  live      001 clean         dropped=0   truncated=0   changed=0   added=0  
 get_tickets                  live      002 clean         dropped=0   truncated=0   changed=0   added=0  
@@ -303,7 +303,7 @@ modify_schedule              upstream  001 clean         dropped=0   truncated=0
 modify_setting               live      001 clean         dropped=0   truncated=0   changed=0   added=0  
 modify_setting               upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
 modify_tag                   live      001 clean         dropped=0   truncated=0   changed=0   added=0  
-modify_tag                   upstream  001 ok            dropped=0   truncated=0   changed=1   added=0  
+modify_tag                   upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
 modify_target                live      001 clean         dropped=0   truncated=0   changed=0   added=0  
 modify_target                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
 modify_task                  live      001 clean         dropped=0   truncated=0   changed=0   added=0  

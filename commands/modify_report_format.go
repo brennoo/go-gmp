@@ -6,7 +6,7 @@ import "encoding/xml"
 type ModifyReportFormat struct {
 	XMLName        xml.Name           `xml:"modify_report_format"`
 	ReportFormatID string             `xml:"report_format_id,attr"`
-	Active         *bool              `xml:"active,omitempty"`
+	Active         *GMPBool           `xml:"active,omitempty"`
 	Name           string             `xml:"name,omitempty"`
 	Summary        string             `xml:"summary,omitempty"`
 	Param          *ReportFormatParam `xml:"param,omitempty"`
