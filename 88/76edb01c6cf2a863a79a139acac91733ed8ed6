@@ -1,0 +1,163 @@
+client/client_test.go
+  s_e77126424c1646::t_622400da4f64ce 692,1477
+commands/bool.go
+  s_e77126424c1646::t_76e18b7d9735a3 3-49
+commands/bool_test.go
+  s_e77126424c1646::t_03076e0219fbbf 1-176
+commands/create_alert.go
+  s_e77126424c1646::t_11b3718ca75d69 15
+commands/create_credential.go
+  s_e77126424c1646::t_3921ed54f08527 11
+commands/create_report.go
+  s_e77126424c1646::t_222d789e9d335d 10
+commands/create_tag.go
+  s_e77126424c1646::t_bb1f491a5e42a8 13
+commands/create_target.go
+  s_e77126424c1646::t_3699a48aaf7bd1 22-23,28
+commands/create_task.go
+  s_e77126424c1646::t_66b856488352de 11
+commands/delete_target.go
+  s_e77126424c1646::t_a74991dc2f4989 11
+commands/delete_task.go
+  s_e77126424c1646::t_f4ce9e296373bb 11
+commands/get_alerts.go
+  s_e77126424c1646::t_485239cb71be4f 14-15
+commands/get_credentials.go
+  s_e77126424c1646::t_99ef1b66ca6384 14-17
+commands/get_filters.go
+  s_e77126424c1646::t_0fca55bc193e96 14-15
+commands/get_groups.go
+  s_e77126424c1646::t_de54d9ffcc52e7 14
+commands/get_results.go
+  s_e77126424c1646::t_c5c1174d96d912 14-17
+commands/get_system_reports.go
+  s_e77126424c1646::t_df16db57934f57 15
+commands/get_targets.go
+  s_e77126424c1646::t_f78b9658700c8c 14-16
+commands/get_tasks.go
+  s_e77126424c1646::t_2fa54a101746c8 14-17
+commands/get_tls_certificates.go
+  s_e77126424c1646::t_883e26fda9d07e 13
+commands/get_vulns.go
+  s_e77126424c1646::t_be9a2ce64f150a 14
+commands/modify_credential.go
+  s_e77126424c1646::t_0a740fbeb354a6 11
+commands/modify_license.go
+  s_e77126424c1646::t_96bd39cf4eb13a 8
+commands/modify_report_format.go
+  s_e77126424c1646::t_37f6817c016492 9
+commands/modify_tag.go
+  s_e77126424c1646::t_ff9f61e2fe8c16 13
+commands/modify_target.go
+  s_e77126424c1646::t_7c29ead14f8979 25-27
+commands/response.go
+  s_e77126424c1646::t_37d7215bbc0780 5,56-59,62-65
+commands/run_wizard.go
+  s_e77126424c1646::t_661b7d128fa825 13
+internal/gmptest/capture_sequence_test.go
+  s_e77126424c1646::t_9ef679e052f12f 441,783,861
+internal/gmptest/testdata/REQUEST-FIDELITY.txt
+  s_e77126424c1646::t_126aba50d3bcc7 11-12,49,110,112,146,207,226,236,244,306
+internal/gmptest/testdata/requests/create_alert/active_false.xml
+  s_e77126424c1646::t_060c05f3fa0f1a 1
+internal/gmptest/testdata/requests/create_alert/active_true.xml
+  s_e77126424c1646::t_69d4eaf95e4475 1
+internal/gmptest/testdata/requests/create_credential/allow_insecure_false.xml
+  s_e77126424c1646::t_a165f2c3b14aff 1
+internal/gmptest/testdata/requests/create_credential/allow_insecure_true.xml
+  s_e77126424c1646::t_7a55266f624115 1
+internal/gmptest/testdata/requests/create_tag/active_false.xml
+  s_e77126424c1646::t_de65bde343bb8f 1
+internal/gmptest/testdata/requests/create_tag/active_true.xml
+  s_e77126424c1646::t_bf59baefb36836 1
+internal/gmptest/testdata/requests/create_target/flags_false.xml
+  s_e77126424c1646::t_7f94c72c53d38b 1
+internal/gmptest/testdata/requests/create_target/flags_true.xml
+  s_e77126424c1646::t_2908a2c2f72317 1
+internal/gmptest/testdata/requests/create_task/alterable_false.xml
+  s_e77126424c1646::t_3a8fb336b42b84 1
+internal/gmptest/testdata/requests/create_task/alterable_true.xml
+  s_e77126424c1646::t_00db7cbebda890 1
+internal/gmptest/testdata/requests/delete_target/ultimate_false.xml
+  s_e77126424c1646::t_33485b469bbef8 1
+internal/gmptest/testdata/requests/delete_target/ultimate_true.xml
+  s_e77126424c1646::t_d26b906623d3c9 1
+internal/gmptest/testdata/requests/delete_task/ultimate_false.xml
+  s_e77126424c1646::t_80979dea199f31 1
+internal/gmptest/testdata/requests/delete_task/ultimate_true.xml
+  s_e77126424c1646::t_b17998d9665160 1
+internal/gmptest/testdata/requests/get_credentials/all_details.xml
+  s_e77126424c1646::t_9d848f12bb0a12 1
+internal/gmptest/testdata/requests/get_credentials/all_details_false.xml
+  s_e77126424c1646::t_bbf06d7df5831f 1
+internal/gmptest/testdata/requests/get_filters/trash_and_alerts.xml
+  s_e77126424c1646::t_cf09cdafb23992 1
+internal/gmptest/testdata/requests/get_filters/trash_and_alerts_false.xml
+  s_e77126424c1646::t_c4470611869105 1
+internal/gmptest/testdata/requests/get_groups/trash_false.xml
+  s_e77126424c1646::t_8179784a6d52ec 1
+internal/gmptest/testdata/requests/get_groups/trash_true.xml
+  s_e77126424c1646::t_089e5e2987eab2 1
+internal/gmptest/testdata/requests/get_results/all_details.xml
+  s_e77126424c1646::t_ae0c6bc204412e 1
+internal/gmptest/testdata/requests/get_results/all_details_false.xml
+  s_e77126424c1646::t_69d1e7676a6424 1
+internal/gmptest/testdata/requests/get_system_reports/brief_false.xml
+  s_e77126424c1646::t_451a8d1b04c565 1
+internal/gmptest/testdata/requests/get_system_reports/brief_true.xml
+  s_e77126424c1646::t_35d7bf2ffe9c7c 1
+internal/gmptest/testdata/requests/get_targets/all_details.xml
+  s_e77126424c1646::t_c5ec4be1c3c93a 1
+internal/gmptest/testdata/requests/get_targets/all_details_false.xml
+  s_e77126424c1646::t_7ac86c93d96422 1
+internal/gmptest/testdata/requests/get_tasks/with_filter.xml
+  s_e77126424c1646::t_587d6c46996888 1
+internal/gmptest/testdata/requests/get_tasks/with_filter_false.xml
+  s_e77126424c1646::t_774ffba1cf72dd 1
+internal/gmptest/testdata/requests/get_tls_certificates/include_data_false.xml
+  s_e77126424c1646::t_83b5cc4f3881ae 1
+internal/gmptest/testdata/requests/get_tls_certificates/include_data_true.xml
+  s_e77126424c1646::t_ad5f28aa13a85d 1
+internal/gmptest/testdata/requests/get_vulns/trash_false.xml
+  s_e77126424c1646::t_5f83b10d7488f5 1
+internal/gmptest/testdata/requests/get_vulns/trash_true.xml
+  s_e77126424c1646::t_b9a72ca0f59bee 1
+internal/gmptest/testdata/requests/modify_credential/allow_insecure_false.xml
+  s_e77126424c1646::t_6285ad7f5ed84c 1
+internal/gmptest/testdata/requests/modify_credential/allow_insecure_true.xml
+  s_e77126424c1646::t_8caa061887b243 1
+internal/gmptest/testdata/requests/modify_license/allow_empty_false.xml
+  s_e77126424c1646::t_5f3fa8e47ba739 1
+internal/gmptest/testdata/requests/modify_license/allow_empty_true.xml
+  s_e77126424c1646::t_3ca270b02738b3 1
+internal/gmptest/testdata/requests/modify_tag/active_false.xml
+  s_e77126424c1646::t_367d4e255a2b6c 1
+internal/gmptest/testdata/requests/modify_tag/active_true.xml
+  s_e77126424c1646::t_2aee46031e8579 1
+internal/gmptest/testdata/requests/modify_target/flags_false.xml
+  s_e77126424c1646::t_1444593d41345f 1
+internal/gmptest/testdata/requests/modify_target/flags_true.xml
+  s_e77126424c1646::t_ef5de01aa1c057 1
+internal/gmptest/testdata/requests/run_wizard/read_only_false.xml
+  s_e77126424c1646::t_af785b8a6e1d0a 1
+internal/gmptest/testdata/requests/run_wizard/read_only_true.xml
+  s_e77126424c1646::t_c4a1e97f3077ae 1
+internal/schema/testdata/CONFORMANCE.md
+  s_e77126424c1646::t_db59e6ef9c151c 32-34,48,79-80,82,87,90-91,96,98,202,227,320,772,787,850,1081,1090,1333,1438,1499,1516,2722,2967,3023,3212,3406,3592,3738,3755,3835,3877,3892,4022
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "8876edb01c6cf2a863a79a139acac91733ed8ed6",
+  "prompts": {},
+  "sessions": {
+    "s_e77126424c1646": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_e77126424c1646",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
