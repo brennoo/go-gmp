@@ -11,43 +11,62 @@ func init() {
 		InfoID: "CVE-2024-12345",
 	})
 
-	// GetSystemReports.Brief: non-pointer bool, omitempty.
+	// GetSystemReports.Brief is *bool: unset, true, and an explicit false all
+	// round-trip distinctly.
 	RegisterRequestCase("get_system_reports", "brief_true", &commands.GetSystemReports{
 		Name:  "load",
-		Brief: true,
+		Brief: commands.Bool(true),
 	})
 
 	RegisterRequestCase("get_system_reports", "brief_unset", &commands.GetSystemReports{
 		Name: "load",
 	})
 
-	// GetTLSCertificates.IncludeCertificateData: non-pointer bool, omitempty.
+	RegisterRequestCase("get_system_reports", "brief_false", &commands.GetSystemReports{
+		Name:  "load",
+		Brief: commands.Bool(false),
+	})
+
+	// GetTLSCertificates.IncludeCertificateData is *bool: unset, true, and an
+	// explicit false all round-trip distinctly.
 	RegisterRequestCase("get_tls_certificates", "include_data_true", &commands.GetTLSCertificates{
 		Filter:                 "rows=-1",
-		IncludeCertificateData: true,
+		IncludeCertificateData: commands.Bool(true),
 	})
 
 	RegisterRequestCase("get_tls_certificates", "include_data_unset", &commands.GetTLSCertificates{
 		TLSCertificateID: "7c8d9e0f-1a2b-3c4d-5e6f-7a8b9c0d1e2f",
 	})
 
-	// GetVulns.Trash: non-pointer bool, omitempty.
+	RegisterRequestCase("get_tls_certificates", "include_data_false", &commands.GetTLSCertificates{
+		Filter:                 "rows=-1",
+		IncludeCertificateData: commands.Bool(false),
+	})
+
+	// GetVulns.Trash is *bool: unset, true, and an explicit false all
+	// round-trip distinctly.
 	RegisterRequestCase("get_vulns", "trash_true", &commands.GetVulns{
 		Filter: "rows=-1",
-		Trash:  true,
+		Trash:  commands.Bool(true),
 	})
 
 	RegisterRequestCase("get_vulns", "by_id", &commands.GetVulns{
 		VulnID: "1234abcd-0000-1111-2222-333344445555",
 	})
 
-	// RunWizard.ReadOnly: non-pointer bool, omitempty attr.
+	RegisterRequestCase("get_vulns", "trash_false", &commands.GetVulns{
+		Filter: "rows=-1",
+		Trash:  commands.Bool(false),
+	})
+
+	// RunWizard.ReadOnly is *bool: unset, true, and an explicit false all
+	// round-trip distinctly.
 	RegisterRequestCase("run_wizard", "read_only_true", &commands.RunWizard{
 		Name: "quick_first_scan",
 		Params: &commands.WizardParams{
 			Params: []commands.WizardParam{{Name: "hosts", Value: "192.0.2.0/24"}},
 		},
-		ReadOnly: true,
+		ReadOnly: commands.Bool(true),
 	})
 
 	RegisterRequestCase("run_wizard", "read_only_unset", &commands.RunWizard{
@@ -57,12 +76,26 @@ func init() {
 		},
 	})
 
-	// ModifyLicense.AllowEmpty: non-pointer bool, omitempty attr.
+	RegisterRequestCase("run_wizard", "read_only_false", &commands.RunWizard{
+		Name: "quick_first_scan",
+		Params: &commands.WizardParams{
+			Params: []commands.WizardParam{{Name: "hosts", Value: "192.0.2.0/24"}},
+		},
+		ReadOnly: commands.Bool(false),
+	})
+
+	// ModifyLicense.AllowEmpty is *bool: unset, true, and an explicit false
+	// all round-trip distinctly.
 	RegisterRequestCase("modify_license", "allow_empty_true", &commands.ModifyLicense{
-		AllowEmpty: true,
+		AllowEmpty: commands.Bool(true),
 	})
 
 	RegisterRequestCase("modify_license", "allow_empty_unset", &commands.ModifyLicense{
 		File: "BASE64LICENSEDATA==",
+	})
+
+	RegisterRequestCase("modify_license", "allow_empty_false", &commands.ModifyLicense{
+		AllowEmpty: commands.Bool(false),
+		File:       "BASE64LICENSEDATA==",
 	})
 }

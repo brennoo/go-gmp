@@ -11,7 +11,7 @@ type GetVulns struct {
 	VulnID  string   `xml:"vuln_id,attr,omitempty"`
 	Filter  string   `xml:"filter,attr,omitempty"`
 	FiltID  string   `xml:"filt_id,attr,omitempty"`
-	Trash   bool     `xml:"trash,attr,omitempty"`
+	Trash   *bool    `xml:"trash,attr,omitempty"`
 }
 
 // GetVulnsResponse represents a get_vulns command response.

@@ -46,7 +46,7 @@ func main() {
 		KDCs:          &commands.CreateCredentialKDCs{KDC: []string{"kdc1.example.com", "kdc2.example.com"}},
 		Key:           &commands.CreateCredentialKey{Phrase: "passphrase", Private: "private-key", Public: "public-key"},
 		Privacy:       &commands.CreateCredentialPrivacy{Algorithm: "AES", Password: "snmp-password"},
-		AllowInsecure: false,
+		AllowInsecure: commands.Bool(false),
 	}
 
 	resp, err := cli.CreateCredential(ctx, cmd)

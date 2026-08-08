@@ -11,9 +11,9 @@ type GetTargets struct {
 	TargetID string   `xml:"target_id,attr,omitempty"`
 	Filter   string   `xml:"filter,attr,omitempty"`
 	FiltID   string   `xml:"filt_id,attr,omitempty"`
-	Trash    bool     `xml:"trash,attr,omitempty"`
-	Tasks    bool     `xml:"tasks,attr,omitempty"`
-	Details  bool     `xml:"details,attr,omitempty"`
+	Trash    *bool    `xml:"trash,attr,omitempty"`
+	Tasks    *bool    `xml:"tasks,attr,omitempty"`
+	Details  *bool    `xml:"details,attr,omitempty"`
 }
 
 // Target represents a <target> element in the get_targets response.

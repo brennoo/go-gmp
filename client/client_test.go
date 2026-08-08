@@ -689,7 +689,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 					},
 				},
 			}
-		} else if cmd.Brief {
+		} else if cmd.Brief != nil && *cmd.Brief {
 			(*response.(*commands.GetSystemReportsResponse)).Status = "200"
 			(*response.(*commands.GetSystemReportsResponse)).StatusText = "OK"
 			(*response.(*commands.GetSystemReportsResponse)).SystemReports = []commands.SystemReport{
@@ -1474,7 +1474,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.ModifyTag); ok {
-		if cmd.TagID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" && cmd.Active == false {
+		if cmd.TagID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" && cmd.Active != nil && !*cmd.Active {
 			(*response.(*commands.ModifyTagResponse)).Status = "200"
 			(*response.(*commands.ModifyTagResponse)).StatusText = "OK"
 		} else {

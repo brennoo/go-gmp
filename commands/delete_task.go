@@ -8,7 +8,7 @@ import (
 type DeleteTask struct {
 	XMLName  xml.Name `xml:"delete_task"`
 	TaskID   string   `xml:"task_id,attr,omitempty"`
-	Ultimate bool     `xml:"ultimate,attr,omitempty"`
+	Ultimate *bool    `xml:"ultimate,attr,omitempty"`
 }
 
 // DeleteTaskResponse represents a delete_task command response.

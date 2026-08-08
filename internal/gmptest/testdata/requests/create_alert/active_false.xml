@@ -1,0 +1,1 @@
+<create_alert><name>Disabled alert</name><condition>Always</condition><event>Task run status changed</event><method>Syslog</method><active>false</active></create_alert>

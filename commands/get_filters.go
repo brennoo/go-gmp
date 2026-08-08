@@ -11,8 +11,8 @@ type GetFilters struct {
 	FilterID string   `xml:"filter_id,attr,omitempty"`
 	Filter   string   `xml:"filter,attr,omitempty"`
 	FiltID   string   `xml:"filt_id,attr,omitempty"`
-	Trash    bool     `xml:"trash,attr,omitempty"`
-	Alerts   bool     `xml:"alerts,attr,omitempty"`
+	Trash    *bool    `xml:"trash,attr,omitempty"`
+	Alerts   *bool    `xml:"alerts,attr,omitempty"`
 }
 
 // GetFiltersResponse represents a get_filters command response.

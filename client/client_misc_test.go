@@ -62,7 +62,7 @@ func TestGetSystemReports(t *testing.T) {
 
 	// Success case: get brief listing
 	cmd = &commands.GetSystemReports{
-		Brief: true,
+		Brief: commands.Bool(true),
 	}
 	resp, err = cli.GetSystemReports(context.Background(), cmd)
 	if err != nil {

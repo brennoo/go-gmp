@@ -10,7 +10,7 @@ type GetTLSCertificates struct {
 	XMLName                xml.Name `xml:"get_tls_certificates"`
 	TLSCertificateID       string   `xml:"tls_certificate_id,attr,omitempty"`
 	Filter                 string   `xml:"filter,attr,omitempty"`
-	IncludeCertificateData bool     `xml:"include_certificate_data,attr,omitempty"`
+	IncludeCertificateData *bool    `xml:"include_certificate_data,attr,omitempty"`
 }
 
 // GetTLSCertificatesResponse represents a get_tls_certificates command response.

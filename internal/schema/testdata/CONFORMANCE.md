@@ -31,7 +31,7 @@ them, so response-side optionality is trusted and request-side is not.
 commands compared:            122
 fully conformant:             36
 with actionable findings:     86
-actionable findings:          786  (request 394, response 392)
+actionable findings:          752  (request 360, response 392)
 suppressed findings:          824
 confirmed by fidelity corpus: 77
 in the schema, not in Go:     0
@@ -42,7 +42,7 @@ in Go, not in the schema:     0
                  actionable suppressed
   MISSING               255          0
   EXTRA                 244          0
-  CARDINALITY            97          0
+  CARDINALITY            63          0
   KIND                   17          0
   OMITEMPTY              10        824
   TYPE                  163          0
@@ -76,25 +76,25 @@ taken against upstream main (155 commands). Two reasons, both expected:
 ### Commands by actionable findings
 
   get_reports                  64   MISSING=49  EXTRA=6  CARDINALITY=5  TYPE=4
-  get_tasks                    49   MISSING=10  EXTRA=15  CARDINALITY=11  TYPE=13
   create_report                47   MISSING=32  EXTRA=5  CARDINALITY=5  TYPE=5
+  get_tasks                    45   MISSING=10  EXTRA=15  CARDINALITY=7  TYPE=13
   get_overrides                36   MISSING=27  EXTRA=3  TYPE=6
-  get_targets                  35   MISSING=11  EXTRA=10  CARDINALITY=3  KIND=3  TYPE=8
+  get_targets                  32   MISSING=11  EXTRA=10  KIND=3  TYPE=8
   get_report_formats           28   MISSING=17  EXTRA=2  CARDINALITY=1  KIND=2  TYPE=6
-  modify_target                25   EXTRA=19  CARDINALITY=3  TYPE=3
-  create_target                23   EXTRA=17  CARDINALITY=3  TYPE=3
   get_notes                    23   MISSING=19  TYPE=4
+  modify_target                22   EXTRA=19  TYPE=3
   get_info                     21   MISSING=12  EXTRA=6  TYPE=3
   modify_agents                21   EXTRA=18  CARDINALITY=3
-  create_task                  19   EXTRA=15  CARDINALITY=3  TYPE=1
+  create_target                20   EXTRA=17  TYPE=3
+  create_task                  18   EXTRA=15  CARDINALITY=2  TYPE=1
   delete_agents                18   EXTRA=18
   get_tags                     18   MISSING=8  EXTRA=2  CARDINALITY=4  TYPE=4
   get_nvts                     17   MISSING=5  EXTRA=1  CARDINALITY=7  TYPE=4
   get_report_configs           17   MISSING=11  EXTRA=2  KIND=2  TYPE=2
-  get_tls_certificates         16   MISSING=5  EXTRA=4  CARDINALITY=1  KIND=2  TYPE=4
   get_tickets                  15   MISSING=5  EXTRA=4  KIND=3  TYPE=3
+  get_tls_certificates         15   MISSING=5  EXTRA=4  KIND=2  TYPE=4
   get_aggregates               14   MISSING=5  EXTRA=5  CARDINALITY=4
-  get_credentials              14   MISSING=2  EXTRA=1  CARDINALITY=4  TYPE=7
+  modify_config                14   EXTRA=6  CARDINALITY=3  OMITEMPTY=2  TYPE=3
   ... and 66 more with fewer
 
 ### Confirmed by both oracles
@@ -199,10 +199,8 @@ OMITEMPTY=2
 
 ### create_alert  (command_create_alert.xml)
 
-CARDINALITY=1  OMITEMPTY=1  TYPE=1
+OMITEMPTY=1  TYPE=1
 
-  CARDINALITY   request  /create_alert/active
-                schema says optional; Active bool cannot express absence (zero is a legal value)
   OMITEMPTY     request  /create_alert/filter
                 schema says required, Filter is tagged omitempty  [suppressed: request-side over-constraint]
   TYPE          request  /create_alert/active
@@ -228,10 +226,8 @@ EXTRA=1  OMITEMPTY=1  SCHEMA-DEFECT=1
 
 ### create_credential  (command_create_credential.xml)
 
-CARDINALITY=1  OMITEMPTY=2  TYPE=1
+OMITEMPTY=2  TYPE=1
 
-  CARDINALITY   request  /create_credential/allow_insecure
-                schema says optional; AllowInsecure bool cannot express absence (zero is a legal value)
   OMITEMPTY     request  /create_credential/privacy/algorithm
                 schema says required, Algorithm is tagged omitempty  [suppressed: request-side over-constraint]
   OMITEMPTY     request  /create_credential/privacy/password
@@ -779,7 +775,7 @@ conformant
 
 ### create_tag  (command_create_tag.xml)
 
-EXTRA=3  CARDINALITY=1  OMITEMPTY=2  TYPE=1
+EXTRA=3  OMITEMPTY=2  TYPE=1
 
   EXTRA         request  /create_tag/resources/resource/name
                 Go field Name string has no counterpart in the schema
@@ -787,8 +783,6 @@ EXTRA=3  CARDINALITY=1  OMITEMPTY=2  TYPE=1
                 Go field Trash bool has no counterpart in the schema
   EXTRA         request  /create_tag/resources/resource/type
                 Go field Type string has no counterpart in the schema
-  CARDINALITY   request  /create_tag/active
-                schema says optional; Active bool cannot express absence (zero is a legal value)
   OMITEMPTY     request  /create_tag/resources
                 schema says required, Resources is tagged omitempty  [suppressed: request-side over-constraint]
   OMITEMPTY     request  /create_tag/resources/resource/@id
@@ -798,7 +792,7 @@ EXTRA=3  CARDINALITY=1  OMITEMPTY=2  TYPE=1
 
 ### create_target  (command_create_target.xml)
 
-EXTRA=17  CARDINALITY=3  OMITEMPTY=12  TYPE=3
+EXTRA=17  OMITEMPTY=12  TYPE=3
 
   EXTRA         request  /create_target/esxi_credential/name
                 Go field Name string has no counterpart in the schema
@@ -834,12 +828,6 @@ EXTRA=17  CARDINALITY=3  OMITEMPTY=12  TYPE=3
                 Go field Port string has no counterpart in the schema
   EXTRA         request  /create_target/ssh_lsc_credential/name
                 Go field Name string has no counterpart in the schema
-  CARDINALITY   request  /create_target/allow_simultaneous_ips
-                schema says optional; AllowSimultaneousIPs bool cannot express absence (zero is a legal value)
-  CARDINALITY   request  /create_target/reverse_lookup_only
-                schema says optional; ReverseLookupOnly bool cannot express absence (zero is a legal value)
-  CARDINALITY   request  /create_target/reverse_lookup_unify
-                schema says optional; ReverseLookupUnify bool cannot express absence (zero is a legal value)
   OMITEMPTY     request  /create_target/asset_hosts/@filter
                 schema says required, Filter is tagged omitempty  [suppressed: request-side over-constraint]
   OMITEMPTY     request  /create_target/esxi_credential/@id
@@ -873,7 +861,7 @@ EXTRA=17  CARDINALITY=3  OMITEMPTY=12  TYPE=3
 
 ### create_task  (command_create_task.xml)
 
-EXTRA=15  CARDINALITY=3  OMITEMPTY=4  TYPE=1
+EXTRA=15  CARDINALITY=2  OMITEMPTY=4  TYPE=1
 
   EXTRA         request  /create_task/alert/name
                 Go field Name string has no counterpart in the schema
@@ -907,8 +895,6 @@ EXTRA=15  CARDINALITY=3  OMITEMPTY=4  TYPE=1
                 Go field Trash bool has no counterpart in the schema
   CARDINALITY   request  /create_task/alert
                 schema says zero-or-more, Go has a single *commands.TaskAlert (Alert)
-  CARDINALITY   request  /create_task/alterable
-                schema says optional; Alterable bool cannot express absence (zero is a legal value)
   CARDINALITY   request  /create_task/schedule_periods
                 schema says optional; SchedulePeriods int cannot express absence (zero is a legal value)
   OMITEMPTY     request  /create_task/config
@@ -1473,16 +1459,8 @@ MISSING=2  EXTRA=1  OMITEMPTY=3  TYPE=2  SCHEMA-DEFECT=1
 
 ### get_credentials  (command_get_credentials.xml)
 
-MISSING=2  EXTRA=1  CARDINALITY=4  OMITEMPTY=2  TYPE=7  SCHEMA-DEFECT=2
+MISSING=2  EXTRA=1  OMITEMPTY=2  TYPE=7  SCHEMA-DEFECT=2
 
-  CARDINALITY   request  /get_credentials/@details
-                schema says optional; Details bool cannot express absence (zero is a legal value)
-  CARDINALITY   request  /get_credentials/@scanners
-                schema says optional; Scanners bool cannot express absence (zero is a legal value)
-  CARDINALITY   request  /get_credentials/@targets
-                schema says optional; Targets bool cannot express absence (zero is a legal value)
-  CARDINALITY   request  /get_credentials/@trash
-                schema says optional; Trash bool cannot express absence (zero is a legal value)
   TYPE          request  /get_credentials/@details
                 schema type boolean is text ("" is true), Go Details is bool: '7' fails to decode and '1' re-emits as 'true'
   TYPE          request  /get_credentials/@scanners
@@ -1550,12 +1528,8 @@ OMITEMPTY=7  TYPE=3  SCHEMA-DEFECT=1
 
 ### get_filters  (command_get_filters.xml)
 
-CARDINALITY=2  OMITEMPTY=1  TYPE=4  SCHEMA-DEFECT=3
+OMITEMPTY=1  TYPE=4  SCHEMA-DEFECT=3
 
-  CARDINALITY   request  /get_filters/@alerts
-                schema says optional; Alerts bool cannot express absence (zero is a legal value)
-  CARDINALITY   request  /get_filters/@trash
-                schema says optional; Trash bool cannot express absence (zero is a legal value)
   TYPE          request  /get_filters/@alerts
                 schema type boolean is text ("" is true), Go Alerts is bool: '7' fails to decode and '1' re-emits as 'true'
   TYPE          request  /get_filters/@trash
@@ -1575,10 +1549,8 @@ CARDINALITY=2  OMITEMPTY=1  TYPE=4  SCHEMA-DEFECT=3
 
 ### get_groups  (command_get_groups.xml)
 
-CARDINALITY=1  OMITEMPTY=1  TYPE=3
+OMITEMPTY=1  TYPE=3
 
-  CARDINALITY   request  /get_groups/@trash
-                schema says optional; Trash bool cannot express absence (zero is a legal value)
   TYPE          request  /get_groups/@trash
                 schema type boolean is text ("" is true), Go Trash is bool: '7' fails to decode and '1' re-emits as 'true'
   OMITEMPTY     response /get_groups_response/filters/name
@@ -2785,16 +2757,8 @@ OMITEMPTY=2  TYPE=1  SCHEMA-DEFECT=1
 
 ### get_results  (command_get_results.xml)
 
-MISSING=1  EXTRA=4  CARDINALITY=5  OMITEMPTY=20  TYPE=4  SCHEMA-DEFECT=2
+MISSING=1  EXTRA=4  CARDINALITY=1  OMITEMPTY=20  TYPE=4  SCHEMA-DEFECT=2
 
-  CARDINALITY   request  /get_results/@details
-                schema says optional; Details bool cannot express absence (zero is a legal value)
-  CARDINALITY   request  /get_results/@get_counts
-                schema says optional; GetCounts bool cannot express absence (zero is a legal value)
-  CARDINALITY   request  /get_results/@notes_details
-                schema says optional; NotesDetails bool cannot express absence (zero is a legal value)
-  CARDINALITY   request  /get_results/@overrides_details
-                schema says optional; OverridesDetails bool cannot express absence (zero is a legal value)
   TYPE          request  /get_results/@details
                 schema type boolean is text ("" is true), Go Details is bool: '7' fails to decode and '1' re-emits as 'true'
   TYPE          request  /get_results/@get_counts
@@ -3046,10 +3010,8 @@ EXTRA=2  CARDINALITY=2  OMITEMPTY=11
 
 ### get_system_reports  (command_get_system_reports.xml)
 
-EXTRA=1  CARDINALITY=2  TYPE=1
+EXTRA=1  CARDINALITY=1  TYPE=1
 
-  CARDINALITY   request  /get_system_reports/@brief
-                schema says optional; Brief bool cannot express absence (zero is a legal value)
   CARDINALITY   request  /get_system_reports/@duration
                 schema says optional; Duration int cannot express absence (zero is a legal value)
   TYPE          request  /get_system_reports/@brief
@@ -3106,14 +3068,8 @@ MISSING=8  EXTRA=2  CARDINALITY=4  OMITEMPTY=2  TYPE=4  SCHEMA-DEFECT=1
 
 ### get_targets  (command_get_targets.xml)
 
-MISSING=11  EXTRA=10  CARDINALITY=3  KIND=3  OMITEMPTY=55  TYPE=8  SCHEMA-DEFECT=8
+MISSING=11  EXTRA=10  KIND=3  OMITEMPTY=55  TYPE=8  SCHEMA-DEFECT=8
 
-  CARDINALITY   request  /get_targets/@details
-                schema says optional; Details bool cannot express absence (zero is a legal value)
-  CARDINALITY   request  /get_targets/@tasks
-                schema says optional; Tasks bool cannot express absence (zero is a legal value)
-  CARDINALITY   request  /get_targets/@trash
-                schema says optional; Trash bool cannot express absence (zero is a legal value)
   TYPE          request  /get_targets/@details
                 schema type boolean is text ("" is true), Go Details is bool: '7' fails to decode and '1' re-emits as 'true'
   TYPE          request  /get_targets/@tasks
@@ -3307,16 +3263,8 @@ MISSING=11  EXTRA=10  CARDINALITY=3  KIND=3  OMITEMPTY=55  TYPE=8  SCHEMA-DEFECT
 
 ### get_tasks  (command_get_tasks.xml)
 
-MISSING=10  EXTRA=15  CARDINALITY=11  OMITEMPTY=9  TYPE=13  SCHEMA-DEFECT=4
+MISSING=10  EXTRA=15  CARDINALITY=7  OMITEMPTY=9  TYPE=13  SCHEMA-DEFECT=4
 
-  CARDINALITY   request  /get_tasks/@details
-                schema says optional; Details bool cannot express absence (zero is a legal value)
-  CARDINALITY   request  /get_tasks/@ignore_pagination
-                schema says optional; IgnorePagination bool cannot express absence (zero is a legal value)
-  CARDINALITY   request  /get_tasks/@schedules_only
-                schema says optional; SchedulesOnly bool cannot express absence (zero is a legal value)
-  CARDINALITY   request  /get_tasks/@trash
-                schema says optional; Trash bool cannot express absence (zero is a legal value)
   TYPE          request  /get_tasks/@details
                 schema type boolean is text ("" is true), Go Details is bool: '7' fails to decode and '1' re-emits as 'true'
   TYPE          request  /get_tasks/@ignore_pagination
@@ -3517,12 +3465,10 @@ MISSING=5  EXTRA=4  KIND=3  OMITEMPTY=23  TYPE=3
 
 ### get_tls_certificates  (command_get_tls_certificates.xml)
 
-MISSING=5  EXTRA=4  CARDINALITY=1  KIND=2  OMITEMPTY=33  TYPE=4
+MISSING=5  EXTRA=4  KIND=2  OMITEMPTY=33  TYPE=4
 
   MISSING       request  /get_tls_certificates/@filt_id
                 optional attr filt_id is not modelled
-  CARDINALITY   request  /get_tls_certificates/@include_certificate_data
-                schema says optional; IncludeCertificateData bool cannot express absence (zero is a legal value)
   TYPE          request  /get_tls_certificates/@include_certificate_data
                 schema type boolean is text ("" is true), Go IncludeCertificateData is bool: '7' fails to decode and '1' re-emits as 'true'
   MISSING       response /get_tls_certificates_response/tls_certificate/sources/source/location
@@ -3707,7 +3653,7 @@ SCHEMA-DEFECT=1
 EXTRA=3  OMITEMPTY=8
 
   EXTRA         request  /get_vulns/@trash
-                Go field Trash bool has no counterpart in the schema
+                Go field Trash *bool has no counterpart in the schema
   EXTRA         response /get_vulns_response/truncated
                 Go field Truncated string has no counterpart in the schema
   EXTRA         response /get_vulns_response/vuln/type
@@ -3853,10 +3799,8 @@ EXTRA=6  CARDINALITY=3  OMITEMPTY=6  TYPE=3
 
 ### modify_credential  (command_modify_credential.xml)
 
-CARDINALITY=1  OMITEMPTY=2  TYPE=1
+OMITEMPTY=2  TYPE=1
 
-  CARDINALITY   request  /modify_credential/allow_insecure
-                schema says optional; AllowInsecure bool cannot express absence (zero is a legal value)
   OMITEMPTY     request  /modify_credential/privacy/algorithm
                 schema says required, Algorithm is tagged omitempty  [suppressed: request-side over-constraint]
   OMITEMPTY     request  /modify_credential/privacy/password
@@ -3874,10 +3818,8 @@ conformant
 
 ### modify_license  (command_modify_license.xml)
 
-CARDINALITY=1  TYPE=1
+TYPE=1
 
-  CARDINALITY   request  /modify_license/@allow_empty
-                schema says optional; AllowEmpty bool cannot express absence (zero is a legal value)
   TYPE          request  /modify_license/@allow_empty
                 schema type boolean is text ("" is true), Go AllowEmpty is bool: '7' fails to decode and '1' re-emits as 'true'
 
@@ -4003,7 +3945,7 @@ conformant
 
 ### modify_tag  (command_modify_tag.xml)
 
-MISSING=1  EXTRA=3  CARDINALITY=1  OMITEMPTY=1  TYPE=1
+MISSING=1  EXTRA=3  OMITEMPTY=1  TYPE=1
 
   MISSING       request  /modify_tag/resources/@action
                 optional attr action is not modelled
@@ -4013,8 +3955,6 @@ MISSING=1  EXTRA=3  CARDINALITY=1  OMITEMPTY=1  TYPE=1
                 Go field Trash bool has no counterpart in the schema
   EXTRA         request  /modify_tag/resources/resource/type
                 Go field Type string has no counterpart in the schema
-  CARDINALITY   request  /modify_tag/active
-                schema says optional; Active bool cannot express absence (zero is a legal value)
   OMITEMPTY     request  /modify_tag/resources/resource/@id
                 schema says optional, ID string has no omitempty and is always emitted
   TYPE          request  /modify_tag/active
@@ -4022,7 +3962,7 @@ MISSING=1  EXTRA=3  CARDINALITY=1  OMITEMPTY=1  TYPE=1
 
 ### modify_target  (command_modify_target.xml)
 
-EXTRA=19  CARDINALITY=3  OMITEMPTY=10  TYPE=3
+EXTRA=19  OMITEMPTY=10  TYPE=3
 
   EXTRA         request  /modify_target/esxi_credential/name
                 Go field Name string has no counterpart in the schema
@@ -4062,12 +4002,6 @@ EXTRA=19  CARDINALITY=3  OMITEMPTY=10  TYPE=3
                 Go field Name string has no counterpart in the schema
   EXTRA         request  /modify_target/ssh_lsc_credential/port
                 Go field Port string has no counterpart in the schema
-  CARDINALITY   request  /modify_target/allow_simultaneous_ips
-                schema says optional; AllowSimultaneousIPs bool cannot express absence (zero is a legal value)
-  CARDINALITY   request  /modify_target/reverse_lookup_only
-                schema says optional; ReverseLookupOnly bool cannot express absence (zero is a legal value)
-  CARDINALITY   request  /modify_target/reverse_lookup_unify
-                schema says optional; ReverseLookupUnify bool cannot express absence (zero is a legal value)
   OMITEMPTY     request  /modify_target/esxi_credential/@id
                 schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
   OMITEMPTY     request  /modify_target/esxi_lsc_credential/@id
@@ -4164,10 +4098,8 @@ OMITEMPTY=1
 
 ### run_wizard  (command_run_wizard.xml)
 
-CARDINALITY=1  OMITEMPTY=1  TYPE=1  SCHEMA-DEFECT=1
+OMITEMPTY=1  TYPE=1  SCHEMA-DEFECT=1
 
-  CARDINALITY   request  /run_wizard/@read_only
-                schema says optional; ReadOnly bool cannot express absence (zero is a legal value)
   OMITEMPTY     request  /run_wizard/params
                 schema says required, Params is tagged omitempty  [suppressed: request-side over-constraint]
   TYPE          request  /run_wizard/@read_only

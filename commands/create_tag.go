@@ -10,7 +10,7 @@ type CreateTag struct {
 	Copy      string              `xml:"copy,omitempty"`
 	Value     string              `xml:"value,omitempty"`
 	Comment   string              `xml:"comment,omitempty"`
-	Active    bool                `xml:"active,omitempty"`
+	Active    *bool               `xml:"active,omitempty"`
 }
 
 // CreateTagResponse represents a create_tag command response.

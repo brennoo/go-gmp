@@ -11,10 +11,10 @@ type GetCredentials struct {
 	CredentialID string   `xml:"credential_id,attr,omitempty"`
 	Filter       string   `xml:"filter,attr,omitempty"`
 	FiltID       string   `xml:"filt_id,attr,omitempty"`
-	Details      bool     `xml:"details,attr,omitempty"`
-	Scanners     bool     `xml:"scanners,attr,omitempty"`
-	Trash        bool     `xml:"trash,attr,omitempty"`
-	Targets      bool     `xml:"targets,attr,omitempty"`
+	Details      *bool    `xml:"details,attr,omitempty"`
+	Scanners     *bool    `xml:"scanners,attr,omitempty"`
+	Trash        *bool    `xml:"trash,attr,omitempty"`
+	Targets      *bool    `xml:"targets,attr,omitempty"`
 	Format       string   `xml:"format,attr,omitempty"`
 }
 

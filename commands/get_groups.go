@@ -11,7 +11,7 @@ type GetGroups struct {
 	GroupID string   `xml:"group_id,attr,omitempty"`
 	Filter  string   `xml:"filter,attr,omitempty"`
 	FiltID  string   `xml:"filt_id,attr,omitempty"`
-	Trash   bool     `xml:"trash,attr,omitempty"`
+	Trash   *bool    `xml:"trash,attr,omitempty"`
 }
 
 // GetGroupsResponse represents a get_groups command response.

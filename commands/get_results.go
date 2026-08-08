@@ -11,10 +11,10 @@ type GetResults struct {
 	Filter           string   `xml:"filter,attr,omitempty"`
 	FiltID           string   `xml:"filt_id,attr,omitempty"`
 	TaskID           string   `xml:"task_id,attr,omitempty"`
-	NotesDetails     bool     `xml:"notes_details,attr,omitempty"`
-	OverridesDetails bool     `xml:"overrides_details,attr,omitempty"`
-	Details          bool     `xml:"details,attr,omitempty"`
-	GetCounts        bool     `xml:"get_counts,attr,omitempty"`
+	NotesDetails     *bool    `xml:"notes_details,attr,omitempty"`
+	OverridesDetails *bool    `xml:"overrides_details,attr,omitempty"`
+	Details          *bool    `xml:"details,attr,omitempty"`
+	GetCounts        *bool    `xml:"get_counts,attr,omitempty"`
 }
 
 // GetResultsResponse represents a get_results command response.

@@ -303,7 +303,7 @@ modify_schedule              upstream  001 clean         dropped=0   truncated=0
 modify_setting               live      001 clean         dropped=0   truncated=0   changed=0   added=0  
 modify_setting               upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
 modify_tag                   live      001 clean         dropped=0   truncated=0   changed=0   added=0  
-modify_tag                   upstream  001 ok            dropped=1   truncated=0   changed=0   added=0  
+modify_tag                   upstream  001 ok            dropped=0   truncated=0   changed=1   added=0  
 modify_target                live      001 clean         dropped=0   truncated=0   changed=0   added=0  
 modify_target                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
 modify_task                  live      001 clean         dropped=0   truncated=0   changed=0   added=0  

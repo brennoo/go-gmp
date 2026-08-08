@@ -31,8 +31,8 @@ func TestCreateAlert(t *testing.T) {
 		Condition: commands.AlertCondition{Text: "Severity at least", Data: condData},
 		Event:     commands.AlertEvent{Text: "Task run status changed", Data: evtData},
 		Method:    commands.AlertMethod{Text: "Email", Data: methData},
-		Filter:    nil,   // filter
-		Active:    false, // active
+		Filter:    nil,                  // filter
+		Active:    commands.Bool(false), // active
 	}
 	resp, err := cli.CreateAlert(context.Background(), cmd)
 	if err != nil {
