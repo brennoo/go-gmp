@@ -1,0 +1,82 @@
+<get_info_response status_text="OK" status="200">
+          <info id="28139">
+            <name>cpe:/a:gnu:gzip:1.3.3</name>
+            <comment/>
+            <creation_time>2007-09-14T17:36:49Z</creation_time>
+            <modification_time>2007-09-14T17:36:49Z</modification_time>
+            <writable>0</writable>
+            <in_use>0</in_use>
+            <update_time>2012-10-26T13:18:00.000+0000</update_time>
+            <cpe>
+              <title>GNU Gzip 1.3.3</title>
+              <score>100</score>
+              <cve_refs>5</cve_refs>
+              <status>DRAFT</status>
+              <cves>
+                <cve>
+                  <entry xmlns:vuln="http://scap.nist.gov/schema/vulnerability/0.4" xmlns="http://scap.nist.gov/schema/feed/vulnerability/2.0" xmlns:patch="http://scap.nist.gov/schema/patch/0.1" xmlns:cpe-lang="http://cpe.mitre.org/language/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scap-core="http://scap.nist.gov/schema/scap-core/0.1" xmlns:cvss="http://scap.nist.gov/schema/cvss-v2/0.2" id="CVE-2004-0603">
+                    <vuln:cvss>
+                      <cvss:base_metrics>
+                        <cvss:score>10.0</cvss:score>
+                      </cvss:base_metrics>
+                    </vuln:cvss>
+                  </entry>
+                </cve>
+                <cve>
+                  <entry xmlns:vuln="http://scap.nist.gov/schema/vulnerability/0.4" xmlns="http://scap.nist.gov/schema/feed/vulnerability/2.0" xmlns:patch="http://scap.nist.gov/schema/patch/0.1" xmlns:cpe-lang="http://cpe.mitre.org/language/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scap-core="http://scap.nist.gov/schema/scap-core/0.1" xmlns:cvss="http://scap.nist.gov/schema/cvss-v2/0.2" id="CVE-2010-0001">
+                    <vuln:cvss>
+                      <cvss:base_metrics>
+                        <cvss:score>6.8</cvss:score>
+                      </cvss:base_metrics>
+                    </vuln:cvss>
+                  </entry>
+                </cve>
+                <cve>
+                  <entry xmlns:vuln="http://scap.nist.gov/schema/vulnerability/0.4" xmlns="http://scap.nist.gov/schema/feed/vulnerability/2.0" xmlns:patch="http://scap.nist.gov/schema/patch/0.1" xmlns:cpe-lang="http://cpe.mitre.org/language/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scap-core="http://scap.nist.gov/schema/scap-core/0.1" xmlns:cvss="http://scap.nist.gov/schema/cvss-v2/0.2" id="CVE-2009-2624">
+                    <vuln:cvss>
+                      <cvss:base_metrics>
+                        <cvss:score>6.8</cvss:score>
+                      </cvss:base_metrics>
+                    </vuln:cvss>
+                  </entry>
+                </cve>
+                <cve>
+                  <entry xmlns:vuln="http://scap.nist.gov/schema/vulnerability/0.4" xmlns="http://scap.nist.gov/schema/feed/vulnerability/2.0" xmlns:patch="http://scap.nist.gov/schema/patch/0.1" xmlns:cpe-lang="http://cpe.mitre.org/language/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scap-core="http://scap.nist.gov/schema/scap-core/0.1" xmlns:cvss="http://scap.nist.gov/schema/cvss-v2/0.2" id="CVE-2005-1228">
+                    <vuln:cvss>
+                      <cvss:base_metrics>
+                        <cvss:score>5.0</cvss:score>
+                      </cvss:base_metrics>
+                    </vuln:cvss>
+                  </entry>
+                </cve>
+                <cve>
+                  <entry xmlns:vuln="http://scap.nist.gov/schema/vulnerability/0.4" xmlns="http://scap.nist.gov/schema/feed/vulnerability/2.0" xmlns:patch="http://scap.nist.gov/schema/patch/0.1" xmlns:cpe-lang="http://cpe.mitre.org/language/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scap-core="http://scap.nist.gov/schema/scap-core/0.1" xmlns:cvss="http://scap.nist.gov/schema/cvss-v2/0.2" id="CVE-2005-0988">
+                    <vuln:cvss>
+                      <cvss:base_metrics>
+                        <cvss:score>3.7</cvss:score>
+                      </cvss:base_metrics>
+                    </vuln:cvss>
+                  </entry>
+                </cve>
+              </cves>
+              <raw_data>
+                <cpe-item xmlns:ns6="http://scap.nist.gov/schema/scap-core/0.1" xmlns:config="http://scap.nist.gov/schema/configuration/0.1" xmlns:meta="http://scap.nist.gov/schema/cpe-dictionary-metadata/0.2" xmlns="http://cpe.mitre.org/dictionary/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scap-core="http://scap.nist.gov/schema/scap-core/0.3" name="cpe:/a:gnu:gzip:1.3.3">
+                  <title xml:lang="en-US">GNU Gzip 1.3.3</title>
+                  <meta:item-metadata nvd-id="28139" status="DRAFT" modification-date="2007-09-14T17:36:49.090Z"/>
+                </cpe-item>
+              </raw_data>
+            </cpe>
+          </info>
+          <details>1</details>
+          <filters id="(null)">
+            <term/>
+          </filters>
+          <sort>
+            <field>name<order>ascending</order></field>
+          </sort>
+          <info max="-1" start="1"/>
+          <info_count>
+            <filtered>1</filtered>
+            <page>1</page>
+          </info_count>
+        </get_info_response>

@@ -1,0 +1,19 @@
+# fidelity: modify_license / upstream / 001
+# provenance: command_modify_license.xml, command "modify_license", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

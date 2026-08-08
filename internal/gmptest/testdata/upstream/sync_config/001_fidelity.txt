@@ -1,0 +1,19 @@
+# fidelity: sync_config / upstream / 001
+# provenance: command_sync_config.xml, command "sync_config", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

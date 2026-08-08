@@ -1,0 +1,19 @@
+<create_report_format>
+          <get_report_formats_response>
+            <report_format id="a0704abb-2120-489f-959f-251c9f4ffebd">
+              <name>CPE</name>
+              <extension>csv</extension>
+              <content_type>text/csv</content_type>
+              <summary>Common Platform Enumeration CSV table.</summary>
+              <description>
+                CPE stands for Common Platform Enumeration.  It is a
+                <truncated>...</truncated>
+              </description>
+              <trust>
+                yes
+                <time>Thu Dec  2 13:22:26 2010</time>
+              </trust>
+              <active>1</active>
+            </report_format>
+          </get_report_formats_response>
+        </create_report_format>

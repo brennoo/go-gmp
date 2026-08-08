@@ -1,0 +1,172 @@
+# Protocol fidelity summary
+#
+# What each response document loses when it round-trips through its Go type.
+# Regenerate with: go test ./internal/gmptest -run TestFidelitySummary -update
+#
+# 'dropped' is the count of distinct paths no Go field captures; a dropped
+# parent folds its descendants, so one line can stand for a whole subtree.
+# 'changed' is a path that survived carrying a different value, e.g. a GMP
+# boolean '1' re-emitted as 'true'. Structural retention is not fidelity.
+# 'added' is elements the round trip invents (non-pointer fields without
+# omitempty, zero time.Time) and is not loss.
+
+fixtures: 154   clean: 105   with-loss: 39   decode-errors: 10   advisory: 0
+commands with loss: 29 of 122
+distinct dropped paths: 115
+
+## Per fixture
+
+authenticate                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+authenticate                 upstream  002 clean         dropped=0   truncated=0   changed=0   added=0  
+create_alert                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+create_alert                 upstream  002 clean         dropped=0   truncated=0   changed=0   added=0  
+create_asset                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+create_config                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+create_config                upstream  002 clean         dropped=0   truncated=0   changed=0   added=0  
+create_credential            upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+create_credential            upstream  002 clean         dropped=0   truncated=0   changed=0   added=0  
+create_credential            upstream  003 clean         dropped=0   truncated=0   changed=0   added=0  
+create_credential            upstream  004 clean         dropped=0   truncated=0   changed=0   added=0  
+create_filter                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+create_group                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+create_note                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+create_override              upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+create_permission            upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+create_permission            upstream  002 clean         dropped=0   truncated=0   changed=0   added=0  
+create_port_list             upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+create_port_range            upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+create_report                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+create_report_config         upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+create_report_format         upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+create_role                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+create_scanner               upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+create_schedule              upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+create_tag                   upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+create_target                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+create_task                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+create_task                  upstream  002 clean         dropped=0   truncated=0   changed=0   added=0  
+create_ticket                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+create_tls_certificate       upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+create_user                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=1  
+delete_agents                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_alert                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_asset                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_config                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_credential            upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_filter                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_group                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_note                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_override              upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_permission            upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_port_list             upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_port_range            upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_report                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_report_config         upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_report_format         upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_role                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_scanner               upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_schedule              upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_tag                   upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_target                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_task                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_ticket                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+delete_user                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+describe_auth                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+empty_trashcan               upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+get_agents                   upstream  001 ok            dropped=6   truncated=0   changed=1   added=0  
+get_aggregates               upstream  001 ok            dropped=3   truncated=1   changed=0   added=0  
+get_alerts                   upstream  001 ok            dropped=1   truncated=0   changed=2   added=7  
+get_assets                   upstream  001 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  
+get_assets                   upstream  002 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  
+get_configs                  upstream  001 ok            dropped=1   truncated=0   changed=2   added=21 
+get_configs                  upstream  002 ok            dropped=4   truncated=0   changed=2   added=19 
+get_credentials              upstream  001 clean         dropped=0   truncated=0   changed=0   added=21 
+get_credentials              upstream  002 ok            dropped=0   truncated=0   changed=2   added=21 
+get_credentials              upstream  003 ok            dropped=0   truncated=0   changed=2   added=21 
+get_features                 upstream  001 ok            dropped=0   truncated=0   changed=1   added=0  
+get_feeds                    upstream  001 ok            dropped=0   truncated=0   changed=3   added=0  
+get_filters                  upstream  001 ok            dropped=1   truncated=0   changed=2   added=19 
+get_filters                  upstream  002 ok            dropped=1   truncated=0   changed=2   added=19 
+get_groups                   upstream  001 ok            dropped=4   truncated=0   changed=2   added=4  
+get_info                     upstream  001 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  
+get_info                     upstream  002 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  
+get_license                  upstream  001 ok            dropped=0   truncated=0   changed=1   added=0  
+get_notes                    upstream  001 ok            dropped=3   truncated=0   changed=3   added=0  
+get_notes                    upstream  002 ok            dropped=8   truncated=0   changed=2   added=0  
+get_nvt_families             upstream  001 ok            dropped=1   truncated=0   changed=0   added=0  
+get_nvts                     upstream  001 ok            dropped=8   truncated=0   changed=0   added=0  
+get_nvts                     upstream  002 clean         dropped=0   truncated=0   changed=0   added=4  
+get_overrides                upstream  001 ok            dropped=3   truncated=0   changed=3   added=0  
+get_overrides                upstream  002 ok            dropped=4   truncated=0   changed=3   added=0  
+get_permissions              upstream  001 ok            dropped=6   truncated=0   changed=1   added=0  
+get_port_lists               upstream  001 ok            dropped=2   truncated=0   changed=1   added=0  
+get_preferences              upstream  001 ok            dropped=1   truncated=0   changed=0   added=6  
+get_preferences              upstream  002 ok            dropped=1   truncated=0   changed=0   added=5  
+get_preferences              upstream  003 ok            dropped=1   truncated=0   changed=0   added=1  
+get_preferences              upstream  004 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  
+get_report_configs           upstream  001 ok            dropped=3   truncated=1   changed=2   added=0  
+get_report_formats           upstream  001 ok            dropped=2   truncated=0   changed=3   added=0  
+get_report_formats           upstream  002 ok            dropped=4   truncated=0   changed=2   added=2  
+get_reports                  upstream  001 ok            dropped=1   truncated=0   changed=0   added=4  
+get_reports                  upstream  002 ok            dropped=22  truncated=0   changed=5   added=8  
+get_resource_names           upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+get_results                  upstream  001 ok            dropped=5   truncated=0   changed=1   added=15 
+get_results                  upstream  002 ok            dropped=4   truncated=0   changed=0   added=57 
+get_roles                    upstream  001 ok            dropped=6   truncated=0   changed=1   added=0  
+get_scanners                 upstream  001 ok            dropped=1   truncated=0   changed=2   added=61 
+get_schedules                upstream  001 ok            dropped=2   truncated=0   changed=2   added=1  
+get_settings                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+get_system_reports           upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+get_system_reports           upstream  002 clean         dropped=0   truncated=0   changed=0   added=0  
+get_tags                     upstream  001 ok            dropped=2   truncated=0   changed=3   added=1  
+get_targets                  upstream  001 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  
+get_targets                  upstream  002 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  
+get_tasks                    upstream  001 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  
+get_tasks                    upstream  002 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  
+get_tasks                    upstream  003 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  
+get_tickets                  upstream  001 ok            dropped=6   truncated=0   changed=3   added=6  
+get_tls_certificates         upstream  001 ok            dropped=7   truncated=0   changed=3   added=2  
+get_users                    upstream  001 clean         dropped=0   truncated=0   changed=0   added=4  
+get_version                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+get_vulns                    upstream  001 ok            dropped=3   truncated=0   changed=0   added=0  
+help                         upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+help                         upstream  002 ok            dropped=1   truncated=0   changed=0   added=0  
+modify_agents                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_alert                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_asset                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_auth                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_config                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_config                upstream  002 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_config                upstream  003 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_config                upstream  004 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_credential            upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_filter                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_group                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_license               upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_note                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_override              upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_permission            upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_port_list             upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_report_config         upstream  001 clean         dropped=0   truncated=0   changed=0   added=1  
+modify_report_format         upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_report_format         upstream  002 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_role                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_scanner               upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_schedule              upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_setting               upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_tag                   upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_target                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_task                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_ticket                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_tls_certificate       upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+modify_user                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+move_task                    upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+restore                      upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+resume_task                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+run_wizard                   upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+start_task                   upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+stop_task                    upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+sync_config                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+test_alert                   upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+verify_report_format         upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+verify_scanner               upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  

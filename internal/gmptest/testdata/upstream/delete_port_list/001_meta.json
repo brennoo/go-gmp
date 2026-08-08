@@ -1,0 +1,8 @@
+{
+  "command": "delete_port_list",
+  "provenance": "upstream",
+  "source": "command_delete_port_list.xml, command \"delete_port_list\", example 1",
+  "source_upstream_revision": "GMP 22.7 (newest entry in vendor/XML/commands/changes.xml)",
+  "source_license": "AGPL-3.0-or-later, Copyright (C) Greenbone AG",
+  "byte_faithful": false
+}

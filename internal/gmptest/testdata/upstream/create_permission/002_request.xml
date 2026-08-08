@@ -1,0 +1,6 @@
+<create_permission>
+          <name>create_user</name>
+          <subject id="9b0cbd98-c011-11e3-a26e-406186ea4fc5">
+            <type>role</type>
+          </subject>
+        </create_permission>

@@ -1,0 +1,4 @@
+# fidelity: get_targets / upstream / 001
+# provenance: command_get_targets.xml, command "get_targets", example 1
+decode: error
+error: strconv.ParseBool: parsing "7": invalid syntax

@@ -1,0 +1,19 @@
+# fidelity: modify_config / upstream / 001
+# provenance: command_modify_config.xml, command "modify_config", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

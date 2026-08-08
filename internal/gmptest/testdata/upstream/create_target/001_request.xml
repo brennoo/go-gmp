@@ -1,0 +1,4 @@
+<create_target>
+          <name>All GNU/Linux machines</name>
+          <hosts>192.168.1.0/24</hosts>
+        </create_target>

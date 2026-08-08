@@ -1,0 +1,8 @@
+{
+  "command": "test_alert",
+  "provenance": "upstream",
+  "source": "command_test_alert.xml, command \"test_alert\", example 1",
+  "source_upstream_revision": "GMP 22.7 (newest entry in vendor/XML/commands/changes.xml)",
+  "source_license": "AGPL-3.0-or-later, Copyright (C) Greenbone AG",
+  "byte_faithful": false
+}

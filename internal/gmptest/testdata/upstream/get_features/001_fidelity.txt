@@ -1,0 +1,19 @@
+# fidelity: get_features / upstream / 001
+# provenance: command_get_features.xml, command "get_features", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_features_response/feature/@enabled                                  "0" -> "false"
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

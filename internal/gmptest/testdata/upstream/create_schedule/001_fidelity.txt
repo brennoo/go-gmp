@@ -1,0 +1,19 @@
+# fidelity: create_schedule / upstream / 001
+# provenance: command_create_schedule.xml, command "create_schedule", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

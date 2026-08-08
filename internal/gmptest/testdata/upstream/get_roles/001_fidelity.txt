@@ -1,0 +1,24 @@
+# fidelity: get_roles / upstream / 001
+# provenance: command_get_roles.xml, command "get_roles", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_roles_response/filters                                              x1  (+13 descendant paths)
+  /get_roles_response/role/in_use                                          x1  (+1 descendant paths)
+  /get_roles_response/role_count                                           x1  (+5 descendant paths)
+  /get_roles_response/roles                                                x1  (+2 descendant paths)
+  /get_roles_response/sort                                                 x1  (+4 descendant paths)
+  /get_roles_response/truncated                                            x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_roles_response/role/writable/#text                                  "1" -> "true"
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

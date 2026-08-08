@@ -1,0 +1,6 @@
+<help_response status="200" status_text="OK">
+    AUTHENTICATE           Authenticate with the manager.
+    CREATE_ALERT           Create an alert.
+    ...
+    VERIFY_SCANNER         Verify a scanner.
+        </help_response>

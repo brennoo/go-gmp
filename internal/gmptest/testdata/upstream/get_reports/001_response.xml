@@ -1,0 +1,5 @@
+<get_reports_response status="200" status_text="OK">
+          <report id="267a3405-e84a-47da-97b2-5fa0d2e8995e" format_id="1a60a67e-97d0-4cbf-bc77-f71b08e7043d" extension="pdf" content_type="application/pdf">
+            hsisn3qaVFhkjFRG4...
+          </report>
+        </get_reports_response>

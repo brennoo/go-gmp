@@ -1,0 +1,19 @@
+# fidelity: create_scanner / upstream / 001
+# provenance: command_create_scanner.xml, command "create_scanner", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

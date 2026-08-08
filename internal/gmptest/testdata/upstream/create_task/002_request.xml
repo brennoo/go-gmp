@@ -1,0 +1,5 @@
+<create_task>
+          <name>Container Example</name>
+          <comment>This task provides for importing reports</comment>
+          <target id="0"/>
+        </create_task>

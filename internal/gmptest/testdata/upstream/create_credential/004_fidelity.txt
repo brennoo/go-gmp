@@ -1,0 +1,19 @@
+# fidelity: create_credential / upstream / 004
+# provenance: command_create_credential.xml, command "create_credential", example 4
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

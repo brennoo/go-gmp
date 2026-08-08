@@ -1,0 +1,13 @@
+<create_credential>
+          <name>Kerberos Cluster Auth</name>
+          <type>krb5</type>
+          <login>admin</login>
+          <password>secret123</password>
+          <realm>EXAMPLE.COM</realm>
+           <kdc>kdc1.example.com,kdc2.example.com,192.168.1.10</kdc>
+          <kdcs>
+            <kdc>kdc1.example.com</kdc>
+            <kdc>kdc2.example.com</kdc>
+            <kdc>192.168.1.10</kdc>
+          </kdcs>
+        </create_credential>

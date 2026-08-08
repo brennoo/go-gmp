@@ -1,0 +1,18 @@
+<get_filters_response status="200" status_text="OK">
+          <filter id="c33864a9-d3fd-44b3-8717-972bfb01dfc0">
+            <name>Local</name>
+            <comment>Any item with name containing 'local'.</comment>
+            <term>name~local first=1 rows=-2</term>
+            <type/>
+            <in_use>1</in_use>
+            <writable>1</writable>
+            <creation_time>2018-08-29T20:21:33Z</creation_time>
+            <modification_time>2018-08-29T20:21:33Z</modification_time>
+            <alerts>
+              <alert id="13bb418a-4220-4575-b35b-ec398bff7418">
+                <name>Local Mailer</name>
+              </alert>
+              <truncated>...</truncated>
+            </alerts>
+          </filter>
+        </get_filters_response>

@@ -1,0 +1,7 @@
+<create_credential>
+          <name>Email certificate</name>
+          <type>smime</type>
+          <certificate>-----BEGIN PKCS7-----
+            [...]
+          </certificate>
+        </create_credential>

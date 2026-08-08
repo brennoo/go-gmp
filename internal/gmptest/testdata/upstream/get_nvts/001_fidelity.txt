@@ -1,0 +1,26 @@
+# fidelity: get_nvts / upstream / 001
+# provenance: command_get_nvts.xml, command "get_nvts", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_nvts_response/nvt/cvss_base                                         x1
+  /get_nvts_response/nvt/preferences/timeout                               x1
+  /get_nvts_response/nvt/preferences/truncated                             x1  (+1 descendant paths)
+  /get_nvts_response/nvt/refs                                              x1
+  /get_nvts_response/nvt/severities/@score                                 x1
+  /get_nvts_response/nvt/timeout                                           x1
+  /get_nvts_response/nvt/truncated                                         x1  (+1 descendant paths)
+  /get_nvts_response/truncated                                             x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

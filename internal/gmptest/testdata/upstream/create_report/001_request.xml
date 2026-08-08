@@ -1,0 +1,21 @@
+<create_report>
+          <report id="f0fdf522-276d-4893-9274-fb8699dc2270" format_id="d5da9f67-8551-4e51-807b-b6a873d70e34" extension="xml" content_type="text/xml">
+            <report id="f0fdf522-276d-4893-9274-fb8699dc2270">
+              <gmp>
+                <version>22.7</version>
+              </gmp>
+              <truncated>...</truncated>
+              <results start="1" max="-1">
+                <result id="634f7a2e-8ca1-43b7-b6d7-0d4841449508">
+                  <truncated>...</truncated>
+                </result>
+                <truncated>...</truncated>
+              </results>
+              <scan_end>2010-02-02T19:11:52+00:00</scan_end>
+              <errors>
+                <count>0</count>
+              </errors>
+            </report>
+          </report>
+          <task id="76a4f237-9984-4345-a1f4-71fbcbf0611c"/>
+        </create_report>

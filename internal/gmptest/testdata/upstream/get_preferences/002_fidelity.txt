@@ -1,0 +1,23 @@
+# fidelity: get_preferences / upstream / 002
+# provenance: command_get_preferences.xml, command "get_preferences", example 2
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_preferences_response/truncated                                      x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_preferences_response/preference/id                                  x1
+  /get_preferences_response/preference/nvt                                 x1
+  /get_preferences_response/preference/nvt/@oid                            x1
+  /get_preferences_response/preference/nvt/name                            x1
+  /get_preferences_response/preference/type                                x1
+
+DUPLICATED
+  (none)

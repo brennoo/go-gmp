@@ -1,0 +1,19 @@
+# fidelity: modify_report_config / upstream / 001
+# provenance: command_modify_report_config.xml, command "modify_report_config", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /modify_report_config_response/@id                                       x1
+
+DUPLICATED
+  (none)

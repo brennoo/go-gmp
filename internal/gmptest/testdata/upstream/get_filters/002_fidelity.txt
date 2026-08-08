@@ -1,0 +1,38 @@
+# fidelity: get_filters / upstream / 002
+# provenance: command_get_filters.xml, command "get_filters", example 2
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_filters_response/filter/alerts/truncated                            x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_filters_response/filter/in_use/#text                                "1" -> "true"
+  /get_filters_response/filter/writable/#text                              "1" -> "true"
+
+ADDED
+  /get_filters_response/filter/owner                                       x1
+  /get_filters_response/filter/owner/name                                  x1
+  /get_filters_response/filter/permissions                                 x1
+  /get_filters_response/filter_count                                       x1
+  /get_filters_response/filter_count/filtered                              x1
+  /get_filters_response/filter_count/filtered/#text                        x1
+  /get_filters_response/filter_count/page                                  x1
+  /get_filters_response/filter_count/page/#text                            x1
+  /get_filters_response/filters                                            x1
+  /get_filters_response/filters/@id                                        x1
+  /get_filters_response/filters/keywords                                   x1
+  /get_filters_response/filters/name                                       x1
+  /get_filters_response/filters/term                                       x1
+  /get_filters_response/filters2                                           x1
+  /get_filters_response/filters2/@max                                      x1
+  /get_filters_response/filters2/@start                                    x1
+  /get_filters_response/sort                                               x1
+  /get_filters_response/sort/field                                         x1
+  /get_filters_response/sort/field/order                                   x1
+
+DUPLICATED
+  (none)

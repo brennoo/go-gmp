@@ -1,0 +1,31 @@
+# fidelity: get_tickets / upstream / 001
+# provenance: command_get_tickets.xml, command "get_tickets", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_tickets_response/filters/@id                                        x1
+  /get_tickets_response/filters/keywords                                   x1  (+7 descendant paths)
+  /get_tickets_response/sort/field/order                                   x1  (+1 descendant paths)
+  /get_tickets_response/ticket_count/#text                                 x1
+  /get_tickets_response/ticket_count/filtered                              x1  (+1 descendant paths)
+  /get_tickets_response/ticket_count/page                                  x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_tickets_response/ticket/in_use/#text                                "0" -> "false"
+  /get_tickets_response/ticket/severity/#text                              "5.0" -> "5"
+  /get_tickets_response/ticket/writable/#text                              "1" -> "true"
+
+ADDED
+  /get_tickets_response/ticket/closed_time                                 x1
+  /get_tickets_response/ticket/closed_time/#text                           x1
+  /get_tickets_response/ticket/fix_verified_time                           x1
+  /get_tickets_response/ticket/fix_verified_time/#text                     x1
+  /get_tickets_response/ticket/fixed_time                                  x1
+  /get_tickets_response/ticket/fixed_time/#text                            x1
+
+DUPLICATED
+  (none)

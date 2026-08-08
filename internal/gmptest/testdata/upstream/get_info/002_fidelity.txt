@@ -1,0 +1,4 @@
+# fidelity: get_info / upstream / 002
+# provenance: command_get_info.xml, command "get_info", example 2
+decode: error
+error: parsing time "2020-11-13T02:30:00.000+0000" as "2006-01-02T15:04:05Z07:00": cannot parse "+0000" as "Z07:00"

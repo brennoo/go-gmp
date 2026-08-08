@@ -1,0 +1,19 @@
+# fidelity: get_version / upstream / 001
+# provenance: command_get_version.xml, command "get_version", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

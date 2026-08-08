@@ -1,0 +1,11 @@
+<modify_alert alert_id="914b59f8-25f5-4c8f-832c-2379cd625236">
+            <name>Low Level Alert 2</name>
+            <condition>
+              Threat level at least
+              <data>
+                Low
+                <name>level</name>
+              </data>
+            </condition>
+            <filter id="7a06bd00-7e4a-4669-b7d7-8fe65ec64a41"/>
+        </modify_alert>

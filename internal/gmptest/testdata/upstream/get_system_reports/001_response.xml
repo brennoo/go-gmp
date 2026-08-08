@@ -1,0 +1,15 @@
+<get_system_reports_response status="200" status_text="OK">
+          <system_report>
+            <name>proc</name>
+            <title>Processes</title>
+          </system_report>
+          <system_report>
+            <name>load</name>
+            <title>System Load</title>
+          </system_report>
+          <system_report>
+            <name>cpu_0</name>
+            <title>CPU Usage: CPU 0</title>
+          </system_report>
+          <truncated>...</truncated>
+        </get_system_reports_response>

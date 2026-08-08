@@ -1,0 +1,22 @@
+# fidelity: get_users / upstream / 001
+# provenance: command_get_users.xml, command "get_users", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_users_response/user/creation_time                                   x1
+  /get_users_response/user/creation_time/#text                             x1
+  /get_users_response/user/modification_time                               x1
+  /get_users_response/user/modification_time/#text                         x1
+
+DUPLICATED
+  (none)

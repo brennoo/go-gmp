@@ -1,0 +1,39 @@
+# fidelity: get_credentials / upstream / 001
+# provenance: command_get_credentials.xml, command "get_credentials", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_credentials_response/credential/allow_insecure                      x2
+  /get_credentials_response/credential/allow_insecure/#text                x2
+  /get_credentials_response/credential/owner                               x2
+  /get_credentials_response/credential/owner/name                          x2
+  /get_credentials_response/credential/permissions                         x2
+  /get_credentials_response/credential_count                               x1
+  /get_credentials_response/credential_count/filtered                      x1
+  /get_credentials_response/credential_count/filtered/#text                x1
+  /get_credentials_response/credential_count/page                          x1
+  /get_credentials_response/credential_count/page/#text                    x1
+  /get_credentials_response/credentials                                    x1
+  /get_credentials_response/credentials/@max                               x1
+  /get_credentials_response/credentials/@start                             x1
+  /get_credentials_response/filters                                        x1
+  /get_credentials_response/filters/@id                                    x1
+  /get_credentials_response/filters/keywords                               x1
+  /get_credentials_response/filters/name                                   x1
+  /get_credentials_response/filters/term                                   x1
+  /get_credentials_response/sort                                           x1
+  /get_credentials_response/sort/field                                     x1
+  /get_credentials_response/sort/field/order                               x1
+
+DUPLICATED
+  (none)

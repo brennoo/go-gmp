@@ -1,0 +1,27 @@
+<get_resource_names_response status_text="OK" status="200">
+          <type>os</type>
+          <resource id="5b6b6aef-b320-42ca-899f-3161ee2a4195">
+            <name>cpe:/h:hp:jetdirect</name>
+          </resource>
+          <resource id="5be25864-9249-431e-8a91-039e334371ad">
+            <name>cpe:/o:canonical:ubuntu_linux:18.04</name>
+          </resource>
+          <resource id="89ccbfe3-9bbb-4c99-b4c7-fb85ca021093">
+            <name>cpe:/o:canonical:ubuntu_linux:8.04</name>
+          </resource>
+          <resource id="f2fa6833-fe34-4e04-a60c-6c5dc1ed0fcf">
+            <name>cpe:/o:debian:debian_linux</name>
+          </resource>
+          <resource id="d29f3e4e-07e0-4eb6-b040-5e179f890784">
+            <name>cpe:/o:debian:debian_linux:8</name>
+          </resource>
+          <resource id="2aa54229-0041-492f-8c81-df0289563512">
+            <name>cpe:/o:debian:debian_linux:9</name>
+          </resource>
+          <resource id="39ff8a64-54c2-405d-8e95-7b086e9a3eca">
+            <name>cpe:/o:linux:kernel</name>
+          </resource>
+          <resource id="19c091f0-a687-4dc3-b482-7d191ead4bb3">
+            <name>cpe:/o:microsoft:windows</name>
+          </resource>
+        </get_resource_names_response>

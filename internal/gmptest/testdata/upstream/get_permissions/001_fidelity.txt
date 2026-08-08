@@ -1,0 +1,24 @@
+# fidelity: get_permissions / upstream / 001
+# provenance: command_get_permissions.xml, command "get_permissions", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_permissions_response/filters/keywords/truncated                     x1  (+1 descendant paths)
+  /get_permissions_response/permission/in_use                              x1  (+1 descendant paths)
+  /get_permissions_response/permission/users                               x1  (+1 descendant paths)
+  /get_permissions_response/permission_count/#text                         x1
+  /get_permissions_response/sort/field/#text                               x1
+  /get_permissions_response/truncated                                      x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_permissions_response/permission/writable/#text                      "1" -> "true"
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

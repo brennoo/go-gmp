@@ -1,0 +1,6 @@
+<modify_config config_id="254cd3ef-bbe1-4d58-859d-21b8d0c046c6">
+          <preference>
+            <name>scanner:scanner:scanner:vhosts</name>
+            <value>ZXhhbXBsZQ==</value>
+          </preference>
+        </modify_config>

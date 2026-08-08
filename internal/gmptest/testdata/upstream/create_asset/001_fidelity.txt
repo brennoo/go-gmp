@@ -1,0 +1,19 @@
+# fidelity: create_asset / upstream / 001
+# provenance: command_create_asset.xml, command "create_asset", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

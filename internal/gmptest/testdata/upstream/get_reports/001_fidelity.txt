@@ -1,0 +1,22 @@
+# fidelity: get_reports / upstream / 001
+# provenance: command_get_reports.xml, command "get_reports", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_reports_response/report/#text                                       x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_reports_response/report/creation_time                               x1
+  /get_reports_response/report/creation_time/#text                         x1
+  /get_reports_response/report/modification_time                           x1
+  /get_reports_response/report/modification_time/#text                     x1
+
+DUPLICATED
+  (none)

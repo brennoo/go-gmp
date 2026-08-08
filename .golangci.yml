@@ -48,6 +48,9 @@ linters:
         path: commands/pagination/.*\.go
       - linters:
           - dupl
+        path: internal/gmptest/(registry|cases_.*)\.go
+      - linters:
+          - dupl
           - errcheck
           - unparam
         path: examples/

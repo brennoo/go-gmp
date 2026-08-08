@@ -1,0 +1,19 @@
+# fidelity: delete_port_range / upstream / 001
+# provenance: command_delete_port_range.xml, command "delete_port_range", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

@@ -1,0 +1,8 @@
+{
+  "command": "create_asset",
+  "provenance": "upstream",
+  "source": "command_create_asset.xml, command \"create_asset\", example 1",
+  "source_upstream_revision": "GMP 22.7 (newest entry in vendor/XML/commands/changes.xml)",
+  "source_license": "AGPL-3.0-or-later, Copyright (C) Greenbone AG",
+  "byte_faithful": false
+}

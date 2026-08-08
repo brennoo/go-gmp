@@ -1,0 +1,61 @@
+<get_tickets_response status_text="OK" status="200">
+          <ticket id="93cd2f71-48c3-4cf2-b542-5b256f59cae0">
+            <owner>
+              <name>joe</name>
+            </owner>
+            <name>OpenSSH Denial of Service Vulnerability - Jan16</name>
+            <comment/>
+            <creation_time>2018-11-29T16:18:56Z</creation_time>
+            <modification_time>2018-11-29T16:18:56Z</modification_time>
+            <writable>1</writable>
+            <in_use>0</in_use>
+            <permissions>
+              <permission>
+                <name>Everything</name>
+              </permission>
+            </permissions>
+            <assigned_to>
+              <user id="33e92d3e-a379-4c46-a4cf-88c8201ab710"/>
+            </assigned_to>
+            <task id="6f559abf-23ca-4dc8-a90a-3acba021f4ff"/>
+            <report id="f0f063cd-07e4-470a-8c66-b5d095d190cd"/>
+            <severity>5.0</severity>
+            <host>127.0.0.1</host>
+            <location>1111/tcp</location>
+            <solution_type>VendorFix</solution_type>
+            <status>Open</status>
+            <open_time>2018-11-29T16:18:56Z</open_time>
+            <open_note>Probably the new version fixes this</open_note>
+            <result id="138c1216-4acb-4ded-bef3-7fab80eac8c7"/>
+          </ticket>
+          <filters id="">
+            <term>first=1 rows=1000 sort=name</term>
+            <keywords>
+              <keyword>
+                <column>first</column>
+                <relation>=</relation>
+                <value>1</value>
+              </keyword>
+              <keyword>
+                <column>rows</column>
+                <relation>=</relation>
+                <value>1000</value>
+              </keyword>
+              <keyword>
+                <column>sort</column>
+                <relation>=</relation>
+                <value>name</value>
+              </keyword>
+            </keywords>
+          </filters>
+          <sort>
+            <field>name
+              <order>ascending</order>
+            </field>
+          </sort>
+          <tickets max="1000" start="1"/>
+          <ticket_count>2
+            <filtered>2</filtered>
+            <page>2</page>
+          </ticket_count>
+        </get_tickets_response>

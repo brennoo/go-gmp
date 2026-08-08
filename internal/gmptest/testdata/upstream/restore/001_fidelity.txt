@@ -1,0 +1,19 @@
+# fidelity: restore / upstream / 001
+# provenance: command_restore.xml, command "restore", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

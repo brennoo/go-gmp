@@ -1,0 +1,23 @@
+# fidelity: run_wizard / upstream / 001
+# provenance: command_run_wizard.xml, command "run_wizard", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  /run_wizard_response/response/start_task_response                        1 -> 2
+  /run_wizard_response/response/start_task_response/@status                1 -> 2
+  /run_wizard_response/response/start_task_response/@status_text           1 -> 2
+  /run_wizard_response/response/start_task_response/report_id              1 -> 2
+  /run_wizard_response/response/start_task_response/report_id/#text        1 -> 2

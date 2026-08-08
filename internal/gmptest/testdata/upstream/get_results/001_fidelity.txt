@@ -1,0 +1,37 @@
+# fidelity: get_results / upstream / 001
+# provenance: command_get_results.xml, command "get_results", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_results_response/filters/keywords/truncated                         x1  (+1 descendant paths)
+  /get_results_response/result/nvt/severities/severity                     x1  (+1 descendant paths)
+  /get_results_response/result_count/#text                                 x1
+  /get_results_response/sort/field/#text                                   x1
+  /get_results_response/truncated                                          x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_results_response/result/nvt/cvss_base/#text                         "5.0" -> "5"
+
+ADDED
+  /get_results_response/result/compliance                                  x1
+  /get_results_response/result/host/asset                                  x1
+  /get_results_response/result/host/asset/@asset_id                        x1
+  /get_results_response/result/host/hostname                               x1
+  /get_results_response/result/name                                        x1
+  /get_results_response/result/nvt/cpe                                     x1
+  /get_results_response/result/nvt/family                                  x1
+  /get_results_response/result/nvt/type                                    x1
+  /get_results_response/result/qod                                         x1
+  /get_results_response/result/qod/type                                    x1
+  /get_results_response/result/qod/value                                   x1
+  /get_results_response/result/qod/value/#text                             x1
+  /get_results_response/result/scan_nvt_version                            x1
+  /get_results_response/result/severity                                    x1
+  /get_results_response/result/severity/#text                              x1
+
+DUPLICATED
+  (none)

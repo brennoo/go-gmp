@@ -1,0 +1,21 @@
+# fidelity: get_feeds / upstream / 001
+# provenance: command_get_feeds.xml, command "get_feeds", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_feeds_response/feed_owner_set/#text                                 "1" -> "true"
+  /get_feeds_response/feed_resources_access/#text                          "1" -> "true"
+  /get_feeds_response/feed_roles_set/#text                                 "1" -> "true"
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

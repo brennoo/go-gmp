@@ -1,0 +1,19 @@
+# fidelity: describe_auth / upstream / 001
+# provenance: command_describe_auth.xml, command "describe_auth", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

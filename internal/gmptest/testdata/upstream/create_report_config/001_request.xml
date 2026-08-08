@@ -1,0 +1,9 @@
+<create_report_config>
+          <name>Test config</name>
+          <report_format id="9e5e5deb-879e-4ecc-8be6-a71cd0875cdd"/>
+          <param>
+            <name>Node Distance</name>
+            <value>10</value>
+          </param>
+          <comment>Test comment</comment>
+        </create_report_config>

@@ -1,0 +1,12 @@
+{
+  "command": "get_tasks",
+  "provenance": "upstream",
+  "source": "command_get_tasks.xml, command \"get_tasks\", example 1",
+  "source_upstream_revision": "GMP 22.7 (newest entry in vendor/XML/commands/changes.xml)",
+  "source_license": "AGPL-3.0-or-later, Copyright (C) Greenbone AG",
+  "transforms": [
+    "cvss3_ratings=on (dropped @IF_NOT_CVSS3_RATINGS@ blocks)",
+    "cvss3_ratings=on (kept @IF_CVSS3_RATINGS@ blocks)"
+  ],
+  "byte_faithful": false
+}

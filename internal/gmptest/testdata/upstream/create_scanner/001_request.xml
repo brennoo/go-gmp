@@ -1,0 +1,8 @@
+<create_scanner>
+          <name>Default Scanner</name>
+          <host>localhost</host>
+          <port>9391</port>
+          <type>2</type>
+          <ca_pub>...</ca_pub>
+          <credential id="254cd3ef-bbe1-4d58-859d-21b8d0c046c6"/>
+        </create_scanner>

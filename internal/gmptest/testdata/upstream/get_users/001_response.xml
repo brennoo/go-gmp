@@ -1,0 +1,10 @@
+<get_users_response status="200" status_text="OK">
+          <user>
+            <name>foobar</name>
+            <role id="8d453140-b74d-11e2-b0be-406186ea4fc5">
+              <name>User</name>
+            </role>
+            <hosts allow="2"/>
+            <sources><source>file</source></sources>
+          </user>
+        </get_users_response>

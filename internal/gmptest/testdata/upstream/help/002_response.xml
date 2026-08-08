@@ -1,0 +1,23 @@
+<help_response status="200" status_text="OK">
+          <schema format="XML" extension="xml" content_type="text/xml">
+            <protocol>
+              <name>Greenbone Management Protocol</name>
+              <abbreviation>GMP</abbreviation>
+              <summary>The management protocol of the Greenbone Vulnerability Manager</summary>
+              <version>22.7</version>
+              <truncated>...</truncated>
+              <type>
+                <name>base64</name>
+                <summary>Base64 encoded data</summary>
+                <pattern>xsd:base64Binary</pattern>
+              </type>
+              <truncated>...</truncated>
+              <command>
+                <name>authenticate</name>
+                <summary>Authenticate with the manager</summary>
+                <truncated>...</truncated>
+              </command>
+              <truncated>...</truncated>
+            </protocol>
+          </schema>
+        </help_response>

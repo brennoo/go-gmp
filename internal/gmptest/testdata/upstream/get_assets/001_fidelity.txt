@@ -1,0 +1,4 @@
+# fidelity: get_assets / upstream / 001
+# provenance: command_get_assets.xml, command "get_assets", example 1
+decode: error
+error: strconv.ParseBool: parsing "7": invalid syntax

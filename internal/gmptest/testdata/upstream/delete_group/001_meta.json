@@ -1,0 +1,8 @@
+{
+  "command": "delete_group",
+  "provenance": "upstream",
+  "source": "command_delete_group.xml, command \"delete_group\", example 1",
+  "source_upstream_revision": "GMP 22.7 (newest entry in vendor/XML/commands/changes.xml)",
+  "source_license": "AGPL-3.0-or-later, Copyright (C) Greenbone AG",
+  "byte_faithful": false
+}

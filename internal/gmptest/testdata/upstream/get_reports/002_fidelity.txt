@@ -1,0 +1,51 @@
+# fidelity: get_reports / upstream / 002
+# provenance: command_get_reports.xml, command "get_reports", example 2
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_reports_response/report/report/closed_cves/count                    x1  (+1 descendant paths)
+  /get_reports_response/report/report/errors/count                         x1  (+1 descendant paths)
+  /get_reports_response/report/report/filters/keywords                     x1  (+7 descendant paths)
+  /get_reports_response/report/report/host/asset                           x1  (+1 descendant paths)
+  /get_reports_response/report/report/host/truncated                       x1  (+1 descendant paths)
+  /get_reports_response/report/report/ports/port/#text                     x1
+  /get_reports_response/report/report/ports/truncated                      x1  (+1 descendant paths)
+  /get_reports_response/report/report/result_count/critical                x1  (+4 descendant paths)
+  /get_reports_response/report/report/result_count/high                    x1  (+4 descendant paths)
+  /get_reports_response/report/report/result_count/hole                    x1  (+4 descendant paths)
+  /get_reports_response/report/report/result_count/info                    x1  (+4 descendant paths)
+  /get_reports_response/report/report/result_count/log                     x1  (+4 descendant paths)
+  /get_reports_response/report/report/result_count/low                     x1  (+4 descendant paths)
+  /get_reports_response/report/report/result_count/medium                  x1  (+4 descendant paths)
+  /get_reports_response/report/report/result_count/warning                 x1  (+4 descendant paths)
+  /get_reports_response/report/report/results/result/nvt/refs/ref          x2  (+2 descendant paths)
+  /get_reports_response/report/report/results/result/nvt/severities/@score x1
+  /get_reports_response/report/report/results/result/nvt/severities/severity x1  (+1 descendant paths)
+  /get_reports_response/report/report/results/truncated                    x1  (+1 descendant paths)
+  /get_reports_response/report/report/scan                                 x1  (+1 descendant paths)
+  /get_reports_response/report/report/sort/field/#text                     x1
+  /get_reports_response/report/report/ssl_certs/count                      x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_reports_response/report/report/ports/port/severity/#text            "5.0" -> "5"
+  /get_reports_response/report/report/results/result/nvt/cvss_base/#text   "5.0" -> "5"
+  /get_reports_response/report/report/scan_end/#text                       "2010-02-02T19:11:52+00:00" -> "2010-02-02T19:11:52Z"
+  /get_reports_response/report/report/scan_start/#text                     "2010-02-02T19:11:21+00:00" -> "2010-02-02T19:11:21Z"
+  /get_reports_response/report/report/timestamp/#text                      "2010-02-02T19:11:21+00:00" -> "2010-02-02T19:11:21Z"
+
+ADDED
+  /get_reports_response/report/creation_time                               x1
+  /get_reports_response/report/creation_time/#text                         x1
+  /get_reports_response/report/modification_time                           x1
+  /get_reports_response/report/modification_time/#text                     x1
+  /get_reports_response/report/report/results/result/creation_time         x1
+  /get_reports_response/report/report/results/result/creation_time/#text   x1
+  /get_reports_response/report/report/results/result/modification_time     x1
+  /get_reports_response/report/report/results/result/modification_time/#text x1
+
+DUPLICATED
+  (none)

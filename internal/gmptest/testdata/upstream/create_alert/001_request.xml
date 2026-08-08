@@ -1,0 +1,28 @@
+<create_alert>
+          <name>emergency</name>
+          <condition>
+            Severity at least
+            <data>
+              <name>severity</name>
+              5.5
+            </data>
+          </condition>
+          <event>
+            Task run status changed
+            <data>
+              <name>status</name>
+              Done
+            </data>
+          </event>
+          <method>
+            Email
+            <data>
+              <name>to_address</name>
+              sally@example.org
+            </data>
+            <data>
+              <name>from_address</name>
+              bob@example.org
+            </data>
+          </method>
+        </create_alert>

@@ -1,0 +1,19 @@
+# fidelity: delete_asset / upstream / 001
+# provenance: command_delete_asset.xml, command "delete_asset", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

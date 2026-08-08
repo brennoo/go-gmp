@@ -1,0 +1,8 @@
+<get_settings_response status="200" status_text="OK">
+          <settings>
+            <setting id="5f5a8712-8017-11e1-8556-406186ea4fc5">
+              <name>Rows Per Page</name>
+              <value>15</value>
+            </setting>
+          </settings>
+        </get_settings_response>

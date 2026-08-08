@@ -1,0 +1,6 @@
+<authenticate>
+          <credentials>
+            <username>sally</username>
+            <password>secrte</password>
+          </credentials>
+        </authenticate>

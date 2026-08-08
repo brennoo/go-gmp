@@ -1,0 +1,4 @@
+<create_tls_certificate>
+          <name>Example Certificate</name>
+          <certificate>MIIDNjCCAp+gAwIBAgIBATANBgkqhkiG9w0BAQQFADCBqTELM[...]</certificate>
+        </create_tls_certificate>

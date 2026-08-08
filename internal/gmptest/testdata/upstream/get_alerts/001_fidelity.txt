@@ -1,0 +1,26 @@
+# fidelity: get_alerts / upstream / 001
+# provenance: command_get_alerts.xml, command "get_alerts", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_alerts_response/truncated                                           x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_alerts_response/alert/in_use/#text                                  "1" -> "true"
+  /get_alerts_response/alert/writable/#text                                "1" -> "true"
+
+ADDED
+  /get_alerts_response/alert/filter                                        x1
+  /get_alerts_response/alert/filter/@id                                    x1
+  /get_alerts_response/alert/filter/name                                   x1
+  /get_alerts_response/alert/owner                                         x1
+  /get_alerts_response/alert/owner/name                                    x1
+  /get_alerts_response/alert/permissions                                   x1
+  /get_alerts_response/alert/tasks                                         x1
+
+DUPLICATED
+  (none)

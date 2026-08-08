@@ -1,0 +1,20 @@
+# fidelity: get_port_lists / upstream / 001
+# provenance: command_get_port_lists.xml, command "get_port_lists", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_port_lists_response/port_list/port_count/udp                        x1  (+1 descendant paths)
+  /get_port_lists_response/port_list/writable                              x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_port_lists_response/port_list/in_use/#text                          "1" -> "true"
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

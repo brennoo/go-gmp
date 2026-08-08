@@ -1,0 +1,23 @@
+# fidelity: get_overrides / upstream / 001
+# provenance: command_get_overrides.xml, command "get_overrides", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_overrides_response/override/in_use                                  x1  (+1 descendant paths)
+  /get_overrides_response/override/new_severity                            x1  (+1 descendant paths)
+  /get_overrides_response/truncated                                        x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_overrides_response/override/active/#text                            "1" -> "true"
+  /get_overrides_response/override/orphan/#text                            "1" -> "true"
+  /get_overrides_response/override/writable/#text                          "1" -> "true"
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

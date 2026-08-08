@@ -1,0 +1,8 @@
+{
+  "command": "create_note",
+  "provenance": "upstream",
+  "source": "command_create_note.xml, command \"create_note\", example 1",
+  "source_upstream_revision": "GMP 22.7 (newest entry in vendor/XML/commands/changes.xml)",
+  "source_license": "AGPL-3.0-or-later, Copyright (C) Greenbone AG",
+  "byte_faithful": false
+}

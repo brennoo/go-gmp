@@ -1,0 +1,24 @@
+# fidelity: get_report_formats / upstream / 002
+# provenance: command_get_report_formats.xml, command "get_report_formats", example 2
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_report_formats_response/report_format/comment                       x1
+  /get_report_formats_response/report_format/description/truncated         x1  (+1 descendant paths)
+  /get_report_formats_response/report_format/file/truncated                x2  (+1 descendant paths)
+  /get_report_formats_response/truncated                                   x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_report_formats_response/report_format/in_use/#text                  "0" -> "false"
+  /get_report_formats_response/report_format/writable/#text                "1" -> "true"
+
+ADDED
+  /get_report_formats_response/report_format/active                        x1
+  /get_report_formats_response/report_format/active/#text                  x1
+
+DUPLICATED
+  (none)

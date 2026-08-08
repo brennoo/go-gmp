@@ -1,0 +1,29 @@
+<get_info_response status_text="OK" status="200">
+          <info id="CVE-2011-0018">
+            <name>CVE-2011-0018</name>
+            <comment/>
+            <creation_time>2011-01-28T16:00:02Z</creation_time>
+            <modification_time>2018-10-10T20:09:00Z</modification_time>
+            <update_time>2020-11-13T02:30:00.000+0000</update_time>
+            <writable>0</writable>
+            <in_use>0</in_use>
+            <update_time>2012-10-26T13:18:00.000+0000</update_time>
+            <cve>
+              <score>90</score>
+              <cvss_vector>AV:N/AC:L/Au:S/C:C/I:C/A:C</cvss_vector>
+              <description>The email function in manage_sql.c in ...(truncated for example)</description>
+              <products>cpe:/a:openvas:openvas_manager:1.0.1 ...(truncated for example)</products>
+            </cve>
+          </info>
+          <filters id="(null)">
+            <term/>
+          </filters>
+          <sort>
+            <field>name<order>ascending</order></field>
+          </sort>
+          <info max="-1" start="1"/>
+          <info_count>
+            <filtered>1</filtered>
+            <page>1</page>
+          </info_count>
+        </get_info_response>

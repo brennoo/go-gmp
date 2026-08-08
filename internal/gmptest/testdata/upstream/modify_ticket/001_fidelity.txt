@@ -1,0 +1,19 @@
+# fidelity: modify_ticket / upstream / 001
+# provenance: command_modify_ticket.xml, command "modify_ticket", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

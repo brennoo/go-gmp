@@ -1,0 +1,19 @@
+# fidelity: help / upstream / 001
+# provenance: command_help.xml, command "help", example 1
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)
