@@ -1,0 +1,20 @@
+docs/review-2026-08.md
+  s_6b74b50f8b69ed::t_a6cee0c3527ad7 492-525
+  s_6b74b50f8b69ed::t_ce681734aa301b 463-491,526
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "f8359884b1be9c05fb73ec1a6cddb9438494f6d7",
+  "prompts": {},
+  "sessions": {
+    "s_6b74b50f8b69ed": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "019fdd9a-6605-7b1e-bab6-fd85490a37f6",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
