@@ -97,8 +97,8 @@ func TestGetRoles(t *testing.T) {
 	if resp.Status != "200" {
 		t.Errorf("Expected status 200, got %s", resp.Status)
 	}
-	if len(resp.Roles) != 1 || resp.Roles[0].Name != "Management" {
-		t.Errorf("Expected role 'Management', got %+v", resp.Roles)
+	if len(resp.Role) != 1 || resp.Role[0].Name != "Management" {
+		t.Errorf("Expected role 'Management', got %+v", resp.Role)
 	}
 }
 

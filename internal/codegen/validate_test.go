@@ -238,26 +238,30 @@ func TestValidateOverrideGeneratedMatchesOrImproves(t *testing.T) {
 }
 
 // TestValidateRoleBeforeMatchesKnownConformance is the role family's
-// counterpart to TestValidateBeforeMatchesKnownConformance. role is still
-// review_only, so commands/{create_role,modify_role,get_roles}.go are the
-// hand-written originals — this pins the pre-swap gate the family was
-// selected to exercise.
+// counterpart to TestValidateBeforeMatchesKnownConformance.
 //
-// create_role and modify_role are already conformant (zero findings either
-// side); get_roles carries the family's entire actionable/suppressed load,
-// and unlike note and override it has zero SCHEMA-DEFECT findings — role's
-// schema has no known upstream defect, which was one of the criteria that
-// ranked it above the other create/get/modify candidates.
+// Since the swap-in, commands/{create_role,modify_role,get_roles}.go *are*
+// the generator's output, so "before" and "after" now describe the same
+// source and these numbers equal wantAfter's — a drift detector on the
+// committed files, not a weaker assertion.
+//
+// For the record, the pre-swap hand-written numbers this used to pin, all of
+// which generation closed (see TestValidateRoleGeneratedMatchesOrImproves for
+// the per-finding explanation):
+//
+//	create_role, modify_role: no findings either side
+//	get_roles: actionable MISSING 11, TYPE 2, suppressed OMITEMPTY 6
+//
+// Unlike note and override, get_roles carries zero SCHEMA-DEFECT findings —
+// role's schema has no known upstream defect, which was one of the criteria
+// that ranked it above the other create/get/modify candidates.
 func TestValidateRoleBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_role")
 
 	want := map[string]counts{
 		"create_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_roles": {
-			actionable: map[string]int{schema.CatMissing: 11, schema.CatType: 2},
-			suppressed: map[string]int{schema.CatOmitEmpty: 6},
-		},
+		"get_roles":   {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -272,14 +276,15 @@ func TestValidateRoleBeforeMatchesKnownConformance(t *testing.T) {
 // TestValidateRoleGeneratedMatchesOrImproves is the role family's pre-swap
 // gate, run at the same rigour the note and override families were.
 //
-// Generation closes every actionable and suppressed finding on all three
-// commands, leaving all of them clean: the 11 MISSING findings on get_roles
-// close (request filter attributes plus response elements — see
-// testdata/golden/get_roles.go), the 2 TYPE findings close (Writable/InUse
-// become commands.GMPBool), and the 6 suppressed OMITEMPTY findings close
-// (the generated struct's omitempty/pointer choices track the schema's
-// required/optional exactly). Since role has no SCHEMA-DEFECT findings to
-// begin with, "after" is empty for every command in this family.
+// What this run found while role was still review_only: generation closed
+// every actionable and suppressed finding on all three commands, leaving all
+// of them clean: the 11 MISSING findings on get_roles closed (request filter
+// attributes plus response elements — see testdata/golden/get_roles.go), the
+// 2 TYPE findings closed (Writable/InUse become commands.GMPBool), and the 6
+// suppressed OMITEMPTY findings closed (the generated struct's
+// omitempty/pointer choices track the schema's required/optional exactly).
+// Since role has no SCHEMA-DEFECT findings to begin with, "after" is empty
+// for every command in this family.
 //
 // "Empty" describes what schema.Comparer can see, which is bounded by what
 // the schema's own <pattern> declares — it is not a claim that the generated

@@ -29,23 +29,23 @@ them, so response-side optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             50
-with actionable findings:     72
-actionable findings:          652  (request 287, response 365)
-suppressed findings:          769
-confirmed by fidelity corpus: 79
+fully conformant:             51
+with actionable findings:     71
+actionable findings:          639  (request 283, response 356)
+suppressed findings:          763
+confirmed by fidelity corpus: 73
 in the schema, not in Go:     0
 in Go, not in the schema:     0
 
 ### Findings by category
 
                  actionable suppressed
-  MISSING               228          0
+  MISSING               217          0
   EXTRA                 241          0
   CARDINALITY            43          0
   KIND                   17          0
-  OMITEMPTY              10        769
-  TYPE                  113          0
+  OMITEMPTY              10        763
+  TYPE                  111          0
   SCHEMA-DEFECT         109          0
 
 ### Schema defects by class
@@ -92,10 +92,10 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_tickets                  16   MISSING=6  EXTRA=4  KIND=3  TYPE=3
   get_tls_certificates         15   MISSING=5  EXTRA=5  KIND=2  TYPE=3
   modify_config                14   EXTRA=6  CARDINALITY=3  OMITEMPTY=2  TYPE=3
-  get_roles                    13   MISSING=11  TYPE=2
   modify_task                  13   MISSING=1  EXTRA=12
   get_aggregates               12   MISSING=5  EXTRA=5  CARDINALITY=2
-  ... and 52 more with fewer
+  get_port_lists               12   MISSING=3  EXTRA=1  CARDINALITY=1  KIND=3  TYPE=4
+  ... and 51 more with fewer
 
 ### Confirmed by both oracles
 
@@ -164,12 +164,6 @@ attributes, and one of its own captured request fixtures uses three of them.
   get_reports              /get_reports_response/reports
   get_reports              /get_reports_response/sort
   get_results              /get_results_response/result/nvt/severities/severity
-  get_roles                /get_roles_response/filters
-  get_roles                /get_roles_response/role/owner
-  get_roles                /get_roles_response/role/permissions
-  get_roles                /get_roles_response/role_count
-  get_roles                /get_roles_response/roles
-  get_roles                /get_roles_response/sort
   get_tags                 /get_tags_response/filters
   get_tags                 /get_tags_response/sort
   get_tags                 /get_tags_response/tag/resources
@@ -2572,46 +2566,7 @@ MISSING=1  EXTRA=4  CARDINALITY=1  OMITEMPTY=20  SCHEMA-DEFECT=2
 
 ### get_roles  (command_get_roles.xml)
 
-MISSING=11  OMITEMPTY=6  TYPE=2
-
-  MISSING       request  /get_roles/@filt_id
-                optional attr filt_id is not modelled
-  MISSING       request  /get_roles/@filter
-                optional attr filter is not modelled
-  MISSING       request  /get_roles/@role_id
-                optional attr role_id is not modelled
-  MISSING       request  /get_roles/@trash
-                optional attr trash is not modelled
-  MISSING       response /get_roles_response/filters
-                required elem filters is not modelled  [fidelity]
-  MISSING       response /get_roles_response/role/owner
-                required elem owner is not modelled  [fidelity]
-  MISSING       response /get_roles_response/role/permissions
-                required elem permissions is not modelled  [fidelity]
-  MISSING       response /get_roles_response/role/user_tags
-                optional elem user_tags is not modelled
-  MISSING       response /get_roles_response/role_count
-                required elem role_count is not modelled  [fidelity]
-  MISSING       response /get_roles_response/roles
-                required elem roles is not modelled  [fidelity]
-  MISSING       response /get_roles_response/sort
-                required elem sort is not modelled  [fidelity]
-  OMITEMPTY     response /get_roles_response/role/comment
-                schema says required, Comment is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_roles_response/role/creation_time
-                schema says required, CreationTime is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_roles_response/role/in_use
-                schema says required, InUse is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_roles_response/role/modification_time
-                schema says required, ModificationTime is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_roles_response/role/users
-                schema says required, Users is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_roles_response/role/writable
-                schema says required, Writable is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  TYPE          response /get_roles_response/role/in_use
-                schema type boolean is text ("" is true), Go InUse is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_roles_response/role/writable
-                schema type boolean is text ("" is true), Go Writable is bool: '7' fails to decode and '1' re-emits as 'true'
+conformant
 
 ### get_scanners  (command_get_scanners.xml)
 

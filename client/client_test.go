@@ -1440,11 +1440,11 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		if mockFail, ok := any(cmd).(interface{ Fail() bool }); ok && mockFail.Fail() {
 			(*response.(*commands.GetRolesResponse)).Status = "400"
 			(*response.(*commands.GetRolesResponse)).StatusText = "Bad request"
-			(*response.(*commands.GetRolesResponse)).Roles = nil
+			(*response.(*commands.GetRolesResponse)).Role = nil
 		} else {
 			(*response.(*commands.GetRolesResponse)).Status = "200"
 			(*response.(*commands.GetRolesResponse)).StatusText = "OK"
-			(*response.(*commands.GetRolesResponse)).Roles = []commands.Role{
+			(*response.(*commands.GetRolesResponse)).Role = []commands.Role{
 				{
 					ID:               "b493b7a8-7489-11df-a3ec-002264764cea",
 					Name:             "Management",

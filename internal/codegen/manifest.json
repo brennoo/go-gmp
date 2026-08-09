@@ -10,8 +10,7 @@
     },
     {
       "name": "role",
-      "commands": ["create_role", "get_roles", "modify_role"],
-      "review_only": true
+      "commands": ["create_role", "get_roles", "modify_role"]
     }
   ]
 }
