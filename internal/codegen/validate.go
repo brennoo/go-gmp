@@ -87,12 +87,23 @@ type CommandRoots struct {
 	Response schema.GoRoot
 }
 
-// BeforeGoRoots reflects the current hand-written commands/ types for the
-// note family. Unlike the generated side, this needs no subprocess:
-// commands is a normal, non-internal package, and internal/codegen already
-// depends on it for exactly this purpose, so schema.ModelOf can be called on
-// it directly, in-process, the same way conformance_test.go calls it on
-// gmptest.Registry's entries.
+// BeforeGoRoots reflects the commands/ types as they stand right now, for
+// every family the manifest names. Unlike the generated side, this needs no
+// subprocess: commands is a normal, non-internal package, and internal/codegen
+// already depends on it for exactly this purpose, so schema.ModelOf can be
+// called on it directly, in-process, the same way conformance_test.go calls it
+// on gmptest.Registry's entries.
+//
+// "Before" means different things per family, deliberately. For an adopted
+// family (note) these types are already the generator's output, so the
+// comparison is a drift detector on the committed files. For a review-only
+// family (override) they are still the hand-written originals, so the
+// comparison is the pre-swap gate the note family went through.
+//
+// The map is written out by hand rather than derived from the manifest because
+// reflection needs the concrete types: adding a family here is the one place
+// that cannot be manifest-driven, and Validate fails loudly on a command it
+// has no entry for rather than silently skipping it.
 func BeforeGoRoots() map[string]CommandRoots {
 	return map[string]CommandRoots{
 		"create_note": {
@@ -106,6 +117,18 @@ func BeforeGoRoots() map[string]CommandRoots {
 		"get_notes": {
 			Request:  schema.ModelOf(&commands.GetNotes{}),
 			Response: schema.ModelOf(&commands.GetNotesResponse{}),
+		},
+		"create_override": {
+			Request:  schema.ModelOf(&commands.CreateOverride{}),
+			Response: schema.ModelOf(&commands.CreateOverrideResponse{}),
+		},
+		"modify_override": {
+			Request:  schema.ModelOf(&commands.ModifyOverride{}),
+			Response: schema.ModelOf(&commands.ModifyOverrideResponse{}),
+		},
+		"get_overrides": {
+			Request:  schema.ModelOf(&commands.GetOverrides{}),
+			Response: schema.ModelOf(&commands.GetOverridesResponse{}),
 		},
 	}
 }
@@ -125,7 +148,8 @@ func packageDir() (string, error) {
 	return filepath.Dir(file), nil
 }
 
-// GeneratedGoRoots runs Generate(cmds, ov) and reflects its output the way
+// GeneratedGoRoots runs Generate(cmds, ov) — one family's commands, the unit
+// Generate is scoped to, see GenerateAll — and reflects its output the way
 // BeforeGoRoots reflects the hand-written types, via the out-of-process
 // mechanism this file's package doc explains. The temporary directory it
 // creates under testdata/ is removed before it returns, on both the success

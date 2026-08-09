@@ -9,13 +9,22 @@ import (
 	"github.com/brennoo/go-gmp/internal/schema"
 )
 
-// validateOrSkip runs Validate for the committed snapshot family, skipping
-// (not failing) when no "go" toolchain is available to build and run the
-// reflect helper GeneratedGoRoots depends on — the same accommodation
+// validateOrSkip runs Validate for the family owning the named command,
+// skipping (not failing) when no "go" toolchain is available to build and run
+// the reflect helper GeneratedGoRoots depends on — the same accommodation
 // TestGeneratedCodeCompiles makes.
-func validateOrSkip(t *testing.T) (before, after []schema.Result) {
+//
+// One family's commands, not the whole manifest: GeneratedGoRoots calls
+// Generate directly, which is scoped to a single family by GenerateAll's
+// contract, so validating per family is what keeps the "after" side identical
+// to the bytes the golden holds for that family.
+func validateOrSkip(t *testing.T, command string) (before, after []schema.Result) {
 	t.Helper()
-	cmds, err := LoadSnapshots(snapshotDir)
+	fam, ok := manifestOrFail(t).FamilyOf(command)
+	if !ok {
+		t.Fatalf("The manifest no longer declares %s", command)
+	}
+	cmds, err := LoadSnapshots(snapshotDir, fam.Commands)
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
@@ -73,7 +82,7 @@ func countFindings(fs []schema.Finding) counts {
 //	get_notes:   actionable MISSING 19, TYPE 4, SCHEMA-DEFECT 2,
 //	             suppressed OMITEMPTY 14
 func TestValidateBeforeMatchesKnownConformance(t *testing.T) {
-	before, _ := validateOrSkip(t)
+	before, _ := validateOrSkip(t, "create_note")
 
 	want := map[string]counts{
 		"create_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
@@ -139,7 +148,7 @@ func TestValidateBeforeMatchesKnownConformance(t *testing.T) {
 // design — neither of which, it turns out, produces a schema.Comparer finding
 // at all for this family, checked directly against the printed diff above).
 func TestValidateGeneratedMatchesOrImproves(t *testing.T) {
-	before, after := validateOrSkip(t)
+	before, after := validateOrSkip(t, "create_note")
 
 	wantAfter := map[string]counts{
 		"create_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
@@ -147,6 +156,100 @@ func TestValidateGeneratedMatchesOrImproves(t *testing.T) {
 		"get_notes":   {actionable: map[string]int{schema.CatDefect: 2}, suppressed: map[string]int{}},
 	}
 
+	assertMatchesOrImproves(t, before, after, wantAfter)
+}
+
+// TestValidateOverrideBeforeMatchesHandWritten is the override family's
+// counterpart to TestValidateBeforeMatchesKnownConformance, and unlike that one
+// it still pins genuinely hand-written numbers: the override family is
+// review_only in the manifest, so commands/{create_override,modify_override,
+// get_overrides}.go have not been swapped and these are the counts the
+// generated types have to match or beat.
+//
+// Every one of them is a real gap in the hand-written code, not a modelling
+// preference:
+//
+//   - create_override, modify_override: EXTRA 2 each (OverrideNVT carries
+//     Name and Type, which the request schema's <nvt> — an oid attribute and
+//     nothing else — does not declare) and MISSING 2 each (Result and Task are
+//     plain strings where the schema declares an element with an id attribute,
+//     so the id can be neither sent nor read).
+//   - get_overrides: EXTRA 3 (a @trash request attribute the schema does not
+//     declare, plus cve/bid on the result NVT), MISSING 27 (2 request
+//     attributes, nvt_oid and task_id, and 25 response elements — most of
+//     <result>, including delta, detection, notes, overrides, tickets, epss,
+//     refs, severities and both timestamps), TYPE 6 (four bools where the
+//     schema's lexical "boolean" needs GMPBool, cvss_base string where the
+//     schema says integer, severity string where it says severity/float64),
+//     SCHEMA-DEFECT 2 (two upstream duplicate-ele bugs), and 40 suppressed
+//     OMITEMPTY findings where a schema-required field is tagged omitempty.
+func TestValidateOverrideBeforeMatchesHandWritten(t *testing.T) {
+	before, _ := validateOrSkip(t, "create_override")
+
+	want := map[string]counts{
+		"create_override": {
+			actionable: map[string]int{schema.CatExtra: 2, schema.CatMissing: 2},
+			suppressed: map[string]int{},
+		},
+		"modify_override": {
+			actionable: map[string]int{schema.CatExtra: 2, schema.CatMissing: 2},
+			suppressed: map[string]int{},
+		},
+		"get_overrides": {
+			actionable: map[string]int{
+				schema.CatExtra: 3, schema.CatMissing: 27, schema.CatType: 6, schema.CatDefect: 2,
+			},
+			suppressed: map[string]int{schema.CatOmitEmpty: 40},
+		},
+	}
+	for _, res := range before {
+		w, ok := want[res.Command]
+		if !ok {
+			t.Errorf("%s: unexpected command in Validate's before results", res.Command)
+			continue
+		}
+		assertCounts(t, "before", res.Command, w, countFindings(res.Findings))
+	}
+}
+
+// TestValidateOverrideGeneratedMatchesOrImproves is the override family's
+// pre-swap gate, run at the same rigour the note family's was.
+//
+// The result: generation closes all 84 findings (44 actionable, 40 suppressed)
+// except the two SCHEMA-DEFECT ones on get_overrides, which are byte-identical
+// before and after. Those two are cmd.Defects — upstream duplicate-ele bugs in
+// the schema itself, copied into the result before Comparer looks at any Go
+// type — so no generated output can move them, exactly as for get_notes.
+//
+// Nothing regresses and no new category appears, so the assertion below is the
+// strongest form: after == {SCHEMA-DEFECT: 2} for get_overrides and empty for
+// the other two.
+//
+// One loss the comparer cannot see, recorded here because it is the same
+// limitation the note family hit and it will matter at swap-in time: the schema
+// DSL has no way to say "this element has attributes *and* character data", so
+// the generated OverrideText models only <text excerpt="">'s attribute and
+// drops the override text itself, and OverrideHost likewise drops the hostname
+// chardata the hand-written OverrideResultHost.Value carries. schema.Comparer
+// compares declared children, not chardata, so neither shows up as a finding in
+// either direction — it is invisible to this test by construction, not
+// suppressed by it.
+func TestValidateOverrideGeneratedMatchesOrImproves(t *testing.T) {
+	before, after := validateOrSkip(t, "create_override")
+
+	wantAfter := map[string]counts{
+		"create_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_overrides":   {actionable: map[string]int{schema.CatDefect: 2}, suppressed: map[string]int{}},
+	}
+	assertMatchesOrImproves(t, before, after, wantAfter)
+}
+
+// assertMatchesOrImproves is the shared body of the two match-or-improve gates:
+// the exact expected "after" counts, plus the two general rules that hold for
+// any family — no category may grow, and the schema's own defects may not move.
+func assertMatchesOrImproves(t *testing.T, before, after []schema.Result, wantAfter map[string]counts) {
+	t.Helper()
 	beforeByCmd := map[string]schema.Result{}
 	for _, res := range before {
 		beforeByCmd[res.Command] = res
@@ -175,6 +278,9 @@ func TestValidateGeneratedMatchesOrImproves(t *testing.T) {
 		// after, since nothing about regenerating commands/ can fix an
 		// upstream schema bug.
 		assertSameDefects(t, res.Command, beforeByCmd[res.Command].Findings, res.Findings)
+	}
+	if len(after) != len(wantAfter) {
+		t.Errorf("Validate returned %d after-results, want %d", len(after), len(wantAfter))
 	}
 }
 

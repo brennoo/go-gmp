@@ -36,13 +36,25 @@ var TypeOverrides = map[string]Override{
 		GoType: "commands.GMPBool",
 		Reason: `T-9 defect #6: lexical free text ("0"=false, anything else incl. empty=true), not xsd:boolean`,
 	},
-	// boolean_atoi is deliberately NOT mapped to GMPBool: it flips empty
-	// text to false where GMPBool treats empty text as true (T-9 defect
-	// #6's two boolean flavours disagree on the empty case). No field in
-	// this prototype's family uses boolean_atoi, so mapping it to a
-	// correct type is deferred until a fixture exists to verify against;
-	// until then it falls through to the mechanical string default rather
-	// than a plausible-looking but wrong override.
+	// boolean_atoi is deliberately NOT mapped to GMPBool: vendor/XML's
+	// <type><name>boolean_atoi</name> says the value is run through atoi(3)
+	// first, "which means that an empty string is considered false" — the
+	// exact opposite of <type><name>boolean</name>'s empty-is-true rule
+	// above (T-9 defect #6's two boolean flavours disagree on the empty
+	// case), so reusing GMPBool would silently invert every empty element.
+	//
+	// Neither generated family uses it. Inventoried by loading all three
+	// note and all three override commands through schema.Load against
+	// vendor/XML/commands and walking every leaf node: zero nodes with a
+	// resolved Type of boolean_atoi, and no entry in internal/schema's
+	// typeAliases maps onto it either — the only boolean_atoi text in those
+	// files is the type definition each split schema file repeats. So there
+	// is still no fixture to verify a dedicated type against, and the name
+	// keeps falling through to the mechanical string default rather than
+	// gaining a plausible-looking but unverified override. Add
+	// commands.GMPAtoiBool (empty/non-numeric -> false, "0" -> false,
+	// anything atoi reads as non-zero -> true) when the first family that
+	// actually declares one is generated.
 	//
 	// gvmd emits ctime(3) strings and empty elements under fields the schema
 	// labels iso_time; time.Time's RFC 3339 UnmarshalText fails on both.

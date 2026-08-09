@@ -1,0 +1,13 @@
+{
+  "families": [
+    {
+      "name": "note",
+      "commands": ["create_note", "get_notes", "modify_note"]
+    },
+    {
+      "name": "override",
+      "commands": ["create_override", "get_overrides", "modify_override"],
+      "review_only": true
+    }
+  ]
+}

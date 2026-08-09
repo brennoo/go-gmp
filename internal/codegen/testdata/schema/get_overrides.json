@@ -1,0 +1,1792 @@
+{
+  "Name": "get_overrides",
+  "File": "command_get_overrides.xml",
+  "Request": {
+    "Name": "get_overrides",
+    "Kind": 0,
+    "Card": 0,
+    "InChoice": false,
+    "Type": "",
+    "Alts": null,
+    "Children": [
+      {
+        "Name": "override_id",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "uuid",
+        "Alts": null,
+        "Children": null
+      },
+      {
+        "Name": "filter",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null
+      },
+      {
+        "Name": "filt_id",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "uuid",
+        "Alts": null,
+        "Children": null
+      },
+      {
+        "Name": "nvt_oid",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "oid",
+        "Alts": null,
+        "Children": null
+      },
+      {
+        "Name": "task_id",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "uuid",
+        "Alts": null,
+        "Children": null
+      },
+      {
+        "Name": "details",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "boolean",
+        "Alts": null,
+        "Children": null
+      },
+      {
+        "Name": "result",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "boolean",
+        "Alts": null,
+        "Children": null
+      }
+    ]
+  },
+  "Response": {
+    "Name": "get_overrides_response",
+    "Kind": 0,
+    "Card": 0,
+    "InChoice": false,
+    "Type": "",
+    "Alts": null,
+    "Children": [
+      {
+        "Name": "status",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "status",
+        "Alts": null,
+        "Children": null
+      },
+      {
+        "Name": "status_text",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null
+      },
+      {
+        "Name": "filters",
+        "Kind": 0,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "id",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "uuid",
+            "Alts": null,
+            "Children": null
+          },
+          {
+            "Name": "term",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null
+          },
+          {
+            "Name": "keywords",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "keyword",
+                "Kind": 0,
+                "Card": 2,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "column",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null
+                  },
+                  {
+                    "Name": "relation",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "",
+                    "Alts": [
+                      "=",
+                      ":",
+                      "~",
+                      "\u003e",
+                      "\u003c"
+                    ],
+                    "Children": null
+                  },
+                  {
+                    "Name": "value",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "Name": "name",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null
+          }
+        ]
+      },
+      {
+        "Name": "sort",
+        "Kind": 0,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "field",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "order",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "",
+                "Alts": [
+                  "ascending",
+                  "descending"
+                ],
+                "Children": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "Name": "overrides",
+        "Kind": 0,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "start",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "integer",
+            "Alts": null,
+            "Children": null
+          },
+          {
+            "Name": "max",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "integer",
+            "Alts": null,
+            "Children": null
+          }
+        ]
+      },
+      {
+        "Name": "override_count",
+        "Kind": 0,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "filtered",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "integer",
+            "Alts": null,
+            "Children": null
+          },
+          {
+            "Name": "page",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "integer",
+            "Alts": null,
+            "Children": null
+          }
+        ]
+      },
+      {
+        "Name": "override",
+        "Kind": 0,
+        "Card": 2,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "id",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "uuid",
+            "Alts": null,
+            "Children": null
+          },
+          {
+            "Name": "permissions",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "permission",
+                "Kind": 0,
+                "Card": 2,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "name",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "name",
+                    "Alts": null,
+                    "Children": null
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "Name": "owner",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "name",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "name",
+                "Alts": null,
+                "Children": null
+              }
+            ]
+          },
+          {
+            "Name": "nvt",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "oid",
+                "Kind": 1,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "oid",
+                "Alts": null,
+                "Children": null
+              },
+              {
+                "Name": "name",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "name",
+                "Alts": null,
+                "Children": null
+              },
+              {
+                "Name": "type",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "text",
+                "Alts": null,
+                "Children": null
+              }
+            ]
+          },
+          {
+            "Name": "creation_time",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "iso_time",
+            "Alts": null,
+            "Children": null
+          },
+          {
+            "Name": "modification_time",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "iso_time",
+            "Alts": null,
+            "Children": null
+          },
+          {
+            "Name": "writable",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "boolean",
+            "Alts": null,
+            "Children": null
+          },
+          {
+            "Name": "in_use",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "boolean",
+            "Alts": null,
+            "Children": null
+          },
+          {
+            "Name": "active",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "boolean",
+            "Alts": null,
+            "Children": null
+          },
+          {
+            "Name": "text",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "excerpt",
+                "Kind": 1,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "boolean",
+                "Alts": null,
+                "Children": null
+              }
+            ]
+          },
+          {
+            "Name": "threat",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "threat",
+            "Alts": null,
+            "Children": null
+          },
+          {
+            "Name": "severity",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "severity",
+            "Alts": null,
+            "Children": null
+          },
+          {
+            "Name": "new_threat",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "threat",
+            "Alts": null,
+            "Children": null
+          },
+          {
+            "Name": "new_severity",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "severity",
+            "Alts": null,
+            "Children": null
+          },
+          {
+            "Name": "orphan",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "boolean",
+            "Alts": null,
+            "Children": null
+          },
+          {
+            "Name": "user_tags",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "count",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "integer",
+                "Alts": null,
+                "Children": null
+              },
+              {
+                "Name": "tag",
+                "Kind": 0,
+                "Card": 2,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "id",
+                    "Kind": 1,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "uuid",
+                    "Alts": null,
+                    "Children": null
+                  },
+                  {
+                    "Name": "name",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null
+                  },
+                  {
+                    "Name": "value",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null
+                  },
+                  {
+                    "Name": "comment",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "Name": "hosts",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null
+          },
+          {
+            "Name": "port",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null
+          },
+          {
+            "Name": "task",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "id",
+                "Kind": 1,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "uuid",
+                "Alts": null,
+                "Children": null
+              },
+              {
+                "Name": "name",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "text",
+                "Alts": null,
+                "Children": null
+              },
+              {
+                "Name": "trash",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "boolean",
+                "Alts": null,
+                "Children": null
+              }
+            ]
+          },
+          {
+            "Name": "end_time",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null
+          },
+          {
+            "Name": "result",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "id",
+                "Kind": 1,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "uuid",
+                "Alts": null,
+                "Children": null
+              },
+              {
+                "Name": "name",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "text",
+                "Alts": null,
+                "Children": null
+              },
+              {
+                "Name": "owner",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "name",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "name",
+                    "Alts": null,
+                    "Children": null
+                  }
+                ]
+              },
+              {
+                "Name": "comment",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "text",
+                "Alts": null,
+                "Children": null
+              },
+              {
+                "Name": "creation_time",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "iso_time",
+                "Alts": null,
+                "Children": null
+              },
+              {
+                "Name": "modification_time",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "iso_time",
+                "Alts": null,
+                "Children": null
+              },
+              {
+                "Name": "host",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "asset",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "",
+                    "Alts": null,
+                    "Children": [
+                      {
+                        "Name": "asset_id",
+                        "Kind": 1,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "uuid",
+                        "Alts": null,
+                        "Children": null
+                      }
+                    ]
+                  },
+                  {
+                    "Name": "hostname",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null
+                  }
+                ]
+              },
+              {
+                "Name": "port",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "text",
+                "Alts": null,
+                "Children": null
+              },
+              {
+                "Name": "nvt",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "oid",
+                    "Kind": 1,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "oid",
+                    "Alts": null,
+                    "Children": null
+                  },
+                  {
+                    "Name": "name",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "name",
+                    "Alts": null,
+                    "Children": null
+                  },
+                  {
+                    "Name": "type",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null
+                  },
+                  {
+                    "Name": "family",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "name",
+                    "Alts": null,
+                    "Children": null
+                  },
+                  {
+                    "Name": "cvss_base",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "integer",
+                    "Alts": null,
+                    "Children": null
+                  },
+                  {
+                    "Name": "severities",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "",
+                    "Alts": null,
+                    "Children": [
+                      {
+                        "Name": "score",
+                        "Kind": 1,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "severity",
+                        "Alts": null,
+                        "Children": null
+                      },
+                      {
+                        "Name": "severity",
+                        "Kind": 0,
+                        "Card": 2,
+                        "InChoice": false,
+                        "Type": "",
+                        "Alts": null,
+                        "Children": [
+                          {
+                            "Name": "type",
+                            "Kind": 1,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "text",
+                            "Alts": null,
+                            "Children": null
+                          },
+                          {
+                            "Name": "origin",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "text",
+                            "Alts": null,
+                            "Children": null
+                          },
+                          {
+                            "Name": "date",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "iso_time",
+                            "Alts": null,
+                            "Children": null
+                          },
+                          {
+                            "Name": "score",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "severity",
+                            "Alts": null,
+                            "Children": null
+                          },
+                          {
+                            "Name": "value",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "text",
+                            "Alts": null,
+                            "Children": null
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "Name": "cpe",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null
+                  },
+                  {
+                    "Name": "tags",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null
+                  },
+                  {
+                    "Name": "refs",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "",
+                    "Alts": null,
+                    "Children": [
+                      {
+                        "Name": "ref",
+                        "Kind": 0,
+                        "Card": 2,
+                        "InChoice": false,
+                        "Type": "",
+                        "Alts": null,
+                        "Children": [
+                          {
+                            "Name": "id",
+                            "Kind": 1,
+                            "Card": 1,
+                            "InChoice": false,
+                            "Type": "text",
+                            "Alts": null,
+                            "Children": null
+                          },
+                          {
+                            "Name": "type",
+                            "Kind": 1,
+                            "Card": 1,
+                            "InChoice": false,
+                            "Type": "text",
+                            "Alts": null,
+                            "Children": null
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "Name": "epss",
+                    "Kind": 0,
+                    "Card": 1,
+                    "InChoice": false,
+                    "Type": "",
+                    "Alts": null,
+                    "Children": [
+                      {
+                        "Name": "max_severity",
+                        "Kind": 0,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "",
+                        "Alts": null,
+                        "Children": [
+                          {
+                            "Name": "score",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "decimal",
+                            "Alts": null,
+                            "Children": null
+                          },
+                          {
+                            "Name": "percentile",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "decimal",
+                            "Alts": null,
+                            "Children": null
+                          },
+                          {
+                            "Name": "cve",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "",
+                            "Alts": null,
+                            "Children": [
+                              {
+                                "Name": "id",
+                                "Kind": 1,
+                                "Card": 1,
+                                "InChoice": false,
+                                "Type": "text",
+                                "Alts": null,
+                                "Children": null
+                              },
+                              {
+                                "Name": "severity",
+                                "Kind": 0,
+                                "Card": 1,
+                                "InChoice": false,
+                                "Type": "severity",
+                                "Alts": null,
+                                "Children": null
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "Name": "max_epss",
+                        "Kind": 0,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "",
+                        "Alts": null,
+                        "Children": [
+                          {
+                            "Name": "score",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "decimal",
+                            "Alts": null,
+                            "Children": null
+                          },
+                          {
+                            "Name": "percentile",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "decimal",
+                            "Alts": null,
+                            "Children": null
+                          },
+                          {
+                            "Name": "cve",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "",
+                            "Alts": null,
+                            "Children": [
+                              {
+                                "Name": "id",
+                                "Kind": 1,
+                                "Card": 1,
+                                "InChoice": false,
+                                "Type": "text",
+                                "Alts": null,
+                                "Children": null
+                              },
+                              {
+                                "Name": "severity",
+                                "Kind": 0,
+                                "Card": 1,
+                                "InChoice": false,
+                                "Type": "severity",
+                                "Alts": null,
+                                "Children": null
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Name": "scan_nvt_version",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "text",
+                "Alts": null,
+                "Children": null
+              },
+              {
+                "Name": "threat",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "threat",
+                "Alts": null,
+                "Children": null
+              },
+              {
+                "Name": "severity",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "severity",
+                "Alts": null,
+                "Children": null
+              },
+              {
+                "Name": "qod",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "value",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "integer",
+                    "Alts": null,
+                    "Children": null
+                  },
+                  {
+                    "Name": "type",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null
+                  }
+                ]
+              },
+              {
+                "Name": "compliance",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "compliance_status",
+                "Alts": null,
+                "Children": null
+              },
+              {
+                "Name": "description",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "text",
+                "Alts": null,
+                "Children": null
+              },
+              {
+                "Name": "user_tags",
+                "Kind": 0,
+                "Card": 1,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "count",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "integer",
+                    "Alts": null,
+                    "Children": null
+                  },
+                  {
+                    "Name": "tag",
+                    "Kind": 0,
+                    "Card": 2,
+                    "InChoice": false,
+                    "Type": "",
+                    "Alts": null,
+                    "Children": [
+                      {
+                        "Name": "id",
+                        "Kind": 1,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "uuid",
+                        "Alts": null,
+                        "Children": null
+                      },
+                      {
+                        "Name": "name",
+                        "Kind": 0,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "text",
+                        "Alts": null,
+                        "Children": null
+                      },
+                      {
+                        "Name": "value",
+                        "Kind": 0,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "text",
+                        "Alts": null,
+                        "Children": null
+                      },
+                      {
+                        "Name": "comment",
+                        "Kind": 0,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "text",
+                        "Alts": null,
+                        "Children": null
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Name": "report",
+                "Kind": 0,
+                "Card": 1,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "id",
+                    "Kind": 1,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "uuid",
+                    "Alts": null,
+                    "Children": null
+                  }
+                ]
+              },
+              {
+                "Name": "task",
+                "Kind": 0,
+                "Card": 1,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "id",
+                    "Kind": 1,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "uuid",
+                    "Alts": null,
+                    "Children": null
+                  },
+                  {
+                    "Name": "name",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null
+                  }
+                ]
+              },
+              {
+                "Name": "path",
+                "Kind": 0,
+                "Card": 1,
+                "InChoice": false,
+                "Type": "text",
+                "Alts": null,
+                "Children": null
+              },
+              {
+                "Name": "original_threat",
+                "Kind": 0,
+                "Card": 1,
+                "InChoice": false,
+                "Type": "threat",
+                "Alts": null,
+                "Children": null
+              },
+              {
+                "Name": "original_severity",
+                "Kind": 0,
+                "Card": 1,
+                "InChoice": false,
+                "Type": "severity",
+                "Alts": null,
+                "Children": null
+              },
+              {
+                "Name": "delta",
+                "Kind": 0,
+                "Card": 1,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "result",
+                    "Kind": 0,
+                    "Card": 1,
+                    "InChoice": false,
+                    "Type": "result",
+                    "Alts": null,
+                    "Children": null
+                  },
+                  {
+                    "Name": "diff",
+                    "Kind": 0,
+                    "Card": 1,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null
+                  },
+                  {
+                    "Name": "notes",
+                    "Kind": 0,
+                    "Card": 1,
+                    "InChoice": false,
+                    "Type": "",
+                    "Alts": null,
+                    "Children": [
+                      {
+                        "Name": "note",
+                        "Kind": 0,
+                        "Card": 2,
+                        "InChoice": false,
+                        "Type": "",
+                        "Alts": null,
+                        "Children": [
+                          {
+                            "Name": "id",
+                            "Kind": 1,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "uuid",
+                            "Alts": null,
+                            "Children": null
+                          },
+                          {
+                            "Name": "permissions",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "",
+                            "Alts": null,
+                            "Children": [
+                              {
+                                "Name": "permission",
+                                "Kind": 0,
+                                "Card": 2,
+                                "InChoice": false,
+                                "Type": "",
+                                "Alts": null,
+                                "Children": [
+                                  {
+                                    "Name": "name",
+                                    "Kind": 0,
+                                    "Card": 0,
+                                    "InChoice": false,
+                                    "Type": "name",
+                                    "Alts": null,
+                                    "Children": null
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "Name": "owner",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "",
+                            "Alts": null,
+                            "Children": [
+                              {
+                                "Name": "name",
+                                "Kind": 0,
+                                "Card": 0,
+                                "InChoice": false,
+                                "Type": "name",
+                                "Alts": null,
+                                "Children": null
+                              }
+                            ]
+                          },
+                          {
+                            "Name": "nvt",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "",
+                            "Alts": null,
+                            "Children": [
+                              {
+                                "Name": "oid",
+                                "Kind": 1,
+                                "Card": 0,
+                                "InChoice": false,
+                                "Type": "oid",
+                                "Alts": null,
+                                "Children": null
+                              },
+                              {
+                                "Name": "name",
+                                "Kind": 0,
+                                "Card": 0,
+                                "InChoice": false,
+                                "Type": "name",
+                                "Alts": null,
+                                "Children": null
+                              },
+                              {
+                                "Name": "type",
+                                "Kind": 0,
+                                "Card": 0,
+                                "InChoice": false,
+                                "Type": "text",
+                                "Alts": null,
+                                "Children": null
+                              }
+                            ]
+                          },
+                          {
+                            "Name": "text",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "",
+                            "Alts": null,
+                            "Children": [
+                              {
+                                "Name": "excerpt",
+                                "Kind": 1,
+                                "Card": 0,
+                                "InChoice": false,
+                                "Type": "boolean",
+                                "Alts": null,
+                                "Children": null
+                              }
+                            ]
+                          },
+                          {
+                            "Name": "creation_time",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "iso_time",
+                            "Alts": null,
+                            "Children": null
+                          },
+                          {
+                            "Name": "modification_time",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "iso_time",
+                            "Alts": null,
+                            "Children": null
+                          },
+                          {
+                            "Name": "writable",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "boolean",
+                            "Alts": null,
+                            "Children": null
+                          },
+                          {
+                            "Name": "in_use",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "boolean",
+                            "Alts": null,
+                            "Children": null
+                          },
+                          {
+                            "Name": "active",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "boolean",
+                            "Alts": null,
+                            "Children": null
+                          },
+                          {
+                            "Name": "orphan",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "boolean",
+                            "Alts": null,
+                            "Children": null
+                          },
+                          {
+                            "Name": "user_tags",
+                            "Kind": 0,
+                            "Card": 1,
+                            "InChoice": false,
+                            "Type": "",
+                            "Alts": null,
+                            "Children": [
+                              {
+                                "Name": "count",
+                                "Kind": 0,
+                                "Card": 0,
+                                "InChoice": false,
+                                "Type": "integer",
+                                "Alts": null,
+                                "Children": null
+                              },
+                              {
+                                "Name": "tag",
+                                "Kind": 0,
+                                "Card": 2,
+                                "InChoice": false,
+                                "Type": "",
+                                "Alts": null,
+                                "Children": [
+                                  {
+                                    "Name": "id",
+                                    "Kind": 1,
+                                    "Card": 0,
+                                    "InChoice": false,
+                                    "Type": "uuid",
+                                    "Alts": null,
+                                    "Children": null
+                                  },
+                                  {
+                                    "Name": "name",
+                                    "Kind": 0,
+                                    "Card": 0,
+                                    "InChoice": false,
+                                    "Type": "text",
+                                    "Alts": null,
+                                    "Children": null
+                                  },
+                                  {
+                                    "Name": "value",
+                                    "Kind": 0,
+                                    "Card": 0,
+                                    "InChoice": false,
+                                    "Type": "text",
+                                    "Alts": null,
+                                    "Children": null
+                                  },
+                                  {
+                                    "Name": "comment",
+                                    "Kind": 0,
+                                    "Card": 0,
+                                    "InChoice": false,
+                                    "Type": "text",
+                                    "Alts": null,
+                                    "Children": null
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "Name": "hosts",
+                            "Kind": 0,
+                            "Card": 1,
+                            "InChoice": false,
+                            "Type": "text",
+                            "Alts": null,
+                            "Children": null
+                          },
+                          {
+                            "Name": "port",
+                            "Kind": 0,
+                            "Card": 1,
+                            "InChoice": false,
+                            "Type": "text",
+                            "Alts": null,
+                            "Children": null
+                          },
+                          {
+                            "Name": "severity",
+                            "Kind": 0,
+                            "Card": 1,
+                            "InChoice": false,
+                            "Type": "severity",
+                            "Alts": null,
+                            "Children": null
+                          },
+                          {
+                            "Name": "task",
+                            "Kind": 0,
+                            "Card": 1,
+                            "InChoice": false,
+                            "Type": "",
+                            "Alts": null,
+                            "Children": [
+                              {
+                                "Name": "id",
+                                "Kind": 1,
+                                "Card": 0,
+                                "InChoice": false,
+                                "Type": "uuid",
+                                "Alts": null,
+                                "Children": null
+                              },
+                              {
+                                "Name": "name",
+                                "Kind": 0,
+                                "Card": 0,
+                                "InChoice": false,
+                                "Type": "text",
+                                "Alts": null,
+                                "Children": null
+                              },
+                              {
+                                "Name": "trash",
+                                "Kind": 0,
+                                "Card": 0,
+                                "InChoice": false,
+                                "Type": "boolean",
+                                "Alts": null,
+                                "Children": null
+                              }
+                            ]
+                          },
+                          {
+                            "Name": "end_time",
+                            "Kind": 0,
+                            "Card": 1,
+                            "InChoice": false,
+                            "Type": "text",
+                            "Alts": null,
+                            "Children": null
+                          },
+                          {
+                            "Name": "result",
+                            "Kind": 0,
+                            "Card": 1,
+                            "InChoice": false,
+                            "Type": "result",
+                            "Alts": null,
+                            "Children": null
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "Name": "overrides",
+                    "Kind": 0,
+                    "Card": 1,
+                    "InChoice": false,
+                    "Type": "",
+                    "Alts": null,
+                    "Children": [
+                      {
+                        "Name": "override",
+                        "Kind": 0,
+                        "Card": 2,
+                        "InChoice": false,
+                        "Type": "override",
+                        "Alts": null,
+                        "Children": null
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Name": "detection",
+                "Kind": 0,
+                "Card": 1,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "result",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "",
+                    "Alts": null,
+                    "Children": [
+                      {
+                        "Name": "id",
+                        "Kind": 1,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "uuid",
+                        "Alts": null,
+                        "Children": null
+                      },
+                      {
+                        "Name": "details",
+                        "Kind": 0,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "",
+                        "Alts": null,
+                        "Children": [
+                          {
+                            "Name": "detail",
+                            "Kind": 0,
+                            "Card": 2,
+                            "InChoice": false,
+                            "Type": "",
+                            "Alts": null,
+                            "Children": [
+                              {
+                                "Name": "name",
+                                "Kind": 0,
+                                "Card": 0,
+                                "InChoice": false,
+                                "Type": "text",
+                                "Alts": null,
+                                "Children": null
+                              },
+                              {
+                                "Name": "value",
+                                "Kind": 0,
+                                "Card": 0,
+                                "InChoice": false,
+                                "Type": "text",
+                                "Alts": null,
+                                "Children": null
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Name": "notes",
+                "Kind": 0,
+                "Card": 1,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "note",
+                    "Kind": 0,
+                    "Card": 2,
+                    "InChoice": false,
+                    "Type": "note",
+                    "Alts": null,
+                    "Children": null
+                  }
+                ]
+              },
+              {
+                "Name": "overrides",
+                "Kind": 0,
+                "Card": 1,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "override",
+                    "Kind": 0,
+                    "Card": 2,
+                    "InChoice": false,
+                    "Type": "override",
+                    "Alts": null,
+                    "Children": null
+                  }
+                ]
+              },
+              {
+                "Name": "tickets",
+                "Kind": 0,
+                "Card": 1,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "ticket",
+                    "Kind": 0,
+                    "Card": 2,
+                    "InChoice": false,
+                    "Type": "",
+                    "Alts": null,
+                    "Children": [
+                      {
+                        "Name": "id",
+                        "Kind": 1,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "uuid",
+                        "Alts": null,
+                        "Children": null
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "Defects": [
+    {
+      "Class": "duplicate-ele",
+      "Path": "/get_overrides_response/override/active",
+      "Detail": "redefined in the same scope"
+    },
+    {
+      "Class": "duplicate-ele",
+      "Path": "/get_overrides_response/override/result/delta/notes/note/active",
+      "Detail": "redefined in the same scope"
+    }
+  ]
+}

@@ -31,10 +31,10 @@ func TestSnapshot(t *testing.T) {
 		byName[c.Name] = c
 	}
 
-	for _, name := range families {
+	for _, name := range manifestOrFail(t).AllCommands() {
 		cmd, ok := byName[name]
 		if !ok {
-			t.Fatalf("%s: not in the parsed schema; the prototype's family list is stale", name)
+			t.Fatalf("%s: not in the parsed schema; %s is stale", name, manifestFile)
 		}
 		got, err := MarshalSnapshot(cmd)
 		if err != nil {
@@ -86,16 +86,17 @@ func assertNoProse(t *testing.T, name string, snapshot []byte) {
 // It is the test that would catch a missing or malformed committed snapshot on
 // a clean checkout, where TestSnapshot itself skips.
 func TestSnapshotsLoad(t *testing.T) {
-	cmds, err := LoadSnapshots(snapshotDir)
+	want := manifestOrFail(t).AllCommands()
+	cmds, err := LoadSnapshots(snapshotDir, want)
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	if len(cmds) != len(families) {
-		t.Fatalf("Got %d commands, want %d", len(cmds), len(families))
+	if len(cmds) != len(want) {
+		t.Fatalf("Got %d commands, want %d", len(cmds), len(want))
 	}
 	for i, c := range cmds {
-		if c.Name != families[i] {
-			t.Errorf("Snapshot %d is %q, want %q", i, c.Name, families[i])
+		if c.Name != want[i] {
+			t.Errorf("Snapshot %d is %q, want %q", i, c.Name, want[i])
 		}
 		if c.Request == nil || c.Response == nil {
 			t.Errorf("%s: snapshot is missing a request or response shape", c.Name)

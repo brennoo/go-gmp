@@ -83,6 +83,14 @@ func TestGenerateIsDeterministic(t *testing.T) {
 // modify_note.go or get_notes.go, or the generator could be quietly leaning on
 // types it did not emit.
 //
+// It covers every family the manifest declares, review-only ones included, and
+// compiles them all into one package — which is also the only check that two
+// families never declare the same type name. Family-local dedup means each
+// family names its shapes without consulting the others, so "note and override
+// both describe an <nvt>" is resolved by the family prefix (NoteNVT vs
+// OverrideNVT) rather than by a shared type; if that prefixing ever failed to
+// separate two families, this test is where the redeclaration surfaces.
+//
 // Those three files still exist on disk, so the check cannot simply build the
 // output as package commands: every type would be redeclared. Instead the
 // files are copied into a throwaway module with only their package clause
@@ -97,6 +105,15 @@ func TestGeneratedCodeCompiles(t *testing.T) {
 		t.Skipf("Skipping: no go toolchain on PATH (%v)", err)
 	}
 	got := generateOrFail(t)
+	// Every family's command files have to be in the build, or "it compiles"
+	// would be a claim about whichever subset happened to be generated.
+	for _, f := range manifestOrFail(t).Families {
+		for _, c := range f.Commands {
+			if _, ok := got[CommandFile(c)]; !ok {
+				t.Fatalf("family %q: %s was not generated, so this test would not compile it", f.Name, CommandFile(c))
+			}
+		}
+	}
 
 	root, err := filepath.Abs("../..")
 	if err != nil {
@@ -151,17 +168,44 @@ func mustWriteFile(t *testing.T, path, content string) {
 	}
 }
 
+// generateOrFail renders every family the manifest declares, review-only ones
+// included: the goldens are where a review-only family's output lives, so the
+// golden test has to see it.
 func generateOrFail(t *testing.T) map[string]string {
 	t.Helper()
-	cmds, err := LoadSnapshots(snapshotDir)
+	return generateManifest(t, manifestOrFail(t))
+}
+
+// generateAdoptedOrFail renders only the families whose output is committed
+// under commands/ — what the CLI writes and what CheckOutput inspects.
+func generateAdoptedOrFail(t *testing.T) map[string]string {
+	t.Helper()
+	return generateManifest(t, manifestOrFail(t).Adopted())
+}
+
+func generateManifest(t *testing.T, m Manifest) map[string]string {
+	t.Helper()
+	cmds, err := LoadSnapshots(snapshotDir, m.AllCommands())
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	out, err := Generate(cmds, TypeOverrides)
+	out, err := GenerateAll(m, cmds, TypeOverrides)
 	if err != nil {
-		t.Fatalf("Generate failed: %v", err)
+		t.Fatalf("GenerateAll failed: %v", err)
 	}
 	return out
+}
+
+// manifestOrFail loads the committed manifest, which every test in this
+// package sources its command list from so none of them carries a second
+// hardcoded copy.
+func manifestOrFail(t *testing.T) Manifest {
+	t.Helper()
+	m, err := LoadManifest(manifestFile)
+	if err != nil {
+		t.Fatalf("Failed to load the manifest: %v", err)
+	}
+	return m
 }
 
 // firstDiff points at the first differing line, so a failure names the change
