@@ -207,9 +207,30 @@ func (c *Comparer) compareNode(res *Result, cmd Command, side string, s *Node, g
 		res.Findings = append(res.Findings, f)
 	case len(s.Children) > 0:
 		c.walk(res, cmd, side, s, g, path, suspect)
+		c.checkChardata(res, cmd, side, s, g, path)
 	case len(g.Children) > 0 && !g.Chardata:
 		res.add(cmd, side, CatExtra, path+"/*", fmt.Sprintf(
 			"schema declares a %q leaf; Go models %d children", displayType(s), len(g.Children)))
+	}
+}
+
+// checkChardata compares mixed content: an element with real children that
+// also carries bare text of its own (e.g. <text excerpt="...">the text
+// </text>). This is the reverse of the len(g.Children) > 0 && !g.Chardata
+// case above, which only fires when the schema is a pure leaf; here the
+// schema side already has children, so the chardata comparison has to run on
+// its own rather than falling out of the existing switch.
+func (c *Comparer) checkChardata(res *Result, cmd Command, side string, s *Node, g *GoNode, path string) {
+	switch {
+	case s.Chardata && !g.Chardata:
+		f := Finding{Command: cmd.Name, Side: side, Category: CatMissing, Path: path + "/#text",
+			Detail: fmt.Sprintf("schema also declares character data (%s) here; Go %s has no `,chardata` field",
+				displayType(s), g.GoType)}
+		f.Confirmed = c.confirmed(cmd.Name, path)
+		res.Findings = append(res.Findings, f)
+	case !s.Chardata && g.Chardata:
+		res.add(cmd, side, CatExtra, path+"/#text", fmt.Sprintf(
+			"Go %s has a `,chardata` field; schema declares no character data here", g.GoType))
 	}
 }
 

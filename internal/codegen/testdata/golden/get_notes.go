@@ -55,6 +55,7 @@ type NoteKeyword struct {
 
 // NoteSort is the <sort> element of get_notes. See the GMP protocol docs for details.
 type NoteSort struct {
+	Value string    `xml:",chardata"`
 	Field NoteField `xml:"field"`
 }
 
@@ -121,6 +122,7 @@ type GetNotesNVT struct {
 
 // NoteText is the <text> element of get_notes. See the GMP protocol docs for details.
 type NoteText struct {
+	Value   string  `xml:",chardata"`
 	Excerpt GMPBool `xml:"excerpt,attr"`
 }
 
@@ -177,6 +179,7 @@ type GetNotesResult struct {
 
 // NoteHost is the <host> element of get_notes. See the GMP protocol docs for details.
 type NoteHost struct {
+	Value    string    `xml:",chardata"`
 	Asset    NoteAsset `xml:"asset"`
 	Hostname string    `xml:"hostname"`
 }
@@ -271,6 +274,7 @@ type NoteResultTask struct {
 
 // NoteDelta is the <delta> element of get_notes. See the GMP protocol docs for details.
 type NoteDelta struct {
+	Value     string          `xml:",chardata"`
 	Result    string          `xml:"result,omitempty"`
 	Diff      string          `xml:"diff,omitempty"`
 	Notes     *NoteDeltaNotes `xml:"notes,omitempty"`

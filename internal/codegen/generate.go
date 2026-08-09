@@ -212,6 +212,14 @@ func typeHash(n *schema.Node) string {
 
 func writeHash(b *strings.Builder, n *schema.Node) {
 	b.WriteString(n.Name)
+	if n.Chardata {
+		// A node with mixed content gets a Value field the same shape's
+		// pure-element twin does not; without this marker two commands whose
+		// children are identical but which disagree on bare chardata would
+		// collapse into one struct and one of them would be wrong.
+		b.WriteString("#text:")
+		b.WriteString(n.Type)
+	}
 	b.WriteByte('{')
 	for _, c := range n.Children {
 		fmt.Fprintf(b, "%s|%s|%s|%s|%s|", c.Name, c.Kind, c.Card, c.Type, strings.Join(c.Alts, "\x1f"))
@@ -360,7 +368,15 @@ func (g *gen) goTypeOf(n *schema.Node) string {
 	if len(n.Children) > 0 {
 		return g.byHash[typeHash(n)].goName
 	}
-	t := schema.Resolve(n.Type)
+	return g.scalarGoType(n.Type)
+}
+
+// scalarGoType is goTypeOf's leaf-resolution rule, factored out so
+// emitChardata can share it directly: a chardata node's own Type is always a
+// lexical leaf type (e.g. "text", "base64"), never a nested shape, so it has
+// no use for goTypeOf's structural branch.
+func (g *gen) scalarGoType(t string) string {
+	t = schema.Resolve(t)
 	if o, ok := g.ov[t]; ok {
 		return strings.TrimPrefix(o.GoType, targetPackage+".")
 	}
@@ -401,6 +417,18 @@ func (g *gen) fieldOf(n *schema.Node, used map[string]bool) field {
 	tag += opts
 
 	return field{name: uniqueName(goName(n.Name), used), goType: goType, tag: tag}
+}
+
+// emitChardata declares the field for a mixed-content node's bare text, if it
+// has any. It is called before emitFields so the chardata field reads first,
+// matching the hand-written override types this generator is meant to match
+// (e.g. commands.OverrideText's Text field precedes its Excerpt attribute).
+func (g *gen) emitChardata(b *strings.Builder, n *schema.Node, used map[string]bool) {
+	if !n.Chardata {
+		return
+	}
+	name := uniqueName("Value", used)
+	fmt.Fprintf(b, "%s %s `xml:\",chardata\"`\n", name, g.scalarGoType(n.Type))
 }
 
 func uniqueName(name string, used map[string]bool) string {
@@ -463,6 +491,7 @@ func (g *gen) emitRequest(b *strings.Builder, c *schema.Command) {
 	fmt.Fprintf(b, "type %s struct {\n", name)
 	used := map[string]bool{"XMLName": true}
 	fmt.Fprintf(b, "XMLName xml.Name `xml:%q`\n", c.Name)
+	g.emitChardata(b, c.Request, used)
 	g.emitFields(b, c.Request.Children, used, nil)
 	b.WriteString("}\n\n")
 }
@@ -483,6 +512,7 @@ func (g *gen) emitResponse(b *strings.Builder, c *schema.Command) {
 	// schema children, so their order and spelling cannot drift per command.
 	b.WriteString("Status string `xml:\"status,attr\"`\n")
 	b.WriteString("StatusText string `xml:\"status_text,attr\"`\n")
+	g.emitChardata(b, c.Response, used)
 	g.emitFields(b, c.Response.Children, used, envelopeAttrs)
 	b.WriteString("}\n\n")
 
@@ -498,7 +528,9 @@ func (g *gen) emitStruct(b *strings.Builder, st *structType) {
 	fmt.Fprintf(b, "// %s is the <%s> element of %s. See the GMP protocol docs for details.\n",
 		st.goName, st.node.Name, g.ownerOf(st))
 	fmt.Fprintf(b, "type %s struct {\n", st.goName)
-	g.emitFields(b, st.node.Children, map[string]bool{}, nil)
+	used := map[string]bool{}
+	g.emitChardata(b, st.node, used)
+	g.emitFields(b, st.node.Children, used, nil)
 	b.WriteString("}\n\n")
 }
 

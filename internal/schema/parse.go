@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 )
@@ -71,6 +72,17 @@ type Node struct {
 	Type     string
 	Alts     []string
 	Children []*Node
+
+	// Chardata marks mixed content: this element has real children and/or
+	// attributes AND bare text of its own. The DSL has no dedicated keyword
+	// for this, and spells it two different ways: bare identifier text next
+	// to an <attrib> or <e> (e.g. <text excerpt="...">the text</text>, see
+	// bareChardata), or an explicit <t>/<type> next to an <e> (e.g.
+	// <pattern><t>integer</t><e>growing</e></pattern>, config/nvt_count in
+	// command_get_configs.xml). Either way Type carries the text's lexical
+	// type, as it would for a pure leaf, and Chardata records that it
+	// co-occurs with Children rather than replacing them.
+	Chardata bool
 }
 
 // Path returns the node's location under parent, in the same syntax the
@@ -308,6 +320,34 @@ func (e *env) fill(n *Node, pattern *rawPattern, defs []rawEle, path string) {
 
 	n.Type, n.Alts = e.leafOf(pattern, path)
 	e.noteType(n.Type, path)
+	if n.Type == "" {
+		if ct := bareChardata(pattern); ct != "" {
+			n.Type = ct
+			e.noteType(ct, path)
+		}
+	}
+	// Mixed content has two DSL spellings. bareChardata just caught the
+	// first: bare text co-occurring with an <attrib> or an <e> reference,
+	// where leafOf's own bare-text branch declined the type precisely
+	// because that co-occurrence was present. The second is <t>/<type>
+	// declaring the type explicitly alongside an <e> reference (e.g.
+	// <pattern><t>integer</t><e>growing</e></pattern>, seen on
+	// config/nvt_count in command_get_configs.xml, confirmed against a
+	// real example response) — leafOf's T/Type-for-T branches return the
+	// type unconditionally and never see this co-occurrence at all. Both
+	// cases collapse to the same signal once n.Type is known: a type name
+	// alongside real content of its own, as opposed to a bare leaf or a
+	// reference this pattern is about to hand off to expandShared.
+	if n.Type != "" && (len(pattern.Attribs) > 0 || !pattern.empty()) {
+		// Guard against the one case where a non-empty Type does not mean
+		// text: <t>/<type> naming a shared top-level <element> rather than a
+		// scalar type. expandShared is about to replace n's content with
+		// that element's own pattern, so any Children collected so far
+		// belong to this local pattern, not to bare text this Type carries.
+		if _, isSharedRef := e.elements[n.Type]; !isSharedRef {
+			n.Chardata = true
+		}
+	}
 
 	for i := range pattern.Attribs {
 		n.Children = append(n.Children, e.attrib(&pattern.Attribs[i], path))
@@ -481,6 +521,27 @@ func (e *env) leafOf(p *rawPattern, path string) (string, []string) {
 		return txt, alts
 	}
 	return "", alts
+}
+
+// bareIdentifierRE matches a pattern's bare text only when it is a single
+// identifier-shaped token, the DSL's only spelling for a leaf type name
+// ("text", "base64", ...). It is deliberately strict: some vendored files
+// interleave unprocessed template conditionals (@IF_CVSS3_RATINGS@ ...
+// @ENDIF_CVSS3_RATINGS@) as literal bare text alongside real child
+// references, and that whitespace-bearing garbage must not be mistaken for
+// character data.
+var bareIdentifierRE = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`)
+
+// bareChardata reports the pattern's bare text when leafOf did not already
+// treat it as the node's whole type — i.e. when it co-occurs with <attrib>s
+// and/or child element references, the DSL's only spelling of mixed content
+// (e.g. <attrib>excerpt</attrib>text).
+func bareChardata(p *rawPattern) string {
+	txt := trim(p.Text)
+	if txt == "" || !bareIdentifierRE.MatchString(txt) {
+		return ""
+	}
+	return txt
 }
 
 func (g *rawGroup) empty() bool {

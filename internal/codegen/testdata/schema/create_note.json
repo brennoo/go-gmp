@@ -16,7 +16,8 @@
         "InChoice": false,
         "Type": "text",
         "Alts": null,
-        "Children": null
+        "Children": null,
+        "Chardata": false
       },
       {
         "Name": "nvt",
@@ -33,9 +34,11 @@
             "InChoice": false,
             "Type": "oid",
             "Alts": null,
-            "Children": null
+            "Children": null,
+            "Chardata": false
           }
-        ]
+        ],
+        "Chardata": false
       },
       {
         "Name": "active",
@@ -44,7 +47,8 @@
         "InChoice": false,
         "Type": "integer",
         "Alts": null,
-        "Children": null
+        "Children": null,
+        "Chardata": false
       },
       {
         "Name": "copy",
@@ -53,7 +57,8 @@
         "InChoice": false,
         "Type": "uuid",
         "Alts": null,
-        "Children": null
+        "Children": null,
+        "Chardata": false
       },
       {
         "Name": "hosts",
@@ -62,7 +67,8 @@
         "InChoice": false,
         "Type": "text",
         "Alts": null,
-        "Children": null
+        "Children": null,
+        "Chardata": false
       },
       {
         "Name": "port",
@@ -71,7 +77,8 @@
         "InChoice": false,
         "Type": "text",
         "Alts": null,
-        "Children": null
+        "Children": null,
+        "Chardata": false
       },
       {
         "Name": "result",
@@ -88,9 +95,11 @@
             "InChoice": false,
             "Type": "uuid",
             "Alts": null,
-            "Children": null
+            "Children": null,
+            "Chardata": false
           }
-        ]
+        ],
+        "Chardata": false
       },
       {
         "Name": "severity",
@@ -99,7 +108,8 @@
         "InChoice": false,
         "Type": "severity",
         "Alts": null,
-        "Children": null
+        "Children": null,
+        "Chardata": false
       },
       {
         "Name": "task",
@@ -116,9 +126,11 @@
             "InChoice": false,
             "Type": "uuid",
             "Alts": null,
-            "Children": null
+            "Children": null,
+            "Chardata": false
           }
-        ]
+        ],
+        "Chardata": false
       },
       {
         "Name": "threat",
@@ -127,9 +139,11 @@
         "InChoice": false,
         "Type": "threat",
         "Alts": null,
-        "Children": null
+        "Children": null,
+        "Chardata": false
       }
-    ]
+    ],
+    "Chardata": false
   },
   "Response": {
     "Name": "create_note_response",
@@ -146,7 +160,8 @@
         "InChoice": false,
         "Type": "status",
         "Alts": null,
-        "Children": null
+        "Children": null,
+        "Chardata": false
       },
       {
         "Name": "status_text",
@@ -155,7 +170,8 @@
         "InChoice": false,
         "Type": "text",
         "Alts": null,
-        "Children": null
+        "Children": null,
+        "Chardata": false
       },
       {
         "Name": "id",
@@ -164,9 +180,11 @@
         "InChoice": false,
         "Type": "uuid",
         "Alts": null,
-        "Children": null
+        "Children": null,
+        "Chardata": false
       }
-    ]
+    ],
+    "Chardata": false
   },
   "Defects": null
 }

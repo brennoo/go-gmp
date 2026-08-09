@@ -31,17 +31,17 @@ them, so response-side optionality is trusted and request-side is not.
 commands compared:            122
 fully conformant:             47
 with actionable findings:     75
-actionable findings:          667  (request 291, response 376)
+actionable findings:          697  (request 298, response 399)
 suppressed findings:          809
-confirmed by fidelity corpus: 73
+confirmed by fidelity corpus: 79
 in the schema, not in Go:     0
 in Go, not in the schema:     0
 
 ### Findings by category
 
                  actionable suppressed
-  MISSING               236          0
-  EXTRA                 242          0
+  MISSING               260          0
+  EXTRA                 248          0
   CARDINALITY            43          0
   KIND                   17          0
   OMITEMPTY              10        809
@@ -75,23 +75,23 @@ taken against upstream main (155 commands). Two reasons, both expected:
 
 ### Commands by actionable findings
 
-  get_reports                  64   MISSING=49  EXTRA=6  CARDINALITY=5  TYPE=4
-  create_report                46   MISSING=32  EXTRA=5  CARDINALITY=5  TYPE=4
-  get_tasks                    41   MISSING=10  EXTRA=15  CARDINALITY=7  TYPE=9
-  get_overrides                36   MISSING=27  EXTRA=3  TYPE=6
-  get_targets                  29   MISSING=11  EXTRA=10  KIND=3  TYPE=5
-  get_report_formats           28   MISSING=17  EXTRA=2  CARDINALITY=1  KIND=2  TYPE=6
-  get_info                     21   MISSING=12  EXTRA=6  TYPE=3
+  get_reports                  70   MISSING=55  EXTRA=6  CARDINALITY=5  TYPE=4
+  create_report                52   MISSING=38  EXTRA=5  CARDINALITY=5  TYPE=4
+  get_tasks                    42   MISSING=11  EXTRA=15  CARDINALITY=7  TYPE=9
+  get_overrides                37   MISSING=28  EXTRA=3  TYPE=6
+  get_report_formats           30   MISSING=18  EXTRA=3  CARDINALITY=1  KIND=2  TYPE=6
+  get_targets                  30   MISSING=12  EXTRA=10  KIND=3  TYPE=5
+  get_info                     22   MISSING=12  EXTRA=7  TYPE=3
   modify_target                19   EXTRA=19
   delete_agents                18   EXTRA=18
+  get_nvts                     18   MISSING=6  EXTRA=1  CARDINALITY=7  TYPE=4
+  get_report_configs           18   MISSING=12  EXTRA=2  KIND=2  TYPE=2
   get_tags                     18   MISSING=8  EXTRA=2  CARDINALITY=4  TYPE=4
   modify_agents                18   EXTRA=18
   create_target                17   EXTRA=17
-  get_nvts                     17   MISSING=5  EXTRA=1  CARDINALITY=7  TYPE=4
-  get_report_configs           17   MISSING=11  EXTRA=2  KIND=2  TYPE=2
-  create_task                  16   EXTRA=15  CARDINALITY=1
-  get_tickets                  15   MISSING=5  EXTRA=4  KIND=3  TYPE=3
-  get_tls_certificates         14   MISSING=5  EXTRA=4  KIND=2  TYPE=3
+  create_task                  17   MISSING=1  EXTRA=15  CARDINALITY=1
+  get_tickets                  16   MISSING=6  EXTRA=4  KIND=3  TYPE=3
+  get_tls_certificates         15   MISSING=5  EXTRA=5  KIND=2  TYPE=3
   modify_config                14   EXTRA=6  CARDINALITY=3  OMITEMPTY=2  TYPE=3
   get_roles                    13   MISSING=11  TYPE=2
   modify_task                  13   MISSING=1  EXTRA=12
@@ -122,6 +122,8 @@ attributes, and one of its own captured request fixtures uses three of them.
   get_report_formats       /get_report_formats_response/report_format/owner
   get_report_formats       /get_report_formats_response/report_format/permissions
   get_reports              /get_reports_response/filters
+  get_reports              /get_reports_response/report/#text
+  get_reports              /get_reports_response/report/report/compliance_count/#text
   get_reports              /get_reports_response/report/report/compliance_count/incomplete/*
   get_reports              /get_reports_response/report/report/compliance_count/no/*
   get_reports              /get_reports_response/report/report/compliance_count/undefined/*
@@ -129,11 +131,14 @@ attributes, and one of its own captured request fixtures uses three of them.
   get_reports              /get_reports_response/report/report/delta/report/*
   get_reports              /get_reports_response/report/report/errors/error/host/*
   get_reports              /get_reports_response/report/report/errors/error/nvt/*
+  get_reports              /get_reports_response/report/report/filters/#text
+  get_reports              /get_reports_response/report/report/filters/delta/#text
   get_reports              /get_reports_response/report/report/host/asset/*
   get_reports              /get_reports_response/report/report/host/compliance_count/*
   get_reports              /get_reports_response/report/report/host/detail/source/*
   get_reports              /get_reports_response/report/report/host/port_count/*
   get_reports              /get_reports_response/report/report/host/result_count/*
+  get_reports              /get_reports_response/report/report/ports/port/#text
   get_reports              /get_reports_response/report/report/result_count/critical
   get_reports              /get_reports_response/report/report/result_count/high
   get_reports              /get_reports_response/report/report/result_count/hole
@@ -152,6 +157,7 @@ attributes, and one of its own captured request fixtures uses three of them.
   get_reports              /get_reports_response/report/report/results/result/overrides/*
   get_reports              /get_reports_response/report/report/results/result/qod/*
   get_reports              /get_reports_response/report/report/results/result/tickets/*
+  get_reports              /get_reports_response/report/report/sort/field/#text
   get_reports              /get_reports_response/report/report/tls_certificates/tls_certificate/certificate/*
   get_reports              /get_reports_response/report/report/tls_certificates/tls_certificate/host/*
   get_reports              /get_reports_response/report_count
@@ -302,8 +308,12 @@ MISSING=1
 
 ### create_report  (command_create_report.xml)
 
-MISSING=32  EXTRA=5  CARDINALITY=5  OMITEMPTY=144  TYPE=4  SCHEMA-DEFECT=10
+MISSING=38  EXTRA=5  CARDINALITY=5  OMITEMPTY=144  TYPE=4  SCHEMA-DEFECT=10
 
+  MISSING       request  /create_report/report/#text
+                schema also declares character data (text) here; Go *commands.Report has no `,chardata` field
+  MISSING       request  /create_report/report/report/compliance_count/#text
+                schema also declares character data (text) here; Go *commands.ReportComplianceCount has no `,chardata` field
   MISSING       request  /create_report/report/report/compliance_count/incomplete/*
                 schema declares 2 children; Go models this as scalar int
   MISSING       request  /create_report/report/report/compliance_count/no/*
@@ -318,6 +328,10 @@ MISSING=32  EXTRA=5  CARDINALITY=5  OMITEMPTY=144  TYPE=4  SCHEMA-DEFECT=10
                 schema declares 1 children; Go models this as scalar string
   MISSING       request  /create_report/report/report/errors/error/nvt/*
                 schema declares 4 children; Go models this as scalar string
+  MISSING       request  /create_report/report/report/filters/#text
+                schema also declares character data (levels) here; Go *commands.ReportFilters has no `,chardata` field
+  MISSING       request  /create_report/report/report/filters/delta/#text
+                schema also declares character data (text) here; Go *commands.ReportDeltaStates has no `,chardata` field
   MISSING       request  /create_report/report/report/host/asset/*
                 schema declares 1 children; Go models this as scalar string
   MISSING       request  /create_report/report/report/host/compliance_count/*
@@ -328,6 +342,8 @@ MISSING=32  EXTRA=5  CARDINALITY=5  OMITEMPTY=144  TYPE=4  SCHEMA-DEFECT=10
                 schema declares 1 children; Go models this as scalar int
   MISSING       request  /create_report/report/report/host/result_count/*
                 schema declares 10 children; Go models this as scalar int
+  MISSING       request  /create_report/report/report/ports/port/#text
+                schema also declares character data (text) here; Go []commands.ReportPort has no `,chardata` field
   MISSING       request  /create_report/report/report/result_count/critical
                 required elem critical is not modelled
   MISSING       request  /create_report/report/report/result_count/high
@@ -364,6 +380,8 @@ MISSING=32  EXTRA=5  CARDINALITY=5  OMITEMPTY=144  TYPE=4  SCHEMA-DEFECT=10
                 schema declares 2 children; Go models this as scalar string
   MISSING       request  /create_report/report/report/results/result/tickets/*
                 schema declares 1 children; Go models this as scalar string
+  MISSING       request  /create_report/report/report/sort/field/#text
+                schema also declares character data (text) here; Go []commands.ReportSortField has no `,chardata` field
   MISSING       request  /create_report/report/report/tls_certificates/tls_certificate/certificate/*
                 schema declares 1 children; Go models this as scalar string
   MISSING       request  /create_report/report/report/tls_certificates/tls_certificate/host/*
@@ -830,8 +848,10 @@ EXTRA=17  OMITEMPTY=12
 
 ### create_task  (command_create_task.xml)
 
-EXTRA=15  CARDINALITY=1  OMITEMPTY=4
+MISSING=1  EXTRA=15  CARDINALITY=1  OMITEMPTY=4
 
+  MISSING       request  /create_task/observers/#text
+                schema also declares character data (user_list) here; Go *commands.TaskObservers has no `,chardata` field
   EXTRA         request  /create_task/alert/name
                 Go field Name string has no counterpart in the schema
   EXTRA         request  /create_task/config/name
@@ -1389,14 +1409,18 @@ EXTRA=6  CARDINALITY=1  OMITEMPTY=9  TYPE=4  SCHEMA-DEFECT=1
 
 ### get_configs  (command_get_configs.xml)
 
-MISSING=2  EXTRA=1  OMITEMPTY=3  TYPE=2  SCHEMA-DEFECT=1
+MISSING=3  EXTRA=2  OMITEMPTY=3  TYPE=2  SCHEMA-DEFECT=1
 
+  MISSING       response /get_configs_response/config/scanner/#text
+                schema also declares character data (text) here; Go *commands.ConfigScanner has no `,chardata` field
   MISSING       response /get_configs_response/config/user_tags/tag
                 repeated elem tag is not modelled
   MISSING       response /get_configs_response/config_count/filtered
                 required elem filtered is not modelled  [fidelity]
   EXTRA         response /get_configs_response/config/families/family/type
                 Go field Type int has no counterpart in the schema
+  EXTRA         response /get_configs_response/config_count/#text
+                Go commands.ConfigCount has a `,chardata` field; schema declares no character data here
   OMITEMPTY     response /get_configs_response/config/tasks
                 schema says required, Tasks is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
   OMITEMPTY     response /get_configs_response/config/user_tags
@@ -1501,7 +1525,7 @@ OMITEMPTY=1  TYPE=2
 
 ### get_info  (command_get_info.xml)
 
-MISSING=12  EXTRA=6  OMITEMPTY=5  TYPE=3  SCHEMA-DEFECT=1
+MISSING=12  EXTRA=7  OMITEMPTY=5  TYPE=3  SCHEMA-DEFECT=1
 
   MISSING       request  /get_info/@filt_id
                 optional attr filt_id is not modelled
@@ -1531,6 +1555,8 @@ MISSING=12  EXTRA=6  OMITEMPTY=5  TYPE=3  SCHEMA-DEFECT=1
                 Go field Score string has no counterpart in the schema
   EXTRA         response /get_info_response/info/cpe/status
                 Go field Status string has no counterpart in the schema
+  EXTRA         response /get_info_response/info/cve/references/reference/#text
+                Go []commands.InfoReference has a `,chardata` field; schema declares no character data here
   EXTRA         response /get_info_response/info/cve/references/reference/@href
                 Go field HREF string has no counterpart in the schema
   EXTRA         response /get_info_response/info/cve/score
@@ -1588,12 +1614,14 @@ conformant
 
 ### get_nvts  (command_get_nvts.xml)
 
-MISSING=5  EXTRA=1  CARDINALITY=7  OMITEMPTY=19  TYPE=4
+MISSING=6  EXTRA=1  CARDINALITY=7  OMITEMPTY=19  TYPE=4
 
   OMITEMPTY     request  /get_nvts/@nvt_oid
                 schema says required, NvtOID is tagged omitempty  [suppressed: request-side over-constraint]
   MISSING       response /get_nvts_response/nvt/epss/*
                 schema declares 2 children; Go models this as scalar string
+  MISSING       response /get_nvts_response/nvt/preferences/#text
+                schema also declares character data (text) here; Go *commands.NVTPreferences has no `,chardata` field
   MISSING       response /get_nvts_response/nvt/qod/*
                 schema declares 2 children; Go models this as scalar string
   MISSING       response /get_nvts_response/nvt/refs/*
@@ -1665,7 +1693,7 @@ MISSING=5  EXTRA=1  CARDINALITY=7  OMITEMPTY=19  TYPE=4
 
 ### get_overrides  (command_get_overrides.xml)
 
-MISSING=27  EXTRA=3  OMITEMPTY=40  TYPE=6  SCHEMA-DEFECT=2
+MISSING=28  EXTRA=3  OMITEMPTY=40  TYPE=6  SCHEMA-DEFECT=2
 
   MISSING       request  /get_overrides/@nvt_oid
                 optional attr nvt_oid is not modelled
@@ -1723,6 +1751,8 @@ MISSING=27  EXTRA=3  OMITEMPTY=40  TYPE=6  SCHEMA-DEFECT=2
                 optional elem tickets is not modelled
   MISSING       response /get_overrides_response/override/result/user_tags
                 optional elem user_tags is not modelled
+  MISSING       response /get_overrides_response/sort/#text
+                schema also declares character data (text) here; Go *commands.OverrideSort has no `,chardata` field
   EXTRA         response /get_overrides_response/override/result/nvt/bid
                 Go field BID int has no counterpart in the schema
   EXTRA         response /get_overrides_response/override/result/nvt/cve
@@ -1826,8 +1856,10 @@ MISSING=27  EXTRA=3  OMITEMPTY=40  TYPE=6  SCHEMA-DEFECT=2
 
 ### get_permissions  (command_get_permissions.xml)
 
-EXTRA=1  OMITEMPTY=29  TYPE=5  SCHEMA-DEFECT=2
+MISSING=1  EXTRA=1  OMITEMPTY=29  TYPE=5  SCHEMA-DEFECT=2
 
+  MISSING       response /get_permissions_response/sort/#text
+                schema also declares character data (text) here; Go *commands.PermissionSort has no `,chardata` field
   EXTRA         response /get_permissions_response/permission/subject/deleted
                 Go field Deleted bool has no counterpart in the schema
   OMITEMPTY     response /get_permissions_response/filters
@@ -1905,10 +1937,12 @@ EXTRA=1  OMITEMPTY=29  TYPE=5  SCHEMA-DEFECT=2
 
 ### get_port_lists  (command_get_port_lists.xml)
 
-MISSING=2  EXTRA=1  CARDINALITY=1  KIND=3  OMITEMPTY=36  TYPE=4  SCHEMA-DEFECT=1
+MISSING=3  EXTRA=1  CARDINALITY=1  KIND=3  OMITEMPTY=36  TYPE=4  SCHEMA-DEFECT=1
 
   MISSING       response /get_port_lists_response/filters/keywords/*
                 schema declares 1 children; Go models this as scalar string  [fidelity]
+  MISSING       response /get_port_lists_response/sort/#text
+                schema also declares character data (text) here; Go *commands.PortListSort has no `,chardata` field
   MISSING       response /get_port_lists_response/sort/field/*
                 schema declares 1 children; Go models this as scalar string
   EXTRA         response /get_port_lists_response/sort/order
@@ -2010,7 +2044,7 @@ conformant
 
 ### get_report_configs  (command_get_report_configs.xml)
 
-MISSING=11  EXTRA=2  KIND=2  OMITEMPTY=15  TYPE=2  SCHEMA-DEFECT=1
+MISSING=12  EXTRA=2  KIND=2  OMITEMPTY=15  TYPE=2  SCHEMA-DEFECT=1
 
   MISSING       request  /get_report_configs/@details
                 optional attr details is not modelled
@@ -2032,6 +2066,8 @@ MISSING=11  EXTRA=2  KIND=2  OMITEMPTY=15  TYPE=2  SCHEMA-DEFECT=1
                 schema declares 2 children; Go models this as scalar string
   MISSING       response /get_report_configs_response/report_config/user_tags
                 optional elem user_tags is not modelled
+  MISSING       response /get_report_configs_response/sort/#text
+                schema also declares character data (text) here; Go *commands.ReportConfigSort has no `,chardata` field
   MISSING       response /get_report_configs_response/sort/field/*
                 schema declares 1 children; Go models this as scalar string
   EXTRA         response /get_report_configs_response/report_config/param/@using_default
@@ -2081,7 +2117,7 @@ MISSING=11  EXTRA=2  KIND=2  OMITEMPTY=15  TYPE=2  SCHEMA-DEFECT=1
 
 ### get_report_formats  (command_get_report_formats.xml)
 
-MISSING=17  EXTRA=2  CARDINALITY=1  KIND=2  OMITEMPTY=14  TYPE=6
+MISSING=18  EXTRA=3  CARDINALITY=1  KIND=2  OMITEMPTY=14  TYPE=6
 
   MISSING       request  /get_report_formats/@alerts
                 optional attr alerts is not modelled
@@ -2115,10 +2151,14 @@ MISSING=17  EXTRA=2  CARDINALITY=1  KIND=2  OMITEMPTY=14  TYPE=6
                 required attr name is not modelled
   MISSING       response /get_report_formats_response/report_format/user_tags
                 optional elem user_tags is not modelled
+  MISSING       response /get_report_formats_response/sort/#text
+                schema also declares character data (text) here; Go *commands.ReportFormatsSort has no `,chardata` field
   MISSING       response /get_report_formats_response/sort/field/*
                 schema declares 1 children; Go models this as scalar string
   EXTRA         response /get_report_formats_response/report_format/comment
                 Go field Comment string has no counterpart in the schema
+  EXTRA         response /get_report_formats_response/report_format/trust/#text
+                Go *commands.ReportFormatTrust has a `,chardata` field; schema declares no character data here
   EXTRA         response /get_report_formats_response/sort/order
                 Go field Order string has no counterpart in the schema
   CARDINALITY   response /get_report_formats_response/report_format/deprecated
@@ -2170,7 +2210,7 @@ MISSING=17  EXTRA=2  CARDINALITY=1  KIND=2  OMITEMPTY=14  TYPE=6
 
 ### get_reports  (command_get_reports.xml)
 
-MISSING=49  EXTRA=6  CARDINALITY=5  OMITEMPTY=143  TYPE=4  SCHEMA-DEFECT=10
+MISSING=55  EXTRA=6  CARDINALITY=5  OMITEMPTY=143  TYPE=4  SCHEMA-DEFECT=10
 
   MISSING       request  /get_reports/@alert_id
                 optional attr alert_id is not modelled
@@ -2204,6 +2244,10 @@ MISSING=49  EXTRA=6  CARDINALITY=5  OMITEMPTY=143  TYPE=4  SCHEMA-DEFECT=10
                 Go field Extension string has no counterpart in the schema
   MISSING       response /get_reports_response/filters
                 optional elem filters is not modelled  [fidelity]
+  MISSING       response /get_reports_response/report/#text
+                schema also declares character data (text) here; Go []commands.Report has no `,chardata` field  [fidelity]
+  MISSING       response /get_reports_response/report/report/compliance_count/#text
+                schema also declares character data (text) here; Go *commands.ReportComplianceCount has no `,chardata` field  [fidelity]
   MISSING       response /get_reports_response/report/report/compliance_count/incomplete/*
                 schema declares 2 children; Go models this as scalar int  [fidelity]
   MISSING       response /get_reports_response/report/report/compliance_count/no/*
@@ -2218,6 +2262,10 @@ MISSING=49  EXTRA=6  CARDINALITY=5  OMITEMPTY=143  TYPE=4  SCHEMA-DEFECT=10
                 schema declares 1 children; Go models this as scalar string  [fidelity]
   MISSING       response /get_reports_response/report/report/errors/error/nvt/*
                 schema declares 4 children; Go models this as scalar string  [fidelity]
+  MISSING       response /get_reports_response/report/report/filters/#text
+                schema also declares character data (levels) here; Go *commands.ReportFilters has no `,chardata` field  [fidelity]
+  MISSING       response /get_reports_response/report/report/filters/delta/#text
+                schema also declares character data (text) here; Go *commands.ReportDeltaStates has no `,chardata` field  [fidelity]
   MISSING       response /get_reports_response/report/report/host/asset/*
                 schema declares 1 children; Go models this as scalar string  [fidelity]
   MISSING       response /get_reports_response/report/report/host/compliance_count/*
@@ -2228,6 +2276,8 @@ MISSING=49  EXTRA=6  CARDINALITY=5  OMITEMPTY=143  TYPE=4  SCHEMA-DEFECT=10
                 schema declares 1 children; Go models this as scalar int  [fidelity]
   MISSING       response /get_reports_response/report/report/host/result_count/*
                 schema declares 10 children; Go models this as scalar int  [fidelity]
+  MISSING       response /get_reports_response/report/report/ports/port/#text
+                schema also declares character data (text) here; Go []commands.ReportPort has no `,chardata` field  [fidelity]
   MISSING       response /get_reports_response/report/report/result_count/critical
                 required elem critical is not modelled  [fidelity]
   MISSING       response /get_reports_response/report/report/result_count/high
@@ -2264,6 +2314,8 @@ MISSING=49  EXTRA=6  CARDINALITY=5  OMITEMPTY=143  TYPE=4  SCHEMA-DEFECT=10
                 schema declares 2 children; Go models this as scalar string  [fidelity]
   MISSING       response /get_reports_response/report/report/results/result/tickets/*
                 schema declares 1 children; Go models this as scalar string  [fidelity]
+  MISSING       response /get_reports_response/report/report/sort/field/#text
+                schema also declares character data (text) here; Go []commands.ReportSortField has no `,chardata` field  [fidelity]
   MISSING       response /get_reports_response/report/report/tls_certificates/tls_certificate/certificate/*
                 schema declares 1 children; Go models this as scalar string  [fidelity]
   MISSING       response /get_reports_response/report/report/tls_certificates/tls_certificate/host/*
@@ -2726,7 +2778,7 @@ MISSING=11  OMITEMPTY=6  TYPE=2
 
 ### get_scanners  (command_get_scanners.xml)
 
-EXTRA=5  OMITEMPTY=10  TYPE=3  SCHEMA-DEFECT=10
+EXTRA=6  OMITEMPTY=10  TYPE=3  SCHEMA-DEFECT=10
 
   EXTRA         response /get_scanners_response/scanner/certificate_info/*
                 schema declares a "certificate_info" leaf; Go models 8 children
@@ -2736,6 +2788,8 @@ EXTRA=5  OMITEMPTY=10  TYPE=3  SCHEMA-DEFECT=10
                 Go field KeyPub string has no counterpart in the schema
   EXTRA         response /get_scanners_response/scanner/truncated
                 Go field Truncated string has no counterpart in the schema
+  EXTRA         response /get_scanners_response/sort/field/#text
+                Go commands.ScannerSortField has a `,chardata` field; schema declares no character data here
   EXTRA         response /get_scanners_response/truncate
                 Go field Truncate string has no counterpart in the schema
   OMITEMPTY     response /get_scanners_response/filters/name
@@ -2787,8 +2841,10 @@ EXTRA=5  OMITEMPTY=10  TYPE=3  SCHEMA-DEFECT=10
 
 ### get_schedules  (command_get_schedules.xml)
 
-OMITEMPTY=17  TYPE=2  SCHEMA-DEFECT=1
+EXTRA=1  OMITEMPTY=17  TYPE=2  SCHEMA-DEFECT=1
 
+  EXTRA         response /get_schedules_response/sort/field/#text
+                Go *commands.ScheduleField has a `,chardata` field; schema declares no character data here
   OMITEMPTY     response /get_schedules_response/filters
                 schema says required, Filters is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
   OMITEMPTY     response /get_schedules_response/filters/@id
@@ -2917,10 +2973,12 @@ MISSING=8  EXTRA=2  CARDINALITY=4  OMITEMPTY=2  TYPE=4  SCHEMA-DEFECT=1
 
 ### get_targets  (command_get_targets.xml)
 
-MISSING=11  EXTRA=10  KIND=3  OMITEMPTY=55  TYPE=5  SCHEMA-DEFECT=8
+MISSING=12  EXTRA=10  KIND=3  OMITEMPTY=55  TYPE=5  SCHEMA-DEFECT=8
 
   MISSING       response /get_targets_response/filters/keywords
                 required elem keywords is not modelled  [fidelity]
+  MISSING       response /get_targets_response/sort/#text
+                schema also declares character data (text) here; Go *commands.TargetSort has no `,chardata` field
   MISSING       response /get_targets_response/sort/field/*
                 schema declares 1 children; Go models this as scalar string
   MISSING       response /get_targets_response/target/esxi_credential/trash
@@ -3106,7 +3164,7 @@ MISSING=11  EXTRA=10  KIND=3  OMITEMPTY=55  TYPE=5  SCHEMA-DEFECT=8
 
 ### get_tasks  (command_get_tasks.xml)
 
-MISSING=10  EXTRA=15  CARDINALITY=7  OMITEMPTY=9  TYPE=9  SCHEMA-DEFECT=4
+MISSING=11  EXTRA=15  CARDINALITY=7  OMITEMPTY=9  TYPE=9  SCHEMA-DEFECT=4
 
   MISSING       response /get_tasks_response/task/alert/trash
                 required elem trash is not modelled
@@ -3116,6 +3174,8 @@ MISSING=10  EXTRA=15  CARDINALITY=7  OMITEMPTY=9  TYPE=9  SCHEMA-DEFECT=4
                 optional elem compliance_count is not modelled
   MISSING       response /get_tasks_response/task/last_report/report/result_count
                 optional elem result_count is not modelled  [fidelity]
+  MISSING       response /get_tasks_response/task/observers/#text
+                schema also declares character data (user_list) here; Go *commands.TaskObservers has no `,chardata` field
   MISSING       response /get_tasks_response/task/report_count/*
                 schema declares 1 children; Go models this as scalar int  [fidelity]
   MISSING       response /get_tasks_response/task/schedule/icalendar
@@ -3219,7 +3279,7 @@ MISSING=10  EXTRA=15  CARDINALITY=7  OMITEMPTY=9  TYPE=9  SCHEMA-DEFECT=4
 
 ### get_tickets  (command_get_tickets.xml)
 
-MISSING=5  EXTRA=4  KIND=3  OMITEMPTY=23  TYPE=3
+MISSING=6  EXTRA=4  KIND=3  OMITEMPTY=23  TYPE=3
 
   MISSING       request  /get_tickets/@filt_id
                 optional attr filt_id is not modelled
@@ -3227,6 +3287,8 @@ MISSING=5  EXTRA=4  KIND=3  OMITEMPTY=23  TYPE=3
                 optional attr trash is not modelled
   MISSING       response /get_tickets_response/filters/keywords
                 required elem keywords is not modelled  [fidelity]
+  MISSING       response /get_tickets_response/sort/#text
+                schema also declares character data (text) here; Go *commands.TicketSort has no `,chardata` field
   MISSING       response /get_tickets_response/sort/field/*
                 schema declares 1 children; Go models this as scalar string
   MISSING       response /get_tickets_response/ticket/user_tags/tag/comment
@@ -3300,7 +3362,7 @@ MISSING=5  EXTRA=4  KIND=3  OMITEMPTY=23  TYPE=3
 
 ### get_tls_certificates  (command_get_tls_certificates.xml)
 
-MISSING=5  EXTRA=4  KIND=2  OMITEMPTY=33  TYPE=3
+MISSING=5  EXTRA=5  KIND=2  OMITEMPTY=33  TYPE=3
 
   MISSING       request  /get_tls_certificates/@filt_id
                 optional attr filt_id is not modelled
@@ -3314,6 +3376,8 @@ MISSING=5  EXTRA=4  KIND=2  OMITEMPTY=33  TYPE=3
                 required elem tls_versions is not modelled
   EXTRA         response /get_tls_certificates_response/filters/comment
                 Go field Comment string has no counterpart in the schema
+  EXTRA         response /get_tls_certificates_response/tls_certificate/certificate/#text
+                Go *commands.TLSCertificateData has a `,chardata` field; schema declares no character data here
   EXTRA         response /get_tls_certificates_response/tls_certificate/sources/source/@type
                 Go field Type string has no counterpart in the schema
   EXTRA         response /get_tls_certificates_response/tls_certificate/valid
@@ -3483,10 +3547,12 @@ SCHEMA-DEFECT=1
 
 ### get_vulns  (command_get_vulns.xml)
 
-EXTRA=3  OMITEMPTY=8
+MISSING=1  EXTRA=3  OMITEMPTY=8
 
   EXTRA         request  /get_vulns/@trash
                 Go field Trash *commands.GMPBool has no counterpart in the schema
+  MISSING       response /get_vulns_response/sort/#text
+                schema also declares character data (text) here; Go *commands.VulnsSort has no `,chardata` field
   EXTRA         response /get_vulns_response/truncated
                 Go field Truncated string has no counterpart in the schema
   EXTRA         response /get_vulns_response/vuln/type

@@ -16,7 +16,8 @@
         "InChoice": false,
         "Type": "uuid",
         "Alts": null,
-        "Children": null
+        "Children": null,
+        "Chardata": false
       },
       {
         "Name": "filter",
@@ -25,7 +26,8 @@
         "InChoice": false,
         "Type": "text",
         "Alts": null,
-        "Children": null
+        "Children": null,
+        "Chardata": false
       },
       {
         "Name": "filt_id",
@@ -34,7 +36,8 @@
         "InChoice": false,
         "Type": "uuid",
         "Alts": null,
-        "Children": null
+        "Children": null,
+        "Chardata": false
       },
       {
         "Name": "nvt_oid",
@@ -43,7 +46,8 @@
         "InChoice": false,
         "Type": "oid",
         "Alts": null,
-        "Children": null
+        "Children": null,
+        "Chardata": false
       },
       {
         "Name": "task_id",
@@ -52,7 +56,8 @@
         "InChoice": false,
         "Type": "uuid",
         "Alts": null,
-        "Children": null
+        "Children": null,
+        "Chardata": false
       },
       {
         "Name": "details",
@@ -61,7 +66,8 @@
         "InChoice": false,
         "Type": "boolean",
         "Alts": null,
-        "Children": null
+        "Children": null,
+        "Chardata": false
       },
       {
         "Name": "result",
@@ -70,9 +76,11 @@
         "InChoice": false,
         "Type": "boolean",
         "Alts": null,
-        "Children": null
+        "Children": null,
+        "Chardata": false
       }
-    ]
+    ],
+    "Chardata": false
   },
   "Response": {
     "Name": "get_notes_response",
@@ -89,7 +97,8 @@
         "InChoice": false,
         "Type": "status",
         "Alts": null,
-        "Children": null
+        "Children": null,
+        "Chardata": false
       },
       {
         "Name": "status_text",
@@ -98,7 +107,8 @@
         "InChoice": false,
         "Type": "text",
         "Alts": null,
-        "Children": null
+        "Children": null,
+        "Chardata": false
       },
       {
         "Name": "filters",
@@ -115,7 +125,8 @@
             "InChoice": false,
             "Type": "uuid",
             "Alts": null,
-            "Children": null
+            "Children": null,
+            "Chardata": false
           },
           {
             "Name": "term",
@@ -124,7 +135,8 @@
             "InChoice": false,
             "Type": "text",
             "Alts": null,
-            "Children": null
+            "Children": null,
+            "Chardata": false
           },
           {
             "Name": "keywords",
@@ -149,7 +161,8 @@
                     "InChoice": false,
                     "Type": "text",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   },
                   {
                     "Name": "relation",
@@ -164,7 +177,8 @@
                       "\u003e",
                       "\u003c"
                     ],
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   },
                   {
                     "Name": "value",
@@ -173,11 +187,14 @@
                     "InChoice": false,
                     "Type": "text",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   }
-                ]
+                ],
+                "Chardata": false
               }
-            ]
+            ],
+            "Chardata": false
           },
           {
             "Name": "name",
@@ -186,16 +203,18 @@
             "InChoice": false,
             "Type": "text",
             "Alts": null,
-            "Children": null
+            "Children": null,
+            "Chardata": false
           }
-        ]
+        ],
+        "Chardata": false
       },
       {
         "Name": "sort",
         "Kind": 0,
         "Card": 0,
         "InChoice": false,
-        "Type": "",
+        "Type": "text",
         "Alts": null,
         "Children": [
           {
@@ -216,11 +235,14 @@
                   "ascending",
                   "descending"
                 ],
-                "Children": null
+                "Children": null,
+                "Chardata": false
               }
-            ]
+            ],
+            "Chardata": false
           }
-        ]
+        ],
+        "Chardata": true
       },
       {
         "Name": "notes",
@@ -237,7 +259,8 @@
             "InChoice": false,
             "Type": "integer",
             "Alts": null,
-            "Children": null
+            "Children": null,
+            "Chardata": false
           },
           {
             "Name": "max",
@@ -246,9 +269,11 @@
             "InChoice": false,
             "Type": "integer",
             "Alts": null,
-            "Children": null
+            "Children": null,
+            "Chardata": false
           }
-        ]
+        ],
+        "Chardata": false
       },
       {
         "Name": "note_count",
@@ -265,7 +290,8 @@
             "InChoice": false,
             "Type": "integer",
             "Alts": null,
-            "Children": null
+            "Children": null,
+            "Chardata": false
           },
           {
             "Name": "page",
@@ -274,9 +300,11 @@
             "InChoice": false,
             "Type": "integer",
             "Alts": null,
-            "Children": null
+            "Children": null,
+            "Chardata": false
           }
-        ]
+        ],
+        "Chardata": false
       },
       {
         "Name": "note",
@@ -293,7 +321,8 @@
             "InChoice": false,
             "Type": "uuid",
             "Alts": null,
-            "Children": null
+            "Children": null,
+            "Chardata": false
           },
           {
             "Name": "permissions",
@@ -318,11 +347,14 @@
                     "InChoice": false,
                     "Type": "name",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   }
-                ]
+                ],
+                "Chardata": false
               }
-            ]
+            ],
+            "Chardata": false
           },
           {
             "Name": "owner",
@@ -339,9 +371,11 @@
                 "InChoice": false,
                 "Type": "name",
                 "Alts": null,
-                "Children": null
+                "Children": null,
+                "Chardata": false
               }
-            ]
+            ],
+            "Chardata": false
           },
           {
             "Name": "nvt",
@@ -358,7 +392,8 @@
                 "InChoice": false,
                 "Type": "oid",
                 "Alts": null,
-                "Children": null
+                "Children": null,
+                "Chardata": false
               },
               {
                 "Name": "name",
@@ -367,7 +402,8 @@
                 "InChoice": false,
                 "Type": "name",
                 "Alts": null,
-                "Children": null
+                "Children": null,
+                "Chardata": false
               },
               {
                 "Name": "type",
@@ -376,16 +412,18 @@
                 "InChoice": false,
                 "Type": "text",
                 "Alts": null,
-                "Children": null
+                "Children": null,
+                "Chardata": false
               }
-            ]
+            ],
+            "Chardata": false
           },
           {
             "Name": "text",
             "Kind": 0,
             "Card": 0,
             "InChoice": false,
-            "Type": "",
+            "Type": "text",
             "Alts": null,
             "Children": [
               {
@@ -395,9 +433,11 @@
                 "InChoice": false,
                 "Type": "boolean",
                 "Alts": null,
-                "Children": null
+                "Children": null,
+                "Chardata": false
               }
-            ]
+            ],
+            "Chardata": true
           },
           {
             "Name": "creation_time",
@@ -406,7 +446,8 @@
             "InChoice": false,
             "Type": "iso_time",
             "Alts": null,
-            "Children": null
+            "Children": null,
+            "Chardata": false
           },
           {
             "Name": "modification_time",
@@ -415,7 +456,8 @@
             "InChoice": false,
             "Type": "iso_time",
             "Alts": null,
-            "Children": null
+            "Children": null,
+            "Chardata": false
           },
           {
             "Name": "writable",
@@ -424,7 +466,8 @@
             "InChoice": false,
             "Type": "boolean",
             "Alts": null,
-            "Children": null
+            "Children": null,
+            "Chardata": false
           },
           {
             "Name": "in_use",
@@ -433,7 +476,8 @@
             "InChoice": false,
             "Type": "boolean",
             "Alts": null,
-            "Children": null
+            "Children": null,
+            "Chardata": false
           },
           {
             "Name": "active",
@@ -442,7 +486,8 @@
             "InChoice": false,
             "Type": "boolean",
             "Alts": null,
-            "Children": null
+            "Children": null,
+            "Chardata": false
           },
           {
             "Name": "orphan",
@@ -451,7 +496,8 @@
             "InChoice": false,
             "Type": "boolean",
             "Alts": null,
-            "Children": null
+            "Children": null,
+            "Chardata": false
           },
           {
             "Name": "user_tags",
@@ -468,7 +514,8 @@
                 "InChoice": false,
                 "Type": "integer",
                 "Alts": null,
-                "Children": null
+                "Children": null,
+                "Chardata": false
               },
               {
                 "Name": "tag",
@@ -485,7 +532,8 @@
                     "InChoice": false,
                     "Type": "uuid",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   },
                   {
                     "Name": "name",
@@ -494,7 +542,8 @@
                     "InChoice": false,
                     "Type": "text",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   },
                   {
                     "Name": "value",
@@ -503,7 +552,8 @@
                     "InChoice": false,
                     "Type": "text",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   },
                   {
                     "Name": "comment",
@@ -512,11 +562,14 @@
                     "InChoice": false,
                     "Type": "text",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   }
-                ]
+                ],
+                "Chardata": false
               }
-            ]
+            ],
+            "Chardata": false
           },
           {
             "Name": "hosts",
@@ -525,7 +578,8 @@
             "InChoice": false,
             "Type": "text",
             "Alts": null,
-            "Children": null
+            "Children": null,
+            "Chardata": false
           },
           {
             "Name": "port",
@@ -534,7 +588,8 @@
             "InChoice": false,
             "Type": "text",
             "Alts": null,
-            "Children": null
+            "Children": null,
+            "Chardata": false
           },
           {
             "Name": "severity",
@@ -543,7 +598,8 @@
             "InChoice": false,
             "Type": "severity",
             "Alts": null,
-            "Children": null
+            "Children": null,
+            "Chardata": false
           },
           {
             "Name": "task",
@@ -560,7 +616,8 @@
                 "InChoice": false,
                 "Type": "uuid",
                 "Alts": null,
-                "Children": null
+                "Children": null,
+                "Chardata": false
               },
               {
                 "Name": "name",
@@ -569,7 +626,8 @@
                 "InChoice": false,
                 "Type": "text",
                 "Alts": null,
-                "Children": null
+                "Children": null,
+                "Chardata": false
               },
               {
                 "Name": "trash",
@@ -578,9 +636,11 @@
                 "InChoice": false,
                 "Type": "boolean",
                 "Alts": null,
-                "Children": null
+                "Children": null,
+                "Chardata": false
               }
-            ]
+            ],
+            "Chardata": false
           },
           {
             "Name": "end_time",
@@ -589,7 +649,8 @@
             "InChoice": false,
             "Type": "text",
             "Alts": null,
-            "Children": null
+            "Children": null,
+            "Chardata": false
           },
           {
             "Name": "result",
@@ -606,7 +667,8 @@
                 "InChoice": false,
                 "Type": "uuid",
                 "Alts": null,
-                "Children": null
+                "Children": null,
+                "Chardata": false
               },
               {
                 "Name": "name",
@@ -615,7 +677,8 @@
                 "InChoice": false,
                 "Type": "text",
                 "Alts": null,
-                "Children": null
+                "Children": null,
+                "Chardata": false
               },
               {
                 "Name": "owner",
@@ -632,9 +695,11 @@
                     "InChoice": false,
                     "Type": "name",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   }
-                ]
+                ],
+                "Chardata": false
               },
               {
                 "Name": "comment",
@@ -643,7 +708,8 @@
                 "InChoice": false,
                 "Type": "text",
                 "Alts": null,
-                "Children": null
+                "Children": null,
+                "Chardata": false
               },
               {
                 "Name": "creation_time",
@@ -652,7 +718,8 @@
                 "InChoice": false,
                 "Type": "iso_time",
                 "Alts": null,
-                "Children": null
+                "Children": null,
+                "Chardata": false
               },
               {
                 "Name": "modification_time",
@@ -661,14 +728,15 @@
                 "InChoice": false,
                 "Type": "iso_time",
                 "Alts": null,
-                "Children": null
+                "Children": null,
+                "Chardata": false
               },
               {
                 "Name": "host",
                 "Kind": 0,
                 "Card": 0,
                 "InChoice": false,
-                "Type": "",
+                "Type": "text",
                 "Alts": null,
                 "Children": [
                   {
@@ -686,9 +754,11 @@
                         "InChoice": false,
                         "Type": "uuid",
                         "Alts": null,
-                        "Children": null
+                        "Children": null,
+                        "Chardata": false
                       }
-                    ]
+                    ],
+                    "Chardata": false
                   },
                   {
                     "Name": "hostname",
@@ -697,9 +767,11 @@
                     "InChoice": false,
                     "Type": "text",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   }
-                ]
+                ],
+                "Chardata": true
               },
               {
                 "Name": "port",
@@ -708,7 +780,8 @@
                 "InChoice": false,
                 "Type": "text",
                 "Alts": null,
-                "Children": null
+                "Children": null,
+                "Chardata": false
               },
               {
                 "Name": "nvt",
@@ -725,7 +798,8 @@
                     "InChoice": false,
                     "Type": "oid",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   },
                   {
                     "Name": "name",
@@ -734,7 +808,8 @@
                     "InChoice": false,
                     "Type": "name",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   },
                   {
                     "Name": "type",
@@ -743,7 +818,8 @@
                     "InChoice": false,
                     "Type": "text",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   },
                   {
                     "Name": "family",
@@ -752,7 +828,8 @@
                     "InChoice": false,
                     "Type": "name",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   },
                   {
                     "Name": "cvss_base",
@@ -761,7 +838,8 @@
                     "InChoice": false,
                     "Type": "integer",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   },
                   {
                     "Name": "severities",
@@ -778,7 +856,8 @@
                         "InChoice": false,
                         "Type": "severity",
                         "Alts": null,
-                        "Children": null
+                        "Children": null,
+                        "Chardata": false
                       },
                       {
                         "Name": "severity",
@@ -795,7 +874,8 @@
                             "InChoice": false,
                             "Type": "text",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           },
                           {
                             "Name": "origin",
@@ -804,7 +884,8 @@
                             "InChoice": false,
                             "Type": "text",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           },
                           {
                             "Name": "date",
@@ -813,7 +894,8 @@
                             "InChoice": false,
                             "Type": "iso_time",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           },
                           {
                             "Name": "score",
@@ -822,7 +904,8 @@
                             "InChoice": false,
                             "Type": "severity",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           },
                           {
                             "Name": "value",
@@ -831,11 +914,14 @@
                             "InChoice": false,
                             "Type": "text",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           }
-                        ]
+                        ],
+                        "Chardata": false
                       }
-                    ]
+                    ],
+                    "Chardata": false
                   },
                   {
                     "Name": "cpe",
@@ -844,7 +930,8 @@
                     "InChoice": false,
                     "Type": "text",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   },
                   {
                     "Name": "tags",
@@ -853,7 +940,8 @@
                     "InChoice": false,
                     "Type": "text",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   },
                   {
                     "Name": "refs",
@@ -878,7 +966,8 @@
                             "InChoice": false,
                             "Type": "text",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           },
                           {
                             "Name": "type",
@@ -887,11 +976,14 @@
                             "InChoice": false,
                             "Type": "text",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           }
-                        ]
+                        ],
+                        "Chardata": false
                       }
-                    ]
+                    ],
+                    "Chardata": false
                   },
                   {
                     "Name": "epss",
@@ -916,7 +1008,8 @@
                             "InChoice": false,
                             "Type": "decimal",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           },
                           {
                             "Name": "percentile",
@@ -925,7 +1018,8 @@
                             "InChoice": false,
                             "Type": "decimal",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           },
                           {
                             "Name": "cve",
@@ -942,7 +1036,8 @@
                                 "InChoice": false,
                                 "Type": "text",
                                 "Alts": null,
-                                "Children": null
+                                "Children": null,
+                                "Chardata": false
                               },
                               {
                                 "Name": "severity",
@@ -951,11 +1046,14 @@
                                 "InChoice": false,
                                 "Type": "severity",
                                 "Alts": null,
-                                "Children": null
+                                "Children": null,
+                                "Chardata": false
                               }
-                            ]
+                            ],
+                            "Chardata": false
                           }
-                        ]
+                        ],
+                        "Chardata": false
                       },
                       {
                         "Name": "max_epss",
@@ -972,7 +1070,8 @@
                             "InChoice": false,
                             "Type": "decimal",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           },
                           {
                             "Name": "percentile",
@@ -981,7 +1080,8 @@
                             "InChoice": false,
                             "Type": "decimal",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           },
                           {
                             "Name": "cve",
@@ -998,7 +1098,8 @@
                                 "InChoice": false,
                                 "Type": "text",
                                 "Alts": null,
-                                "Children": null
+                                "Children": null,
+                                "Chardata": false
                               },
                               {
                                 "Name": "severity",
@@ -1007,15 +1108,20 @@
                                 "InChoice": false,
                                 "Type": "severity",
                                 "Alts": null,
-                                "Children": null
+                                "Children": null,
+                                "Chardata": false
                               }
-                            ]
+                            ],
+                            "Chardata": false
                           }
-                        ]
+                        ],
+                        "Chardata": false
                       }
-                    ]
+                    ],
+                    "Chardata": false
                   }
-                ]
+                ],
+                "Chardata": false
               },
               {
                 "Name": "scan_nvt_version",
@@ -1024,7 +1130,8 @@
                 "InChoice": false,
                 "Type": "text",
                 "Alts": null,
-                "Children": null
+                "Children": null,
+                "Chardata": false
               },
               {
                 "Name": "threat",
@@ -1033,7 +1140,8 @@
                 "InChoice": false,
                 "Type": "threat",
                 "Alts": null,
-                "Children": null
+                "Children": null,
+                "Chardata": false
               },
               {
                 "Name": "severity",
@@ -1042,7 +1150,8 @@
                 "InChoice": false,
                 "Type": "severity",
                 "Alts": null,
-                "Children": null
+                "Children": null,
+                "Chardata": false
               },
               {
                 "Name": "qod",
@@ -1059,7 +1168,8 @@
                     "InChoice": false,
                     "Type": "integer",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   },
                   {
                     "Name": "type",
@@ -1068,9 +1178,11 @@
                     "InChoice": false,
                     "Type": "text",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   }
-                ]
+                ],
+                "Chardata": false
               },
               {
                 "Name": "compliance",
@@ -1079,7 +1191,8 @@
                 "InChoice": false,
                 "Type": "compliance_status",
                 "Alts": null,
-                "Children": null
+                "Children": null,
+                "Chardata": false
               },
               {
                 "Name": "description",
@@ -1088,7 +1201,8 @@
                 "InChoice": false,
                 "Type": "text",
                 "Alts": null,
-                "Children": null
+                "Children": null,
+                "Chardata": false
               },
               {
                 "Name": "user_tags",
@@ -1105,7 +1219,8 @@
                     "InChoice": false,
                     "Type": "integer",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   },
                   {
                     "Name": "tag",
@@ -1122,7 +1237,8 @@
                         "InChoice": false,
                         "Type": "uuid",
                         "Alts": null,
-                        "Children": null
+                        "Children": null,
+                        "Chardata": false
                       },
                       {
                         "Name": "name",
@@ -1131,7 +1247,8 @@
                         "InChoice": false,
                         "Type": "text",
                         "Alts": null,
-                        "Children": null
+                        "Children": null,
+                        "Chardata": false
                       },
                       {
                         "Name": "value",
@@ -1140,7 +1257,8 @@
                         "InChoice": false,
                         "Type": "text",
                         "Alts": null,
-                        "Children": null
+                        "Children": null,
+                        "Chardata": false
                       },
                       {
                         "Name": "comment",
@@ -1149,11 +1267,14 @@
                         "InChoice": false,
                         "Type": "text",
                         "Alts": null,
-                        "Children": null
+                        "Children": null,
+                        "Chardata": false
                       }
-                    ]
+                    ],
+                    "Chardata": false
                   }
-                ]
+                ],
+                "Chardata": false
               },
               {
                 "Name": "report",
@@ -1170,9 +1291,11 @@
                     "InChoice": false,
                     "Type": "uuid",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   }
-                ]
+                ],
+                "Chardata": false
               },
               {
                 "Name": "task",
@@ -1189,7 +1312,8 @@
                     "InChoice": false,
                     "Type": "uuid",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   },
                   {
                     "Name": "name",
@@ -1198,9 +1322,11 @@
                     "InChoice": false,
                     "Type": "text",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   }
-                ]
+                ],
+                "Chardata": false
               },
               {
                 "Name": "path",
@@ -1209,7 +1335,8 @@
                 "InChoice": false,
                 "Type": "text",
                 "Alts": null,
-                "Children": null
+                "Children": null,
+                "Chardata": false
               },
               {
                 "Name": "original_threat",
@@ -1218,7 +1345,8 @@
                 "InChoice": false,
                 "Type": "threat",
                 "Alts": null,
-                "Children": null
+                "Children": null,
+                "Chardata": false
               },
               {
                 "Name": "original_severity",
@@ -1227,14 +1355,15 @@
                 "InChoice": false,
                 "Type": "severity",
                 "Alts": null,
-                "Children": null
+                "Children": null,
+                "Chardata": false
               },
               {
                 "Name": "delta",
                 "Kind": 0,
                 "Card": 1,
                 "InChoice": false,
-                "Type": "",
+                "Type": "text",
                 "Alts": null,
                 "Children": [
                   {
@@ -1244,7 +1373,8 @@
                     "InChoice": false,
                     "Type": "result",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   },
                   {
                     "Name": "diff",
@@ -1253,7 +1383,8 @@
                     "InChoice": false,
                     "Type": "text",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   },
                   {
                     "Name": "notes",
@@ -1270,9 +1401,11 @@
                         "InChoice": false,
                         "Type": "note",
                         "Alts": null,
-                        "Children": null
+                        "Children": null,
+                        "Chardata": false
                       }
-                    ]
+                    ],
+                    "Chardata": false
                   },
                   {
                     "Name": "overrides",
@@ -1297,7 +1430,8 @@
                             "InChoice": false,
                             "Type": "uuid",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           },
                           {
                             "Name": "permissions",
@@ -1322,11 +1456,14 @@
                                     "InChoice": false,
                                     "Type": "name",
                                     "Alts": null,
-                                    "Children": null
+                                    "Children": null,
+                                    "Chardata": false
                                   }
-                                ]
+                                ],
+                                "Chardata": false
                               }
-                            ]
+                            ],
+                            "Chardata": false
                           },
                           {
                             "Name": "owner",
@@ -1343,9 +1480,11 @@
                                 "InChoice": false,
                                 "Type": "name",
                                 "Alts": null,
-                                "Children": null
+                                "Children": null,
+                                "Chardata": false
                               }
-                            ]
+                            ],
+                            "Chardata": false
                           },
                           {
                             "Name": "nvt",
@@ -1362,7 +1501,8 @@
                                 "InChoice": false,
                                 "Type": "oid",
                                 "Alts": null,
-                                "Children": null
+                                "Children": null,
+                                "Chardata": false
                               },
                               {
                                 "Name": "name",
@@ -1371,7 +1511,8 @@
                                 "InChoice": false,
                                 "Type": "name",
                                 "Alts": null,
-                                "Children": null
+                                "Children": null,
+                                "Chardata": false
                               },
                               {
                                 "Name": "type",
@@ -1380,9 +1521,11 @@
                                 "InChoice": false,
                                 "Type": "text",
                                 "Alts": null,
-                                "Children": null
+                                "Children": null,
+                                "Chardata": false
                               }
-                            ]
+                            ],
+                            "Chardata": false
                           },
                           {
                             "Name": "creation_time",
@@ -1391,7 +1534,8 @@
                             "InChoice": false,
                             "Type": "iso_time",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           },
                           {
                             "Name": "modification_time",
@@ -1400,7 +1544,8 @@
                             "InChoice": false,
                             "Type": "iso_time",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           },
                           {
                             "Name": "writable",
@@ -1409,7 +1554,8 @@
                             "InChoice": false,
                             "Type": "boolean",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           },
                           {
                             "Name": "in_use",
@@ -1418,7 +1564,8 @@
                             "InChoice": false,
                             "Type": "boolean",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           },
                           {
                             "Name": "active",
@@ -1427,14 +1574,15 @@
                             "InChoice": false,
                             "Type": "boolean",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           },
                           {
                             "Name": "text",
                             "Kind": 0,
                             "Card": 0,
                             "InChoice": false,
-                            "Type": "",
+                            "Type": "text",
                             "Alts": null,
                             "Children": [
                               {
@@ -1444,9 +1592,11 @@
                                 "InChoice": false,
                                 "Type": "boolean",
                                 "Alts": null,
-                                "Children": null
+                                "Children": null,
+                                "Chardata": false
                               }
-                            ]
+                            ],
+                            "Chardata": true
                           },
                           {
                             "Name": "threat",
@@ -1455,7 +1605,8 @@
                             "InChoice": false,
                             "Type": "threat",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           },
                           {
                             "Name": "severity",
@@ -1464,7 +1615,8 @@
                             "InChoice": false,
                             "Type": "severity",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           },
                           {
                             "Name": "new_threat",
@@ -1473,7 +1625,8 @@
                             "InChoice": false,
                             "Type": "threat",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           },
                           {
                             "Name": "new_severity",
@@ -1482,7 +1635,8 @@
                             "InChoice": false,
                             "Type": "severity",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           },
                           {
                             "Name": "orphan",
@@ -1491,7 +1645,8 @@
                             "InChoice": false,
                             "Type": "boolean",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           },
                           {
                             "Name": "user_tags",
@@ -1508,7 +1663,8 @@
                                 "InChoice": false,
                                 "Type": "integer",
                                 "Alts": null,
-                                "Children": null
+                                "Children": null,
+                                "Chardata": false
                               },
                               {
                                 "Name": "tag",
@@ -1525,7 +1681,8 @@
                                     "InChoice": false,
                                     "Type": "uuid",
                                     "Alts": null,
-                                    "Children": null
+                                    "Children": null,
+                                    "Chardata": false
                                   },
                                   {
                                     "Name": "name",
@@ -1534,7 +1691,8 @@
                                     "InChoice": false,
                                     "Type": "text",
                                     "Alts": null,
-                                    "Children": null
+                                    "Children": null,
+                                    "Chardata": false
                                   },
                                   {
                                     "Name": "value",
@@ -1543,7 +1701,8 @@
                                     "InChoice": false,
                                     "Type": "text",
                                     "Alts": null,
-                                    "Children": null
+                                    "Children": null,
+                                    "Chardata": false
                                   },
                                   {
                                     "Name": "comment",
@@ -1552,11 +1711,14 @@
                                     "InChoice": false,
                                     "Type": "text",
                                     "Alts": null,
-                                    "Children": null
+                                    "Children": null,
+                                    "Chardata": false
                                   }
-                                ]
+                                ],
+                                "Chardata": false
                               }
-                            ]
+                            ],
+                            "Chardata": false
                           },
                           {
                             "Name": "hosts",
@@ -1565,7 +1727,8 @@
                             "InChoice": false,
                             "Type": "text",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           },
                           {
                             "Name": "port",
@@ -1574,7 +1737,8 @@
                             "InChoice": false,
                             "Type": "text",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           },
                           {
                             "Name": "task",
@@ -1591,7 +1755,8 @@
                                 "InChoice": false,
                                 "Type": "uuid",
                                 "Alts": null,
-                                "Children": null
+                                "Children": null,
+                                "Chardata": false
                               },
                               {
                                 "Name": "name",
@@ -1600,7 +1765,8 @@
                                 "InChoice": false,
                                 "Type": "text",
                                 "Alts": null,
-                                "Children": null
+                                "Children": null,
+                                "Chardata": false
                               },
                               {
                                 "Name": "trash",
@@ -1609,9 +1775,11 @@
                                 "InChoice": false,
                                 "Type": "boolean",
                                 "Alts": null,
-                                "Children": null
+                                "Children": null,
+                                "Chardata": false
                               }
-                            ]
+                            ],
+                            "Chardata": false
                           },
                           {
                             "Name": "end_time",
@@ -1620,7 +1788,8 @@
                             "InChoice": false,
                             "Type": "text",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           },
                           {
                             "Name": "result",
@@ -1629,13 +1798,17 @@
                             "InChoice": false,
                             "Type": "result",
                             "Alts": null,
-                            "Children": null
+                            "Children": null,
+                            "Chardata": false
                           }
-                        ]
+                        ],
+                        "Chardata": false
                       }
-                    ]
+                    ],
+                    "Chardata": false
                   }
-                ]
+                ],
+                "Chardata": true
               },
               {
                 "Name": "detection",
@@ -1660,7 +1833,8 @@
                         "InChoice": false,
                         "Type": "uuid",
                         "Alts": null,
-                        "Children": null
+                        "Children": null,
+                        "Chardata": false
                       },
                       {
                         "Name": "details",
@@ -1685,7 +1859,8 @@
                                 "InChoice": false,
                                 "Type": "text",
                                 "Alts": null,
-                                "Children": null
+                                "Children": null,
+                                "Chardata": false
                               },
                               {
                                 "Name": "value",
@@ -1694,15 +1869,20 @@
                                 "InChoice": false,
                                 "Type": "text",
                                 "Alts": null,
-                                "Children": null
+                                "Children": null,
+                                "Chardata": false
                               }
-                            ]
+                            ],
+                            "Chardata": false
                           }
-                        ]
+                        ],
+                        "Chardata": false
                       }
-                    ]
+                    ],
+                    "Chardata": false
                   }
-                ]
+                ],
+                "Chardata": false
               },
               {
                 "Name": "notes",
@@ -1719,9 +1899,11 @@
                     "InChoice": false,
                     "Type": "note",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   }
-                ]
+                ],
+                "Chardata": false
               },
               {
                 "Name": "overrides",
@@ -1738,9 +1920,11 @@
                     "InChoice": false,
                     "Type": "override",
                     "Alts": null,
-                    "Children": null
+                    "Children": null,
+                    "Chardata": false
                   }
-                ]
+                ],
+                "Chardata": false
               },
               {
                 "Name": "tickets",
@@ -1765,17 +1949,23 @@
                         "InChoice": false,
                         "Type": "uuid",
                         "Alts": null,
-                        "Children": null
+                        "Children": null,
+                        "Chardata": false
                       }
-                    ]
+                    ],
+                    "Chardata": false
                   }
-                ]
+                ],
+                "Chardata": false
               }
-            ]
+            ],
+            "Chardata": false
           }
-        ]
+        ],
+        "Chardata": false
       }
-    ]
+    ],
+    "Chardata": false
   },
   "Defects": [
     {

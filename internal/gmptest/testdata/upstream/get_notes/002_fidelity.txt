@@ -5,9 +5,7 @@ namespaces-seen:
 
 DROPPED
   /get_notes_response/note/end_time                                        x1
-  /get_notes_response/note/result/host/#text                               x1
   /get_notes_response/note/result/nvt/cve                                  x1
-  /get_notes_response/note/text/#text                                      x1
   /get_notes_response/truncated                                            x1  (+1 descendant paths)
 
 TRUNCATED

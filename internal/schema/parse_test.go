@@ -232,6 +232,103 @@ func TestLeafTypeSpellings(t *testing.T) {
 	}
 }
 
+// --- mixed content -----------------------------------------------------
+
+// TestChardataBareTextSpelling covers the DSL's first mixed-content
+// spelling: bare identifier text sitting next to an <attrib>, the shape
+// behind <text excerpt="...">actual text</text> in note/override.
+func TestChardataBareTextSpelling(t *testing.T) {
+	cmd := parseOne(t, `
+    <name>x</name>
+    <pattern><e>text</e></pattern>
+    <ele>
+      <name>text</name>
+      <pattern>
+        text
+        <attrib><name>excerpt</name><type>boolean</type></attrib>
+      </pattern>
+    </ele>
+    <response><pattern/></response>`)
+
+	n := find(t, cmd.Request, "text")
+	if n.Type != "text" {
+		t.Errorf("Got type %q, want text", n.Type)
+	}
+	if !n.Chardata {
+		t.Error("Expected Chardata to be set for bare text beside an <attrib>")
+	}
+	find(t, n, "excerpt")
+}
+
+// TestChardataTaggedTypeSpelling covers the DSL's second mixed-content
+// spelling: an explicit <t> alongside an <e> reference, the shape behind
+// config/nvt_count and config/family_count in command_get_configs.xml,
+// where a real example response shows bare integer text next to a
+// <growing> child (e.g. <nvt_count>88005<growing>1</growing></nvt_count>).
+// leafOf's T branch returns the type unconditionally, so unlike the bare-
+// text spelling above, this one is never routed through bareChardata.
+func TestChardataTaggedTypeSpelling(t *testing.T) {
+	cmd := parseOne(t, `
+    <name>x</name>
+    <pattern><e>nvt_count</e></pattern>
+    <ele>
+      <name>nvt_count</name>
+      <pattern>
+        <t>integer</t>
+        <e>growing</e>
+      </pattern>
+      <ele><name>growing</name><pattern><t>boolean</t></pattern></ele>
+    </ele>
+    <response><pattern/></response>`)
+
+	n := find(t, cmd.Request, "nvt_count")
+	if n.Type != "integer" {
+		t.Errorf("Got type %q, want integer", n.Type)
+	}
+	if !n.Chardata {
+		t.Error("Expected Chardata to be set for <t> beside an <e> reference")
+	}
+	find(t, n, "growing")
+}
+
+// TestChardataDoesNotFireForSharedElementReference guards the boundary the
+// tagged-type spelling introduces: a <t> can also name a shared top-level
+// <element> rather than a scalar type. If that pattern also carries a local
+// <e> reference of its own, n.Type is non-empty and Children is non-empty
+// at the exact point fill() checks — indistinguishable from genuine mixed
+// content unless the shared-element case is excluded. expandShared is about
+// to replace n's content with the referenced element's own pattern, so
+// there is no bare text here at all.
+func TestChardataDoesNotFireForSharedElementReference(t *testing.T) {
+	body := `<?xml version="1.0"?><protocol>
+      <element>
+        <name>nvt</name>
+        <pattern><e>family</e></pattern>
+        <ele><name>family</name><pattern>text</pattern></ele>
+      </element>
+      <command>
+        <name>x</name>
+        <pattern><e>a</e></pattern>
+        <ele>
+          <name>a</name>
+          <pattern><t>nvt</t><e>extra</e></pattern>
+          <ele><name>extra</name><pattern>text</pattern></ele>
+        </ele>
+        <response><pattern/></response>
+      </command></protocol>`
+
+	cmds, err := Parse([]byte(body), "test.xml")
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+	a := find(t, cmds[0].Request, "a")
+	if a.Chardata {
+		t.Error("A shared-element reference must not be marked Chardata")
+	}
+	find(t, a, "family")
+	find(t, a, "extra")
+}
+
 func TestResponseIsParsedSeparately(t *testing.T) {
 	cmd := parseOne(t, `
     <name>x</name>
