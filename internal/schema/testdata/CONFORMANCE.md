@@ -29,23 +29,23 @@ them, so response-side optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             44
-with actionable findings:     78
-actionable findings:          692  (request 300, response 392)
-suppressed findings:          824
-confirmed by fidelity corpus: 79
+fully conformant:             47
+with actionable findings:     75
+actionable findings:          667  (request 291, response 376)
+suppressed findings:          809
+confirmed by fidelity corpus: 73
 in the schema, not in Go:     0
 in Go, not in the schema:     0
 
 ### Findings by category
 
                  actionable suppressed
-  MISSING               255          0
-  EXTRA                 244          0
+  MISSING               236          0
+  EXTRA                 242          0
   CARDINALITY            43          0
   KIND                   17          0
-  OMITEMPTY              10        824
-  TYPE                  123          0
+  OMITEMPTY              10        809
+  TYPE                  119          0
   SCHEMA-DEFECT         109          0
 
 ### Schema defects by class
@@ -81,7 +81,6 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_overrides                36   MISSING=27  EXTRA=3  TYPE=6
   get_targets                  29   MISSING=11  EXTRA=10  KIND=3  TYPE=5
   get_report_formats           28   MISSING=17  EXTRA=2  CARDINALITY=1  KIND=2  TYPE=6
-  get_notes                    23   MISSING=19  TYPE=4
   get_info                     21   MISSING=12  EXTRA=6  TYPE=3
   modify_target                19   EXTRA=19
   delete_agents                18   EXTRA=18
@@ -95,7 +94,8 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_tls_certificates         14   MISSING=5  EXTRA=4  KIND=2  TYPE=3
   modify_config                14   EXTRA=6  CARDINALITY=3  OMITEMPTY=2  TYPE=3
   get_roles                    13   MISSING=11  TYPE=2
-  ... and 58 more with fewer
+  modify_task                  13   MISSING=1  EXTRA=12
+  ... and 55 more with fewer
 
 ### Confirmed by both oracles
 
@@ -115,12 +115,6 @@ attributes, and one of its own captured request fixtures uses three of them.
   get_aggregates           /get_aggregates_response/filters
   get_configs              /get_configs_response/config_count/filtered
   get_info                 /get_info_response/info/cve/severity
-  get_notes                /get_notes_response/note/end_time
-  get_notes                /get_notes_response/note/hosts
-  get_notes                /get_notes_response/note/port
-  get_notes                /get_notes_response/note/result
-  get_notes                /get_notes_response/note/task
-  get_notes                /get_notes_response/notes
   get_nvts                 /get_nvts_response/nvt/refs/*
   get_port_lists           /get_port_lists_response/filters/keywords/*
   get_report_configs       /get_report_configs_response/filters/keywords/*
@@ -246,10 +240,7 @@ SCHEMA-DEFECT=1
 
 ### create_note  (command_create_note.xml)
 
-EXTRA=1
-
-  EXTRA         request  /create_note/nvt/name
-                Go field Name string has no counterpart in the schema
+conformant
 
 ### create_override  (command_create_override.xml)
 
@@ -1584,82 +1575,8 @@ OMITEMPTY=3  TYPE=1  SCHEMA-DEFECT=1
 
 ### get_notes  (command_get_notes.xml)
 
-MISSING=19  OMITEMPTY=14  TYPE=4  SCHEMA-DEFECT=2
+SCHEMA-DEFECT=2
 
-  MISSING       request  /get_notes/@details
-                optional attr details is not modelled
-  MISSING       request  /get_notes/@filt_id
-                optional attr filt_id is not modelled
-  MISSING       request  /get_notes/@filter
-                optional attr filter is not modelled
-  MISSING       request  /get_notes/@note_id
-                optional attr note_id is not modelled
-  MISSING       request  /get_notes/@nvt_oid
-                optional attr nvt_oid is not modelled
-  MISSING       request  /get_notes/@result
-                optional attr result is not modelled
-  MISSING       request  /get_notes/@task_id
-                optional attr task_id is not modelled
-  MISSING       response /get_notes_response/note/end_time
-                optional elem end_time is not modelled  [fidelity]
-  MISSING       response /get_notes_response/note/hosts
-                optional elem hosts is not modelled  [fidelity]
-  MISSING       response /get_notes_response/note/nvt/type
-                required elem type is not modelled
-  MISSING       response /get_notes_response/note/owner
-                required elem owner is not modelled
-  MISSING       response /get_notes_response/note/permissions
-                required elem permissions is not modelled
-  MISSING       response /get_notes_response/note/port
-                optional elem port is not modelled  [fidelity]
-  MISSING       response /get_notes_response/note/result
-                optional elem result is not modelled  [fidelity]
-  MISSING       response /get_notes_response/note/severity
-                optional elem severity is not modelled
-  MISSING       response /get_notes_response/note/task
-                optional elem task is not modelled  [fidelity]
-  MISSING       response /get_notes_response/note/text/*
-                schema declares 1 children; Go models this as scalar string
-  MISSING       response /get_notes_response/note/user_tags
-                optional elem user_tags is not modelled
-  MISSING       response /get_notes_response/notes
-                required elem notes is not modelled  [fidelity]
-  OMITEMPTY     response /get_notes_response/filters
-                schema says required, Filters is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_notes_response/filters/keywords
-                schema says required, Keywords is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_notes_response/note/active
-                schema says required, Active is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_notes_response/note/creation_time
-                schema says required, CreationTime is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_notes_response/note/in_use
-                schema says required, InUse is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_notes_response/note/modification_time
-                schema says required, ModificationTime is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_notes_response/note/nvt
-                schema says required, NVT is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_notes_response/note/nvt/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_notes_response/note/orphan
-                schema says required, Orphan is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_notes_response/note/text
-                schema says required, Text is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_notes_response/note/writable
-                schema says required, Writable is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_notes_response/note_count
-                schema says required, NoteCount is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_notes_response/sort
-                schema says required, Sort is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_notes_response/sort/field
-                schema says required, Field is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  TYPE          response /get_notes_response/note/active
-                schema type boolean is text ("" is true), Go Active is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_notes_response/note/in_use
-                schema type boolean is text ("" is true), Go InUse is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_notes_response/note/orphan
-                schema type boolean is text ("" is true), Go Orphan is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_notes_response/note/writable
-                schema type boolean is text ("" is true), Go Writable is bool: '7' fails to decode and '1' re-emits as 'true'
   SCHEMA-DEFECT response /get_notes_response/note/active
                 duplicate-ele: redefined in the same scope
   SCHEMA-DEFECT response /get_notes_response/note/result/delta/overrides/override/active
@@ -3730,12 +3647,7 @@ conformant
 
 ### modify_note  (command_modify_note.xml)
 
-EXTRA=1  OMITEMPTY=1
-
-  EXTRA         request  /modify_note/nvt/name
-                Go field Name string has no counterpart in the schema
-  OMITEMPTY     request  /modify_note/text
-                schema says required, Text is tagged omitempty  [suppressed: request-side over-constraint]
+conformant
 
 ### modify_override  (command_modify_override.xml)
 

@@ -889,7 +889,7 @@ func (r *captureRun) annotationNote(st *captureState) {
 	id := r.created("create_note", "annotations: create_note on the imported result's NVT",
 		&commands.CreateNote{
 			Text: "go-gmp fixture note. " + captureComment,
-			NVT:  &commands.NoteNVT{OID: st.nvtOID},
+			NVT:  commands.NoteNVT{OID: st.nvtOID},
 		},
 		func(id string) {
 			r.send("delete_note", "teardown: delete_note ultimate",

@@ -5,7 +5,6 @@ namespaces-seen:
 
 DROPPED
   /get_notes_response/note_count/#text                                     x1
-  /get_notes_response/notes                                                x1  (+2 descendant paths)
   /get_notes_response/sort/field/#text                                     x1
 
 TRUNCATED

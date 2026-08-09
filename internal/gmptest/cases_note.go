@@ -7,22 +7,22 @@ func init() {
 	// nonzero value, and an explicit zero all round-trip distinctly.
 	RegisterRequestCase("create_note", "with_nvt_and_result", &commands.CreateNote{
 		Text:   "False positive: this service is intentionally exposed for testing.",
-		NVT:    &commands.NoteNVT{OID: "1.3.6.1.4.1.25623.1.0.100315"},
-		Result: &commands.CreateNoteResult{ID: "9b7f6e5d-4c3b-2a1f-0e9d-8c7b6a5d4e3f"},
+		NVT:    commands.NoteNVT{OID: "1.3.6.1.4.1.25623.1.0.100315"},
+		Result: &commands.NoteResult{ID: "9b7f6e5d-4c3b-2a1f-0e9d-8c7b6a5d4e3f"},
 		Hosts:  "192.0.2.10",
 		Port:   "443/tcp",
 	})
 
 	RegisterRequestCase("create_note", "active_and_severity_set", &commands.CreateNote{
 		Text:     "Active for 7 days at severity 7.5.",
-		NVT:      &commands.NoteNVT{OID: "1.3.6.1.4.1.25623.1.0.100315"},
+		NVT:      commands.NoteNVT{OID: "1.3.6.1.4.1.25623.1.0.100315"},
 		Active:   commands.Int(7),
 		Severity: commands.Float64(7.5),
 	})
 
 	RegisterRequestCase("create_note", "active_and_severity_zero", &commands.CreateNote{
 		Text:     "Active off, severity explicitly zero.",
-		NVT:      &commands.NoteNVT{OID: "1.3.6.1.4.1.25623.1.0.100315"},
+		NVT:      commands.NoteNVT{OID: "1.3.6.1.4.1.25623.1.0.100315"},
 		Active:   commands.Int(0),
 		Severity: commands.Float64(0),
 	})

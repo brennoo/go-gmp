@@ -4,20 +4,35 @@ decode: ok
 namespaces-seen: 
 
 DROPPED
-  /get_notes_response/note/in_use                                          x1  (+1 descendant paths)
-  /get_notes_response/note/text/@excerpt                                   x1
+  /get_notes_response/note/text/#text                                      x1
   /get_notes_response/truncated                                            x1  (+1 descendant paths)
 
 TRUNCATED
   (none)
 
 CHANGED
-  /get_notes_response/note/active/#text                                    "1" -> "true"
-  /get_notes_response/note/orphan/#text                                    "1" -> "true"
-  /get_notes_response/note/writable/#text                                  "1" -> "true"
+  (none)
 
 ADDED
-  (none)
+  /get_notes_response/filters                                              x1
+  /get_notes_response/filters/@id                                          x1
+  /get_notes_response/filters/keywords                                     x1
+  /get_notes_response/filters/term                                         x1
+  /get_notes_response/note/nvt/type                                        x1
+  /get_notes_response/note/owner                                           x1
+  /get_notes_response/note/owner/name                                      x1
+  /get_notes_response/note/permissions                                     x1
+  /get_notes_response/note_count                                           x1
+  /get_notes_response/note_count/filtered                                  x1
+  /get_notes_response/note_count/filtered/#text                            x1
+  /get_notes_response/note_count/page                                      x1
+  /get_notes_response/note_count/page/#text                                x1
+  /get_notes_response/notes                                                x1
+  /get_notes_response/notes/@max                                           x1
+  /get_notes_response/notes/@start                                         x1
+  /get_notes_response/sort                                                 x1
+  /get_notes_response/sort/field                                           x1
+  /get_notes_response/sort/field/order                                     x1
 
 DUPLICATED
   (none)

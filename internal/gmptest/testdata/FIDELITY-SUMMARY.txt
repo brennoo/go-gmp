@@ -12,7 +12,7 @@
 
 fixtures: 320   clean: 186   with-loss: 119   decode-errors: 14   advisory: 1
 commands with loss: 37 of 122
-distinct dropped paths: 277
+distinct dropped paths: 272
 
 ## Per fixture
 
@@ -167,9 +167,9 @@ get_info                     upstream  001 ADVISORY      dropped=5   truncated=0
 get_info                     upstream  002 ok            dropped=3   truncated=0   changed=0   added=4  
 get_license                  live      001 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  
 get_license                  upstream  001 ok            dropped=0   truncated=0   changed=1   added=0  
-get_notes                    live      001 ok            dropped=3   truncated=0   changed=0   added=0  
-get_notes                    upstream  001 ok            dropped=3   truncated=0   changed=3   added=0  
-get_notes                    upstream  002 ok            dropped=8   truncated=0   changed=2   added=0  
+get_notes                    live      001 ok            dropped=2   truncated=0   changed=0   added=0  
+get_notes                    upstream  001 ok            dropped=2   truncated=0   changed=0   added=19 
+get_notes                    upstream  002 ok            dropped=5   truncated=0   changed=0   added=46 
 get_nvt_families             live      001 clean         dropped=0   truncated=0   changed=0   added=0  
 get_nvt_families             upstream  001 ok            dropped=1   truncated=0   changed=0   added=0  
 get_nvts                     upstream  001 ok            dropped=8   truncated=0   changed=0   added=0  

@@ -1,0 +1,154 @@
+{
+  "Name": "modify_note",
+  "File": "command_modify_note.xml",
+  "Request": {
+    "Name": "modify_note",
+    "Kind": 0,
+    "Card": 0,
+    "InChoice": false,
+    "Type": "",
+    "Alts": null,
+    "Children": [
+      {
+        "Name": "note_id",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "uuid",
+        "Alts": null,
+        "Children": null
+      },
+      {
+        "Name": "text",
+        "Kind": 0,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null
+      },
+      {
+        "Name": "active",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "integer",
+        "Alts": null,
+        "Children": null
+      },
+      {
+        "Name": "nvt",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "oid",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "oid",
+            "Alts": null,
+            "Children": null
+          }
+        ]
+      },
+      {
+        "Name": "hosts",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null
+      },
+      {
+        "Name": "port",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null
+      },
+      {
+        "Name": "result",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "id",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "uuid",
+            "Alts": null,
+            "Children": null
+          }
+        ]
+      },
+      {
+        "Name": "severity",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "severity",
+        "Alts": null,
+        "Children": null
+      },
+      {
+        "Name": "task",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "id",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "uuid",
+            "Alts": null,
+            "Children": null
+          }
+        ]
+      }
+    ]
+  },
+  "Response": {
+    "Name": "modify_note_response",
+    "Kind": 0,
+    "Card": 0,
+    "InChoice": false,
+    "Type": "",
+    "Alts": null,
+    "Children": [
+      {
+        "Name": "status",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "status",
+        "Alts": null,
+        "Children": null
+      },
+      {
+        "Name": "status_text",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null
+      }
+    ]
+  },
+  "Defects": null
+}

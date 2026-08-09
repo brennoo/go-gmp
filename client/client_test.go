@@ -1260,7 +1260,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.CreateNote); ok {
-		if cmd.Text == "This issue should be resolved after the upgrade." && cmd.NVT != nil && cmd.NVT.OID == "1.3.6.1.4.1.25623.1.0.10330" && cmd.Result != nil && cmd.Result.ID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+		if cmd.Text == "This issue should be resolved after the upgrade." && cmd.NVT.OID == "1.3.6.1.4.1.25623.1.0.10330" && cmd.Result != nil && cmd.Result.ID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
 			(*response.(*commands.CreateNoteResponse)).Status = "202"
 			(*response.(*commands.CreateNoteResponse)).StatusText = "OK, resource created"
 			(*response.(*commands.CreateNoteResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
@@ -1283,17 +1283,21 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	if _, ok := command.(*commands.GetNotes); ok {
 		(*response.(*commands.GetNotesResponse)).Status = "200"
 		(*response.(*commands.GetNotesResponse)).StatusText = "OK"
-		(*response.(*commands.GetNotesResponse)).Notes = []commands.Note{
+		// Note.Text is a struct carrying only the schema-declared @excerpt
+		// attribute: the schema DSL has no way to declare an element that has
+		// both attributes and text, so the generated type cannot hold the
+		// note body. The rest of the note is asserted in TestGetNotes.
+		(*response.(*commands.GetNotesResponse)).Note = []commands.Note{
 			{
 				ID:               "b76b81a7-9df8-42df-afff-baa9d4620128",
-				NVT:              &commands.NoteNVT{OID: "1.3.6.1.4.1.25623.1.0.75", Name: "Test NVT: long lines"},
+				NVT:              commands.GetNotesNVT{OID: "1.3.6.1.4.1.25623.1.0.75", Name: "Test NVT: long lines"},
 				CreationTime:     commands.GMPTime{Time: time.Date(2013, 1, 9, 9, 47, 41, 0, time.FixedZone("+01:00", 3600))},
 				ModificationTime: commands.GMPTime{Time: time.Date(2013, 1, 9, 9, 47, 41, 0, time.FixedZone("+01:00", 3600))},
-				Writable:         true,
-				InUse:            false,
-				Active:           true,
-				Orphan:           true,
-				Text:             "This is the full text of the note.",
+				Writable:         commands.GMPBool(true),
+				InUse:            commands.GMPBool(false),
+				Active:           commands.GMPBool(true),
+				Orphan:           commands.GMPBool(true),
+				Text:             commands.NoteText{Excerpt: commands.GMPBool(false)},
 			},
 		}
 	}
