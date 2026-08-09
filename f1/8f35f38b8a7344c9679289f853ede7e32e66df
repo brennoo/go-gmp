@@ -1,0 +1,43 @@
+client/client_role_test.go
+  s_b05d52610208cb::t_0361356b0b5ee7 100-101
+client/client_test.go
+  s_b05d52610208cb::t_ab9f1751becf41 1443,1447
+commands/create_role.go
+  s_b05d52610208cb::t_5bc0ccd24625bf 1-2,7,16
+commands/get_roles.go
+  s_b05d52610208cb::t_a12afa3f5b3634 1-2,5,7,10-13,16,18-25,33-76,78-117
+commands/modify_role.go
+  s_b05d52610208cb::t_31ce9c4841139c 1-2,7,16
+docs/review-2026-08.md
+  s_b05d52610208cb::t_9f893f9640252b 16,20-23,25,41-82,854
+internal/codegen/manifest.json
+  s_b05d52610208cb::t_3719adb285fda8 13
+internal/codegen/manifest_test.go
+  s_b05d52610208cb::t_66ceee6d2216af 27-30,33,45,49-50,59-61
+internal/codegen/validate_test.go
+  s_b05d52610208cb::t_98fd72a8656153 241-253,255-257,264,279-287
+internal/gmptest/testdata/FIDELITY-SUMMARY.txt
+  s_b05d52610208cb::t_17bebdc5d32a54 15,214-215
+internal/gmptest/testdata/live/get_roles/001_fidelity.txt
+  s_b05d52610208cb::t_3c3ee9069fa94d 7-8,11
+internal/gmptest/testdata/upstream/get_roles/001_fidelity.txt
+  s_b05d52610208cb::t_bbfdb9cfb1e493 7-9,16,19-21
+internal/schema/testdata/CONFORMANCE.md
+  s_b05d52610208cb::t_a39f7be9f67ca9 32-36,43,47-48,97-98,2569
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "f18f35f38b8a7344c9679289f853ede7e32e66df",
+  "prompts": {},
+  "sessions": {
+    "s_b05d52610208cb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_b05d52610208cb",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
