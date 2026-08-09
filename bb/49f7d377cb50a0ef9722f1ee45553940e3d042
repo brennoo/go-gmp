@@ -1,0 +1,50 @@
+docs/review-2026-08.md
+  s_6b74b50f8b69ed::t_a2c5d91e5c0b36 1-25,73-83,452,812-813,829-830,1017-1018
+  s_6b74b50f8b69ed::t_989e8ef10d8c8f 815-820,822-823,832-837,839-840,1020-1024
+  s_6b74b50f8b69ed::t_51aade062f8a7a 26-28,70-72
+  s_e12f5b629e85a5::t_0b4b4d5bbc7ffe 29-69,843
+internal/codegen/manifest.json
+  s_e12f5b629e85a5::t_839499e269e45d 10-14
+internal/codegen/manifest_test.go
+  s_e12f5b629e85a5::t_3ed7f910f23c7f 27,29-30,33,38-41,45,49-50,54-56
+internal/codegen/testdata/golden/create_role.go
+  s_e12f5b629e85a5::t_ce987b141c0c31 1-27
+internal/codegen/testdata/golden/get_roles.go
+  s_e12f5b629e85a5::t_6928ed158a0ffc 1-118
+internal/codegen/testdata/golden/modify_role.go
+  s_e12f5b629e85a5::t_887a744c11cb99 1-26
+internal/codegen/testdata/schema/create_role.json
+  s_e12f5b629e85a5::t_9b6a394743e5fd 1-97
+internal/codegen/testdata/schema/get_roles.json
+  s_e12f5b629e85a5::t_310e042c858a84 1-499
+internal/codegen/testdata/schema/modify_role.json
+  s_e12f5b629e85a5::t_1755e66984a900 1-87
+internal/codegen/validate.go
+  s_e12f5b629e85a5::t_3a75faae97d1a0 98-101,133-144
+internal/codegen/validate_test.go
+  s_e12f5b629e85a5::t_71b13d31d78235 4,7-8,10,240-423
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "bb49f7d377cb50a0ef9722f1ee45553940e3d042",
+  "prompts": {},
+  "sessions": {
+    "s_6b74b50f8b69ed": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "019fdd9a-6605-7b1e-bab6-fd85490a37f6",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    },
+    "s_e12f5b629e85a5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_e12f5b629e85a5",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
