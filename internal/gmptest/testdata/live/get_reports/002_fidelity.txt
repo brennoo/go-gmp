@@ -1,4 +1,59 @@
 # fidelity: get_reports / live / 002
 # provenance: container task: get_reports for the imported report
-decode: error
-error: parsing time "" as "2006-01-02T15:04:05Z07:00": cannot parse "" as "2006"
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_reports_response/filters                                            x1  (+11 descendant paths)
+  /get_reports_response/report/@config_id                                  x1
+  /get_reports_response/report/@extension                                  x1
+  /get_reports_response/report/@format_id                                  x1
+  /get_reports_response/report/comment                                     x1
+  /get_reports_response/report/in_use                                      x1  (+1 descendant paths)
+  /get_reports_response/report/report/apps/count                           x1  (+1 descendant paths)
+  /get_reports_response/report/report/closed_cves/count                    x1  (+1 descendant paths)
+  /get_reports_response/report/report/cves                                 x1  (+2 descendant paths)
+  /get_reports_response/report/report/errors/count                         x1  (+1 descendant paths)
+  /get_reports_response/report/report/filters/@id                          x1
+  /get_reports_response/report/report/filters/keywords                     x1  (+7 descendant paths)
+  /get_reports_response/report/report/hosts/count                          x1  (+1 descendant paths)
+  /get_reports_response/report/report/os/count                             x1  (+1 descendant paths)
+  /get_reports_response/report/report/ports/count                          x1  (+1 descendant paths)
+  /get_reports_response/report/report/result_count/#text                   x1
+  /get_reports_response/report/report/result_count/critical                x1  (+4 descendant paths)
+  /get_reports_response/report/report/result_count/false_positive          x1  (+4 descendant paths)
+  /get_reports_response/report/report/result_count/filtered                x1  (+1 descendant paths)
+  /get_reports_response/report/report/result_count/full                    x1  (+1 descendant paths)
+  /get_reports_response/report/report/result_count/high                    x1  (+4 descendant paths)
+  /get_reports_response/report/report/result_count/hole                    x1  (+5 descendant paths)
+  /get_reports_response/report/report/result_count/info                    x1  (+5 descendant paths)
+  /get_reports_response/report/report/result_count/log                     x1  (+4 descendant paths)
+  /get_reports_response/report/report/result_count/low                     x1  (+4 descendant paths)
+  /get_reports_response/report/report/result_count/medium                  x1  (+4 descendant paths)
+  /get_reports_response/report/report/result_count/warning                 x1  (+5 descendant paths)
+  /get_reports_response/report/report/sort/field/#text                     x1
+  /get_reports_response/report/report/ssl_certs/count                      x1  (+1 descendant paths)
+  /get_reports_response/report/report/task/progress                        x1  (+1 descendant paths)
+  /get_reports_response/report/report/task/target/@id                      x1
+  /get_reports_response/report/report/task/target/comment                  x1
+  /get_reports_response/report/report/task/target/name                     x1
+  /get_reports_response/report/report/task/target/trash                    x1  (+1 descendant paths)
+  /get_reports_response/report/report/vulns/count                          x1  (+1 descendant paths)
+  /get_reports_response/report/writable                                    x1  (+1 descendant paths)
+  /get_reports_response/report_count                                       x1  (+5 descendant paths)
+  /get_reports_response/reports                                            x1  (+2 descendant paths)
+  /get_reports_response/sort                                               x1  (+4 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_reports_response/report/report/severity/filtered/#text              "-99.0" -> "-99"
+  /get_reports_response/report/report/severity/full/#text                  "-99.0" -> "-99"
+
+ADDED
+  /get_reports_response/report/report/scan_end/#text                       x1
+  /get_reports_response/report/report/scan_start/#text                     x1
+
+DUPLICATED
+  (none)

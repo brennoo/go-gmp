@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/xml"
-	"time"
 )
 
 // GetRoles represents a get_roles command request.
@@ -24,12 +23,12 @@ func (r *GetRolesResponse) GetStatus() (string, string) {
 }
 
 type Role struct {
-	ID               string    `xml:"id,attr"`
-	Name             string    `xml:"name"`
-	Comment          string    `xml:"comment,omitempty"`
-	CreationTime     time.Time `xml:"creation_time,omitempty"`
-	ModificationTime time.Time `xml:"modification_time,omitempty"`
-	Writable         bool      `xml:"writable,omitempty"`
-	InUse            bool      `xml:"in_use,omitempty"`
-	Users            string    `xml:"users,omitempty"`
+	ID               string  `xml:"id,attr"`
+	Name             string  `xml:"name"`
+	Comment          string  `xml:"comment,omitempty"`
+	CreationTime     GMPTime `xml:"creation_time,omitempty"`
+	ModificationTime GMPTime `xml:"modification_time,omitempty"`
+	Writable         bool    `xml:"writable,omitempty"`
+	InUse            bool    `xml:"in_use,omitempty"`
+	Users            string  `xml:"users,omitempty"`
 }

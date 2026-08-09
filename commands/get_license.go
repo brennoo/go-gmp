@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/xml"
-	"time"
 )
 
 // GetLicense represents a get_license command request.
@@ -39,14 +38,14 @@ type LicenseContent struct {
 
 // LicenseMeta represents the meta element in license content.
 type LicenseMeta struct {
-	Version      string    `xml:"version"`
-	ID           string    `xml:"id"`
-	Comment      string    `xml:"comment"`
-	Type         string    `xml:"type"`
-	CustomerName string    `xml:"customer_name"`
-	Created      time.Time `xml:"created"`
-	Begins       time.Time `xml:"begins"`
-	Expires      time.Time `xml:"expires"`
+	Version      string  `xml:"version"`
+	ID           string  `xml:"id"`
+	Comment      string  `xml:"comment"`
+	Type         string  `xml:"type"`
+	CustomerName string  `xml:"customer_name"`
+	Created      GMPTime `xml:"created"`
+	Begins       GMPTime `xml:"begins"`
+	Expires      GMPTime `xml:"expires"`
 }
 
 // LicenseAppliance represents the appliance element in license content.

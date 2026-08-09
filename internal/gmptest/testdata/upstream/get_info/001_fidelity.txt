@@ -1,4 +1,40 @@
 # fidelity: get_info / upstream / 001
 # provenance: command_get_info.xml, command "get_info", example 1
-decode: error
-error: parsing time "2012-10-26T13:18:00.000+0000" as "2006-01-02T15:04:05Z07:00": cannot parse "+0000" as "Z07:00"
+decode: ok
+namespaces-seen: http://cpe.mitre.org/dictionary/2.0 http://cpe.mitre.org/language/2.0 http://scap.nist.gov/schema/configuration/0.1 http://scap.nist.gov/schema/cpe-dictionary-metadata/0.2 http://scap.nist.gov/schema/cvss-v2/0.2 http://scap.nist.gov/schema/feed/vulnerability/2.0 http://scap.nist.gov/schema/patch/0.1 http://scap.nist.gov/schema/scap-core/0.1 http://scap.nist.gov/schema/scap-core/0.3 http://scap.nist.gov/schema/vulnerability/0.4 http://www.w3.org/2001/XMLSchema-instance http://www.w3.org/XML/1998/namespace
+ADVISORY: this document uses namespaces, which encoding/xml does not
+round-trip faithfully. Treat every count below as unreliable.
+
+DROPPED
+  /get_info_response/info/@max                                             x1
+  /get_info_response/info/@start                                           x1
+  /get_info_response/info/cpe/cves/cve/{http://scap.nist.gov/schema/feed/vulnerability/2.0}entry x5  (+5 descendant paths)
+  /get_info_response/info/cpe/raw_data/{http://cpe.mitre.org/dictionary/2.0}cpe-item x1  (+8 descendant paths)
+  /get_info_response/sort/field/#text                                      x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_info_response/details/#text                                         "1" -> "true"
+
+ADDED
+  /get_info_response/filters/keywords                                      x1
+  /get_info_response/filters/name                                          x1
+  /get_info_response/info/cpe/deprecated                                   x1
+  /get_info_response/info/cpe/deprecated/#text                             x1
+
+DUPLICATED
+  /get_info_response/info/@id                                              1 -> 2
+  /get_info_response/info/comment                                          1 -> 2
+  /get_info_response/info/creation_time                                    1 -> 2
+  /get_info_response/info/creation_time/#text                              1 -> 2
+  /get_info_response/info/in_use                                           1 -> 2
+  /get_info_response/info/in_use/#text                                     1 -> 2
+  /get_info_response/info/modification_time                                1 -> 2
+  /get_info_response/info/modification_time/#text                          1 -> 2
+  /get_info_response/info/name                                             1 -> 2
+  /get_info_response/info/update_time                                      1 -> 2
+  /get_info_response/info/update_time/#text                                1 -> 2
+  /get_info_response/info/writable                                         1 -> 2
+  /get_info_response/info/writable/#text                                   1 -> 2

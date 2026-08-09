@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/xml"
-	"time"
 )
 
 // GetConfigs represents a get_configs command request.
@@ -42,8 +41,8 @@ type Config struct {
 	Owner            ConfigOwner         `xml:"owner"`
 	Name             string              `xml:"name"`
 	Comment          string              `xml:"comment"`
-	CreationTime     time.Time           `xml:"creation_time"`
-	ModificationTime time.Time           `xml:"modification_time"`
+	CreationTime     GMPTime             `xml:"creation_time"`
+	ModificationTime GMPTime             `xml:"modification_time"`
 	FamilyCount      ConfigFamilyCount   `xml:"family_count"`
 	NVTCount         ConfigNVTCount      `xml:"nvt_count"`
 	Type             string              `xml:"type"`

@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/xml"
-	"time"
 )
 
 // GetPermissions represents a get_permissions command request.
@@ -37,8 +36,8 @@ type Permission struct {
 	Owner            *PermissionOwner    `xml:"owner,omitempty"`
 	Name             string              `xml:"name,omitempty"`
 	Comment          string              `xml:"comment,omitempty"`
-	CreationTime     time.Time           `xml:"creation_time,omitempty"`
-	ModificationTime time.Time           `xml:"modification_time,omitempty"`
+	CreationTime     GMPTime             `xml:"creation_time,omitempty"`
+	ModificationTime GMPTime             `xml:"modification_time,omitempty"`
 	Writable         bool                `xml:"writable,omitempty"`
 	InUse            bool                `xml:"in_use,omitempty"`
 	Permissions      *PermissionList     `xml:"permissions,omitempty"`

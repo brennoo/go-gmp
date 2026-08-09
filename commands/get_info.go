@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/xml"
-	"time"
 )
 
 // GetInfo represents a get_info command request.
@@ -36,11 +35,11 @@ type Info struct {
 	ID               string           `xml:"id,attr"`
 	Name             string           `xml:"name"`
 	Comment          string           `xml:"comment"`
-	CreationTime     time.Time        `xml:"creation_time"`
-	ModificationTime time.Time        `xml:"modification_time"`
+	CreationTime     GMPTime          `xml:"creation_time"`
+	ModificationTime GMPTime          `xml:"modification_time"`
 	Writable         bool             `xml:"writable"`
 	InUse            bool             `xml:"in_use"`
-	UpdateTime       time.Time        `xml:"update_time"`
+	UpdateTime       GMPTime          `xml:"update_time"`
 	Owner            *InfoOwner       `xml:"owner,omitempty"`
 	Permissions      *InfoPermissions `xml:"permissions,omitempty"`
 	UserTags         *InfoUserTags    `xml:"user_tags,omitempty"`

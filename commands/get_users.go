@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/xml"
-	"time"
 )
 
 // GetUsers represents a get_users command request.
@@ -36,8 +35,8 @@ type User struct {
 	Owner            *UserOwner       `xml:"owner,omitempty"`
 	Name             string           `xml:"name"`
 	Comment          string           `xml:"comment,omitempty"`
-	CreationTime     time.Time        `xml:"creation_time,omitempty"`
-	ModificationTime time.Time        `xml:"modification_time,omitempty"`
+	CreationTime     GMPTime          `xml:"creation_time,omitempty"`
+	ModificationTime GMPTime          `xml:"modification_time,omitempty"`
 	Writable         bool             `xml:"writable,omitempty"`
 	InUse            bool             `xml:"in_use,omitempty"`
 	Role             *UserRole        `xml:"role,omitempty"`

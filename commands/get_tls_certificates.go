@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/xml"
-	"time"
 )
 
 // GetTLSCertificates represents a get_tls_certificates command request.
@@ -37,8 +36,8 @@ type TLSCertificate struct {
 	Owner             *TLSCertificateOwner       `xml:"owner,omitempty"`
 	Name              string                     `xml:"name,omitempty"`
 	Comment           string                     `xml:"comment,omitempty"`
-	CreationTime      time.Time                  `xml:"creation_time,omitempty"`
-	ModificationTime  time.Time                  `xml:"modification_time,omitempty"`
+	CreationTime      GMPTime                    `xml:"creation_time,omitempty"`
+	ModificationTime  GMPTime                    `xml:"modification_time,omitempty"`
 	Writable          bool                       `xml:"writable,omitempty"`
 	InUse             bool                       `xml:"in_use,omitempty"`
 	Permissions       *TLSCertificatePermissions `xml:"permissions,omitempty"`
@@ -48,12 +47,12 @@ type TLSCertificate struct {
 	Trust             bool                       `xml:"trust,omitempty"`
 	Valid             bool                       `xml:"valid,omitempty"`
 	TimeStatus        string                     `xml:"time_status,omitempty"`
-	ActivationTime    time.Time                  `xml:"activation_time,omitempty"`
-	ExpirationTime    time.Time                  `xml:"expiration_time,omitempty"`
+	ActivationTime    GMPTime                    `xml:"activation_time,omitempty"`
+	ExpirationTime    GMPTime                    `xml:"expiration_time,omitempty"`
 	SubjectDN         string                     `xml:"subject_dn,omitempty"`
 	IssuerDN          string                     `xml:"issuer_dn,omitempty"`
 	Serial            string                     `xml:"serial,omitempty"`
-	LastSeen          time.Time                  `xml:"last_seen,omitempty"`
+	LastSeen          GMPTime                    `xml:"last_seen,omitempty"`
 	Sources           *TLSCertificateSources     `xml:"sources,omitempty"`
 }
 

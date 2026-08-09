@@ -1,4 +1,50 @@
 # fidelity: get_tasks / upstream / 001
 # provenance: command_get_tasks.xml, command "get_tasks", example 1
-decode: error
-error: parsing time "Mon Feb  1 19:11:20 2010" as "2006-01-02T15:04:05Z07:00": cannot parse "Mon Feb  1 19:11:20 2010" as "2006"
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_tasks_response/task/alterable                                       x1  (+1 descendant paths)
+  /get_tasks_response/task/in_use                                          x1  (+1 descendant paths)
+  /get_tasks_response/task/last_report/report/result_count                 x1  (+16 descendant paths)
+  /get_tasks_response/task/report_count/finished                           x1  (+1 descendant paths)
+  /get_tasks_response/task/schedule/trash                                  x1  (+1 descendant paths)
+  /get_tasks_response/task/trend                                           x1
+  /get_tasks_response/task/truncated                                       x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_tasks_response/task/last_report/report/severity/#text               "5.0" -> "5"
+  /get_tasks_response/task/last_report/report/timestamp/#text              "Mon Feb  1 19:11:20 2010" -> "2010-02-01T19:11:20Z"
+  /get_tasks_response/task/writable/#text                                  "1" -> "true"
+
+ADDED
+  /get_tasks_response/filters                                              x1
+  /get_tasks_response/filters/@id                                          x1
+  /get_tasks_response/filters/keywords                                     x1
+  /get_tasks_response/filters/name                                         x1
+  /get_tasks_response/filters/term                                         x1
+  /get_tasks_response/sort                                                 x1
+  /get_tasks_response/sort/field                                           x1
+  /get_tasks_response/sort/field/order                                     x1
+  /get_tasks_response/task/config/type                                     x1
+  /get_tasks_response/task/last_report/report/scan_end                     x1
+  /get_tasks_response/task/last_report/report/scan_end/#text               x1
+  /get_tasks_response/task/last_report/report/scan_start                   x1
+  /get_tasks_response/task/last_report/report/scan_start/#text             x1
+  /get_tasks_response/task_count                                           x1
+  /get_tasks_response/task_count/filtered                                  x1
+  /get_tasks_response/task_count/filtered/#text                            x1
+  /get_tasks_response/task_count/page                                      x1
+  /get_tasks_response/task_count/page/#text                                x1
+  /get_tasks_response/tasks                                                x1
+  /get_tasks_response/tasks/@max                                           x1
+  /get_tasks_response/tasks/@start                                         x1
+
+DUPLICATED
+  /get_tasks_response/task/creation_time                                   1 -> 2
+  /get_tasks_response/task/creation_time/#text                             1 -> 2
+  /get_tasks_response/task/modification_time                               1 -> 2
+  /get_tasks_response/task/modification_time/#text                         1 -> 2

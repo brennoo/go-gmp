@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/xml"
-	"time"
 )
 
 // GetNVTs represents a get_nvts command request.
@@ -40,8 +39,8 @@ func (r *GetNVTsResponse) GetStatus() (string, string) {
 type NVT struct {
 	OID              string          `xml:"oid,attr"`
 	Name             string          `xml:"name,omitempty"`
-	CreationTime     time.Time       `xml:"creation_time,omitempty"`
-	ModificationTime time.Time       `xml:"modification_time,omitempty"`
+	CreationTime     GMPTime         `xml:"creation_time,omitempty"`
+	ModificationTime GMPTime         `xml:"modification_time,omitempty"`
 	Category         int             `xml:"category,omitempty"`
 	Family           string          `xml:"family,omitempty"`
 	CvssBase         int             `xml:"cvss_base,omitempty"`

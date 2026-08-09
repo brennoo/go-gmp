@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/xml"
-	"time"
 )
 
 // GetFilters represents a get_filters command request.
@@ -40,8 +39,8 @@ type Filter struct {
 	Comment          string            `xml:"comment"`
 	Term             string            `xml:"term"`
 	Type             string            `xml:"type"`
-	CreationTime     time.Time         `xml:"creation_time"`
-	ModificationTime time.Time         `xml:"modification_time"`
+	CreationTime     GMPTime           `xml:"creation_time"`
+	ModificationTime GMPTime           `xml:"modification_time"`
 	InUse            bool              `xml:"in_use"`
 	Writable         bool              `xml:"writable"`
 	Permissions      FilterPermissions `xml:"permissions"`

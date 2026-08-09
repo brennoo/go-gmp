@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/xml"
-	"time"
 )
 
 // GetTargets represents a get_targets command request.
@@ -22,8 +21,8 @@ type Target struct {
 	Owner                *TargetOwner       `xml:"owner,omitempty"`
 	Name                 string             `xml:"name,omitempty"`
 	Comment              string             `xml:"comment,omitempty"`
-	CreationTime         time.Time          `xml:"creation_time,omitempty"`
-	ModificationTime     time.Time          `xml:"modification_time,omitempty"`
+	CreationTime         GMPTime            `xml:"creation_time,omitempty"`
+	ModificationTime     GMPTime            `xml:"modification_time,omitempty"`
 	Writable             bool               `xml:"writable,omitempty"`
 	InUse                bool               `xml:"in_use,omitempty"`
 	Permissions          *TargetPermissions `xml:"permissions,omitempty"`

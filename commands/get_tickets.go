@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/xml"
-	"time"
 )
 
 // GetTickets represents a get_tickets command request.
@@ -36,8 +35,8 @@ type Ticket struct {
 	Owner             *TicketOwner       `xml:"owner,omitempty"`
 	Name              string             `xml:"name"`
 	Comment           string             `xml:"comment"`
-	CreationTime      time.Time          `xml:"creation_time"`
-	ModificationTime  time.Time          `xml:"modification_time"`
+	CreationTime      GMPTime            `xml:"creation_time"`
+	ModificationTime  GMPTime            `xml:"modification_time"`
 	Writable          bool               `xml:"writable"`
 	InUse             bool               `xml:"in_use"`
 	Permissions       *TicketPermissions `xml:"permissions,omitempty"`
@@ -52,13 +51,13 @@ type Ticket struct {
 	Location          string             `xml:"location,omitempty"`
 	SolutionType      string             `xml:"solution_type,omitempty"`
 	Status            string             `xml:"status"`
-	OpenTime          time.Time          `xml:"open_time,omitempty"`
+	OpenTime          GMPTime            `xml:"open_time,omitempty"`
 	OpenNote          string             `xml:"open_note,omitempty"`
-	FixedTime         time.Time          `xml:"fixed_time,omitempty"`
+	FixedTime         GMPTime            `xml:"fixed_time,omitempty"`
 	FixedNote         string             `xml:"fixed_note,omitempty"`
-	ClosedTime        time.Time          `xml:"closed_time,omitempty"`
+	ClosedTime        GMPTime            `xml:"closed_time,omitempty"`
 	ClosedNote        string             `xml:"closed_note,omitempty"`
-	FixVerifiedTime   time.Time          `xml:"fix_verified_time,omitempty"`
+	FixVerifiedTime   GMPTime            `xml:"fix_verified_time,omitempty"`
 	FixVerifiedReport *TicketReport      `xml:"fix_verified_report,omitempty"`
 	Orphan            bool               `xml:"orphan,omitempty"`
 }

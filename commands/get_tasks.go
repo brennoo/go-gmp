@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/xml"
-	"time"
 )
 
 // GetTasks represents a get_tasks command request.
@@ -41,8 +40,8 @@ type GetTasksResponseTask struct {
 	Owner            *TaskOwner           `xml:"owner,omitempty"`
 	Name             string               `xml:"name"`
 	Comment          string               `xml:"comment,omitempty"`
-	CreationTime     time.Time            `xml:"creation_time,omitempty"`
-	ModificationTime time.Time            `xml:"modification_time,omitempty"`
+	CreationTime     GMPTime              `xml:"creation_time,omitempty"`
+	ModificationTime GMPTime              `xml:"modification_time,omitempty"`
 	Writable         bool                 `xml:"writable,omitempty"`
 	InUse            bool                 `xml:"in_use,omitempty"`
 	Permissions      *TaskPermissions     `xml:"permissions,omitempty"`
@@ -191,10 +190,10 @@ type TaskPreference struct {
 }
 
 type TaskReport struct {
-	ID            string    `xml:"id,attr"`
-	Timestamp     time.Time `xml:"timestamp,omitempty"`
-	ScanStart     time.Time `xml:"scan_start,omitempty"`
-	ScanEnd       time.Time `xml:"scan_end,omitempty"`
-	ScanRunStatus string    `xml:"scan_run_status,omitempty"`
-	Severity      float64   `xml:"severity,omitempty"`
+	ID            string  `xml:"id,attr"`
+	Timestamp     GMPTime `xml:"timestamp,omitempty"`
+	ScanStart     GMPTime `xml:"scan_start,omitempty"`
+	ScanEnd       GMPTime `xml:"scan_end,omitempty"`
+	ScanRunStatus string  `xml:"scan_run_status,omitempty"`
+	Severity      float64 `xml:"severity,omitempty"`
 }

@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/xml"
-	"time"
 )
 
 // GetVulns represents a get_vulns command request.
@@ -38,8 +37,8 @@ type Vuln struct {
 	ID               string       `xml:"id,attr"`
 	Name             string       `xml:"name"`
 	Type             string       `xml:"type"`
-	CreationTime     time.Time    `xml:"creation_time"`
-	ModificationTime time.Time    `xml:"modification_time"`
+	CreationTime     GMPTime      `xml:"creation_time"`
+	ModificationTime GMPTime      `xml:"modification_time"`
 	Severity         float64      `xml:"severity"`
 	QoD              int          `xml:"qod"`
 	Results          *VulnResults `xml:"results,omitempty"`
@@ -48,9 +47,9 @@ type Vuln struct {
 
 // VulnResults represents the <results> element in a vuln.
 type VulnResults struct {
-	Count  int       `xml:"count"`
-	Oldest time.Time `xml:"oldest"`
-	Newest time.Time `xml:"newest"`
+	Count  int     `xml:"count"`
+	Oldest GMPTime `xml:"oldest"`
+	Newest GMPTime `xml:"newest"`
 }
 
 // VulnHosts represents the <hosts> element in a vuln.

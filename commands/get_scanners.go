@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/xml"
-	"time"
 )
 
 // GetScanners represents a get_scanners command request.
@@ -40,8 +39,8 @@ type Scanner struct {
 	Name             string                 `xml:"name"`
 	Comment          string                 `xml:"comment"`
 	Copy             string                 `xml:"copy"`
-	CreationTime     time.Time              `xml:"creation_time"`
-	ModificationTime time.Time              `xml:"modification_time"`
+	CreationTime     GMPTime                `xml:"creation_time"`
+	ModificationTime GMPTime                `xml:"modification_time"`
 	Writable         bool                   `xml:"writable"`
 	InUse            bool                   `xml:"in_use"`
 	Host             string                 `xml:"host"`
@@ -202,12 +201,12 @@ type ScannerCount struct {
 // ScannerCertificateInfo represents certificate information for a scanner.
 type ScannerCertificateInfo struct {
 	//	XMLName        xml.Name `xml:"certificate_info"`
-	TimeStatus        string    `xml:"time_status"`
-	ActivationTime    time.Time `xml:"activation_time"`
-	ExpirationTime    time.Time `xml:"expiration_time"`
-	Issuer            string    `xml:"issuer"`
-	MD5Fingerprint    string    `xml:"md5_fingerprint"`
-	SHA256Fingerprint string    `xml:"sha256_fingerprint,omitempty"`
-	Subject           string    `xml:"subject,omitempty"`
-	Serial            string    `xml:"serial,omitempty"`
+	TimeStatus        string  `xml:"time_status"`
+	ActivationTime    GMPTime `xml:"activation_time"`
+	ExpirationTime    GMPTime `xml:"expiration_time"`
+	Issuer            string  `xml:"issuer"`
+	MD5Fingerprint    string  `xml:"md5_fingerprint"`
+	SHA256Fingerprint string  `xml:"sha256_fingerprint,omitempty"`
+	Subject           string  `xml:"subject,omitempty"`
+	Serial            string  `xml:"serial,omitempty"`
 }

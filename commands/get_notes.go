@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/xml"
-	"time"
 )
 
 // GetNotes represents a get_notes command request.
@@ -28,15 +27,15 @@ func (r *GetNotesResponse) GetStatus() (string, string) {
 
 // Note represents a <note> element in the get_notes response.
 type Note struct {
-	ID               string    `xml:"id,attr"`
-	NVT              *NoteNVT  `xml:"nvt,omitempty"`
-	CreationTime     time.Time `xml:"creation_time,omitempty"`
-	ModificationTime time.Time `xml:"modification_time,omitempty"`
-	Writable         bool      `xml:"writable,omitempty"`
-	InUse            bool      `xml:"in_use,omitempty"`
-	Active           bool      `xml:"active,omitempty"`
-	Orphan           bool      `xml:"orphan,omitempty"`
-	Text             string    `xml:"text,omitempty"`
+	ID               string   `xml:"id,attr"`
+	NVT              *NoteNVT `xml:"nvt,omitempty"`
+	CreationTime     GMPTime  `xml:"creation_time,omitempty"`
+	ModificationTime GMPTime  `xml:"modification_time,omitempty"`
+	Writable         bool     `xml:"writable,omitempty"`
+	InUse            bool     `xml:"in_use,omitempty"`
+	Active           bool     `xml:"active,omitempty"`
+	Orphan           bool     `xml:"orphan,omitempty"`
+	Text             string   `xml:"text,omitempty"`
 }
 
 // NoteNVT represents the <nvt> element in a note.

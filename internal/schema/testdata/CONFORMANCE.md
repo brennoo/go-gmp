@@ -33,7 +33,7 @@ fully conformant:             44
 with actionable findings:     78
 actionable findings:          692  (request 300, response 392)
 suppressed findings:          824
-confirmed by fidelity corpus: 77
+confirmed by fidelity corpus: 79
 in the schema, not in Go:     0
 in Go, not in the schema:     0
 
@@ -114,6 +114,7 @@ attributes, and one of its own captured request fixtures uses three of them.
   get_agents               /get_agents_response/sort
   get_aggregates           /get_aggregates_response/filters
   get_configs              /get_configs_response/config_count/filtered
+  get_info                 /get_info_response/info/cve/severity
   get_notes                /get_notes_response/note/end_time
   get_notes                /get_notes_response/note/hosts
   get_notes                /get_notes_response/note/port
@@ -182,6 +183,7 @@ attributes, and one of its own captured request fixtures uses three of them.
   get_targets              /get_targets_response/target/snmp_credential/trash
   get_targets              /get_targets_response/target/ssh_credential/trash
   get_targets              /get_targets_response/target/ssh_elevate_credential/trash
+  get_tasks                /get_tasks_response/task/last_report/report/result_count
   get_tasks                /get_tasks_response/task/report_count/*
   get_tickets              /get_tickets_response/filters/keywords
   help                     /help_response/schema
@@ -914,7 +916,7 @@ EXTRA=18
   EXTRA         request  /delete_agents/agents/agent/connection_status
                 Go field ConnectionStatus string has no counterpart in the schema
   EXTRA         request  /delete_agents/agents/agent/creation_time
-                Go field CreationTime time.Time has no counterpart in the schema
+                Go field CreationTime commands.GMPTime has no counterpart in the schema
   EXTRA         request  /delete_agents/agents/agent/heartbeat_interval
                 Go field HeartbeatInterval int has no counterpart in the schema
   EXTRA         request  /delete_agents/agents/agent/hostname
@@ -924,11 +926,11 @@ EXTRA=18
   EXTRA         request  /delete_agents/agents/agent/ip
                 Go field IP []string has no counterpart in the schema
   EXTRA         request  /delete_agents/agents/agent/last_update
-                Go field LastUpdate time.Time has no counterpart in the schema
+                Go field LastUpdate commands.GMPTime has no counterpart in the schema
   EXTRA         request  /delete_agents/agents/agent/min_interval
                 Go field MinInterval int has no counterpart in the schema
   EXTRA         request  /delete_agents/agents/agent/modification_time
-                Go field ModificationTime time.Time has no counterpart in the schema
+                Go field ModificationTime commands.GMPTime has no counterpart in the schema
   EXTRA         request  /delete_agents/agents/agent/name
                 Go field Name string has no counterpart in the schema
   EXTRA         request  /delete_agents/agents/agent/owner
@@ -1531,7 +1533,7 @@ MISSING=12  EXTRA=6  OMITEMPTY=5  TYPE=3  SCHEMA-DEFECT=1
   MISSING       response /get_info_response/info/cve/references/reference/url
                 required elem url is not modelled
   MISSING       response /get_info_response/info/cve/severity
-                required elem severity is not modelled
+                required elem severity is not modelled  [fidelity]
   MISSING       response /get_info_response/info/dfn_cert_adv
                 optional elem dfn_cert_adv is not modelled
   EXTRA         response /get_info_response/info/cpe/score
@@ -3196,7 +3198,7 @@ MISSING=10  EXTRA=15  CARDINALITY=7  OMITEMPTY=9  TYPE=9  SCHEMA-DEFECT=4
   MISSING       response /get_tasks_response/task/last_report/report/compliance_count
                 optional elem compliance_count is not modelled
   MISSING       response /get_tasks_response/task/last_report/report/result_count
-                optional elem result_count is not modelled
+                optional elem result_count is not modelled  [fidelity]
   MISSING       response /get_tasks_response/task/report_count/*
                 schema declares 1 children; Go models this as scalar int  [fidelity]
   MISSING       response /get_tasks_response/task/schedule/icalendar
@@ -3214,19 +3216,19 @@ MISSING=10  EXTRA=15  CARDINALITY=7  OMITEMPTY=9  TYPE=9  SCHEMA-DEFECT=4
   EXTRA         response /get_tasks_response/task/current_report/@id
                 Go field ID string has no counterpart in the schema
   EXTRA         response /get_tasks_response/task/current_report/scan_end
-                Go field ScanEnd time.Time has no counterpart in the schema
+                Go field ScanEnd commands.GMPTime has no counterpart in the schema
   EXTRA         response /get_tasks_response/task/current_report/scan_run_status
                 Go field ScanRunStatus string has no counterpart in the schema
   EXTRA         response /get_tasks_response/task/current_report/scan_start
-                Go field ScanStart time.Time has no counterpart in the schema
+                Go field ScanStart commands.GMPTime has no counterpart in the schema
   EXTRA         response /get_tasks_response/task/current_report/severity
                 Go field Severity float64 has no counterpart in the schema
   EXTRA         response /get_tasks_response/task/current_report/timestamp
-                Go field Timestamp time.Time has no counterpart in the schema
+                Go field Timestamp commands.GMPTime has no counterpart in the schema
   EXTRA         response /get_tasks_response/task/last_report/report/scan_run_status
                 Go field ScanRunStatus string has no counterpart in the schema
   EXTRA         response /get_tasks_response/task/last_report/report/scan_start
-                Go field ScanStart time.Time has no counterpart in the schema
+                Go field ScanStart commands.GMPTime has no counterpart in the schema
   EXTRA         response /get_tasks_response/task/observers/user_list
                 Go field UserList string has no counterpart in the schema
   EXTRA         response /get_tasks_response/task/reports
@@ -3621,7 +3623,7 @@ EXTRA=18
   EXTRA         request  /modify_agents/agents/agent/connection_status
                 Go field ConnectionStatus string has no counterpart in the schema
   EXTRA         request  /modify_agents/agents/agent/creation_time
-                Go field CreationTime time.Time has no counterpart in the schema
+                Go field CreationTime commands.GMPTime has no counterpart in the schema
   EXTRA         request  /modify_agents/agents/agent/heartbeat_interval
                 Go field HeartbeatInterval int has no counterpart in the schema
   EXTRA         request  /modify_agents/agents/agent/hostname
@@ -3631,11 +3633,11 @@ EXTRA=18
   EXTRA         request  /modify_agents/agents/agent/ip
                 Go field IP []string has no counterpart in the schema
   EXTRA         request  /modify_agents/agents/agent/last_update
-                Go field LastUpdate time.Time has no counterpart in the schema
+                Go field LastUpdate commands.GMPTime has no counterpart in the schema
   EXTRA         request  /modify_agents/agents/agent/min_interval
                 Go field MinInterval int has no counterpart in the schema
   EXTRA         request  /modify_agents/agents/agent/modification_time
-                Go field ModificationTime time.Time has no counterpart in the schema
+                Go field ModificationTime commands.GMPTime has no counterpart in the schema
   EXTRA         request  /modify_agents/agents/agent/name
                 Go field Name string has no counterpart in the schema
   EXTRA         request  /modify_agents/agents/agent/owner

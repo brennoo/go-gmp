@@ -10,9 +10,9 @@
 # 'added' is elements the round trip invents (non-pointer fields without
 # omitempty, zero time.Time) and is not loss.
 
-fixtures: 320   clean: 186   with-loss: 113   decode-errors: 21   advisory: 0
-commands with loss: 36 of 122
-distinct dropped paths: 240
+fixtures: 320   clean: 186   with-loss: 119   decode-errors: 14   advisory: 1
+commands with loss: 37 of 122
+distinct dropped paths: 277
 
 ## Per fixture
 
@@ -161,10 +161,10 @@ get_groups                   live      001 ok            dropped=2   truncated=0
 get_groups                   live      002 ok            dropped=2   truncated=0   changed=0   added=1  
 get_groups                   live      003 ok            dropped=2   truncated=0   changed=2   added=1  
 get_groups                   upstream  001 ok            dropped=4   truncated=0   changed=2   added=4  
-get_info                     live      001 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  
+get_info                     live      001 ok            dropped=5   truncated=0   changed=0   added=4  
 get_info                     live      002 clean         dropped=0   truncated=0   changed=0   added=15 
-get_info                     upstream  001 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  
-get_info                     upstream  002 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  
+get_info                     upstream  001 ADVISORY      dropped=5   truncated=0   changed=1   added=4  
+get_info                     upstream  002 ok            dropped=3   truncated=0   changed=0   added=4  
 get_license                  live      001 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  
 get_license                  upstream  001 ok            dropped=0   truncated=0   changed=1   added=0  
 get_notes                    live      001 ok            dropped=3   truncated=0   changed=0   added=0  
@@ -199,7 +199,7 @@ get_report_formats           live      002 ok            dropped=10  truncated=0
 get_report_formats           upstream  001 ok            dropped=2   truncated=0   changed=3   added=0  
 get_report_formats           upstream  002 ok            dropped=4   truncated=0   changed=2   added=2  
 get_reports                  live      001 ok            dropped=4   truncated=0   changed=0   added=0  
-get_reports                  live      002 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  
+get_reports                  live      002 ok            dropped=39  truncated=0   changed=2   added=2  
 get_reports                  upstream  001 ok            dropped=1   truncated=0   changed=0   added=4  
 get_reports                  upstream  002 ok            dropped=22  truncated=0   changed=5   added=8  
 get_resource_names           live      001 clean         dropped=0   truncated=0   changed=0   added=0  
@@ -243,9 +243,9 @@ get_tasks                    live      003 ok            dropped=11  truncated=0
 get_tasks                    live      004 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  
 get_tasks                    live      005 clean         dropped=0   truncated=0   changed=0   added=17 
 get_tasks                    live      006 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  
-get_tasks                    upstream  001 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  
-get_tasks                    upstream  002 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  
-get_tasks                    upstream  003 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  
+get_tasks                    upstream  001 ok            dropped=7   truncated=0   changed=3   added=21 
+get_tasks                    upstream  002 ok            dropped=9   truncated=0   changed=5   added=11 
+get_tasks                    upstream  003 ok            dropped=14  truncated=0   changed=2   added=1  
 get_tickets                  live      001 ok            dropped=6   truncated=0   changed=0   added=0  
 get_tickets                  live      002 ok            dropped=6   truncated=0   changed=0   added=0  
 get_tickets                  upstream  001 ok            dropped=6   truncated=0   changed=3   added=6  

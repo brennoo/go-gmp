@@ -1,4 +1,41 @@
 # fidelity: get_tasks / upstream / 002
 # provenance: command_get_tasks.xml, command "get_tasks", example 2
-decode: error
-error: parsing time "Mon Feb  1 19:11:20 2010" as "2006-01-02T15:04:05Z07:00": cannot parse "Mon Feb  1 19:11:20 2010" as "2006"
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_tasks_response/sort/field/#text                                     x1
+  /get_tasks_response/task/in_use                                          x1  (+1 descendant paths)
+  /get_tasks_response/task/last_report/report/result_count                 x1  (+16 descendant paths)
+  /get_tasks_response/task/report_count/finished                           x1  (+1 descendant paths)
+  /get_tasks_response/task/reports/preferences                             x1  (+7 descendant paths)
+  /get_tasks_response/task/reports/report/result_count                     x2  (+16 descendant paths)
+  /get_tasks_response/task/schedule/trash                                  x1  (+1 descendant paths)
+  /get_tasks_response/task/trend                                           x1
+  /get_tasks_response/task_count/#text                                     x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_tasks_response/task/alterable/#text                                 "1" -> "true"
+  /get_tasks_response/task/last_report/report/severity/#text               "5.0" -> "5"
+  /get_tasks_response/task/last_report/report/timestamp/#text              "Mon Feb  1 19:11:20 2010" -> "2010-02-01T19:11:20Z"
+  /get_tasks_response/task/reports/report/severity/#text                   "5.0" -> "5"
+  /get_tasks_response/task/writable/#text                                  "1" -> "true"
+
+ADDED
+  /get_tasks_response/filters/keywords                                     x1
+  /get_tasks_response/filters/name                                         x1
+  /get_tasks_response/task/config/type                                     x1
+  /get_tasks_response/task/last_report/report/scan_end                     x1
+  /get_tasks_response/task/last_report/report/scan_end/#text               x1
+  /get_tasks_response/task/last_report/report/scan_start                   x1
+  /get_tasks_response/task/last_report/report/scan_start/#text             x1
+  /get_tasks_response/task/reports/report/scan_end                         x2
+  /get_tasks_response/task/reports/report/scan_end/#text                   x2
+  /get_tasks_response/task/reports/report/scan_start                       x2
+  /get_tasks_response/task/reports/report/scan_start/#text                 x2
+
+DUPLICATED
+  (none)

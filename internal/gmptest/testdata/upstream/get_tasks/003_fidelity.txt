@@ -1,4 +1,33 @@
 # fidelity: get_tasks / upstream / 003
 # provenance: command_get_tasks.xml, command "get_tasks", example 3
-decode: error
-error: parsing time "\x0a            2019-08-13T12:28:44+02:00" as "2006-01-02T15:04:05Z07:00": cannot parse "\x0a            2019-08-13T12:28:44+02:00" as "2006"
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_tasks_response/filters/keywords/truncated                           x1  (+1 descendant paths)
+  /get_tasks_response/sort/field/#text                                     x1
+  /get_tasks_response/task/alterable                                       x1  (+1 descendant paths)
+  /get_tasks_response/task/config/trash                                    x1  (+1 descendant paths)
+  /get_tasks_response/task/hosts_ordering                                  x1
+  /get_tasks_response/task/in_use                                          x1  (+1 descendant paths)
+  /get_tasks_response/task/last_report/report/result_count                 x1  (+18 descendant paths)
+  /get_tasks_response/task/preferences/truncated                           x1  (+1 descendant paths)
+  /get_tasks_response/task/report_count/finished                           x1  (+1 descendant paths)
+  /get_tasks_response/task/scanner/trash                                   x1  (+1 descendant paths)
+  /get_tasks_response/task/schedule/trash                                  x1  (+1 descendant paths)
+  /get_tasks_response/task/target/trash                                    x1  (+1 descendant paths)
+  /get_tasks_response/task/trend                                           x1
+  /get_tasks_response/task_count/#text                                     x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_tasks_response/task/last_report/report/severity/#text               "9.0" -> "9"
+  /get_tasks_response/task/writable/#text                                  "1" -> "true"
+
+ADDED
+  /get_tasks_response/filters/name                                         x1
+
+DUPLICATED
+  (none)

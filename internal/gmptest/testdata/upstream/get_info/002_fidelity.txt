@@ -1,4 +1,34 @@
 # fidelity: get_info / upstream / 002
 # provenance: command_get_info.xml, command "get_info", example 2
-decode: error
-error: parsing time "2020-11-13T02:30:00.000+0000" as "2006-01-02T15:04:05Z07:00": cannot parse "+0000" as "Z07:00"
+decode: ok
+namespaces-seen: 
+
+DROPPED
+  /get_info_response/info/@max                                             x1
+  /get_info_response/info/@start                                           x1
+  /get_info_response/sort/field/#text                                      x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_info_response/details                                               x1
+  /get_info_response/details/#text                                         x1
+  /get_info_response/filters/keywords                                      x1
+  /get_info_response/filters/name                                          x1
+
+DUPLICATED
+  /get_info_response/info/@id                                              1 -> 2
+  /get_info_response/info/comment                                          1 -> 2
+  /get_info_response/info/creation_time                                    1 -> 2
+  /get_info_response/info/creation_time/#text                              1 -> 2
+  /get_info_response/info/in_use                                           1 -> 2
+  /get_info_response/info/in_use/#text                                     1 -> 2
+  /get_info_response/info/modification_time                                1 -> 2
+  /get_info_response/info/modification_time/#text                          1 -> 2
+  /get_info_response/info/name                                             1 -> 2
+  /get_info_response/info/writable                                         1 -> 2
+  /get_info_response/info/writable/#text                                   1 -> 2

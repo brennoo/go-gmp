@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/xml"
-	"time"
 )
 
 // GetReportFormats represents a get_report_formats command request.
@@ -34,8 +33,8 @@ type ReportFormat struct {
 	ID               string                 `xml:"id,attr"`
 	Name             string                 `xml:"name"`
 	Comment          string                 `xml:"comment,omitempty"`
-	CreationTime     time.Time              `xml:"creation_time"`
-	ModificationTime time.Time              `xml:"modification_time"`
+	CreationTime     GMPTime                `xml:"creation_time"`
+	ModificationTime GMPTime                `xml:"modification_time"`
 	Writable         bool                   `xml:"writable"`
 	InUse            bool                   `xml:"in_use"`
 	Extension        string                 `xml:"extension"`

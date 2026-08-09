@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/xml"
-	"time"
 )
 
 // GetAssets represents a get_assets command request.
@@ -39,8 +38,8 @@ type Asset struct {
 	Owner            AssetOwner        `xml:"owner"`
 	Name             string            `xml:"name"`
 	Comment          string            `xml:"comment"`
-	CreationTime     time.Time         `xml:"creation_time"`
-	ModificationTime time.Time         `xml:"modification_time"`
+	CreationTime     GMPTime           `xml:"creation_time"`
+	ModificationTime GMPTime           `xml:"modification_time"`
 	Writable         bool              `xml:"writable,omitempty"`
 	InUse            bool              `xml:"in_use,omitempty"`
 	Permissions      []AssetPermission `xml:"permissions>permission,omitempty"`

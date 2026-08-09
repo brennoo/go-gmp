@@ -1,11 +1,11 @@
 package schema
 
 import (
+	"encoding"
 	"encoding/xml"
 	"reflect"
 	"sort"
 	"strings"
-	"time"
 )
 
 // The Go side is derived by reflection rather than by go/ast.
@@ -60,8 +60,8 @@ type GoRoot struct {
 }
 
 var (
-	xmlNameType = reflect.TypeOf(xml.Name{})
-	timeType    = reflect.TypeOf(time.Time{})
+	xmlNameType       = reflect.TypeFor[xml.Name]()
+	textMarshalerType = reflect.TypeFor[encoding.TextMarshaler]()
 )
 
 // ModelOf reflects v, which must be a pointer to a struct with an XMLName
@@ -212,7 +212,9 @@ func cardOf(n *GoNode) Card {
 }
 
 // structUnder returns the struct type a field ultimately holds, or nil when
-// the field is a scalar. time.Time is a scalar here: it is a leaf on the wire.
+// the field is a scalar. A struct that implements encoding.TextMarshaler
+// (time.Time, GMPTime) is a scalar here: it is a leaf on the wire, not a
+// container to descend into.
 func structUnder(t reflect.Type) reflect.Type {
 	for t.Kind() == reflect.Pointer || t.Kind() == reflect.Slice {
 		if t.Kind() == reflect.Slice && t.Elem().Kind() == reflect.Uint8 {
@@ -220,7 +222,7 @@ func structUnder(t reflect.Type) reflect.Type {
 		}
 		t = t.Elem()
 	}
-	if t.Kind() != reflect.Struct || t == timeType || t == xmlNameType {
+	if t.Kind() != reflect.Struct || t == xmlNameType || t.Implements(textMarshalerType) {
 		return nil
 	}
 	return t

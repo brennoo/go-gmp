@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/xml"
-	"time"
 )
 
 // GetReports represents a get_reports command request.
@@ -40,8 +39,8 @@ type Report struct {
 	Owner            *ReportOwner     `xml:"owner,omitempty"`
 	Name             string           `xml:"name,omitempty"`
 	Comment          string           `xml:"comment,omitempty"`
-	CreationTime     time.Time        `xml:"creation_time,omitempty"`
-	ModificationTime time.Time        `xml:"modification_time,omitempty"`
+	CreationTime     GMPTime          `xml:"creation_time,omitempty"`
+	ModificationTime GMPTime          `xml:"modification_time,omitempty"`
 	Writable         bool             `xml:"writable,omitempty"`
 	InUse            bool             `xml:"in_use,omitempty"`
 	Task             *ReportTask      `xml:"task,omitempty"`
@@ -102,9 +101,9 @@ type ReportContent struct {
 	SSLCerts        *ReportCount           `xml:"ssl_certs,omitempty"`
 	Host            []ReportHost           `xml:"host,omitempty"`
 	TLSCertificates *ReportTLSCertificates `xml:"tls_certificates,omitempty"`
-	Timestamp       time.Time              `xml:"timestamp,omitempty"`
-	ScanStart       time.Time              `xml:"scan_start,omitempty"`
-	ScanEnd         time.Time              `xml:"scan_end,omitempty"`
+	Timestamp       GMPTime                `xml:"timestamp,omitempty"`
+	ScanStart       GMPTime                `xml:"scan_start,omitempty"`
+	ScanEnd         GMPTime                `xml:"scan_end,omitempty"`
 	Errors          *ReportErrors          `xml:"errors,omitempty"`
 }
 
@@ -230,8 +229,8 @@ type ReportResult struct {
 	Name             string          `xml:"name,omitempty"`
 	Owner            *ReportOwner    `xml:"owner,omitempty"`
 	Comment          string          `xml:"comment,omitempty"`
-	CreationTime     time.Time       `xml:"creation_time,omitempty"`
-	ModificationTime time.Time       `xml:"modification_time,omitempty"`
+	CreationTime     GMPTime         `xml:"creation_time,omitempty"`
+	ModificationTime GMPTime         `xml:"modification_time,omitempty"`
 	UserTags         *ReportUserTags `xml:"user_tags,omitempty"`
 	Report           *ReportRef      `xml:"report,omitempty"`
 	Task             *ReportTaskRef  `xml:"task,omitempty"`
@@ -306,19 +305,19 @@ type ReportTLSCertificates struct {
 	Certificates []ReportTLSCertificate `xml:"tls_certificate,omitempty"`
 }
 type ReportTLSCertificate struct {
-	Name              string    `xml:"name,omitempty"`
-	Certificate       string    `xml:"certificate,omitempty"`
-	Format            string    `xml:"format,attr,omitempty"`
-	SHA256Fingerprint string    `xml:"sha256_fingerprint,omitempty"`
-	MD5Fingerprint    string    `xml:"md5_fingerprint,omitempty"`
-	Valid             bool      `xml:"valid,omitempty"`
-	ActivationTime    time.Time `xml:"activation_time,omitempty"`
-	ExpirationTime    time.Time `xml:"expiration_time,omitempty"`
-	SubjectDN         string    `xml:"subject_dn,omitempty"`
-	IssuerDN          string    `xml:"issuer_dn,omitempty"`
-	Serial            string    `xml:"serial,omitempty"`
-	Host              string    `xml:"host,omitempty"`
-	Ports             []int     `xml:"ports>port,omitempty"`
+	Name              string  `xml:"name,omitempty"`
+	Certificate       string  `xml:"certificate,omitempty"`
+	Format            string  `xml:"format,attr,omitempty"`
+	SHA256Fingerprint string  `xml:"sha256_fingerprint,omitempty"`
+	MD5Fingerprint    string  `xml:"md5_fingerprint,omitempty"`
+	Valid             bool    `xml:"valid,omitempty"`
+	ActivationTime    GMPTime `xml:"activation_time,omitempty"`
+	ExpirationTime    GMPTime `xml:"expiration_time,omitempty"`
+	SubjectDN         string  `xml:"subject_dn,omitempty"`
+	IssuerDN          string  `xml:"issuer_dn,omitempty"`
+	Serial            string  `xml:"serial,omitempty"`
+	Host              string  `xml:"host,omitempty"`
+	Ports             []int   `xml:"ports>port,omitempty"`
 }
 type ReportErrors struct {
 	Count  int           `xml:"count,omitempty"`

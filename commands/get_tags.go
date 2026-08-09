@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/xml"
-	"time"
 )
 
 // GetTags represents a get_tags command request.
@@ -31,8 +30,8 @@ type Tag struct {
 	ID               string          `xml:"id,attr"`
 	Name             string          `xml:"name"`
 	Comment          string          `xml:"comment,omitempty"`
-	CreationTime     time.Time       `xml:"creation_time,omitempty"`
-	ModificationTime time.Time       `xml:"modification_time,omitempty"`
+	CreationTime     GMPTime         `xml:"creation_time,omitempty"`
+	ModificationTime GMPTime         `xml:"modification_time,omitempty"`
 	Writable         bool            `xml:"writable,omitempty"`
 	InUse            bool            `xml:"in_use,omitempty"`
 	Value            string          `xml:"value,omitempty"`
