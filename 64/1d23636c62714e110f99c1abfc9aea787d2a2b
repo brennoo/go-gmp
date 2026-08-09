@@ -1,0 +1,63 @@
+.github/workflows/go.yml
+  s_5c6a30fc3b4b22::t_18884db29fe988 36-43,54
+hack/generate.sh
+  s_5c6a30fc3b4b22::t_2809ca953892f0 2-4,6-10,12-16,25-28,31
+internal/cmd/gengmp/main.go
+  s_5c6a30fc3b4b22::t_78dbbce5fcd879 2-3,5-12,14-16,25,30-34,42-50,52-54,56,58-62,64-80,84-117,119-131,133,135,137,140,145-146,158,165
+internal/cmd/gengmp/main_test.go
+  s_5c6a30fc3b4b22::t_c65cb004179e0a 1-103
+internal/codegen/check.go
+  s_5c6a30fc3b4b22::t_03f6914e1ef14e 1-211
+internal/codegen/check_test.go
+  s_5c6a30fc3b4b22::t_1f8253f9f112cb 1-259
+internal/codegen/generate.go
+  s_5c6a30fc3b4b22::t_63b56e3513b7cb 57-139,444
+internal/codegen/generate_test.go
+  s_5c6a30fc3b4b22::t_4874e6c90b5d20 86-93,108-116,171-173,176-188,192,194,199-210
+internal/codegen/manifest.go
+  s_5c6a30fc3b4b22::t_477de5b6100990 1-225
+internal/codegen/manifest.json
+  s_5c6a30fc3b4b22::t_32e99dcc08aa83 1-13
+internal/codegen/manifest_test.go
+  s_5c6a30fc3b4b22::t_e23c4acba9d47c 1-302
+internal/codegen/overrides.go
+  s_5c6a30fc3b4b22::t_1bcb32dab66266 39-57
+internal/codegen/snapshot.go
+  s_5c6a30fc3b4b22::t_2c9b5895f3aa83 40-49
+internal/codegen/snapshot_test.go
+  s_5c6a30fc3b4b22::t_65634a6e26db29 34,37,89-90,94-95,98-99
+internal/codegen/testdata/golden/create_override.go
+  s_5c6a30fc3b4b22::t_eca4b7da6d053e 1-35
+internal/codegen/testdata/golden/get_overrides.go
+  s_5c6a30fc3b4b22::t_bb4c57c3c15e1d 1-350
+internal/codegen/testdata/golden/modify_override.go
+  s_5c6a30fc3b4b22::t_d5d8b16b485223 1-34
+internal/codegen/testdata/golden/override_shared.go
+  s_5c6a30fc3b4b22::t_309d998767affe 1-18
+internal/codegen/testdata/schema/create_override.json
+  s_5c6a30fc3b4b22::t_47584af24fa029 1-190
+internal/codegen/testdata/schema/get_overrides.json
+  s_5c6a30fc3b4b22::t_0726ee5ed64108 1-1792
+internal/codegen/testdata/schema/modify_override.json
+  s_5c6a30fc3b4b22::t_584d6b78b44a22 1-181
+internal/codegen/validate.go
+  s_5c6a30fc3b4b22::t_7482ff8c256a26 90-106,121-132,151-152
+internal/codegen/validate_test.go
+  s_5c6a30fc3b4b22::t_3ff0c5fadbdeb5 12-14,16-21,23-27,85,151,159-252,282-284
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "641d23636c62714e110f99c1abfc9aea787d2a2b",
+  "prompts": {},
+  "sessions": {
+    "s_5c6a30fc3b4b22": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_5c6a30fc3b4b22",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
