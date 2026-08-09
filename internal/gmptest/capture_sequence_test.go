@@ -911,7 +911,7 @@ func (r *captureRun) annotationOverride(st *captureState) {
 	id := r.created("create_override", "annotations: create_override on the imported result's NVT",
 		&commands.CreateOverride{
 			Text:        "go-gmp fixture override. " + captureComment,
-			NVT:         &commands.OverrideNVT{OID: st.nvtOID},
+			NVT:         commands.OverrideNVT{OID: st.nvtOID},
 			NewSeverity: commands.Float64(2.0),
 		},
 		func(id string) {

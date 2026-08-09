@@ -12,7 +12,7 @@
 
 fixtures: 320   clean: 186   with-loss: 119   decode-errors: 14   advisory: 1
 commands with loss: 37 of 122
-distinct dropped paths: 270
+distinct dropped paths: 265
 
 ## Per fixture
 
@@ -176,9 +176,9 @@ get_nvts                     upstream  001 ok            dropped=8   truncated=0
 get_nvts                     upstream  002 clean         dropped=0   truncated=0   changed=0   added=4  
 get_overrides                live      001 ok            dropped=2   truncated=0   changed=0   added=0  
 get_overrides                live      002 ok            dropped=2   truncated=0   changed=0   added=0  
-get_overrides                live      003 ok            dropped=6   truncated=0   changed=2   added=0  
-get_overrides                upstream  001 ok            dropped=3   truncated=0   changed=3   added=0  
-get_overrides                upstream  002 ok            dropped=4   truncated=0   changed=3   added=0  
+get_overrides                live      003 ok            dropped=2   truncated=0   changed=0   added=1  
+get_overrides                upstream  001 ok            dropped=1   truncated=0   changed=1   added=22 
+get_overrides                upstream  002 ok            dropped=2   truncated=0   changed=1   added=59 
 get_permissions              live      001 ok            dropped=11  truncated=0   changed=0   added=0  
 get_permissions              live      002 ok            dropped=11  truncated=0   changed=0   added=0  
 get_permissions              live      003 ok            dropped=8   truncated=0   changed=1   added=0  

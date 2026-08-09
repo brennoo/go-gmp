@@ -159,47 +159,30 @@ func TestValidateGeneratedMatchesOrImproves(t *testing.T) {
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
 
-// TestValidateOverrideBeforeMatchesHandWritten is the override family's
-// counterpart to TestValidateBeforeMatchesKnownConformance, and unlike that one
-// it still pins genuinely hand-written numbers: the override family is
-// review_only in the manifest, so commands/{create_override,modify_override,
-// get_overrides}.go have not been swapped and these are the counts the
-// generated types have to match or beat.
+// TestValidateOverrideBeforeMatchesKnownConformance is the override family's
+// counterpart to TestValidateBeforeMatchesKnownConformance.
 //
-// Every one of them is a real gap in the hand-written code, not a modelling
-// preference:
+// Since the swap-in, commands/{create_override,modify_override,get_overrides,
+// override_shared}.go *are* the generator's output, so "before" and "after"
+// now describe the same source and these numbers equal wantAfter's — a drift
+// detector on the committed files, not a weaker assertion.
 //
-//   - create_override, modify_override: EXTRA 2 each (OverrideNVT carries
-//     Name and Type, which the request schema's <nvt> — an oid attribute and
-//     nothing else — does not declare) and MISSING 2 each (Result and Task are
-//     plain strings where the schema declares an element with an id attribute,
-//     so the id can be neither sent nor read).
-//   - get_overrides: EXTRA 3 (a @trash request attribute the schema does not
-//     declare, plus cve/bid on the result NVT), MISSING 27 (2 request
-//     attributes, nvt_oid and task_id, and 25 response elements — most of
-//     <result>, including delta, detection, notes, overrides, tickets, epss,
-//     refs, severities and both timestamps), TYPE 6 (four bools where the
-//     schema's lexical "boolean" needs GMPBool, cvss_base string where the
-//     schema says integer, severity string where it says severity/float64),
-//     SCHEMA-DEFECT 2 (two upstream duplicate-ele bugs), and 40 suppressed
-//     OMITEMPTY findings where a schema-required field is tagged omitempty.
-func TestValidateOverrideBeforeMatchesHandWritten(t *testing.T) {
+// For the record, the pre-swap hand-written numbers this used to pin, all of
+// which generation closed (see TestValidateOverrideGeneratedMatchesOrImproves
+// for the per-finding explanation):
+//
+//	create_override, modify_override: actionable EXTRA 2, MISSING 2 each
+//	get_overrides: actionable EXTRA 3, MISSING 28, TYPE 6, SCHEMA-DEFECT 2,
+//	               suppressed OMITEMPTY 40
+func TestValidateOverrideBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_override")
 
 	want := map[string]counts{
-		"create_override": {
-			actionable: map[string]int{schema.CatExtra: 2, schema.CatMissing: 2},
-			suppressed: map[string]int{},
-		},
-		"modify_override": {
-			actionable: map[string]int{schema.CatExtra: 2, schema.CatMissing: 2},
-			suppressed: map[string]int{},
-		},
+		"create_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_overrides": {
-			actionable: map[string]int{
-				schema.CatExtra: 3, schema.CatMissing: 27, schema.CatType: 6, schema.CatDefect: 2,
-			},
-			suppressed: map[string]int{schema.CatOmitEmpty: 40},
+			actionable: map[string]int{schema.CatDefect: 2},
+			suppressed: map[string]int{},
 		},
 	}
 	for _, res := range before {
@@ -215,25 +198,30 @@ func TestValidateOverrideBeforeMatchesHandWritten(t *testing.T) {
 // TestValidateOverrideGeneratedMatchesOrImproves is the override family's
 // pre-swap gate, run at the same rigour the note family's was.
 //
-// The result: generation closes all 84 findings (44 actionable, 40 suppressed)
-// except the two SCHEMA-DEFECT ones on get_overrides, which are byte-identical
-// before and after. Those two are cmd.Defects — upstream duplicate-ele bugs in
-// the schema itself, copied into the result before Comparer looks at any Go
+// What this run found while override was still review_only: generation
+// closed all 84 findings (44 actionable, 40 suppressed) except the two
+// SCHEMA-DEFECT ones on get_overrides, which are byte-identical before and
+// after. Those two are cmd.Defects — upstream duplicate-ele bugs in the
+// schema itself, copied into the result before Comparer looks at any Go
 // type — so no generated output can move them, exactly as for get_notes.
 //
-// Nothing regresses and no new category appears, so the assertion below is the
-// strongest form: after == {SCHEMA-DEFECT: 2} for get_overrides and empty for
-// the other two.
+//   - create_override, modify_override: the EXTRA 2/MISSING 2 pairs closed
+//     because the generated OverrideNVT has no Name/Type fields the schema
+//     doesn't declare, and Result/Task became ID-bearing structs instead of
+//     bare strings.
+//   - get_overrides: all 28 MISSING findings closed (2 request attributes,
+//     25 response elements, and 1 chardata site — the schema's <sort>
+//     declares bare text alongside its <field> child, which schema.Comparer
+//     now understands via Node.Chardata, matched by the generated
+//     OverrideSort's own Value field), the 40 suppressed OMITEMPTY findings
+//     closed, the 6 TYPE findings closed (GMPBool for lexical booleans,
+//     float64 for severity — cvss_base stays int, matching the schema's own
+//     declaration), and the 3 EXTRA findings closed (the undeclared @trash
+//     request attribute and result-NVT cve/bid are gone).
 //
-// One loss the comparer cannot see, recorded here because it is the same
-// limitation the note family hit and it will matter at swap-in time: the schema
-// DSL has no way to say "this element has attributes *and* character data", so
-// the generated OverrideText models only <text excerpt="">'s attribute and
-// drops the override text itself, and OverrideHost likewise drops the hostname
-// chardata the hand-written OverrideResultHost.Value carries. schema.Comparer
-// compares declared children, not chardata, so neither shows up as a finding in
-// either direction — it is invisible to this test by construction, not
-// suppressed by it.
+// Nothing regresses and no new category appears, so the assertion below is
+// the strongest form: after == {SCHEMA-DEFECT: 2} for get_overrides and
+// empty for the other two.
 func TestValidateOverrideGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_override")
 

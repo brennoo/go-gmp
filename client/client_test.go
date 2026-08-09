@@ -431,7 +431,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.CreateOverride); ok {
-		if cmd.Text == "This is actually of little concern." && cmd.NVT.OID == "1.3.6.1.4.1.25623.1.0.10330" && cmd.NewThreat == "Low" && cmd.Result == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+		if cmd.Text == "This is actually of little concern." && cmd.NVT.OID == "1.3.6.1.4.1.25623.1.0.10330" && cmd.NewThreat == "Low" && cmd.Result != nil && cmd.Result.ID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
 			(*response.(*commands.CreateOverrideResponse)).Status = "201"
 			(*response.(*commands.CreateOverrideResponse)).StatusText = "OK, resource created"
 			(*response.(*commands.CreateOverrideResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
@@ -453,15 +453,15 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		if cmd.OverrideID == "b76b81a7-9df8-42df-afff-baa9d4620128" {
 			(*response.(*commands.GetOverridesResponse)).Status = "200"
 			(*response.(*commands.GetOverridesResponse)).StatusText = "OK"
-			(*response.(*commands.GetOverridesResponse)).Overrides = []commands.Override{
+			(*response.(*commands.GetOverridesResponse)).Override = []commands.Override{
 				{
 					ID:          "b76b81a7-9df8-42df-afff-baa9d4620128",
-					Text:        &commands.OverrideText{Text: "This is the full text of the override."},
+					Text:        commands.OverrideText{Value: "This is the full text of the override."},
 					NewThreat:   "Log",
 					NewSeverity: 0.0,
 					Orphan:      true,
 					Active:      true,
-					NVT:         &commands.OverrideNVT{OID: "1.3.6.1.4.1.25623.1.0.75", Name: "Test NVT: long lines"},
+					NVT:         commands.GetOverridesNVT{OID: "1.3.6.1.4.1.25623.1.0.75", Name: "Test NVT: long lines"},
 				},
 			}
 		} else {

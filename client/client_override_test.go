@@ -15,9 +15,9 @@ func TestCreateOverride(t *testing.T) {
 
 	cmd := &commands.CreateOverride{
 		Text:      "This is actually of little concern.",
-		NVT:       &commands.OverrideNVT{OID: "1.3.6.1.4.1.25623.1.0.10330"},
+		NVT:       commands.OverrideNVT{OID: "1.3.6.1.4.1.25623.1.0.10330"},
 		NewThreat: "Low",
-		Result:    "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
+		Result:    &commands.OverrideResult{ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"},
 	}
 	resp, err := cli.CreateOverride(context.Background(), cmd)
 	if err != nil {
@@ -74,11 +74,11 @@ func TestGetOverrides(t *testing.T) {
 	if resp.StatusText != "OK" {
 		t.Errorf("Expected status text OK, got %s", resp.StatusText)
 	}
-	if len(resp.Overrides) != 1 {
-		t.Errorf("Expected 1 override, got %d", len(resp.Overrides))
+	if len(resp.Override) != 1 {
+		t.Errorf("Expected 1 override, got %d", len(resp.Override))
 	}
-	if resp.Overrides[0].ID != "b76b81a7-9df8-42df-afff-baa9d4620128" {
-		t.Errorf("Expected override ID b76b81a7-9df8-42df-afff-baa9d4620128, got %s", resp.Overrides[0].ID)
+	if resp.Override[0].ID != "b76b81a7-9df8-42df-afff-baa9d4620128" {
+		t.Errorf("Expected override ID b76b81a7-9df8-42df-afff-baa9d4620128, got %s", resp.Override[0].ID)
 	}
 }
 

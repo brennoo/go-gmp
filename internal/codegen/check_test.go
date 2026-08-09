@@ -176,10 +176,13 @@ func TestCheckOutputIgnoresUnmarkedAndNonGo(t *testing.T) {
 }
 
 func TestCheckOutputDetectsAbsentSnapshot(t *testing.T) {
-	// A manifest naming a command with no snapshot file at all.
+	// A manifest naming a command with no snapshot file at all, alongside
+	// every family newOutDir actually seeded the directory with — otherwise
+	// the seeded families' own files would show up as unrelated Obsolete
+	// findings, masking the one this test cares about.
 	dir := newOutDir(t)
-	m := writeManifest(t, `{"families":[{"name":"note","commands":["create_note","get_notes","modify_note"]},
-		{"name":"phantom","commands":["get_phantoms"]}]}`)
+	m := Manifest{Families: append(append([]Family{}, manifestOrFail(t).Adopted().Families...),
+		Family{Name: "phantom", Commands: []string{"get_phantoms"}})}
 
 	r := checkOrFail(t, m, snapshotDir, dir)
 	if len(r.MalformedSnapshots) != 1 || !strings.HasPrefix(r.MalformedSnapshots[0], "get_phantoms: ") {

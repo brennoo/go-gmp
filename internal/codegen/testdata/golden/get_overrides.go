@@ -55,6 +55,7 @@ type OverrideKeyword struct {
 
 // OverrideSort is the <sort> element of get_overrides. See the GMP protocol docs for details.
 type OverrideSort struct {
+	Value string        `xml:",chardata"`
 	Field OverrideField `xml:"field"`
 }
 
@@ -124,6 +125,7 @@ type GetOverridesNVT struct {
 
 // OverrideText is the <text> element of get_overrides. See the GMP protocol docs for details.
 type OverrideText struct {
+	Value   string  `xml:",chardata"`
 	Excerpt GMPBool `xml:"excerpt,attr"`
 }
 
@@ -180,6 +182,7 @@ type GetOverridesResult struct {
 
 // OverrideHost is the <host> element of get_overrides. See the GMP protocol docs for details.
 type OverrideHost struct {
+	Value    string        `xml:",chardata"`
 	Asset    OverrideAsset `xml:"asset"`
 	Hostname string        `xml:"hostname"`
 }
@@ -274,6 +277,7 @@ type OverrideResultTask struct {
 
 // OverrideDelta is the <delta> element of get_overrides. See the GMP protocol docs for details.
 type OverrideDelta struct {
+	Value     string                  `xml:",chardata"`
 	Result    string                  `xml:"result,omitempty"`
 	Diff      string                  `xml:"diff,omitempty"`
 	Notes     *OverrideNotes          `xml:"notes,omitempty"`

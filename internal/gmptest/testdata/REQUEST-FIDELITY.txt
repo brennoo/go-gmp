@@ -8,8 +8,8 @@
 # silently fails to ever emit).
 # Regenerate with: go test ./internal/gmptest -run TestRequestRoundTrip -update
 
-requests-compared: 320   clean: 301   with-loss: 17   decode-errors: 2   advisory: 0   skipped-no-request: 0
-commands with a recorded request: 122 of 122   commands with loss: 15
+requests-compared: 320   clean: 300   with-loss: 18   decode-errors: 2   advisory: 0   skipped-no-request: 0
+commands with a recorded request: 122 of 122   commands with loss: 16
 
 ## Per fixture
 
@@ -37,7 +37,7 @@ create_group                 upstream  001 clean         dropped=0   truncated=0
 create_note                  live      001 clean         dropped=0   truncated=0   changed=0   added=0  
 create_note                  upstream  001 ok            dropped=1   truncated=0   changed=0   added=1  
 create_override              live      001 clean         dropped=0   truncated=0   changed=0   added=0  
-create_override              upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
+create_override              upstream  001 ok            dropped=1   truncated=0   changed=0   added=1  
 create_permission            live      001 clean         dropped=0   truncated=0   changed=0   added=0  
 create_permission            upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
 create_permission            upstream  002 clean         dropped=0   truncated=0   changed=0   added=0  

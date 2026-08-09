@@ -6,8 +6,7 @@
     },
     {
       "name": "override",
-      "commands": ["create_override", "get_overrides", "modify_override"],
-      "review_only": true
+      "commands": ["create_override", "get_overrides", "modify_override"]
     }
   ]
 }

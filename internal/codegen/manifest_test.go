@@ -8,19 +8,6 @@ import (
 	"github.com/brennoo/go-gmp/internal/schema"
 )
 
-// writeManifest writes body to a temp file and loads it, failing the test if
-// it does not validate. Tests that expect a rejection use loadManifestErr.
-func writeManifest(t *testing.T, body string) Manifest {
-	t.Helper()
-	path := filepath.Join(t.TempDir(), manifestFile)
-	writeTestFile(t, path, body)
-	m, err := LoadManifest(path)
-	if err != nil {
-		t.Fatalf("LoadManifest(%s) failed: %v", body, err)
-	}
-	return m
-}
-
 func loadManifestErr(t *testing.T, body string) string {
 	t.Helper()
 	path := filepath.Join(t.TempDir(), manifestFile)
@@ -37,12 +24,11 @@ func loadManifestErr(t *testing.T, body string) string {
 func TestCommittedManifest(t *testing.T) {
 	m := manifestOrFail(t)
 
-	// note is adopted: commands/{create_note,get_notes,modify_note,
-	// note_shared}.go are the generator's output. override is review-only: its
-	// output is a golden under testdata/golden, and commands/ still holds the
-	// hand-written originals, which -check must not call stale.
+	// Both families are adopted: commands/{create_note,get_notes,modify_note,
+	// note_shared,create_override,get_overrides,modify_override,
+	// override_shared}.go are all the generator's output.
 	assertFamily(t, m, "get_notes", "note", false)
-	assertFamily(t, m, "get_overrides", "override", true)
+	assertFamily(t, m, "get_overrides", "override", false)
 	if _, ok := m.FamilyOf("delete_note"); ok {
 		t.Error("FamilyOf(delete_note) claims a family the manifest does not declare")
 	}
@@ -51,12 +37,12 @@ func TestCommittedManifest(t *testing.T) {
 	if got := m.AllCommands(); strings.Join(got, ",") != strings.Join(want, ",") {
 		t.Errorf("AllCommands() = %v, want %v", got, want)
 	}
-	wantAdopted := []string{"create_note", "get_notes", "modify_note"}
+	wantAdopted := want
 	if got := m.Adopted().AllCommands(); strings.Join(got, ",") != strings.Join(wantAdopted, ",") {
 		t.Errorf("Adopted().AllCommands() = %v, want %v", got, wantAdopted)
 	}
-	if got := m.ReviewOnlyFamilies(); strings.Join(got, ",") != "override" {
-		t.Errorf("ReviewOnlyFamilies() = %v, want [override]", got)
+	if got := m.ReviewOnlyFamilies(); len(got) != 0 {
+		t.Errorf("ReviewOnlyFamilies() = %v, want none", got)
 	}
 
 	assertFiles(t, "ExpectedOutputFiles", m.ExpectedOutputFiles("commands"), []string{
@@ -64,7 +50,8 @@ func TestCommittedManifest(t *testing.T) {
 		"modify_note.go", "modify_override.go", "note_shared.go", "override_shared.go",
 	})
 	assertFiles(t, "Adopted().ExpectedOutputFiles", m.Adopted().ExpectedOutputFiles("commands"), []string{
-		"create_note.go", "get_notes.go", "modify_note.go", "note_shared.go",
+		"create_note.go", "create_override.go", "get_notes.go", "get_overrides.go",
+		"modify_note.go", "modify_override.go", "note_shared.go", "override_shared.go",
 	})
 
 	if got, want := m.SnapshotPath("d", "get_notes"), SnapshotPath("d", "get_notes"); got != want {

@@ -29,10 +29,10 @@ them, so response-side optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             47
-with actionable findings:     75
-actionable findings:          697  (request 298, response 399)
-suppressed findings:          809
+fully conformant:             50
+with actionable findings:     72
+actionable findings:          652  (request 287, response 365)
+suppressed findings:          769
 confirmed by fidelity corpus: 79
 in the schema, not in Go:     0
 in Go, not in the schema:     0
@@ -40,12 +40,12 @@ in Go, not in the schema:     0
 ### Findings by category
 
                  actionable suppressed
-  MISSING               260          0
-  EXTRA                 248          0
+  MISSING               228          0
+  EXTRA                 241          0
   CARDINALITY            43          0
   KIND                   17          0
-  OMITEMPTY              10        809
-  TYPE                  119          0
+  OMITEMPTY              10        769
+  TYPE                  113          0
   SCHEMA-DEFECT         109          0
 
 ### Schema defects by class
@@ -78,7 +78,6 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_reports                  70   MISSING=55  EXTRA=6  CARDINALITY=5  TYPE=4
   create_report                52   MISSING=38  EXTRA=5  CARDINALITY=5  TYPE=4
   get_tasks                    42   MISSING=11  EXTRA=15  CARDINALITY=7  TYPE=9
-  get_overrides                37   MISSING=28  EXTRA=3  TYPE=6
   get_report_formats           30   MISSING=18  EXTRA=3  CARDINALITY=1  KIND=2  TYPE=6
   get_targets                  30   MISSING=12  EXTRA=10  KIND=3  TYPE=5
   get_info                     22   MISSING=12  EXTRA=7  TYPE=3
@@ -95,7 +94,8 @@ taken against upstream main (155 commands). Two reasons, both expected:
   modify_config                14   EXTRA=6  CARDINALITY=3  OMITEMPTY=2  TYPE=3
   get_roles                    13   MISSING=11  TYPE=2
   modify_task                  13   MISSING=1  EXTRA=12
-  ... and 55 more with fewer
+  get_aggregates               12   MISSING=5  EXTRA=5  CARDINALITY=2
+  ... and 52 more with fewer
 
 ### Confirmed by both oracles
 
@@ -250,16 +250,7 @@ conformant
 
 ### create_override  (command_create_override.xml)
 
-MISSING=2  EXTRA=2
-
-  MISSING       request  /create_override/result/*
-                schema declares 1 children; Go models this as scalar string
-  MISSING       request  /create_override/task/*
-                schema declares 1 children; Go models this as scalar string
-  EXTRA         request  /create_override/nvt/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /create_override/nvt/type
-                Go field Type string has no counterpart in the schema
+conformant
 
 ### create_permission  (command_create_permission.xml)
 
@@ -1693,162 +1684,8 @@ MISSING=6  EXTRA=1  CARDINALITY=7  OMITEMPTY=19  TYPE=4
 
 ### get_overrides  (command_get_overrides.xml)
 
-MISSING=28  EXTRA=3  OMITEMPTY=40  TYPE=6  SCHEMA-DEFECT=2
+SCHEMA-DEFECT=2
 
-  MISSING       request  /get_overrides/@nvt_oid
-                optional attr nvt_oid is not modelled
-  MISSING       request  /get_overrides/@task_id
-                optional attr task_id is not modelled
-  EXTRA         request  /get_overrides/@trash
-                Go field Trash string has no counterpart in the schema
-  MISSING       response /get_overrides_response/override/result/comment
-                required elem comment is not modelled
-  MISSING       response /get_overrides_response/override/result/compliance
-                required elem compliance is not modelled
-  MISSING       response /get_overrides_response/override/result/creation_time
-                required elem creation_time is not modelled
-  MISSING       response /get_overrides_response/override/result/delta
-                optional elem delta is not modelled
-  MISSING       response /get_overrides_response/override/result/detection
-                optional elem detection is not modelled
-  MISSING       response /get_overrides_response/override/result/host/hostname
-                required elem hostname is not modelled
-  MISSING       response /get_overrides_response/override/result/modification_time
-                required elem modification_time is not modelled
-  MISSING       response /get_overrides_response/override/result/name
-                required elem name is not modelled
-  MISSING       response /get_overrides_response/override/result/notes
-                optional elem notes is not modelled
-  MISSING       response /get_overrides_response/override/result/nvt/cpe
-                required elem cpe is not modelled
-  MISSING       response /get_overrides_response/override/result/nvt/epss
-                optional elem epss is not modelled
-  MISSING       response /get_overrides_response/override/result/nvt/family
-                required elem family is not modelled
-  MISSING       response /get_overrides_response/override/result/nvt/refs
-                required elem refs is not modelled
-  MISSING       response /get_overrides_response/override/result/nvt/severities
-                required elem severities is not modelled
-  MISSING       response /get_overrides_response/override/result/nvt/tags
-                required elem tags is not modelled
-  MISSING       response /get_overrides_response/override/result/original_severity
-                optional elem original_severity is not modelled
-  MISSING       response /get_overrides_response/override/result/original_threat
-                optional elem original_threat is not modelled
-  MISSING       response /get_overrides_response/override/result/overrides
-                optional elem overrides is not modelled
-  MISSING       response /get_overrides_response/override/result/owner
-                required elem owner is not modelled
-  MISSING       response /get_overrides_response/override/result/path
-                optional elem path is not modelled
-  MISSING       response /get_overrides_response/override/result/report
-                optional elem report is not modelled
-  MISSING       response /get_overrides_response/override/result/scan_nvt_version
-                required elem scan_nvt_version is not modelled
-  MISSING       response /get_overrides_response/override/result/task
-                optional elem task is not modelled
-  MISSING       response /get_overrides_response/override/result/tickets
-                optional elem tickets is not modelled
-  MISSING       response /get_overrides_response/override/result/user_tags
-                optional elem user_tags is not modelled
-  MISSING       response /get_overrides_response/sort/#text
-                schema also declares character data (text) here; Go *commands.OverrideSort has no `,chardata` field
-  EXTRA         response /get_overrides_response/override/result/nvt/bid
-                Go field BID int has no counterpart in the schema
-  EXTRA         response /get_overrides_response/override/result/nvt/cve
-                Go field CVE string has no counterpart in the schema
-  OMITEMPTY     response /get_overrides_response/filters
-                schema says required, Filters is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/active
-                schema says required, Active is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/creation_time
-                schema says required, CreationTime is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/in_use
-                schema says required, InUse is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/modification_time
-                schema says required, ModificationTime is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/new_severity
-                schema says required, NewSeverity is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/new_threat
-                schema says required, NewThreat is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/nvt
-                schema says required, NVT is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/nvt/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/nvt/type
-                schema says required, Type is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/orphan
-                schema says required, Orphan is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/owner
-                schema says required, Owner is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/permissions
-                schema says required, Permissions is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/result/description
-                schema says required, Description is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/result/host
-                schema says required, Host is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/result/host/asset
-                schema says required, Asset is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/result/nvt
-                schema says required, NVT is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/result/nvt/cvss_base
-                schema says required, CVSSBase is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/result/nvt/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/result/nvt/type
-                schema says required, Type is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/result/port
-                schema says required, Port is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/result/qod
-                schema says required, QOD is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/result/qod/type
-                schema says required, Type is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/result/qod/value
-                schema says required, Value is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/result/severity
-                schema says required, Severity is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/result/threat
-                schema says required, Threat is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/severity
-                schema says required, Severity is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/task/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/task/trash
-                schema says required, Trash is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/text
-                schema says required, Text is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/text/@excerpt
-                schema says required, Excerpt is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/threat
-                schema says required, Threat is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/user_tags/count
-                schema says required, Count is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/user_tags/tag/comment
-                schema says required, Comment is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/user_tags/tag/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/user_tags/tag/value
-                schema says required, Value is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override/writable
-                schema says required, Writable is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/override_count
-                schema says required, Count is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/overrides
-                schema says required, Pagination is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_overrides_response/sort
-                schema says required, Sort is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  TYPE          response /get_overrides_response/override/active
-                schema type boolean is text ("" is true), Go Active is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_overrides_response/override/in_use
-                schema type boolean is text ("" is true), Go InUse is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_overrides_response/override/orphan
-                schema type boolean is text ("" is true), Go Orphan is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_overrides_response/override/result/nvt/cvss_base
-                schema type integer, Go CVSSBase is string (want int)
-  TYPE          response /get_overrides_response/override/result/severity
-                schema type severity, Go Severity is string (want float64)
-  TYPE          response /get_overrides_response/override/writable
-                schema type boolean is text ("" is true), Go Writable is bool: '7' fails to decode and '1' re-emits as 'true'
   SCHEMA-DEFECT response /get_overrides_response/override/active
                 duplicate-ele: redefined in the same scope
   SCHEMA-DEFECT response /get_overrides_response/override/result/delta/notes/note/active
@@ -3717,16 +3554,7 @@ conformant
 
 ### modify_override  (command_modify_override.xml)
 
-MISSING=2  EXTRA=2
-
-  MISSING       request  /modify_override/result/*
-                schema declares 1 children; Go models this as scalar string
-  MISSING       request  /modify_override/task/*
-                schema declares 1 children; Go models this as scalar string
-  EXTRA         request  /modify_override/nvt/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /modify_override/nvt/type
-                Go field Type string has no counterpart in the schema
+conformant
 
 ### modify_permission  (command_modify_permission.xml)
 
