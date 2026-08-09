@@ -1,9 +1,13 @@
 package codegen
 
 import (
+	"encoding/xml"
 	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
 	"sort"
+	"strings"
 	"testing"
 
 	"github.com/brennoo/go-gmp/internal/schema"
@@ -231,6 +235,190 @@ func TestValidateOverrideGeneratedMatchesOrImproves(t *testing.T) {
 		"get_overrides":   {actionable: map[string]int{schema.CatDefect: 2}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
+}
+
+// TestValidateRoleBeforeMatchesKnownConformance is the role family's
+// counterpart to TestValidateBeforeMatchesKnownConformance. role is still
+// review_only, so commands/{create_role,modify_role,get_roles}.go are the
+// hand-written originals — this pins the pre-swap gate the family was
+// selected to exercise.
+//
+// create_role and modify_role are already conformant (zero findings either
+// side); get_roles carries the family's entire actionable/suppressed load,
+// and unlike note and override it has zero SCHEMA-DEFECT findings — role's
+// schema has no known upstream defect, which was one of the criteria that
+// ranked it above the other create/get/modify candidates.
+func TestValidateRoleBeforeMatchesKnownConformance(t *testing.T) {
+	before, _ := validateOrSkip(t, "create_role")
+
+	want := map[string]counts{
+		"create_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_roles": {
+			actionable: map[string]int{schema.CatMissing: 11, schema.CatType: 2},
+			suppressed: map[string]int{schema.CatOmitEmpty: 6},
+		},
+	}
+	for _, res := range before {
+		w, ok := want[res.Command]
+		if !ok {
+			t.Errorf("%s: unexpected command in Validate's before results", res.Command)
+			continue
+		}
+		assertCounts(t, "before", res.Command, w, countFindings(res.Findings))
+	}
+}
+
+// TestValidateRoleGeneratedMatchesOrImproves is the role family's pre-swap
+// gate, run at the same rigour the note and override families were.
+//
+// Generation closes every actionable and suppressed finding on all three
+// commands, leaving all of them clean: the 11 MISSING findings on get_roles
+// close (request filter attributes plus response elements — see
+// testdata/golden/get_roles.go), the 2 TYPE findings close (Writable/InUse
+// become commands.GMPBool), and the 6 suppressed OMITEMPTY findings close
+// (the generated struct's omitempty/pointer choices track the schema's
+// required/optional exactly). Since role has no SCHEMA-DEFECT findings to
+// begin with, "after" is empty for every command in this family.
+//
+// "Empty" describes what schema.Comparer can see, which is bounded by what
+// the schema's own <pattern> declares — it is not a claim that the generated
+// model is a lossless mirror of every byte gvmd sends. role_count is a
+// concrete counterexample: TestRoleCountBareTotalIsAnAcceptedLoss pins a
+// case, identical in kind to create_override's result-as-text gap (see the
+// "Accepted evidence" note in docs/review-2026-08.md), where the schema's own
+// <pattern> for role_count declares only <e>filtered</e>/<e>page</e> with no
+// text token anywhere in it, while both bundled command_get_roles.xml
+// examples and a live capture send a bare total ("1", "6") ahead of those two
+// children. Comparer has nothing to compare against for content the pattern
+// never declares, so this loss is invisible to it — and, per the same
+// generate-only-what-the-schema-declares principle that left boolean_atoi
+// without an override, it is accepted and documented rather than patched
+// into RoleCount as a field the schema itself never asked for.
+func TestValidateRoleGeneratedMatchesOrImproves(t *testing.T) {
+	before, after := validateOrSkip(t, "create_role")
+
+	wantAfter := map[string]counts{
+		"create_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_roles":   {actionable: map[string]int{}, suppressed: map[string]int{}},
+	}
+	assertMatchesOrImproves(t, before, after, wantAfter)
+}
+
+// roleCountProbe mirrors testdata/golden/get_roles.go's RoleCount field for
+// field, byte for byte — keep the two in sync. It exists to decode real
+// get_roles fixtures with the exact shape the generator emits today, without
+// pulling in the out-of-process GeneratedGoRoots machinery just to observe
+// one field.
+type roleCountProbe struct {
+	XMLName   xml.Name `xml:"get_roles_response"`
+	RoleCount struct {
+		Filtered int `xml:"filtered"`
+		Page     int `xml:"page"`
+	} `xml:"role_count"`
+}
+
+// roleCountEvidence is roleCountProbe plus a ",chardata" field the generated
+// shape does not have. It exists solely to prove what the fixture actually
+// contains, independent of what the generated shape can retain — decoding
+// the same bytes into roleCountProbe proves the drop; decoding them into this
+// type proves there really was something to drop.
+type roleCountEvidence struct {
+	XMLName   xml.Name `xml:"get_roles_response"`
+	RoleCount struct {
+		Value    string `xml:",chardata"`
+		Filtered int    `xml:"filtered"`
+		Page     int    `xml:"page"`
+	} `xml:"role_count"`
+}
+
+// TestRoleCountBareTotalIsAnAcceptedLoss pins a real, live-confirmed gap the
+// role family's otherwise-clean TestValidateRoleGeneratedMatchesOrImproves
+// result does not cover: command_get_roles.xml's own <role_count> pattern
+// (both its bundled examples, and a live gvmd capture under
+// internal/gmptest/testdata/live/get_roles) sends a bare total ahead of
+// <filtered>/<page> — "1" in the upstream example, "6" live — but the
+// schema's declared <pattern> for role_count is only <e>filtered</e>
+// <e>page</e>, with no text token anywhere in it (contrast <sort>, whose
+// pattern literally contains the bareword "text" next to <e>field</e>,
+// which is exactly what Node.Chardata detects and RoleSort's Value field
+// reflects). There is nothing for the schema-side parser to see here: the
+// pattern the generator draws from simply never declares this content, so
+// generation cannot recover it, and schema.Comparer — which only compares
+// against what the pattern declares — correctly reports no finding for it
+// either.
+//
+// This is the same class of gap as create_override's result-as-text loss
+// (docs/review-2026-08.md's "Accepted evidence" note): the schema's own
+// declared structure and its own examples disagree, and per the
+// generate-only-what-the-schema-declares principle, the fix is to document
+// the loss, not to add a field the schema never asked for.
+//
+// Each fixture is decoded twice, into two structurally identical types that
+// differ only in one field, so the test proves both halves of the claim
+// against the actual wire bytes rather than assuming either: roleCountEvidence
+// (which has a ,chardata field) proves the bare total is really there;
+// roleCountProbe (an exact mirror of the generated RoleCount) proves that,
+// with only Filtered/Page to decode into, that same total has nowhere to go.
+// If this test starts failing because Filtered/Page stop decoding, because
+// the bare total disappears or changes, or because testdata/golden/get_roles.go
+// grows a chardata field that recovers it, update this comment and
+// docs/review-2026-08.md together.
+func TestRoleCountBareTotalIsAnAcceptedLoss(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	cases := []struct {
+		provenance string
+		path       string
+		wantTotal  string
+		wantChild  int
+	}{
+		{"upstream", filepath.Join(gmptestDir, "upstream", "get_roles", "001_response.xml"), "1", 1},
+		{"live", filepath.Join(gmptestDir, "live", "get_roles", "001_response.xml"), "6", 6},
+	}
+	for _, tc := range cases {
+		t.Run(tc.provenance, func(t *testing.T) {
+			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", tc.path, err)
+			}
+
+			// First, prove the wire actually carries the bare total: decode
+			// with a ,chardata field the generated shape lacks.
+			var evidence roleCountEvidence
+			if err := xml.Unmarshal(data, &evidence); err != nil {
+				t.Fatalf("decoding %s into roleCountEvidence: %v", tc.path, err)
+			}
+			if got := strings.TrimSpace(evidence.RoleCount.Value); got != tc.wantTotal {
+				t.Fatalf("%s: role_count bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
+					tc.path, got, tc.wantTotal)
+			}
+			if evidence.RoleCount.Filtered != tc.wantChild || evidence.RoleCount.Page != tc.wantChild {
+				t.Fatalf("%s: roleCountEvidence children = %+v, want Filtered=Page=%d",
+					tc.path, evidence.RoleCount, tc.wantChild)
+			}
+
+			// Second, prove the exact generated shape retains the children
+			// but has nowhere to put that total.
+			var got roleCountProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into roleCountProbe: %v", tc.path, err)
+			}
+			if got.RoleCount.Filtered != tc.wantChild || got.RoleCount.Page != tc.wantChild {
+				t.Errorf("roleCountProbe = %+v, want Filtered=Page=%d (the generated shape changed unexpectedly)",
+					got.RoleCount, tc.wantChild)
+			}
+			// roleCountProbe has no field that could have captured
+			// evidence.RoleCount.Value — that silent drop, now proven against
+			// the actual fixture bytes rather than assumed, is the accepted
+			// loss this test exists to pin.
+		})
+	}
 }
 
 // assertMatchesOrImproves is the shared body of the two match-or-improve gates:
