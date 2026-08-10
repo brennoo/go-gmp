@@ -5,18 +5,31 @@ namespaces-seen:
 
 DROPPED
   /get_tags_response/tag/comment                                           x1
-  /get_tags_response/tag/in_use                                            x1  (+1 descendant paths)
+  /get_tags_response/tag/resource                                          x1  (+7 descendant paths)
+  /get_tags_response/truncated                                             x1  (+1 descendant paths)
 
 TRUNCATED
   (none)
 
 CHANGED
-  /get_tags_response/tag/active/#text                                      "1" -> "true"
-  /get_tags_response/tag/resource/trash/#text                              "0" -> "false"
-  /get_tags_response/tag/writable/#text                                    "1" -> "true"
+  (none)
 
 ADDED
-  /get_tags_response/tag/permissions                                       x1
+  /get_tags_response/filters                                               x1
+  /get_tags_response/filters/@id                                           x1
+  /get_tags_response/filters/keywords                                      x1
+  /get_tags_response/filters/term                                          x1
+  /get_tags_response/sort                                                  x1
+  /get_tags_response/sort/field                                            x1
+  /get_tags_response/sort/field/order                                      x1
+  /get_tags_response/tag_count                                             x1
+  /get_tags_response/tag_count/filtered                                    x1
+  /get_tags_response/tag_count/filtered/#text                              x1
+  /get_tags_response/tag_count/page                                        x1
+  /get_tags_response/tag_count/page/#text                                  x1
+  /get_tags_response/tags                                                  x1
+  /get_tags_response/tags/@max                                             x1
+  /get_tags_response/tags/@start                                           x1
 
 DUPLICATED
   (none)

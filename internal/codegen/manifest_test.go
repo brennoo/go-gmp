@@ -24,17 +24,17 @@ func loadManifestErr(t *testing.T, body string) string {
 func TestCommittedManifest(t *testing.T) {
 	m := manifestOrFail(t)
 
-	// note, override, role, and group are all adopted: commands/{create_note,
+	// note, override, role, group, and tag are all adopted: commands/{create_note,
 	// get_notes,modify_note,note_shared,create_override,get_overrides,
 	// modify_override,override_shared,create_role,get_roles,modify_role,
-	// create_group,get_groups,modify_group}.go are all the generator's output.
-	// tag is still review_only: commands/{create_tag,get_tags,modify_tag}.go
-	// remain hand-written.
-	assertFamily(t, m, "get_notes", "note", false)
-	assertFamily(t, m, "get_overrides", "override", false)
-	assertFamily(t, m, "get_roles", "role", false)
-	assertFamily(t, m, "get_groups", "group", false)
-	assertFamily(t, m, "get_tags", "tag", true)
+	// create_group,get_groups,modify_group,create_tag,get_tags,modify_tag,
+	// tag_shared}.go are all the generator's output. No family is currently
+	// review_only.
+	assertFamily(t, m, "get_notes", "note")
+	assertFamily(t, m, "get_overrides", "override")
+	assertFamily(t, m, "get_roles", "role")
+	assertFamily(t, m, "get_groups", "group")
+	assertFamily(t, m, "get_tags", "tag")
 	if _, ok := m.FamilyOf("delete_note"); ok {
 		t.Error("FamilyOf(delete_note) claims a family the manifest does not declare")
 	}
@@ -47,15 +47,12 @@ func TestCommittedManifest(t *testing.T) {
 	if got := m.AllCommands(); strings.Join(got, ",") != strings.Join(want, ",") {
 		t.Errorf("AllCommands() = %v, want %v", got, want)
 	}
-	wantAdopted := []string{
-		"create_group", "create_note", "create_override", "create_role", "get_groups", "get_notes", "get_overrides",
-		"get_roles", "modify_group", "modify_note", "modify_override", "modify_role",
-	}
+	wantAdopted := want
 	if got := m.Adopted().AllCommands(); strings.Join(got, ",") != strings.Join(wantAdopted, ",") {
 		t.Errorf("Adopted().AllCommands() = %v, want %v", got, wantAdopted)
 	}
-	if got := m.ReviewOnlyFamilies(); strings.Join(got, ",") != "tag" {
-		t.Errorf("ReviewOnlyFamilies() = %v, want [tag]", got)
+	if got := m.ReviewOnlyFamilies(); len(got) != 0 {
+		t.Errorf("ReviewOnlyFamilies() = %v, want none", got)
 	}
 
 	assertFiles(t, "ExpectedOutputFiles", m.ExpectedOutputFiles("commands"), []string{
@@ -65,9 +62,10 @@ func TestCommittedManifest(t *testing.T) {
 		"override_shared.go", "role_shared.go", "tag_shared.go",
 	})
 	assertFiles(t, "Adopted().ExpectedOutputFiles", m.Adopted().ExpectedOutputFiles("commands"), []string{
-		"create_group.go", "create_note.go", "create_override.go", "create_role.go", "get_groups.go", "get_notes.go", "get_overrides.go",
-		"get_roles.go", "group_shared.go", "modify_group.go", "modify_note.go", "modify_override.go", "modify_role.go",
-		"note_shared.go", "override_shared.go", "role_shared.go",
+		"create_group.go", "create_note.go", "create_override.go", "create_role.go", "create_tag.go", "get_groups.go",
+		"get_notes.go", "get_overrides.go", "get_roles.go", "get_tags.go", "group_shared.go", "modify_group.go",
+		"modify_note.go", "modify_override.go", "modify_role.go", "modify_tag.go", "note_shared.go",
+		"override_shared.go", "role_shared.go", "tag_shared.go",
 	})
 
 	if got, want := m.SnapshotPath("d", "get_notes"), SnapshotPath("d", "get_notes"); got != want {
@@ -76,9 +74,10 @@ func TestCommittedManifest(t *testing.T) {
 }
 
 // assertFamily checks that command is owned by the named family, that the
-// family's shared file follows the convention, and that its adoption state is
-// what the manifest is supposed to be declaring.
-func assertFamily(t *testing.T, m Manifest, command, family string, reviewOnly bool) {
+// family's shared file follows the convention, and that it is adopted (no
+// family is currently review_only; a future one will need this to take a
+// reviewOnly parameter again).
+func assertFamily(t *testing.T, m Manifest, command, family string) {
 	t.Helper()
 	f, ok := m.FamilyOf(command)
 	if !ok {
@@ -90,8 +89,8 @@ func assertFamily(t *testing.T, m Manifest, command, family string, reviewOnly b
 	if want := family + "_shared.go"; f.SharedFile() != want {
 		t.Errorf("%s: SharedFile() = %q, want %s", family, f.SharedFile(), want)
 	}
-	if f.ReviewOnly != reviewOnly {
-		t.Errorf("%s: ReviewOnly = %v, want %v", family, f.ReviewOnly, reviewOnly)
+	if f.ReviewOnly {
+		t.Errorf("%s: ReviewOnly = true, want false", family)
 	}
 }
 

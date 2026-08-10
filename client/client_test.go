@@ -1469,7 +1469,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.CreateTag); ok {
-		if cmd.Name == "geo:long" && cmd.Resources != nil && len(cmd.Resources.Resources) > 0 && cmd.Resources.Resources[0].ID == "b493b7a8-7489-11df-a3ec-002264764cea" {
+		if cmd.Name == "geo:long" && len(cmd.Resources.Resource) > 0 && cmd.Resources.Resource[0].ID == "b493b7a8-7489-11df-a3ec-002264764cea" {
 			(*response.(*commands.CreateTagResponse)).Status = "201"
 			(*response.(*commands.CreateTagResponse)).StatusText = "OK, resource created"
 			(*response.(*commands.CreateTagResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
@@ -1492,23 +1492,25 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	if _, ok := command.(*commands.GetTags); ok {
 		(*response.(*commands.GetTagsResponse)).Status = "200"
 		(*response.(*commands.GetTagsResponse)).StatusText = "OK"
-		(*response.(*commands.GetTagsResponse)).Tags = []commands.Tag{
+		(*response.(*commands.GetTagsResponse)).Tag = []commands.Tag{
 			{
 				ID:               "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 				Name:             "geo:long",
 				Comment:          "",
 				CreationTime:     commands.GMPTime{Time: time.Date(2016, 3, 3, 11, 46, 56, 0, time.UTC)},
 				ModificationTime: commands.GMPTime{Time: time.Date(2016, 3, 3, 11, 46, 56, 0, time.UTC)},
-				Writable:         true,
-				InUse:            false,
+				Writable:         commands.Bool(true),
+				InUse:            commands.Bool(false),
 				Value:            "52.2788",
-				Active:           true,
-				Resources: []commands.TagResource{
-					{
-						ID:    "b493b7a8-7489-11df-a3ec-002264764cea",
-						Type:  "target",
-						Name:  "Server 1",
-						Trash: false,
+				Active:           commands.Bool(true),
+				Resources: &commands.GetTagsResources{
+					Type: "target",
+					Resource: []commands.TagResourcesResource{
+						{
+							ID:    "b493b7a8-7489-11df-a3ec-002264764cea",
+							Name:  "Server 1",
+							Trash: false,
+						},
 					},
 				},
 			},

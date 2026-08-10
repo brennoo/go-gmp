@@ -1,1 +1,1 @@
-<create_tag><name>environment</name><value>decommissioned</value><active>0</active></create_tag>
+<create_tag><name>environment</name><resources><type>task</type><resource id="e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31"></resource></resources><value>decommissioned</value><active>0</active></create_tag>

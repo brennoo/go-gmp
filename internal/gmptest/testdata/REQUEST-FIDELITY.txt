@@ -8,7 +8,7 @@
 # silently fails to ever emit).
 # Regenerate with: go test ./internal/gmptest -run TestRequestRoundTrip -update
 
-requests-compared: 320   clean: 300   with-loss: 18   decode-errors: 2   advisory: 0   skipped-no-request: 0
+requests-compared: 320   clean: 299   with-loss: 19   decode-errors: 2   advisory: 0   skipped-no-request: 0
 commands with a recorded request: 122 of 122   commands with loss: 16
 
 ## Per fixture
@@ -56,8 +56,8 @@ create_scanner               live      001 clean         dropped=0   truncated=0
 create_scanner               upstream  001 clean         dropped=0   truncated=0   changed=0   added=4  
 create_schedule              live      001 clean         dropped=0   truncated=0   changed=0   added=0  
 create_schedule              upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
-create_tag                   live      001 clean         dropped=0   truncated=0   changed=0   added=0  
-create_tag                   upstream  001 ok            dropped=1   truncated=0   changed=0   added=0  
+create_tag                   live      001 ok            dropped=3   truncated=0   changed=0   added=0  
+create_tag                   upstream  001 ok            dropped=1   truncated=0   changed=0   added=2  
 create_target                live      001 clean         dropped=0   truncated=0   changed=0   added=0  
 create_target                live      002 clean         dropped=0   truncated=0   changed=0   added=0  
 create_target                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  

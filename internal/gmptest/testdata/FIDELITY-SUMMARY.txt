@@ -12,7 +12,7 @@
 
 fixtures: 320   clean: 186   with-loss: 119   decode-errors: 14   advisory: 1
 commands with loss: 37 of 122
-distinct dropped paths: 260
+distinct dropped paths: 259
 
 ## Per fixture
 
@@ -228,10 +228,10 @@ get_settings                 upstream  001 clean         dropped=0   truncated=0
 get_system_reports           live      001 ok            dropped=2   truncated=0   changed=1   added=0  
 get_system_reports           upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
 get_system_reports           upstream  002 clean         dropped=0   truncated=0   changed=0   added=0  
-get_tags                     live      001 ok            dropped=4   truncated=0   changed=0   added=0  
-get_tags                     live      002 ok            dropped=4   truncated=0   changed=0   added=0  
-get_tags                     live      003 ok            dropped=6   truncated=0   changed=2   added=0  
-get_tags                     upstream  001 ok            dropped=2   truncated=0   changed=3   added=1  
+get_tags                     live      001 ok            dropped=2   truncated=0   changed=0   added=0  
+get_tags                     live      002 ok            dropped=2   truncated=0   changed=0   added=0  
+get_tags                     live      003 ok            dropped=3   truncated=0   changed=0   added=0  
+get_tags                     upstream  001 ok            dropped=3   truncated=0   changed=0   added=15 
 get_targets                  live      001 ok            dropped=6   truncated=0   changed=0   added=0  
 get_targets                  live      002 ok            dropped=6   truncated=0   changed=0   added=0  
 get_targets                  live      003 ok            dropped=29  truncated=0   changed=2   added=0  

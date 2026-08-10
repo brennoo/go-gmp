@@ -712,10 +712,16 @@ func TestGroupSortFieldNameIsAnAcceptedLoss(t *testing.T) {
 }
 
 // TestValidateTagBeforeMatchesKnownConformance is the tag family's
-// counterpart to TestValidateBeforeMatchesKnownConformance, written while tag
-// is still review_only: "before" reflects the hand-written commands/ types,
-// cross-checked against internal/schema/testdata/CONFORMANCE.md's own
-// create_tag/get_tags/modify_tag sections.
+// counterpart to TestValidateBeforeMatchesKnownConformance.
+//
+// Since the swap-in, commands/{create_tag,modify_tag,get_tags}.go *are* the
+// generator's output, so "before" and "after" now describe the same source
+// and these numbers equal wantAfter's — a drift detector on the committed
+// files, not a weaker assertion.
+//
+// For the record, the pre-swap hand-written numbers this used to pin, all of
+// which generation closed except get_tags's one SCHEMA-DEFECT (see
+// TestValidateTagGeneratedMatchesOrImproves for the per-finding explanation):
 //
 //	create_tag: actionable EXTRA 3, OMITEMPTY 1, suppressed OMITEMPTY 1
 //	get_tags:   actionable MISSING 8, EXTRA 2, CARDINALITY 4, TYPE 4,
@@ -725,24 +731,9 @@ func TestValidateTagBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_tag")
 
 	want := map[string]counts{
-		"create_tag": {
-			actionable: map[string]int{schema.CatExtra: 3, schema.CatOmitEmpty: 1},
-			suppressed: map[string]int{schema.CatOmitEmpty: 1},
-		},
-		"get_tags": {
-			actionable: map[string]int{
-				schema.CatMissing:     8,
-				schema.CatExtra:       2,
-				schema.CatCardinality: 4,
-				schema.CatType:        4,
-				schema.CatDefect:      1,
-			},
-			suppressed: map[string]int{schema.CatOmitEmpty: 2},
-		},
-		"modify_tag": {
-			actionable: map[string]int{schema.CatMissing: 1, schema.CatExtra: 3, schema.CatOmitEmpty: 1},
-			suppressed: map[string]int{},
-		},
+		"create_tag": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_tags":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{}},
+		"modify_tag": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -754,10 +745,10 @@ func TestValidateTagBeforeMatchesKnownConformance(t *testing.T) {
 	}
 }
 
-// TestValidateTagGeneratedMatchesOrImproves is the tag family's pre-swap
+// TestValidateTagGeneratedMatchesOrImproves is the tag family's post-swap
 // gate, run at the same rigour note, override, role, and group were.
 //
-// What this run found while tag is still review_only: generation closes
+// What this run found while tag was still review_only: generation closed
 // every actionable and suppressed finding on all three commands except
 // get_tags's one pre-existing SCHEMA-DEFECT (/get_tags_response/tag/
 // resources/resource/permissions, an empty-pattern site — the same defect

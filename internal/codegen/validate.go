@@ -95,11 +95,11 @@ type CommandRoots struct {
 // on gmptest.Registry's entries.
 //
 // "Before" means different things per family, deliberately. For an adopted
-// family (note, override, role, group) these types are already the
+// family (note, override, role, group, tag) these types are already the
 // generator's output, so the comparison is a drift detector on the committed
-// files. For a review-only family (tag) they are still the hand-written
-// originals, so the comparison is the pre-swap gate note, override, role, and
-// group went through.
+// files. For a review-only family (none currently) these would still be the
+// hand-written originals, so the comparison would be the pre-swap gate note,
+// override, role, group, and tag all went through.
 //
 // The map is written out by hand rather than derived from the manifest because
 // reflection needs the concrete types: adding a family here is the one place

@@ -29,23 +29,23 @@ them, so response-side optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             52
-with actionable findings:     70
-actionable findings:          637  (request 283, response 354)
-suppressed findings:          762
-confirmed by fidelity corpus: 73
+fully conformant:             55
+with actionable findings:     67
+actionable findings:          610  (request 271, response 339)
+suppressed findings:          759
+confirmed by fidelity corpus: 68
 in the schema, not in Go:     0
 in Go, not in the schema:     0
 
 ### Findings by category
 
                  actionable suppressed
-  MISSING               217          0
-  EXTRA                 241          0
-  CARDINALITY            43          0
+  MISSING               208          0
+  EXTRA                 233          0
+  CARDINALITY            39          0
   KIND                   17          0
-  OMITEMPTY              10        762
-  TYPE                  109          0
+  OMITEMPTY               8        759
+  TYPE                  105          0
   SCHEMA-DEFECT         109          0
 
 ### Schema defects by class
@@ -85,7 +85,6 @@ taken against upstream main (155 commands). Two reasons, both expected:
   delete_agents                18   EXTRA=18
   get_nvts                     18   MISSING=6  EXTRA=1  CARDINALITY=7  TYPE=4
   get_report_configs           18   MISSING=12  EXTRA=2  KIND=2  TYPE=2
-  get_tags                     18   MISSING=8  EXTRA=2  CARDINALITY=4  TYPE=4
   modify_agents                18   EXTRA=18
   create_target                17   EXTRA=17
   create_task                  17   MISSING=1  EXTRA=15  CARDINALITY=1
@@ -95,7 +94,8 @@ taken against upstream main (155 commands). Two reasons, both expected:
   modify_task                  13   MISSING=1  EXTRA=12
   get_aggregates               12   MISSING=5  EXTRA=5  CARDINALITY=2
   get_port_lists               12   MISSING=3  EXTRA=1  CARDINALITY=1  KIND=3  TYPE=4
-  ... and 50 more with fewer
+  get_assets                   11   EXTRA=6  CARDINALITY=1  TYPE=4
+  ... and 47 more with fewer
 
 ### Confirmed by both oracles
 
@@ -164,11 +164,6 @@ attributes, and one of its own captured request fixtures uses three of them.
   get_reports              /get_reports_response/reports
   get_reports              /get_reports_response/sort
   get_results              /get_results_response/result/nvt/severities/severity
-  get_tags                 /get_tags_response/filters
-  get_tags                 /get_tags_response/sort
-  get_tags                 /get_tags_response/tag/resources
-  get_tags                 /get_tags_response/tag_count
-  get_tags                 /get_tags_response/tags
   get_targets              /get_targets_response/filters/keywords
   get_targets              /get_targets_response/target/esxi_credential/trash
   get_targets              /get_targets_response/target/krb5_credential/trash
@@ -755,18 +750,7 @@ conformant
 
 ### create_tag  (command_create_tag.xml)
 
-EXTRA=3  OMITEMPTY=2
-
-  EXTRA         request  /create_tag/resources/resource/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /create_tag/resources/resource/trash
-                Go field Trash bool has no counterpart in the schema
-  EXTRA         request  /create_tag/resources/resource/type
-                Go field Type string has no counterpart in the schema
-  OMITEMPTY     request  /create_tag/resources
-                schema says required, Resources is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /create_tag/resources/resource/@id
-                schema says optional, ID string has no omitempty and is always emitted
+conformant
 
 ### create_target  (command_create_target.xml)
 
@@ -2711,48 +2695,8 @@ EXTRA=1
 
 ### get_tags  (command_get_tags.xml)
 
-MISSING=8  EXTRA=2  CARDINALITY=4  OMITEMPTY=2  TYPE=4  SCHEMA-DEFECT=1
+SCHEMA-DEFECT=1
 
-  MISSING       request  /get_tags/@filt_id
-                optional attr filt_id is not modelled
-  MISSING       request  /get_tags/@names_only
-                optional attr names_only is not modelled
-  MISSING       request  /get_tags/@trash
-                optional attr trash is not modelled
-  MISSING       response /get_tags_response/filters
-                required elem filters is not modelled  [fidelity]
-  MISSING       response /get_tags_response/sort
-                required elem sort is not modelled  [fidelity]
-  MISSING       response /get_tags_response/tag/resources
-                optional elem resources is not modelled  [fidelity]
-  MISSING       response /get_tags_response/tag_count
-                required elem tag_count is not modelled  [fidelity]
-  MISSING       response /get_tags_response/tags
-                required elem tags is not modelled  [fidelity]
-  EXTRA         response /get_tags_response/tag/resource
-                Go field Resources []commands.TagResource has no counterpart in the schema
-  EXTRA         response /get_tags_response/truncated
-                Go field Truncated string has no counterpart in the schema
-  CARDINALITY   response /get_tags_response/tag/active
-                schema says optional; Active bool cannot express absence (zero is a legal value)
-  CARDINALITY   response /get_tags_response/tag/in_use
-                schema says optional; InUse bool cannot express absence (zero is a legal value)
-  CARDINALITY   response /get_tags_response/tag/orphan
-                schema says optional; Orphan bool cannot express absence (zero is a legal value)
-  CARDINALITY   response /get_tags_response/tag/writable
-                schema says optional; Writable bool cannot express absence (zero is a legal value)
-  OMITEMPTY     response /get_tags_response/tag/@id
-                schema says optional, ID string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_tags_response/tag/permissions
-                schema says optional,  (wrapper) has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  TYPE          response /get_tags_response/tag/active
-                schema type boolean is text ("" is true), Go Active is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_tags_response/tag/in_use
-                schema type boolean is text ("" is true), Go InUse is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_tags_response/tag/orphan
-                schema type boolean is text ("" is true), Go Orphan is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_tags_response/tag/writable
-                schema type boolean is text ("" is true), Go Writable is bool: '7' fails to decode and '1' re-emits as 'true'
   SCHEMA-DEFECT response /get_tags_response/tag/resources/resource/permissions
                 empty-pattern: pattern declares no content
 
@@ -3592,18 +3536,7 @@ conformant
 
 ### modify_tag  (command_modify_tag.xml)
 
-MISSING=1  EXTRA=3  OMITEMPTY=1
-
-  MISSING       request  /modify_tag/resources/@action
-                optional attr action is not modelled
-  EXTRA         request  /modify_tag/resources/resource/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /modify_tag/resources/resource/trash
-                Go field Trash bool has no counterpart in the schema
-  EXTRA         request  /modify_tag/resources/resource/type
-                Go field Type string has no counterpart in the schema
-  OMITEMPTY     request  /modify_tag/resources/resource/@id
-                schema says optional, ID string has no omitempty and is always emitted
+conformant
 
 ### modify_target  (command_modify_target.xml)
 

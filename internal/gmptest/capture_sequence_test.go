@@ -489,17 +489,20 @@ func (r *captureRun) lifecycleTag(st *captureState) {
 		`<resources><type>target</type><resource id="%s"/></resources></create_tag>`,
 		r.resourceName("tag"), captureComment, st.targetID)
 
-	// TagResource has non-omitempty <type>, <name> and <trash> children, so the
-	// typed request emits empty elements inside <resource>. Whether gvmd
-	// tolerates them is exactly the sort of thing this corpus exists to settle.
+	// TagResource only carries ID today. It used to also have non-omitempty
+	// <type>, <name> and <trash> children, and gvmd's tolerance of the
+	// resulting empty elements inside <resource> is exactly what got recorded
+	// verbatim in testdata/live/create_tag/001_request.xml — that capture
+	// predates the narrower type and is historical client output, not a
+	// requirement this call still exercises.
 	resp := r.sendWithFallbacks("create_tag", "lifecycle: create_tag on the created target",
 		&commands.CreateTag{
 			Name:    r.resourceName("tag"),
 			Comment: captureComment,
 			Value:   "fixture",
-			Resources: &commands.CreateTagResources{
-				Type:      "target",
-				Resources: []commands.TagResource{{ID: st.targetID}},
+			Resources: commands.TagResources{
+				Type:     "target",
+				Resource: []commands.TagResource{{ID: st.targetID}},
 			},
 		},
 		[]rawAttempt{{desc: "lifecycle: create_tag with a bare <resource id=…/>", xml: rawTag}})

@@ -15,9 +15,9 @@ func TestCreateTag(t *testing.T) {
 
 	cmd := &commands.CreateTag{
 		Name: "geo:long",
-		Resources: &commands.CreateTagResources{
+		Resources: commands.TagResources{
 			Type: "target",
-			Resources: []commands.TagResource{
+			Resource: []commands.TagResource{
 				{ID: "b493b7a8-7489-11df-a3ec-002264764cea"},
 			},
 		},
@@ -68,8 +68,8 @@ func TestGetTags(t *testing.T) {
 	if resp.Status != "200" {
 		t.Errorf("Expected status 200, got %s", resp.Status)
 	}
-	if len(resp.Tags) != 1 || resp.Tags[0].Name != "geo:long" {
-		t.Errorf("Expected tag 'geo:long', got %+v", resp.Tags)
+	if len(resp.Tag) != 1 || resp.Tag[0].Name != "geo:long" {
+		t.Errorf("Expected tag 'geo:long', got %+v", resp.Tag)
 	}
 }
 
