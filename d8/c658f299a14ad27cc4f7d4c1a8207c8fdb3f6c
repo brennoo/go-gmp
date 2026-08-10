@@ -1,0 +1,41 @@
+docs/review-2026-08.md
+  s_a512eaaa90ffc8::t_d5590b838ddf60 30-31,222-275,1047
+internal/codegen/generate.go
+  s_a512eaaa90ffc8::t_d5587262505447 566-571,573-595
+internal/codegen/manifest.json
+  s_a512eaaa90ffc8::t_a942e2eba0df6f 22-26
+internal/codegen/manifest_test.go
+  s_a512eaaa90ffc8::t_863787d5d273ac 31-38,44-46,51-55,59-60,64-68,83-85,97-98,272-328
+internal/codegen/testdata/golden/create_schedule.go
+  s_a512eaaa90ffc8::t_ad12bca055adb5 1-28
+internal/codegen/testdata/golden/get_schedules.go
+  s_a512eaaa90ffc8::t_438ec992629085 1-133
+internal/codegen/testdata/golden/modify_schedule.go
+  s_a512eaaa90ffc8::t_71d10619a1aed5 1-27
+internal/codegen/testdata/schema/create_schedule.json
+  s_a512eaaa90ffc8::t_b97aa6f019c290 1-107
+internal/codegen/testdata/schema/get_schedules.json
+  s_a512eaaa90ffc8::t_bb893e36f30850 1-577
+internal/codegen/testdata/schema/modify_schedule.json
+  s_a512eaaa90ffc8::t_a1cfb24c3bfb60 1-97
+internal/codegen/validate.go
+  s_a512eaaa90ffc8::t_05a6ca22ec21cd 100-101,170-181
+internal/codegen/validate_test.go
+  s_a512eaaa90ffc8::t_089abfa6220c7d 994-1290
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "d8c658f299a14ad27cc4f7d4c1a8207c8fdb3f6c",
+  "prompts": {},
+  "sessions": {
+    "s_a512eaaa90ffc8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_a512eaaa90ffc8",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
