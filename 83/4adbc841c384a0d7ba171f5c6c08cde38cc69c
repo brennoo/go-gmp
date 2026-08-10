@@ -1,0 +1,39 @@
+docs/review-2026-08.md
+  s_5043b8d93d3a7b::t_f9aa581372f4bb 87-127,899
+internal/codegen/manifest.json
+  s_5043b8d93d3a7b::t_f3e5b5fb930af8 14-18
+internal/codegen/manifest_test.go
+  s_5043b8d93d3a7b::t_06697198768f64 30-31,35,41-42,47-50,54-55,59-60
+internal/codegen/testdata/golden/create_group.go
+  s_5043b8d93d3a7b::t_0ac01deab89f70 1-33
+internal/codegen/testdata/golden/get_groups.go
+  s_5043b8d93d3a7b::t_93e366a06a386a 1-118
+internal/codegen/testdata/golden/modify_group.go
+  s_5043b8d93d3a7b::t_3a5b554cd5db17 1-26
+internal/codegen/testdata/schema/create_group.json
+  s_5043b8d93d3a7b::t_e1fa08b637a64b 1-124
+internal/codegen/testdata/schema/get_groups.json
+  s_5043b8d93d3a7b::t_fa2557793f479c 1-499
+internal/codegen/testdata/schema/modify_group.json
+  s_5043b8d93d3a7b::t_8014ab67889dfb 1-87
+internal/codegen/validate.go
+  s_5043b8d93d3a7b::t_94b3a17e0be7b0 98-101,145-156
+internal/codegen/validate_test.go
+  s_5043b8d93d3a7b::t_44cde6df713e67 429-717
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "834adbc841c384a0d7ba171f5c6c08cde38cc69c",
+  "prompts": {},
+  "sessions": {
+    "s_5043b8d93d3a7b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_5043b8d93d3a7b",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
