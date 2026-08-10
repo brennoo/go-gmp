@@ -1059,7 +1059,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	if _, ok := command.(*commands.GetGroups); ok {
 		(*response.(*commands.GetGroupsResponse)).Status = "200"
 		(*response.(*commands.GetGroupsResponse)).StatusText = "OK"
-		(*response.(*commands.GetGroupsResponse)).Groups = []commands.Group{
+		(*response.(*commands.GetGroupsResponse)).Group = []commands.Group{
 			{
 				ID:               "b493b7a8-7489-11df-a3ec-002264764cea",
 				Name:             "Management",

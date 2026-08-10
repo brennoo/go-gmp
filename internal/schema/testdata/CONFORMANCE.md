@@ -29,10 +29,10 @@ them, so response-side optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             51
-with actionable findings:     71
-actionable findings:          639  (request 283, response 356)
-suppressed findings:          763
+fully conformant:             52
+with actionable findings:     70
+actionable findings:          637  (request 283, response 354)
+suppressed findings:          762
 confirmed by fidelity corpus: 73
 in the schema, not in Go:     0
 in Go, not in the schema:     0
@@ -44,8 +44,8 @@ in Go, not in the schema:     0
   EXTRA                 241          0
   CARDINALITY            43          0
   KIND                   17          0
-  OMITEMPTY              10        763
-  TYPE                  111          0
+  OMITEMPTY              10        762
+  TYPE                  109          0
   SCHEMA-DEFECT         109          0
 
 ### Schema defects by class
@@ -95,7 +95,7 @@ taken against upstream main (155 commands). Two reasons, both expected:
   modify_task                  13   MISSING=1  EXTRA=12
   get_aggregates               12   MISSING=5  EXTRA=5  CARDINALITY=2
   get_port_lists               12   MISSING=3  EXTRA=1  CARDINALITY=1  KIND=3  TYPE=4
-  ... and 51 more with fewer
+  ... and 50 more with fewer
 
 ### Confirmed by both oracles
 
@@ -1499,14 +1499,7 @@ OMITEMPTY=1  TYPE=2  SCHEMA-DEFECT=3
 
 ### get_groups  (command_get_groups.xml)
 
-OMITEMPTY=1  TYPE=2
-
-  OMITEMPTY     response /get_groups_response/filters/name
-                schema says optional, Name string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  TYPE          response /get_groups_response/group/in_use
-                schema type boolean is text ("" is true), Go InUse is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_groups_response/group/writable
-                schema type boolean is text ("" is true), Go Writable is bool: '7' fails to decode and '1' re-emits as 'true'
+conformant
 
 ### get_info  (command_get_info.xml)
 

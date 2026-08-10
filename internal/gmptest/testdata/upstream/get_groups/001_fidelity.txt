@@ -13,11 +13,9 @@ TRUNCATED
   (none)
 
 CHANGED
-  /get_groups_response/group/in_use/#text                                  "0" -> "false"
-  /get_groups_response/group/writable/#text                                "1" -> "true"
+  (none)
 
 ADDED
-  /get_groups_response/filters/name                                        x1
   /get_groups_response/group/owner                                         x1
   /get_groups_response/group/owner/name                                    x1
   /get_groups_response/group/permissions                                   x1

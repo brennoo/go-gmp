@@ -62,8 +62,8 @@ func TestGetGroups(t *testing.T) {
 	if resp.Status != "200" {
 		t.Errorf("Expected status 200, got %s", resp.Status)
 	}
-	if len(resp.Groups) != 1 || resp.Groups[0].Name != "Management" {
-		t.Errorf("Expected group 'Management', got %+v", resp.Groups)
+	if len(resp.Group) != 1 || resp.Group[0].Name != "Management" {
+		t.Errorf("Expected group 'Management', got %+v", resp.Group)
 	}
 }
 

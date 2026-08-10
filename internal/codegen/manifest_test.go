@@ -24,15 +24,14 @@ func loadManifestErr(t *testing.T, body string) string {
 func TestCommittedManifest(t *testing.T) {
 	m := manifestOrFail(t)
 
-	// note, override, and role are all adopted: commands/{create_note,get_notes,
-	// modify_note,note_shared,create_override,get_overrides,modify_override,
-	// override_shared,create_role,get_roles,modify_role}.go are all the
-	// generator's output. group is review-only: its goldens live only under
-	// internal/codegen/testdata/golden, not commands/.
+	// note, override, role, and group are all adopted: commands/{create_note,
+	// get_notes,modify_note,note_shared,create_override,get_overrides,
+	// modify_override,override_shared,create_role,get_roles,modify_role,
+	// create_group,get_groups,modify_group}.go are all the generator's output.
 	assertFamily(t, m, "get_notes", "note", false)
 	assertFamily(t, m, "get_overrides", "override", false)
 	assertFamily(t, m, "get_roles", "role", false)
-	assertFamily(t, m, "get_groups", "group", true)
+	assertFamily(t, m, "get_groups", "group", false)
 	if _, ok := m.FamilyOf("delete_note"); ok {
 		t.Error("FamilyOf(delete_note) claims a family the manifest does not declare")
 	}
@@ -44,15 +43,12 @@ func TestCommittedManifest(t *testing.T) {
 	if got := m.AllCommands(); strings.Join(got, ",") != strings.Join(want, ",") {
 		t.Errorf("AllCommands() = %v, want %v", got, want)
 	}
-	wantAdopted := []string{
-		"create_note", "create_override", "create_role", "get_notes", "get_overrides",
-		"get_roles", "modify_note", "modify_override", "modify_role",
-	}
+	wantAdopted := want
 	if got := m.Adopted().AllCommands(); strings.Join(got, ",") != strings.Join(wantAdopted, ",") {
 		t.Errorf("Adopted().AllCommands() = %v, want %v", got, wantAdopted)
 	}
-	if got := m.ReviewOnlyFamilies(); strings.Join(got, ",") != "group" {
-		t.Errorf("ReviewOnlyFamilies() = %v, want [group]", got)
+	if got := m.ReviewOnlyFamilies(); len(got) != 0 {
+		t.Errorf("ReviewOnlyFamilies() = %v, want none", got)
 	}
 
 	assertFiles(t, "ExpectedOutputFiles", m.ExpectedOutputFiles("commands"), []string{
@@ -61,8 +57,8 @@ func TestCommittedManifest(t *testing.T) {
 		"note_shared.go", "override_shared.go", "role_shared.go",
 	})
 	assertFiles(t, "Adopted().ExpectedOutputFiles", m.Adopted().ExpectedOutputFiles("commands"), []string{
-		"create_note.go", "create_override.go", "create_role.go", "get_notes.go", "get_overrides.go",
-		"get_roles.go", "modify_note.go", "modify_override.go", "modify_role.go",
+		"create_group.go", "create_note.go", "create_override.go", "create_role.go", "get_groups.go", "get_notes.go", "get_overrides.go",
+		"get_roles.go", "group_shared.go", "modify_group.go", "modify_note.go", "modify_override.go", "modify_role.go",
 		"note_shared.go", "override_shared.go", "role_shared.go",
 	})
 
@@ -74,7 +70,7 @@ func TestCommittedManifest(t *testing.T) {
 // assertFamily checks that command is owned by the named family, that the
 // family's shared file follows the convention, and that its adoption state is
 // what the manifest is supposed to be declaring.
-func assertFamily(t *testing.T, m Manifest, command, family string, reviewOnly bool) {
+func assertFamily(t *testing.T, m Manifest, command, family string, reviewOnly bool) { //nolint:unparam // every family is adopted right now; the next review-only family will pass true again
 	t.Helper()
 	f, ok := m.FamilyOf(command)
 	if !ok {

@@ -157,10 +157,10 @@ get_filters                  live      002 ok            dropped=4   truncated=1
 get_filters                  live      003 ok            dropped=4   truncated=1   changed=2   added=4  
 get_filters                  upstream  001 ok            dropped=1   truncated=0   changed=2   added=19 
 get_filters                  upstream  002 ok            dropped=1   truncated=0   changed=2   added=19 
-get_groups                   live      001 ok            dropped=2   truncated=0   changed=0   added=1  
-get_groups                   live      002 ok            dropped=2   truncated=0   changed=0   added=1  
-get_groups                   live      003 ok            dropped=2   truncated=0   changed=2   added=1  
-get_groups                   upstream  001 ok            dropped=4   truncated=0   changed=2   added=4  
+get_groups                   live      001 ok            dropped=2   truncated=0   changed=0   added=0  
+get_groups                   live      002 ok            dropped=2   truncated=0   changed=0   added=0  
+get_groups                   live      003 ok            dropped=2   truncated=0   changed=0   added=0  
+get_groups                   upstream  001 ok            dropped=4   truncated=0   changed=0   added=3  
 get_info                     live      001 ok            dropped=5   truncated=0   changed=0   added=4  
 get_info                     live      002 clean         dropped=0   truncated=0   changed=0   added=15 
 get_info                     upstream  001 ADVISORY      dropped=5   truncated=0   changed=1   added=4  

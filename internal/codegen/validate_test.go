@@ -426,25 +426,24 @@ func TestRoleCountBareTotalIsAnAcceptedLoss(t *testing.T) {
 	}
 }
 
-// TestValidateGroupBeforeMatchesHandWritten is the group family's counterpart
-// to TestValidateBeforeMatchesKnownConformance, and unlike the adopted
-// families' versions it still pins genuinely hand-written numbers: group is
-// review_only in the manifest, so commands/{create_group,modify_group,
-// get_groups}.go have not been swapped and these are the counts the
-// generated types have to match or beat.
+// TestValidateGroupBeforeMatchesKnownConformance is the group family's
+// counterpart to TestValidateBeforeMatchesKnownConformance.
 //
-// Both gaps are real, not modelling preferences:
+// Since the swap-in, commands/{create_group,modify_group,get_groups}.go
+// *are* the generator's output, so "before" and "after" now describe the
+// same source and these numbers equal wantAfter's — a drift detector on the
+// committed files, not a weaker assertion.
 //
-//   - create_group: SCHEMA-DEFECT 1 (/create_group/specials/full has an
-//     empty <pattern/>, one of 44 such sites across 23 commands — an
-//     upstream schema quirk, not a group-specific defect).
-//   - modify_group: already fully conformant.
-//   - get_groups: TYPE 2 (Group.Writable/Group.InUse are bool where the
-//     schema's lexical "boolean" needs GMPBool, the same T-9 defect #6 every
-//     other family hit) and suppressed OMITEMPTY 1 (GroupFilters.Name has no
-//     omitempty tag where the schema marks <name> optional — inert on
-//     decode, per schema.Comparer's checkOmitEmpty).
-func TestValidateGroupBeforeMatchesHandWritten(t *testing.T) {
+// For the record, the pre-swap hand-written numbers this used to pin, both
+// of which generation closed (see TestValidateGroupGeneratedMatchesOrImproves
+// for the per-finding explanation):
+//
+//	create_group: actionable SCHEMA-DEFECT 1 (unchanged by the swap — schema
+//	  defects are copied from cmd.Defects before any Go-type comparison ever
+//	  runs, so generation cannot move them)
+//	modify_group: no findings either side
+//	get_groups: actionable TYPE 2, suppressed OMITEMPTY 1
+func TestValidateGroupBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_group")
 
 	want := map[string]counts{
@@ -453,10 +452,7 @@ func TestValidateGroupBeforeMatchesHandWritten(t *testing.T) {
 			suppressed: map[string]int{},
 		},
 		"modify_group": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_groups": {
-			actionable: map[string]int{schema.CatType: 2},
-			suppressed: map[string]int{schema.CatOmitEmpty: 1},
-		},
+		"get_groups":   {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -468,10 +464,10 @@ func TestValidateGroupBeforeMatchesHandWritten(t *testing.T) {
 	}
 }
 
-// TestValidateGroupGeneratedMatchesOrImproves is the group family's pre-swap
+// TestValidateGroupGeneratedMatchesOrImproves is the group family's post-swap
 // gate, run at the same rigour note, override, and role were.
 //
-// What this run found while group was still review_only: generation closes
+// What this run found while group was still review_only: generation closed
 // both the TYPE 2 and suppressed OMITEMPTY 1 findings on get_groups
 // (Writable/InUse become commands.GMPBool; GroupFilters.Name gains
 // omitempty, tracking the schema's optional <name>), leaving get_groups and

@@ -14,8 +14,7 @@
     },
     {
       "name": "group",
-      "commands": ["create_group", "get_groups", "modify_group"],
-      "review_only": true
+      "commands": ["create_group", "get_groups", "modify_group"]
     }
   ]
 }
