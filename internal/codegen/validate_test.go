@@ -426,6 +426,295 @@ func TestRoleCountBareTotalIsAnAcceptedLoss(t *testing.T) {
 	}
 }
 
+// TestValidateGroupBeforeMatchesHandWritten is the group family's counterpart
+// to TestValidateBeforeMatchesKnownConformance, and unlike the adopted
+// families' versions it still pins genuinely hand-written numbers: group is
+// review_only in the manifest, so commands/{create_group,modify_group,
+// get_groups}.go have not been swapped and these are the counts the
+// generated types have to match or beat.
+//
+// Both gaps are real, not modelling preferences:
+//
+//   - create_group: SCHEMA-DEFECT 1 (/create_group/specials/full has an
+//     empty <pattern/>, one of 44 such sites across 23 commands — an
+//     upstream schema quirk, not a group-specific defect).
+//   - modify_group: already fully conformant.
+//   - get_groups: TYPE 2 (Group.Writable/Group.InUse are bool where the
+//     schema's lexical "boolean" needs GMPBool, the same T-9 defect #6 every
+//     other family hit) and suppressed OMITEMPTY 1 (GroupFilters.Name has no
+//     omitempty tag where the schema marks <name> optional — inert on
+//     decode, per schema.Comparer's checkOmitEmpty).
+func TestValidateGroupBeforeMatchesHandWritten(t *testing.T) {
+	before, _ := validateOrSkip(t, "create_group")
+
+	want := map[string]counts{
+		"create_group": {
+			actionable: map[string]int{schema.CatDefect: 1},
+			suppressed: map[string]int{},
+		},
+		"modify_group": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_groups": {
+			actionable: map[string]int{schema.CatType: 2},
+			suppressed: map[string]int{schema.CatOmitEmpty: 1},
+		},
+	}
+	for _, res := range before {
+		w, ok := want[res.Command]
+		if !ok {
+			t.Errorf("%s: unexpected command in Validate's before results", res.Command)
+			continue
+		}
+		assertCounts(t, "before", res.Command, w, countFindings(res.Findings))
+	}
+}
+
+// TestValidateGroupGeneratedMatchesOrImproves is the group family's pre-swap
+// gate, run at the same rigour note, override, and role were.
+//
+// What this run found while group was still review_only: generation closes
+// both the TYPE 2 and suppressed OMITEMPTY 1 findings on get_groups
+// (Writable/InUse become commands.GMPBool; GroupFilters.Name gains
+// omitempty, tracking the schema's optional <name>), leaving get_groups and
+// modify_group clean. create_group keeps its SCHEMA-DEFECT 1 untouched:
+// SCHEMA-DEFECT findings are copied from cmd.Defects before any Go-type
+// comparison ever runs, so no generated output can move them — the same
+// reasoning already on record for note, override, and role.
+//
+// One loss the comparer cannot see, recorded here because it is the same
+// class already documented for role: the schema's declared <pattern> for
+// group_count is only <e>filtered</e><e>page</e>, no text token anywhere,
+// and <field> (inside <sort>) is likewise <e>order</e> with no text token —
+// yet both command_get_groups.xml's own bundled example and a live capture
+// send a bare total/name ahead of those children. See
+// TestGroupCountBareTotalIsAnAcceptedLoss and
+// TestGroupSortFieldNameIsAnAcceptedLoss below for both halves, each pinned
+// against real fixture bytes the same way TestRoleCountBareTotalIsAnAcceptedLoss
+// pins role's.
+func TestValidateGroupGeneratedMatchesOrImproves(t *testing.T) {
+	before, after := validateOrSkip(t, "create_group")
+
+	wantAfter := map[string]counts{
+		"create_group": {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{}},
+		"modify_group": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_groups":   {actionable: map[string]int{}, suppressed: map[string]int{}},
+	}
+	assertMatchesOrImproves(t, before, after, wantAfter)
+}
+
+// groupCountProbe mirrors testdata/golden/get_groups.go's GroupCount field,
+// byte for byte — keep the two in sync. It exists to decode real get_groups
+// fixtures with the exact shape the generator emits today, without pulling
+// in the out-of-process GeneratedGoRoots machinery just to observe one
+// field. See roleCountProbe above for the identical role-family precedent.
+type groupCountProbe struct {
+	XMLName    xml.Name `xml:"get_groups_response"`
+	GroupCount struct {
+		Filtered int `xml:"filtered"`
+		Page     int `xml:"page"`
+	} `xml:"group_count"`
+}
+
+// groupCountEvidence is groupCountProbe plus a ",chardata" field the
+// generated shape does not have, proving what the fixture actually contains
+// independent of what the generated shape can retain.
+type groupCountEvidence struct {
+	XMLName    xml.Name `xml:"get_groups_response"`
+	GroupCount struct {
+		Value    string `xml:",chardata"`
+		Filtered int    `xml:"filtered"`
+		Page     int    `xml:"page"`
+	} `xml:"group_count"`
+}
+
+// TestGroupCountBareTotalIsAnAcceptedLoss is the group family's counterpart
+// to TestRoleCountBareTotalIsAnAcceptedLoss: command_get_groups.xml's own
+// bundled example, and a live gvmd capture under
+// internal/gmptest/testdata/live/get_groups, both send a bare total ahead of
+// <filtered>/<page> ("1" in both cases here), but the schema's declared
+// <pattern> for group_count is only <e>filtered</e><e>page</e>, with no text
+// token anywhere in it. There is nothing for the schema-side parser to see:
+// the pattern the generator draws from simply never declares this content,
+// so generation cannot recover it, and schema.Comparer — which only
+// compares against what the pattern declares — correctly reports no finding
+// for it either.
+//
+// This is the same class of gap as create_override's result-as-text loss and
+// role_count's identical shape (docs/review-2026-08.md's "Accepted evidence"
+// note): the schema's own declared structure and its own examples disagree,
+// and per the generate-only-what-the-schema-declares principle, the fix is
+// to document the loss, not to add a field the schema never asked for.
+//
+// Each fixture is decoded twice, into two structurally identical types that
+// differ only in one field, so the test proves both halves of the claim
+// against the actual wire bytes rather than assuming either: groupCountEvidence
+// (which has a ,chardata field) proves the bare total is really there;
+// groupCountProbe (an exact mirror of the generated GroupCount) proves that,
+// with only Filtered/Page to decode into, that same total has nowhere to go.
+func TestGroupCountBareTotalIsAnAcceptedLoss(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	cases := []struct {
+		provenance string
+		path       string
+		wantTotal  string
+		wantChild  int
+	}{
+		{"upstream", filepath.Join(gmptestDir, "upstream", "get_groups", "001_response.xml"), "1", 1},
+		{"live", filepath.Join(gmptestDir, "live", "get_groups", "003_response.xml"), "1", 1},
+	}
+	for _, tc := range cases {
+		t.Run(tc.provenance, func(t *testing.T) {
+			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", tc.path, err)
+			}
+
+			// First, prove the wire actually carries the bare total: decode
+			// with a ,chardata field the generated shape lacks.
+			var evidence groupCountEvidence
+			if err := xml.Unmarshal(data, &evidence); err != nil {
+				t.Fatalf("decoding %s into groupCountEvidence: %v", tc.path, err)
+			}
+			if got := strings.TrimSpace(evidence.GroupCount.Value); got != tc.wantTotal {
+				t.Fatalf("%s: group_count bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
+					tc.path, got, tc.wantTotal)
+			}
+			if evidence.GroupCount.Filtered != tc.wantChild || evidence.GroupCount.Page != tc.wantChild {
+				t.Fatalf("%s: groupCountEvidence children = %+v, want Filtered=Page=%d",
+					tc.path, evidence.GroupCount, tc.wantChild)
+			}
+
+			// Second, prove the exact generated shape retains the children
+			// but has nowhere to put that total.
+			var got groupCountProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into groupCountProbe: %v", tc.path, err)
+			}
+			if got.GroupCount.Filtered != tc.wantChild || got.GroupCount.Page != tc.wantChild {
+				t.Errorf("groupCountProbe = %+v, want Filtered=Page=%d (the generated shape changed unexpectedly)",
+					got.GroupCount, tc.wantChild)
+			}
+			// groupCountProbe has no field that could have captured
+			// evidence.GroupCount.Value — that silent drop, now proven
+			// against the actual fixture bytes rather than assumed, is the
+			// accepted loss this test exists to pin.
+		})
+	}
+}
+
+// groupSortFieldProbe mirrors testdata/golden/get_groups.go's GroupSort/
+// GroupField fields, byte for byte — keep the two in sync. Same rationale as
+// groupCountProbe: decode real fixtures with the exact shape the generator
+// emits today, without the out-of-process GeneratedGoRoots machinery.
+type groupSortFieldProbe struct {
+	XMLName xml.Name `xml:"get_groups_response"`
+	Sort    struct {
+		Field struct {
+			Order string `xml:"order"`
+		} `xml:"field"`
+	} `xml:"sort"`
+}
+
+// groupSortFieldEvidence is groupSortFieldProbe plus a ",chardata" field on
+// Field that the generated GroupField does not have, proving what the
+// fixture actually contains independent of what the generated shape can
+// retain.
+type groupSortFieldEvidence struct {
+	XMLName xml.Name `xml:"get_groups_response"`
+	Sort    struct {
+		Field struct {
+			Value string `xml:",chardata"`
+			Order string `xml:"order"`
+		} `xml:"field"`
+	} `xml:"sort"`
+}
+
+// TestGroupSortFieldNameIsAnAcceptedLoss is TestGroupCountBareTotalIsAnAcceptedLoss's
+// counterpart for the other half of the same contradiction: command_get_groups.xml's
+// own bundled example, and a live gvmd capture, both send the sort field's name
+// as bare text ahead of <order> ("name" in both fixtures here), but the
+// schema's declared <pattern> for <field> (inside <sort>) is only
+// <e>order</e>, with no text token anywhere in it — unlike <sort> itself,
+// whose pattern does contain the bareword text and is why GroupSort.Value
+// exists. There is nothing for the schema-side parser to see: the pattern
+// the generator draws from simply never declares this content, so
+// generation cannot recover it, and schema.Comparer — which only compares
+// against what the pattern declares — correctly reports no finding for it
+// either.
+//
+// This is the same class of gap as group_count's bare total above and
+// role_count's identical shape (docs/review-2026-08.md's "Accepted evidence"
+// note): the schema's own declared structure and its own examples disagree,
+// and per the generate-only-what-the-schema-declares principle, the fix is
+// to document the loss, not to add a field the schema never asked for.
+//
+// Each fixture is decoded twice, into two structurally identical types that
+// differ only in one field, so the test proves both halves of the claim
+// against the actual wire bytes rather than assuming either:
+// groupSortFieldEvidence (which has a ,chardata field on Field) proves the
+// bare field name is really there; groupSortFieldProbe (an exact mirror of
+// the generated GroupSort/GroupField) proves that, with only Order to decode
+// into, that same name has nowhere to go.
+func TestGroupSortFieldNameIsAnAcceptedLoss(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	cases := []struct {
+		provenance string
+		path       string
+		wantName   string
+		wantOrder  string
+	}{
+		{"upstream", filepath.Join(gmptestDir, "upstream", "get_groups", "001_response.xml"), "name", "ascending"},
+		{"live", filepath.Join(gmptestDir, "live", "get_groups", "003_response.xml"), "name", "ascending"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.provenance, func(t *testing.T) {
+			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", tc.path, err)
+			}
+
+			// First, prove the wire actually carries the bare field name:
+			// decode with a ,chardata field the generated shape lacks.
+			var evidence groupSortFieldEvidence
+			if err := xml.Unmarshal(data, &evidence); err != nil {
+				t.Fatalf("decoding %s into groupSortFieldEvidence: %v", tc.path, err)
+			}
+			if got := strings.TrimSpace(evidence.Sort.Field.Value); got != tc.wantName {
+				t.Fatalf("%s: sort/field bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
+					tc.path, got, tc.wantName)
+			}
+			if evidence.Sort.Field.Order != tc.wantOrder {
+				t.Fatalf("%s: groupSortFieldEvidence order = %q, want %q",
+					tc.path, evidence.Sort.Field.Order, tc.wantOrder)
+			}
+
+			// Second, prove the exact generated shape retains Order but has
+			// nowhere to put the field name.
+			var got groupSortFieldProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into groupSortFieldProbe: %v", tc.path, err)
+			}
+			if got.Sort.Field.Order != tc.wantOrder {
+				t.Errorf("groupSortFieldProbe order = %q, want %q (the generated shape changed unexpectedly)",
+					got.Sort.Field.Order, tc.wantOrder)
+			}
+			// groupSortFieldProbe has no field that could have captured
+			// evidence.Sort.Field.Value — that silent drop, now proven
+			// against the actual fixture bytes rather than assumed, is the
+			// accepted loss this test exists to pin.
+		})
+	}
+}
+
 // assertMatchesOrImproves is the shared body of the two match-or-improve gates:
 // the exact expected "after" counts, plus the two general rules that hold for
 // any family — no category may grow, and the schema's own defects may not move.

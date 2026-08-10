@@ -27,32 +27,37 @@ func TestCommittedManifest(t *testing.T) {
 	// note, override, and role are all adopted: commands/{create_note,get_notes,
 	// modify_note,note_shared,create_override,get_overrides,modify_override,
 	// override_shared,create_role,get_roles,modify_role}.go are all the
-	// generator's output.
+	// generator's output. group is review-only: its goldens live only under
+	// internal/codegen/testdata/golden, not commands/.
 	assertFamily(t, m, "get_notes", "note", false)
 	assertFamily(t, m, "get_overrides", "override", false)
 	assertFamily(t, m, "get_roles", "role", false)
+	assertFamily(t, m, "get_groups", "group", true)
 	if _, ok := m.FamilyOf("delete_note"); ok {
 		t.Error("FamilyOf(delete_note) claims a family the manifest does not declare")
 	}
 
 	want := []string{
-		"create_note", "create_override", "create_role", "get_notes", "get_overrides",
-		"get_roles", "modify_note", "modify_override", "modify_role",
+		"create_group", "create_note", "create_override", "create_role", "get_groups", "get_notes", "get_overrides",
+		"get_roles", "modify_group", "modify_note", "modify_override", "modify_role",
 	}
 	if got := m.AllCommands(); strings.Join(got, ",") != strings.Join(want, ",") {
 		t.Errorf("AllCommands() = %v, want %v", got, want)
 	}
-	wantAdopted := want
+	wantAdopted := []string{
+		"create_note", "create_override", "create_role", "get_notes", "get_overrides",
+		"get_roles", "modify_note", "modify_override", "modify_role",
+	}
 	if got := m.Adopted().AllCommands(); strings.Join(got, ",") != strings.Join(wantAdopted, ",") {
 		t.Errorf("Adopted().AllCommands() = %v, want %v", got, wantAdopted)
 	}
-	if got := m.ReviewOnlyFamilies(); len(got) != 0 {
-		t.Errorf("ReviewOnlyFamilies() = %v, want none", got)
+	if got := m.ReviewOnlyFamilies(); strings.Join(got, ",") != "group" {
+		t.Errorf("ReviewOnlyFamilies() = %v, want [group]", got)
 	}
 
 	assertFiles(t, "ExpectedOutputFiles", m.ExpectedOutputFiles("commands"), []string{
-		"create_note.go", "create_override.go", "create_role.go", "get_notes.go", "get_overrides.go",
-		"get_roles.go", "modify_note.go", "modify_override.go", "modify_role.go",
+		"create_group.go", "create_note.go", "create_override.go", "create_role.go", "get_groups.go", "get_notes.go", "get_overrides.go",
+		"get_roles.go", "group_shared.go", "modify_group.go", "modify_note.go", "modify_override.go", "modify_role.go",
 		"note_shared.go", "override_shared.go", "role_shared.go",
 	})
 	assertFiles(t, "Adopted().ExpectedOutputFiles", m.Adopted().ExpectedOutputFiles("commands"), []string{

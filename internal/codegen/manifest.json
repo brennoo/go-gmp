@@ -11,6 +11,11 @@
     {
       "name": "role",
       "commands": ["create_role", "get_roles", "modify_role"]
+    },
+    {
+      "name": "group",
+      "commands": ["create_group", "get_groups", "modify_group"],
+      "review_only": true
     }
   ]
 }
