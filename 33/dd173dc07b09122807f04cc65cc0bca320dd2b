@@ -1,0 +1,41 @@
+docs/review-2026-08.md
+  s_82ff0f341cc4a9::t_557108ce02cc1c 16,25-26,28-29,129-188,960
+internal/codegen/manifest.json
+  s_82ff0f341cc4a9::t_9a6e5e325cf316 18-22
+internal/codegen/manifest_test.go
+  s_82ff0f341cc4a9::t_e57528722267dd 31-32,37,43-45,50-53,57-58,62-65,81
+internal/codegen/testdata/golden/create_tag.go
+  s_82ff0f341cc4a9::t_6b3558d55da70e 1-36
+internal/codegen/testdata/golden/get_tags.go
+  s_82ff0f341cc4a9::t_1e12cb6c3372cb 1-121
+internal/codegen/testdata/golden/modify_tag.go
+  s_82ff0f341cc4a9::t_eb77026ae13bcf 1-36
+internal/codegen/testdata/golden/tag_shared.go
+  s_82ff0f341cc4a9::t_81cb1e4d212b0a 1-8
+internal/codegen/testdata/schema/create_tag.json
+  s_82ff0f341cc4a9::t_8d8e27cbb6f60b 1-159
+internal/codegen/testdata/schema/get_tags.json
+  s_82ff0f341cc4a9::t_3faed76243a755 1-535
+internal/codegen/testdata/schema/modify_tag.json
+  s_82ff0f341cc4a9::t_2ffcb36dc0c40c 1-159
+internal/codegen/validate.go
+  s_82ff0f341cc4a9::t_02a57d7451ee4d 98-102,158-169
+internal/codegen/validate_test.go
+  s_82ff0f341cc4a9::t_8b2bfe0365636f 714-1002
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "33dd173dc07b09122807f04cc65cc0bca320dd2b",
+  "prompts": {},
+  "sessions": {
+    "s_82ff0f341cc4a9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_82ff0f341cc4a9",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
