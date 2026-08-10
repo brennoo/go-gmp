@@ -1,0 +1,61 @@
+client/client_schedule_test.go
+  s_d3852020e98a67::t_757e2880083196 77-78,80-81,83-84
+client/client_test.go
+  s_d3852020e98a67::t_7f53fc6c315e83 406
+commands/create_schedule.go
+  s_d3852020e98a67::t_93d92140fd42ee 1-2,7,17
+commands/get_schedules.go
+  s_d3852020e98a67::t_f738b3d4ee26bd 1-2,5,7,13-14,17,19-26,34-39,42-44,47-51,54-57,60-62,65-68,71-74,77-96,99-101,104-106,109-112,115-132
+commands/modify_schedule.go
+  s_d3852020e98a67::t_b9335c34b5609e 1-2,7,17
+docs/review-2026-08.md
+  s_d3852020e98a67::t_4f15bfb3d47a23 16,19-22,24-25,27-30,221-240,242,244,246,248-268,272-274,277-288,300,1060
+internal/codegen/manifest.json
+  s_d3852020e98a67::t_2e9b0a5994a80e 25
+internal/codegen/manifest_test.go
+  s_d3852020e98a67::t_5d87dc4b2f931b 27-32,38,51,55-56,67-71,82,270,273
+internal/codegen/validate.go
+  s_d3852020e98a67::t_5ba91eda915baa 98-102
+internal/codegen/validate_test.go
+  s_d3852020e98a67::t_8b1c21332430b3 996-999,1006,1019,1022-1026,1029-1033,1047,1049,1052-1053
+internal/gmptest/cases_schedule.go
+  s_d3852020e98a67::t_a44705e5ae548c 1-33
+internal/gmptest/testdata/FIDELITY-SUMMARY.txt
+  s_d3852020e98a67::t_82dde16ff30dbf 15,220-223
+internal/gmptest/testdata/live/get_schedules/001_fidelity.txt
+  s_d3852020e98a67::t_dd43ab39fae8ec 8
+internal/gmptest/testdata/live/get_schedules/002_fidelity.txt
+  s_d3852020e98a67::t_44deff71fa3e74 8
+internal/gmptest/testdata/live/get_schedules/003_fidelity.txt
+  s_d3852020e98a67::t_d66f8e18e3b68e 8,14,17
+internal/gmptest/testdata/requests/get_schedules/by_id.xml
+  s_d3852020e98a67::t_8a8f23c98f256d 1
+internal/gmptest/testdata/requests/get_schedules/filter_and_trash_false.xml
+  s_d3852020e98a67::t_cd18bb3a554bcb 1
+internal/gmptest/testdata/requests/get_schedules/filter_and_trash_true.xml
+  s_d3852020e98a67::t_06238c3dd9f39d 1
+internal/gmptest/testdata/requests/get_schedules/tasks_false.xml
+  s_d3852020e98a67::t_c258004589f89e 1
+internal/gmptest/testdata/requests/get_schedules/tasks_true.xml
+  s_d3852020e98a67::t_2f56f055bbb56e 1
+internal/gmptest/testdata/upstream/get_schedules/001_fidelity.txt
+  s_d3852020e98a67::t_34b1d938a24071 14,17-31
+internal/schema/testdata/CONFORMANCE.md
+  s_d3852020e98a67::t_93113a503f7b36 32-35,44,47-48,98,2613
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "74c36a16d05e4826eead2841d53bc8a347d78287",
+  "prompts": {},
+  "sessions": {
+    "s_d3852020e98a67": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_d3852020e98a67",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
