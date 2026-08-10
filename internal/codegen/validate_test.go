@@ -991,6 +991,303 @@ func TestTagSortFieldNameIsAnAcceptedLoss(t *testing.T) {
 	}
 }
 
+// TestValidateScheduleBeforeMatchesKnownConformance is the schedule family's
+// counterpart to TestValidateBeforeMatchesKnownConformance. schedule is
+// review_only, so commands/{create_schedule,modify_schedule,get_schedules}.go
+// are the hand-written originals — this pins the pre-swap gate the family was
+// selected to exercise.
+//
+// create_schedule and modify_schedule are already conformant (zero findings
+// either side, apart from the ICalendar/Icalendar Go-name divergence the
+// generator's initialisms table doesn't yet cover — that is not something
+// schema.Comparer can see, since it compares field shapes, not identifier
+// spelling). get_schedules carries the family's entire actionable/suppressed
+// load, plus its own SCHEMA-DEFECT 1 — the same generic
+// empty-pattern class already on record for a dozen other commands, not new
+// here.
+func TestValidateScheduleBeforeMatchesKnownConformance(t *testing.T) {
+	before, _ := validateOrSkip(t, "create_schedule")
+
+	want := map[string]counts{
+		"create_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_schedules": {
+			actionable: map[string]int{schema.CatExtra: 1, schema.CatType: 2, schema.CatDefect: 1},
+			suppressed: map[string]int{schema.CatOmitEmpty: 17},
+		},
+	}
+	for _, res := range before {
+		w, ok := want[res.Command]
+		if !ok {
+			t.Errorf("%s: unexpected command in Validate's before results", res.Command)
+			continue
+		}
+		assertCounts(t, "before", res.Command, w, countFindings(res.Findings))
+	}
+}
+
+// TestValidateScheduleGeneratedMatchesOrImproves is the schedule family's
+// pre-swap gate, run at the same rigour note, override, role, group, and tag
+// were.
+//
+// Generation closes the EXTRA 1 finding on get_schedules (ScheduleField
+// drops its hand-written `,chardata` field, which the schema's <field>
+// pattern never declared), closes both TYPE 2 findings (Writable/InUse
+// become commands.GMPBool), and closes all 17 suppressed OMITEMPTY findings
+// (Filters/Sort/Schedules/ScheduleCount and their required children become
+// non-pointer, non-omitempty values; the optional <tasks> wrapper becomes a
+// pointer). create_schedule and modify_schedule stay clean. get_schedules
+// keeps its SCHEMA-DEFECT 1 untouched: SCHEMA-DEFECT findings are copied from
+// cmd.Defects before any Go-type comparison ever runs, so no generated output
+// can move them — the same reasoning already on record for every prior
+// family.
+//
+// Two losses the comparer cannot see, recorded here for the same reason
+// role's and group's were:
+//
+//   - ScheduleCount: the schema's declared <pattern> for schedule_count is
+//     only <e>filtered</e><e>page</e>, no text token anywhere, yet a live
+//     capture sends a bare total ahead of those children. See
+//     TestScheduleCountBareTotalIsAnAcceptedLoss below.
+//   - ScheduleField: the schema's declared <pattern> for <field> (inside
+//     <sort>) is likewise <e>order</e> with no text token, yet the same live
+//     captures send the sort field's name as bare text ahead of <order>. See
+//     TestScheduleSortFieldNameIsAnAcceptedLoss below.
+//
+// A third gap worth naming even though it closes no finding and needs no
+// test: get_schedules's request-side Trash/Tasks attrs are schema-declared
+// booleans (Type:"boolean") but are hand-written as plain string, not bool —
+// and schema.Comparer's checkType only raises a TYPE finding when the Go
+// field's base type is bool (see conform.go's checkType), never when it is
+// already string. The generator still improves these to *GMPBool for typed,
+// schema-correct wire encoding, but that improvement tracks no finding
+// either side, since none was ever raised for the string case.
+func TestValidateScheduleGeneratedMatchesOrImproves(t *testing.T) {
+	before, after := validateOrSkip(t, "create_schedule")
+
+	wantAfter := map[string]counts{
+		"create_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_schedules":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{}},
+	}
+	assertMatchesOrImproves(t, before, after, wantAfter)
+}
+
+// scheduleCountProbe mirrors testdata/golden/get_schedules.go's
+// ScheduleCount field, byte for byte — keep the two in sync. It exists to
+// decode real get_schedules fixtures with the exact shape the generator
+// emits today, without pulling in the out-of-process GeneratedGoRoots
+// machinery just to observe one field. See roleCountProbe/groupCountProbe
+// above for the identical precedent.
+type scheduleCountProbe struct {
+	XMLName       xml.Name `xml:"get_schedules_response"`
+	ScheduleCount struct {
+		Filtered int `xml:"filtered"`
+		Page     int `xml:"page"`
+	} `xml:"schedule_count"`
+}
+
+// scheduleCountEvidence is scheduleCountProbe plus a ",chardata" field the
+// generated shape does not have, proving what the fixture actually contains
+// independent of what the generated shape can retain.
+type scheduleCountEvidence struct {
+	XMLName       xml.Name `xml:"get_schedules_response"`
+	ScheduleCount struct {
+		Value    string `xml:",chardata"`
+		Filtered int    `xml:"filtered"`
+		Page     int    `xml:"page"`
+	} `xml:"schedule_count"`
+}
+
+// TestScheduleCountBareTotalIsAnAcceptedLoss is the schedule family's
+// counterpart to TestRoleCountBareTotalIsAnAcceptedLoss and
+// TestGroupCountBareTotalIsAnAcceptedLoss: live gvmd captures under
+// internal/gmptest/testdata/live/get_schedules send a bare total ahead of
+// <filtered>/<page>, but the schema's declared <pattern> for schedule_count
+// is only <e>filtered</e><e>page</e>, with no text token anywhere in it.
+// There is nothing for the schema-side parser to see: the pattern the
+// generator draws from simply never declares this content, so generation
+// cannot recover it, and schema.Comparer — which only compares against what
+// the pattern declares — correctly reports no finding for it either.
+//
+// This is the same class of gap as create_override's result-as-text loss and
+// role_count/group_count's identical shape (docs/review-2026-08.md's
+// "Accepted evidence" note): the schema's own declared structure and its own
+// examples disagree, and per the generate-only-what-the-schema-declares
+// principle, the fix is to document the loss, not to add a field the schema
+// never asked for.
+//
+// Each fixture is decoded twice, into two structurally identical types that
+// differ only in one field, so the test proves both halves of the claim
+// against the actual wire bytes rather than assuming either:
+// scheduleCountEvidence (which has a ,chardata field) proves the bare total
+// is really there; scheduleCountProbe (an exact mirror of the generated
+// ScheduleCount) proves that, with only Filtered/Page to decode into, that
+// same total has nowhere to go.
+func TestScheduleCountBareTotalIsAnAcceptedLoss(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	cases := []struct {
+		provenance string
+		path       string
+		wantTotal  string
+		wantChild  int
+	}{
+		{"live_001", filepath.Join(gmptestDir, "live", "get_schedules", "001_response.xml"), "0", 0},
+		{"live_002", filepath.Join(gmptestDir, "live", "get_schedules", "002_response.xml"), "0", 0},
+		{"live_003", filepath.Join(gmptestDir, "live", "get_schedules", "003_response.xml"), "1", 1},
+	}
+	for _, tc := range cases {
+		t.Run(tc.provenance, func(t *testing.T) {
+			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", tc.path, err)
+			}
+
+			// First, prove the wire actually carries the bare total: decode
+			// with a ,chardata field the generated shape lacks.
+			var evidence scheduleCountEvidence
+			if err := xml.Unmarshal(data, &evidence); err != nil {
+				t.Fatalf("decoding %s into scheduleCountEvidence: %v", tc.path, err)
+			}
+			if got := strings.TrimSpace(evidence.ScheduleCount.Value); got != tc.wantTotal {
+				t.Fatalf("%s: schedule_count bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
+					tc.path, got, tc.wantTotal)
+			}
+			if evidence.ScheduleCount.Filtered != tc.wantChild || evidence.ScheduleCount.Page != tc.wantChild {
+				t.Fatalf("%s: scheduleCountEvidence children = %+v, want Filtered=Page=%d",
+					tc.path, evidence.ScheduleCount, tc.wantChild)
+			}
+
+			// Second, prove the exact generated shape retains the children
+			// but has nowhere to put that total.
+			var got scheduleCountProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into scheduleCountProbe: %v", tc.path, err)
+			}
+			if got.ScheduleCount.Filtered != tc.wantChild || got.ScheduleCount.Page != tc.wantChild {
+				t.Errorf("scheduleCountProbe = %+v, want Filtered=Page=%d (the generated shape changed unexpectedly)",
+					got.ScheduleCount, tc.wantChild)
+			}
+			// scheduleCountProbe has no field that could have captured
+			// evidence.ScheduleCount.Value — that silent drop, now proven
+			// against the actual fixture bytes rather than assumed, is the
+			// accepted loss this test exists to pin.
+		})
+	}
+}
+
+// scheduleSortFieldProbe mirrors testdata/golden/get_schedules.go's
+// ScheduleSort/ScheduleField fields, byte for byte — keep the two in sync.
+// Same rationale as scheduleCountProbe: decode real fixtures with the exact
+// shape the generator emits today, without the out-of-process
+// GeneratedGoRoots machinery.
+type scheduleSortFieldProbe struct {
+	XMLName xml.Name `xml:"get_schedules_response"`
+	Sort    struct {
+		Field struct {
+			Order string `xml:"order"`
+		} `xml:"field"`
+	} `xml:"sort"`
+}
+
+// scheduleSortFieldEvidence is scheduleSortFieldProbe plus a ",chardata"
+// field on Field that the generated ScheduleField does not have, proving
+// what the fixture actually contains independent of what the generated
+// shape can retain.
+type scheduleSortFieldEvidence struct {
+	XMLName xml.Name `xml:"get_schedules_response"`
+	Sort    struct {
+		Field struct {
+			Value string `xml:",chardata"`
+			Order string `xml:"order"`
+		} `xml:"field"`
+	} `xml:"sort"`
+}
+
+// TestScheduleSortFieldNameIsAnAcceptedLoss is
+// TestScheduleCountBareTotalIsAnAcceptedLoss's counterpart for the other
+// half of the same contradiction: live gvmd captures under
+// internal/gmptest/testdata/live/get_schedules send the sort field's name as
+// bare text ahead of <order> ("name" in each fixture here), but the schema's
+// declared <pattern> for <field> (inside <sort>) is only <e>order</e>, with
+// no text token anywhere in it. There is nothing for the schema-side parser
+// to see: the pattern the generator draws from simply never declares this
+// content, so generation cannot recover it, and schema.Comparer — which only
+// compares against what the pattern declares — correctly reports no finding
+// for it either.
+//
+// This is the same class of gap as schedule_count's bare total above and
+// role/group/tag's identical shape (docs/review-2026-08.md's "Accepted
+// evidence" note): the schema's own declared structure and its own examples
+// disagree, and per the generate-only-what-the-schema-declares principle,
+// the fix is to document the loss, not to add a field the schema never
+// asked for.
+//
+// Each fixture is decoded twice, into two structurally identical types that
+// differ only in one field, so the test proves both halves of the claim
+// against the actual wire bytes rather than assuming either:
+// scheduleSortFieldEvidence (which has a ,chardata field on Field) proves
+// the bare field name is really there; scheduleSortFieldProbe (an exact
+// mirror of the generated ScheduleSort/ScheduleField) proves that, with only
+// Order to decode into, that same name has nowhere to go.
+func TestScheduleSortFieldNameIsAnAcceptedLoss(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	cases := []struct {
+		provenance string
+		path       string
+		wantName   string
+		wantOrder  string
+	}{
+		{"live_001", filepath.Join(gmptestDir, "live", "get_schedules", "001_response.xml"), "name", "ascending"},
+		{"live_002", filepath.Join(gmptestDir, "live", "get_schedules", "002_response.xml"), "name", "ascending"},
+		{"live_003", filepath.Join(gmptestDir, "live", "get_schedules", "003_response.xml"), "name", "ascending"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.provenance, func(t *testing.T) {
+			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", tc.path, err)
+			}
+
+			var evidence scheduleSortFieldEvidence
+			if err := xml.Unmarshal(data, &evidence); err != nil {
+				t.Fatalf("decoding %s into scheduleSortFieldEvidence: %v", tc.path, err)
+			}
+			if got := strings.TrimSpace(evidence.Sort.Field.Value); got != tc.wantName {
+				t.Fatalf("%s: sort/field bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
+					tc.path, got, tc.wantName)
+			}
+			if evidence.Sort.Field.Order != tc.wantOrder {
+				t.Fatalf("%s: scheduleSortFieldEvidence order = %q, want %q",
+					tc.path, evidence.Sort.Field.Order, tc.wantOrder)
+			}
+
+			var got scheduleSortFieldProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into scheduleSortFieldProbe: %v", tc.path, err)
+			}
+			if got.Sort.Field.Order != tc.wantOrder {
+				t.Errorf("scheduleSortFieldProbe order = %q, want %q (the generated shape changed unexpectedly)",
+					got.Sort.Field.Order, tc.wantOrder)
+			}
+			// scheduleSortFieldProbe has no field that could have captured
+			// evidence.Sort.Field.Value — that silent drop, now proven
+			// against the actual fixture bytes rather than assumed, is the
+			// accepted loss this test exists to pin.
+		})
+	}
+}
+
 // assertMatchesOrImproves is the shared body of the two match-or-improve gates:
 // the exact expected "after" counts, plus the two general rules that hold for
 // any family — no category may grow, and the schema's own defects may not move.

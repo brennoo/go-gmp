@@ -1,0 +1,577 @@
+{
+  "Name": "get_schedules",
+  "File": "command_get_schedules.xml",
+  "Request": {
+    "Name": "get_schedules",
+    "Kind": 0,
+    "Card": 0,
+    "InChoice": false,
+    "Type": "",
+    "Alts": null,
+    "Children": [
+      {
+        "Name": "schedule_id",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "uuid",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "filter",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "filt_id",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "uuid",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "trash",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "boolean",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "tasks",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "boolean",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      }
+    ],
+    "Chardata": false
+  },
+  "Response": {
+    "Name": "get_schedules_response",
+    "Kind": 0,
+    "Card": 0,
+    "InChoice": false,
+    "Type": "",
+    "Alts": null,
+    "Children": [
+      {
+        "Name": "status",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "status",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "status_text",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "filters",
+        "Kind": 0,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "id",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "uuid",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "term",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "keywords",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "keyword",
+                "Kind": 0,
+                "Card": 2,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "column",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "relation",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "",
+                    "Alts": [
+                      "=",
+                      ":",
+                      "~",
+                      "\u003e",
+                      "\u003c"
+                    ],
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "value",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  }
+                ],
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          },
+          {
+            "Name": "name",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      },
+      {
+        "Name": "sort",
+        "Kind": 0,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "field",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "order",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "",
+                "Alts": [
+                  "ascending",
+                  "descending"
+                ],
+                "Children": null,
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          }
+        ],
+        "Chardata": true
+      },
+      {
+        "Name": "schedules",
+        "Kind": 0,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "start",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "integer",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "max",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "integer",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      },
+      {
+        "Name": "schedule_count",
+        "Kind": 0,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "filtered",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "integer",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "page",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "integer",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      },
+      {
+        "Name": "schedule",
+        "Kind": 0,
+        "Card": 2,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "id",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "uuid",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "owner",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "name",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "name",
+                "Alts": null,
+                "Children": null,
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          },
+          {
+            "Name": "name",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "name",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "comment",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "creation_time",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "iso_time",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "modification_time",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "iso_time",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "writable",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "boolean",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "in_use",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "boolean",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "permissions",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "permission",
+                "Kind": 0,
+                "Card": 2,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "name",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "name",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  }
+                ],
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          },
+          {
+            "Name": "icalendar",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "timezone",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "timezone",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "user_tags",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "count",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "integer",
+                "Alts": null,
+                "Children": null,
+                "Chardata": false
+              },
+              {
+                "Name": "tag",
+                "Kind": 0,
+                "Card": 2,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "id",
+                    "Kind": 1,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "uuid",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "name",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "value",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "comment",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  }
+                ],
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          },
+          {
+            "Name": "tasks",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "task",
+                "Kind": 0,
+                "Card": 2,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "id",
+                    "Kind": 1,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "uuid",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "name",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "name",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "permissions",
+                    "Kind": 0,
+                    "Card": 1,
+                    "InChoice": false,
+                    "Type": "",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  }
+                ],
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      }
+    ],
+    "Chardata": false
+  },
+  "Defects": [
+    {
+      "Class": "empty-pattern",
+      "Path": "/get_schedules_response/schedule/tasks/task/permissions",
+      "Detail": "pattern declares no content"
+    }
+  ]
+}

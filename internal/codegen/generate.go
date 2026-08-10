@@ -563,32 +563,36 @@ func (g *gen) emitFields(b *strings.Builder, kids []*schema.Node, used, skipAttr
 
 // --- identifiers -------------------------------------------------------------
 
-// initialisms are the acronyms the hand-written commands/ package already
-// spells in full caps. Keeping the generator's spelling identical is what lets
-// generated types drop in beside them without renaming every call site.
+// initialisms are the acronyms and other fixed-casing exceptions the
+// hand-written commands/ package already spells this way — most are full-caps
+// acronyms, but "icalendar" is the one mixed-case exception (RFC 5545's own
+// spelling, not an acronym). Keeping the generator's spelling identical is
+// what lets generated types drop in beside them without renaming every call
+// site.
 var initialisms = map[string]string{
-	"api":  "API",
-	"cpe":  "CPE",
-	"cve":  "CVE",
-	"cvss": "CVSS",
-	"dns":  "DNS",
-	"http": "HTTP",
-	"icmp": "ICMP",
-	"id":   "ID",
-	"ip":   "IP",
-	"nvt":  "NVT",
-	"oid":  "OID",
-	"os":   "OS",
-	"qod":  "QOD",
-	"smb":  "SMB",
-	"snmp": "SNMP",
-	"ssh":  "SSH",
-	"tcp":  "TCP",
-	"tls":  "TLS",
-	"udp":  "UDP",
-	"url":  "URL",
-	"uuid": "UUID",
-	"xml":  "XML",
+	"api":       "API",
+	"cpe":       "CPE",
+	"cve":       "CVE",
+	"cvss":      "CVSS",
+	"dns":       "DNS",
+	"http":      "HTTP",
+	"icalendar": "ICalendar",
+	"icmp":      "ICMP",
+	"id":        "ID",
+	"ip":        "IP",
+	"nvt":       "NVT",
+	"oid":       "OID",
+	"os":        "OS",
+	"qod":       "QOD",
+	"smb":       "SMB",
+	"snmp":      "SNMP",
+	"ssh":       "SSH",
+	"tcp":       "TCP",
+	"tls":       "TLS",
+	"udp":       "UDP",
+	"url":       "URL",
+	"uuid":      "UUID",
+	"xml":       "XML",
 }
 
 // goName turns a schema element or command name into an exported Go

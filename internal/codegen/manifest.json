@@ -19,6 +19,11 @@
     {
       "name": "tag",
       "commands": ["create_tag", "get_tags", "modify_tag"]
+    },
+    {
+      "name": "schedule",
+      "commands": ["create_schedule", "get_schedules", "modify_schedule"],
+      "review_only": true
     }
   ]
 }
