@@ -15,6 +15,11 @@
     {
       "name": "group",
       "commands": ["create_group", "get_groups", "modify_group"]
+    },
+    {
+      "name": "tag",
+      "commands": ["create_tag", "get_tags", "modify_tag"],
+      "review_only": true
     }
   ]
 }

@@ -95,10 +95,11 @@ type CommandRoots struct {
 // on gmptest.Registry's entries.
 //
 // "Before" means different things per family, deliberately. For an adopted
-// family (note, override, role) these types are already the generator's
-// output, so the comparison is a drift detector on the committed files. For a
-// review-only family (group) they are still the hand-written originals, so
-// the comparison is the pre-swap gate note, override, and role went through.
+// family (note, override, role, group) these types are already the
+// generator's output, so the comparison is a drift detector on the committed
+// files. For a review-only family (tag) they are still the hand-written
+// originals, so the comparison is the pre-swap gate note, override, role, and
+// group went through.
 //
 // The map is written out by hand rather than derived from the manifest because
 // reflection needs the concrete types: adding a family here is the one place
@@ -153,6 +154,18 @@ func BeforeGoRoots() map[string]CommandRoots {
 		"get_groups": {
 			Request:  schema.ModelOf(&commands.GetGroups{}),
 			Response: schema.ModelOf(&commands.GetGroupsResponse{}),
+		},
+		"create_tag": {
+			Request:  schema.ModelOf(&commands.CreateTag{}),
+			Response: schema.ModelOf(&commands.CreateTagResponse{}),
+		},
+		"modify_tag": {
+			Request:  schema.ModelOf(&commands.ModifyTag{}),
+			Response: schema.ModelOf(&commands.ModifyTagResponse{}),
+		},
+		"get_tags": {
+			Request:  schema.ModelOf(&commands.GetTags{}),
+			Response: schema.ModelOf(&commands.GetTagsResponse{}),
 		},
 	}
 }

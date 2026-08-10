@@ -711,6 +711,295 @@ func TestGroupSortFieldNameIsAnAcceptedLoss(t *testing.T) {
 	}
 }
 
+// TestValidateTagBeforeMatchesKnownConformance is the tag family's
+// counterpart to TestValidateBeforeMatchesKnownConformance, written while tag
+// is still review_only: "before" reflects the hand-written commands/ types,
+// cross-checked against internal/schema/testdata/CONFORMANCE.md's own
+// create_tag/get_tags/modify_tag sections.
+//
+//	create_tag: actionable EXTRA 3, OMITEMPTY 1, suppressed OMITEMPTY 1
+//	get_tags:   actionable MISSING 8, EXTRA 2, CARDINALITY 4, TYPE 4,
+//	            SCHEMA-DEFECT 1, suppressed OMITEMPTY 2
+//	modify_tag: actionable MISSING 1, EXTRA 3, OMITEMPTY 1
+func TestValidateTagBeforeMatchesKnownConformance(t *testing.T) {
+	before, _ := validateOrSkip(t, "create_tag")
+
+	want := map[string]counts{
+		"create_tag": {
+			actionable: map[string]int{schema.CatExtra: 3, schema.CatOmitEmpty: 1},
+			suppressed: map[string]int{schema.CatOmitEmpty: 1},
+		},
+		"get_tags": {
+			actionable: map[string]int{
+				schema.CatMissing:     8,
+				schema.CatExtra:       2,
+				schema.CatCardinality: 4,
+				schema.CatType:        4,
+				schema.CatDefect:      1,
+			},
+			suppressed: map[string]int{schema.CatOmitEmpty: 2},
+		},
+		"modify_tag": {
+			actionable: map[string]int{schema.CatMissing: 1, schema.CatExtra: 3, schema.CatOmitEmpty: 1},
+			suppressed: map[string]int{},
+		},
+	}
+	for _, res := range before {
+		w, ok := want[res.Command]
+		if !ok {
+			t.Errorf("%s: unexpected command in Validate's before results", res.Command)
+			continue
+		}
+		assertCounts(t, "before", res.Command, w, countFindings(res.Findings))
+	}
+}
+
+// TestValidateTagGeneratedMatchesOrImproves is the tag family's pre-swap
+// gate, run at the same rigour note, override, role, and group were.
+//
+// What this run found while tag is still review_only: generation closes
+// every actionable and suppressed finding on all three commands except
+// get_tags's one pre-existing SCHEMA-DEFECT (/get_tags_response/tag/
+// resources/resource/permissions, an empty-pattern site — the same defect
+// class note/override/create_group already carry), which is untouched
+// byte-for-byte since SCHEMA-DEFECT findings are copied from cmd.Defects
+// before any Go-type comparison runs.
+//
+// The specific closures:
+//   - create_tag: the 3 EXTRA findings (resources/resource's name/trash/type)
+//     close because the generated TagResource (shared with modify_tag, see
+//     testdata/golden/tag_shared.go) only has an ID field — the schema's
+//     request-side resource pattern never declares those three. The
+//     actionable OMITEMPTY on .../resources (schema says required) closes
+//     because the generated CreateTag.Resources is a non-pointer
+//     TagResources. The suppressed OMITEMPTY on .../resources/resource/@id
+//     closes because the generated TagResource.ID keeps its omitempty,
+//     matching the schema's optional attribute.
+//   - get_tags: all 8 MISSING findings close (3 request attributes —
+//     filt_id, trash, names_only — and 5 response elements/wrappers —
+//     filters, sort, tags, tag_count, and the tag/resources wrapper, see
+//     testdata/golden/get_tags.go), both EXTRA findings close (the
+//     hand-written Tag.Resources's flattened shape and GetTagsResponse's
+//     unused Truncated field are both gone — Truncated has no schema
+//     counterpart at all and is dropped rather than replaced), all 4
+//     CARDINALITY and all 4 TYPE findings close together on the same four
+//     fields (Writable/InUse/Active/Orphan become *commands.GMPBool,
+//     closing the optional-lexical-boolean pair at once), and both
+//     suppressed OMITEMPTY findings close (tag/@id and tag/permissions both
+//     gain the omitempty the schema's optional declaration calls for).
+//   - modify_tag: the MISSING finding (resources/@action) closes because the
+//     generated ModifyTagResources gains an Action field; the 3 EXTRA
+//     findings close the same way create_tag's did, via the shared
+//     TagResource; the OMITEMPTY finding closes the same way, via
+//     TagResource.ID's omitempty.
+//
+// Nothing regresses and no new category appears: after == {SCHEMA-DEFECT: 1}
+// for get_tags and empty for the other two.
+func TestValidateTagGeneratedMatchesOrImproves(t *testing.T) {
+	before, after := validateOrSkip(t, "create_tag")
+
+	wantAfter := map[string]counts{
+		"create_tag": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_tags":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{}},
+		"modify_tag": {actionable: map[string]int{}, suppressed: map[string]int{}},
+	}
+	assertMatchesOrImproves(t, before, after, wantAfter)
+}
+
+// tagCountProbe mirrors testdata/golden/get_tags.go's TagCount field, byte
+// for byte — keep the two in sync. Same rationale as groupCountProbe: decode
+// real get_tags fixtures with the exact shape the generator emits today,
+// without pulling in the out-of-process GeneratedGoRoots machinery.
+type tagCountProbe struct {
+	XMLName  xml.Name `xml:"get_tags_response"`
+	TagCount struct {
+		Filtered int `xml:"filtered"`
+		Page     int `xml:"page"`
+	} `xml:"tag_count"`
+}
+
+// tagCountEvidence is tagCountProbe plus a ",chardata" field the generated
+// shape does not have, proving what the fixture actually contains
+// independent of what the generated shape can retain.
+type tagCountEvidence struct {
+	XMLName  xml.Name `xml:"get_tags_response"`
+	TagCount struct {
+		Value    string `xml:",chardata"`
+		Filtered int    `xml:"filtered"`
+		Page     int    `xml:"page"`
+	} `xml:"tag_count"`
+}
+
+// TestTagCountBareTotalIsAnAcceptedLoss is the tag family's counterpart to
+// TestGroupCountBareTotalIsAnAcceptedLoss: live gvmd captures under
+// internal/gmptest/testdata/live/get_tags send a bare total ahead of
+// <filtered>/<page>, but the schema's declared <pattern> for tag_count is
+// only <e>filtered</e><e>page</e>, with no text token anywhere in it. There
+// is nothing for the schema-side parser to see: the pattern the generator
+// draws from simply never declares this content, so generation cannot
+// recover it, and schema.Comparer — which only compares against what the
+// pattern declares — correctly reports no finding for it either.
+//
+// Unlike role_count/group_count, no bundled upstream example exists for
+// get_tags (internal/gmptest/testdata/upstream/get_tags has only one
+// example and it has no tag_count at all — a filtered-empty result), so this
+// test is pinned against all three live captures instead of an
+// upstream/live pair. All three matter: 001 and 002 send a bare "0" ahead of
+// <filtered>0</filtered>/<page>0</page>, proving the loss is real evidence of
+// gvmd's own wire shape rather than an artifact of a nonzero total; 003 sends
+// "1", the nonzero case.
+//
+// Each fixture is decoded twice, into two structurally identical types that
+// differ only in one field, so the test proves both halves of the claim
+// against the actual wire bytes rather than assuming either: tagCountEvidence
+// (which has a ,chardata field) proves the bare total is really there;
+// tagCountProbe (an exact mirror of the generated TagCount) proves that,
+// with only Filtered/Page to decode into, that same total has nowhere to go.
+func TestTagCountBareTotalIsAnAcceptedLoss(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	cases := []struct {
+		provenance string
+		path       string
+		wantTotal  string
+		wantChild  int
+	}{
+		{"live_001", filepath.Join(gmptestDir, "live", "get_tags", "001_response.xml"), "0", 0},
+		{"live_002", filepath.Join(gmptestDir, "live", "get_tags", "002_response.xml"), "0", 0},
+		{"live_003", filepath.Join(gmptestDir, "live", "get_tags", "003_response.xml"), "1", 1},
+	}
+	for _, tc := range cases {
+		t.Run(tc.provenance, func(t *testing.T) {
+			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", tc.path, err)
+			}
+
+			var evidence tagCountEvidence
+			if err := xml.Unmarshal(data, &evidence); err != nil {
+				t.Fatalf("decoding %s into tagCountEvidence: %v", tc.path, err)
+			}
+			if got := strings.TrimSpace(evidence.TagCount.Value); got != tc.wantTotal {
+				t.Fatalf("%s: tag_count bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
+					tc.path, got, tc.wantTotal)
+			}
+			if evidence.TagCount.Filtered != tc.wantChild || evidence.TagCount.Page != tc.wantChild {
+				t.Fatalf("%s: tagCountEvidence children = %+v, want Filtered=Page=%d",
+					tc.path, evidence.TagCount, tc.wantChild)
+			}
+
+			var got tagCountProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into tagCountProbe: %v", tc.path, err)
+			}
+			if got.TagCount.Filtered != tc.wantChild || got.TagCount.Page != tc.wantChild {
+				t.Errorf("tagCountProbe = %+v, want Filtered=Page=%d (the generated shape changed unexpectedly)",
+					got.TagCount, tc.wantChild)
+			}
+			// tagCountProbe has no field that could have captured
+			// evidence.TagCount.Value — that silent drop, now proven against
+			// the actual fixture bytes rather than assumed, is the accepted
+			// loss this test exists to pin.
+		})
+	}
+}
+
+// tagSortFieldProbe mirrors testdata/golden/get_tags.go's TagSort/TagField
+// fields, byte for byte — keep the two in sync. Same rationale as
+// groupSortFieldProbe: decode real fixtures with the exact shape the
+// generator emits today, without the out-of-process GeneratedGoRoots
+// machinery.
+type tagSortFieldProbe struct {
+	XMLName xml.Name `xml:"get_tags_response"`
+	Sort    struct {
+		Field struct {
+			Order string `xml:"order"`
+		} `xml:"field"`
+	} `xml:"sort"`
+}
+
+// tagSortFieldEvidence is tagSortFieldProbe plus a ",chardata" field on Field
+// that the generated TagField does not have, proving what the fixture
+// actually contains independent of what the generated shape can retain.
+type tagSortFieldEvidence struct {
+	XMLName xml.Name `xml:"get_tags_response"`
+	Sort    struct {
+		Field struct {
+			Value string `xml:",chardata"`
+			Order string `xml:"order"`
+		} `xml:"field"`
+	} `xml:"sort"`
+}
+
+// TestTagSortFieldNameIsAnAcceptedLoss is TestTagCountBareTotalIsAnAcceptedLoss's
+// counterpart for the other half of the same contradiction: all three live
+// gvmd captures under internal/gmptest/testdata/live/get_tags send the sort
+// field's name as bare text ahead of <order>, but the schema's declared
+// <pattern> for <field> (inside <sort>) is only <e>order</e>, with no text
+// token anywhere in it — unlike <sort> itself, whose pattern does contain
+// the bareword text and is why TagSort.Value exists on the golden struct
+// already. There is nothing for the schema-side parser to see: the pattern
+// the generator draws from simply never declares this content, so
+// generation cannot recover it, and schema.Comparer — which only compares
+// against what the pattern declares — correctly reports no finding for it
+// either.
+func TestTagSortFieldNameIsAnAcceptedLoss(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	cases := []struct {
+		provenance string
+		path       string
+		wantName   string
+		wantOrder  string
+	}{
+		{"live_001", filepath.Join(gmptestDir, "live", "get_tags", "001_response.xml"), "name", "ascending"},
+		{"live_002", filepath.Join(gmptestDir, "live", "get_tags", "002_response.xml"), "name", "ascending"},
+		{"live_003", filepath.Join(gmptestDir, "live", "get_tags", "003_response.xml"), "name", "ascending"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.provenance, func(t *testing.T) {
+			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", tc.path, err)
+			}
+
+			var evidence tagSortFieldEvidence
+			if err := xml.Unmarshal(data, &evidence); err != nil {
+				t.Fatalf("decoding %s into tagSortFieldEvidence: %v", tc.path, err)
+			}
+			if got := strings.TrimSpace(evidence.Sort.Field.Value); got != tc.wantName {
+				t.Fatalf("%s: sort/field bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
+					tc.path, got, tc.wantName)
+			}
+			if evidence.Sort.Field.Order != tc.wantOrder {
+				t.Fatalf("%s: tagSortFieldEvidence order = %q, want %q",
+					tc.path, evidence.Sort.Field.Order, tc.wantOrder)
+			}
+
+			var got tagSortFieldProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into tagSortFieldProbe: %v", tc.path, err)
+			}
+			if got.Sort.Field.Order != tc.wantOrder {
+				t.Errorf("tagSortFieldProbe order = %q, want %q (the generated shape changed unexpectedly)",
+					got.Sort.Field.Order, tc.wantOrder)
+			}
+			// tagSortFieldProbe has no field that could have captured
+			// evidence.Sort.Field.Value — that silent drop, now proven
+			// against the actual fixture bytes rather than assumed, is the
+			// accepted loss this test exists to pin.
+		})
+	}
+}
+
 // assertMatchesOrImproves is the shared body of the two match-or-improve gates:
 // the exact expected "after" counts, plus the two general rules that hold for
 // any family — no category may grow, and the schema's own defects may not move.
