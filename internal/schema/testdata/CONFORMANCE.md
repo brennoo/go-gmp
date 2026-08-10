@@ -29,10 +29,10 @@ them, so response-side optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             55
-with actionable findings:     67
-actionable findings:          610  (request 271, response 339)
-suppressed findings:          759
+fully conformant:             56
+with actionable findings:     66
+actionable findings:          607  (request 271, response 336)
+suppressed findings:          742
 confirmed by fidelity corpus: 68
 in the schema, not in Go:     0
 in Go, not in the schema:     0
@@ -41,11 +41,11 @@ in Go, not in the schema:     0
 
                  actionable suppressed
   MISSING               208          0
-  EXTRA                 233          0
+  EXTRA                 232          0
   CARDINALITY            39          0
   KIND                   17          0
-  OMITEMPTY               8        759
-  TYPE                  105          0
+  OMITEMPTY               8        742
+  TYPE                  103          0
   SCHEMA-DEFECT         109          0
 
 ### Schema defects by class
@@ -95,7 +95,7 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_aggregates               12   MISSING=5  EXTRA=5  CARDINALITY=2
   get_port_lists               12   MISSING=3  EXTRA=1  CARDINALITY=1  KIND=3  TYPE=4
   get_assets                   11   EXTRA=6  CARDINALITY=1  TYPE=4
-  ... and 47 more with fewer
+  ... and 46 more with fewer
 
 ### Confirmed by both oracles
 
@@ -2610,48 +2610,8 @@ EXTRA=6  OMITEMPTY=10  TYPE=3  SCHEMA-DEFECT=10
 
 ### get_schedules  (command_get_schedules.xml)
 
-EXTRA=1  OMITEMPTY=17  TYPE=2  SCHEMA-DEFECT=1
+SCHEMA-DEFECT=1
 
-  EXTRA         response /get_schedules_response/sort/field/#text
-                Go *commands.ScheduleField has a `,chardata` field; schema declares no character data here
-  OMITEMPTY     response /get_schedules_response/filters
-                schema says required, Filters is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_schedules_response/filters/@id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_schedules_response/filters/keywords
-                schema says required, Keywords is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_schedules_response/filters/keywords/keyword/column
-                schema says required, Column is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_schedules_response/filters/keywords/keyword/relation
-                schema says required, Relation is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_schedules_response/filters/keywords/keyword/value
-                schema says required, Value is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_schedules_response/filters/term
-                schema says required, Term is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_schedules_response/schedule/tasks
-                schema says optional,  (wrapper) has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_schedules_response/schedule_count
-                schema says required, ScheduleCount is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_schedules_response/schedule_count/filtered
-                schema says required, Filtered is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_schedules_response/schedule_count/page
-                schema says required, Page is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_schedules_response/schedules
-                schema says required, ScheduleInfo is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_schedules_response/schedules/@max
-                schema says required, Max is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_schedules_response/schedules/@start
-                schema says required, Start is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_schedules_response/sort
-                schema says required, Sort is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_schedules_response/sort/field
-                schema says required, Field is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_schedules_response/sort/field/order
-                schema says required, Order is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  TYPE          response /get_schedules_response/schedule/in_use
-                schema type boolean is text ("" is true), Go InUse is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_schedules_response/schedule/writable
-                schema type boolean is text ("" is true), Go Writable is bool: '7' fails to decode and '1' re-emits as 'true'
   SCHEMA-DEFECT response /get_schedules_response/schedule/tasks/task/permissions
                 empty-pattern: pattern declares no content
 

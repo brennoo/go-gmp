@@ -11,11 +11,24 @@ TRUNCATED
   (none)
 
 CHANGED
-  /get_schedules_response/schedule/in_use/#text                            "0" -> "false"
-  /get_schedules_response/schedule/writable/#text                          "1" -> "true"
+  (none)
 
 ADDED
-  /get_schedules_response/schedule/tasks                                   x1
+  /get_schedules_response/filters                                          x1
+  /get_schedules_response/filters/@id                                      x1
+  /get_schedules_response/filters/keywords                                 x1
+  /get_schedules_response/filters/term                                     x1
+  /get_schedules_response/schedule_count                                   x1
+  /get_schedules_response/schedule_count/filtered                          x1
+  /get_schedules_response/schedule_count/filtered/#text                    x1
+  /get_schedules_response/schedule_count/page                              x1
+  /get_schedules_response/schedule_count/page/#text                        x1
+  /get_schedules_response/schedules                                        x1
+  /get_schedules_response/schedules/@max                                   x1
+  /get_schedules_response/schedules/@start                                 x1
+  /get_schedules_response/sort                                             x1
+  /get_schedules_response/sort/field                                       x1
+  /get_schedules_response/sort/field/order                                 x1
 
 DUPLICATED
   (none)

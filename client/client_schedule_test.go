@@ -74,14 +74,14 @@ func TestGetSchedules(t *testing.T) {
 	if resp.StatusText != "OK" {
 		t.Errorf("Expected status text 'OK', got '%s'", resp.StatusText)
 	}
-	if len(resp.Schedules) != 1 {
-		t.Errorf("Expected 1 schedule, got %d", len(resp.Schedules))
+	if len(resp.Schedule) != 1 {
+		t.Errorf("Expected 1 schedule, got %d", len(resp.Schedule))
 	}
-	if resp.Schedules[0].Name != "Every day" {
-		t.Errorf("Expected schedule name 'Every day', got '%s'", resp.Schedules[0].Name)
+	if resp.Schedule[0].Name != "Every day" {
+		t.Errorf("Expected schedule name 'Every day', got '%s'", resp.Schedule[0].Name)
 	}
-	if resp.Schedules[0].Timezone != "UTC" {
-		t.Errorf("Expected timezone 'UTC', got '%s'", resp.Schedules[0].Timezone)
+	if resp.Schedule[0].Timezone != "UTC" {
+		t.Errorf("Expected timezone 'UTC', got '%s'", resp.Schedule[0].Timezone)
 	}
 }
 

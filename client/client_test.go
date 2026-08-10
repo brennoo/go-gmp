@@ -403,7 +403,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		if cmd.ScheduleID == "ddda859a-45be-4c58-85b3-517c66230232" {
 			(*response.(*commands.GetSchedulesResponse)).Status = "200"
 			(*response.(*commands.GetSchedulesResponse)).StatusText = "OK"
-			(*response.(*commands.GetSchedulesResponse)).Schedules = []commands.Schedule{
+			(*response.(*commands.GetSchedulesResponse)).Schedule = []commands.Schedule{
 				{
 					ID:               "ddda859a-45be-4c58-85b3-517c66230232",
 					Name:             "Every day",

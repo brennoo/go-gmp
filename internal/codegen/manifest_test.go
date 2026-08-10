@@ -24,18 +24,18 @@ func loadManifestErr(t *testing.T, body string) string {
 func TestCommittedManifest(t *testing.T) {
 	m := manifestOrFail(t)
 
-	// note, override, role, group, and tag are all adopted: commands/{create_note,
-	// get_notes,modify_note,note_shared,create_override,get_overrides,
-	// modify_override,override_shared,create_role,get_roles,modify_role,
-	// create_group,get_groups,modify_group,create_tag,get_tags,modify_tag,
-	// tag_shared}.go are all the generator's output. schedule is review-only:
-	// its goldens live only under internal/codegen/testdata/golden, not commands/.
+	// note, override, role, group, tag, and schedule are all adopted:
+	// commands/{create_note,get_notes,modify_note,note_shared,create_override,
+	// get_overrides,modify_override,override_shared,create_role,get_roles,
+	// modify_role,create_group,get_groups,modify_group,create_tag,get_tags,
+	// modify_tag,tag_shared,create_schedule,get_schedules,modify_schedule}.go
+	// are all the generator's output.
 	assertFamily(t, m, "get_notes", "note", false)
 	assertFamily(t, m, "get_overrides", "override", false)
 	assertFamily(t, m, "get_roles", "role", false)
 	assertFamily(t, m, "get_groups", "group", false)
 	assertFamily(t, m, "get_tags", "tag", false)
-	assertFamily(t, m, "get_schedules", "schedule", true)
+	assertFamily(t, m, "get_schedules", "schedule", false)
 	if _, ok := m.FamilyOf("delete_note"); ok {
 		t.Error("FamilyOf(delete_note) claims a family the manifest does not declare")
 	}
@@ -48,16 +48,12 @@ func TestCommittedManifest(t *testing.T) {
 	if got := m.AllCommands(); strings.Join(got, ",") != strings.Join(want, ",") {
 		t.Errorf("AllCommands() = %v, want %v", got, want)
 	}
-	wantAdopted := []string{
-		"create_group", "create_note", "create_override", "create_role", "create_tag", "get_groups", "get_notes",
-		"get_overrides", "get_roles", "get_tags", "modify_group", "modify_note", "modify_override", "modify_role",
-		"modify_tag",
-	}
+	wantAdopted := want
 	if got := m.Adopted().AllCommands(); strings.Join(got, ",") != strings.Join(wantAdopted, ",") {
 		t.Errorf("Adopted().AllCommands() = %v, want %v", got, wantAdopted)
 	}
-	if got := m.ReviewOnlyFamilies(); strings.Join(got, ",") != "schedule" {
-		t.Errorf("ReviewOnlyFamilies() = %v, want [schedule]", got)
+	if got := m.ReviewOnlyFamilies(); len(got) != 0 {
+		t.Errorf("ReviewOnlyFamilies() = %v, want none", got)
 	}
 
 	assertFiles(t, "ExpectedOutputFiles", m.ExpectedOutputFiles("commands"), []string{
@@ -68,10 +64,11 @@ func TestCommittedManifest(t *testing.T) {
 		"role_shared.go", "schedule_shared.go", "tag_shared.go",
 	})
 	assertFiles(t, "Adopted().ExpectedOutputFiles", m.Adopted().ExpectedOutputFiles("commands"), []string{
-		"create_group.go", "create_note.go", "create_override.go", "create_role.go", "create_tag.go", "get_groups.go",
-		"get_notes.go", "get_overrides.go", "get_roles.go", "get_tags.go", "group_shared.go", "modify_group.go",
-		"modify_note.go", "modify_override.go", "modify_role.go", "modify_tag.go", "note_shared.go",
-		"override_shared.go", "role_shared.go", "tag_shared.go",
+		"create_group.go", "create_note.go", "create_override.go", "create_role.go", "create_schedule.go",
+		"create_tag.go", "get_groups.go", "get_notes.go", "get_overrides.go", "get_roles.go", "get_schedules.go",
+		"get_tags.go", "group_shared.go", "modify_group.go", "modify_note.go", "modify_override.go",
+		"modify_role.go", "modify_schedule.go", "modify_tag.go", "note_shared.go", "override_shared.go",
+		"role_shared.go", "schedule_shared.go", "tag_shared.go",
 	})
 
 	if got, want := m.SnapshotPath("d", "get_notes"), SnapshotPath("d", "get_notes"); got != want {
@@ -82,7 +79,7 @@ func TestCommittedManifest(t *testing.T) {
 // assertFamily checks that command is owned by the named family, that the
 // family's shared file follows the convention, and that its ReviewOnly flag
 // matches reviewOnly.
-func assertFamily(t *testing.T, m Manifest, command, family string, reviewOnly bool) {
+func assertFamily(t *testing.T, m Manifest, command, family string, reviewOnly bool) { //nolint:unparam // every family is adopted right now; the next review-only family will pass true again
 	t.Helper()
 	f, ok := m.FamilyOf(command)
 	if !ok {
@@ -270,11 +267,10 @@ func TestRealFamiliesGenerateIndependently(t *testing.T) {
 }
 
 // TestScheduleICalendarNamingIsStable pins the fix for "icalendar" in
-// generate.go's initialisms table: the schema element and the hand-written
+// generate.go's initialisms table: the schema element and the adopted
 // commands/{create_schedule,modify_schedule,get_schedules}.go all spell the
 // Go field "ICalendar" (RFC 5545's own casing), and without the table entry
-// goName would instead render it "Icalendar" — a public API regression this
-// review-only family's golden output must not carry into eventual adoption.
+// goName would instead render it "Icalendar" — a public API regression.
 //
 // Generating schedule alone and generating it alongside every other real
 // family in the committed manifest must produce byte-identical output for

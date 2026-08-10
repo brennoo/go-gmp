@@ -993,28 +993,17 @@ func TestTagSortFieldNameIsAnAcceptedLoss(t *testing.T) {
 
 // TestValidateScheduleBeforeMatchesKnownConformance is the schedule family's
 // counterpart to TestValidateBeforeMatchesKnownConformance. schedule is
-// review_only, so commands/{create_schedule,modify_schedule,get_schedules}.go
-// are the hand-written originals — this pins the pre-swap gate the family was
-// selected to exercise.
-//
-// create_schedule and modify_schedule are already conformant (zero findings
-// either side, apart from the ICalendar/Icalendar Go-name divergence the
-// generator's initialisms table doesn't yet cover — that is not something
-// schema.Comparer can see, since it compares field shapes, not identifier
-// spelling). get_schedules carries the family's entire actionable/suppressed
-// load, plus its own SCHEMA-DEFECT 1 — the same generic
-// empty-pattern class already on record for a dozen other commands, not new
-// here.
+// adopted, so commands/{create_schedule,modify_schedule,get_schedules}.go are
+// already the generator's output — this is a drift detector on the committed
+// files, the same role group and tag's post-adoption "before" tests already
+// are.
 func TestValidateScheduleBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_schedule")
 
 	want := map[string]counts{
 		"create_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_schedules": {
-			actionable: map[string]int{schema.CatExtra: 1, schema.CatType: 2, schema.CatDefect: 1},
-			suppressed: map[string]int{schema.CatOmitEmpty: 17},
-		},
+		"get_schedules":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -1027,20 +1016,21 @@ func TestValidateScheduleBeforeMatchesKnownConformance(t *testing.T) {
 }
 
 // TestValidateScheduleGeneratedMatchesOrImproves is the schedule family's
-// pre-swap gate, run at the same rigour note, override, role, group, and tag
+// post-swap gate, run at the same rigour note, override, role, group, and tag
 // were.
 //
-// Generation closes the EXTRA 1 finding on get_schedules (ScheduleField
-// drops its hand-written `,chardata` field, which the schema's <field>
-// pattern never declared), closes both TYPE 2 findings (Writable/InUse
-// become commands.GMPBool), and closes all 17 suppressed OMITEMPTY findings
+// What this run found while schedule was still review_only: generation
+// closed the EXTRA 1 finding on get_schedules (ScheduleField drops its
+// hand-written `,chardata` field, which the schema's <field> pattern never
+// declared), closed both TYPE 2 findings (Writable/InUse become
+// commands.GMPBool), and closed all 17 suppressed OMITEMPTY findings
 // (Filters/Sort/Schedules/ScheduleCount and their required children become
 // non-pointer, non-omitempty values; the optional <tasks> wrapper becomes a
-// pointer). create_schedule and modify_schedule stay clean. get_schedules
-// keeps its SCHEMA-DEFECT 1 untouched: SCHEMA-DEFECT findings are copied from
-// cmd.Defects before any Go-type comparison ever runs, so no generated output
-// can move them — the same reasoning already on record for every prior
-// family.
+// pointer). create_schedule and modify_schedule stayed clean throughout.
+// get_schedules keeps its SCHEMA-DEFECT 1 untouched: SCHEMA-DEFECT findings
+// are copied from cmd.Defects before any Go-type comparison ever runs, so no
+// generated output can move them — the same reasoning already on record for
+// every prior family.
 //
 // Two losses the comparer cannot see, recorded here for the same reason
 // role's and group's were:
@@ -1054,13 +1044,13 @@ func TestValidateScheduleBeforeMatchesKnownConformance(t *testing.T) {
 //     captures send the sort field's name as bare text ahead of <order>. See
 //     TestScheduleSortFieldNameIsAnAcceptedLoss below.
 //
-// A third gap worth naming even though it closes no finding and needs no
+// A third gap worth naming even though it closed no finding and needed no
 // test: get_schedules's request-side Trash/Tasks attrs are schema-declared
-// booleans (Type:"boolean") but are hand-written as plain string, not bool —
+// booleans (Type:"boolean") but were hand-written as plain string, not bool —
 // and schema.Comparer's checkType only raises a TYPE finding when the Go
 // field's base type is bool (see conform.go's checkType), never when it is
-// already string. The generator still improves these to *GMPBool for typed,
-// schema-correct wire encoding, but that improvement tracks no finding
+// already string. The generator still improved these to *GMPBool for typed,
+// schema-correct wire encoding, but that improvement tracked no finding
 // either side, since none was ever raised for the string case.
 func TestValidateScheduleGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_schedule")

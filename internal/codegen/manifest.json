@@ -22,8 +22,7 @@
     },
     {
       "name": "schedule",
-      "commands": ["create_schedule", "get_schedules", "modify_schedule"],
-      "review_only": true
+      "commands": ["create_schedule", "get_schedules", "modify_schedule"]
     }
   ]
 }
