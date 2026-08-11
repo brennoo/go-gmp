@@ -1,0 +1,92 @@
+docs/review-2026-08.md
+  s_6b74b50f8b69ed::t_fc0f6d8c450a3e 728-738
+  s_6b74b50f8b69ed::t_80d79ca01e625b 725-727
+  s_6b74b50f8b69ed::t_f15831d3e0c6c7 739-741
+  s_56ecd5e2439927::t_f2371d422a280f 34-35,579-724,742-751,1523
+internal/cmd/gengmp/main.go
+  s_56ecd5e2439927::t_38c3b936927ebd 106,140
+internal/codegen/check.go
+  s_56ecd5e2439927::t_0f0f23653edbff 82,99
+internal/codegen/check_test.go
+  s_56ecd5e2439927::t_0057348a98aa24 48,234
+internal/codegen/generate.go
+  s_56ecd5e2439927::t_1806c80fafd3f0 6,32,37,41,60-62,64-154,185,202,262,274-287,523-528,568-584,728-733,735-737,743,745,752-885,934-935,942-945,1262
+internal/codegen/generate_test.go
+  s_56ecd5e2439927::t_df363c468c0d91 201,447-615,646,665-755
+internal/codegen/manifest.json
+  s_56ecd5e2439927::t_266c9686d95e03 34-38
+internal/codegen/manifest_test.go
+  s_56ecd5e2439927::t_9f4166088ef187 34-36,45,52-55,60-65,69-70,75-81,204,219,258,265,313,317,371,375,405-464,486,498
+internal/codegen/overrides.go
+  s_56ecd5e2439927::t_dff7d1f20cd3fa 104-141,168-186
+internal/codegen/overrides_test.go
+  s_56ecd5e2439927::t_26fc7fe9d3c241 1-132
+internal/codegen/testdata/golden/create_tls_certificate.go
+  s_56ecd5e2439927::t_23f54467ec67d9 1-28
+internal/codegen/testdata/golden/get_tls_certificates.go
+  s_56ecd5e2439927::t_d482b030ef574b 1-175
+internal/codegen/testdata/golden/modify_tls_certificate.go
+  s_56ecd5e2439927::t_619e8f725e20c6 1-27
+internal/codegen/testdata/schema/create_tls_certificate.json
+  s_56ecd5e2439927::t_b4929e30415e5d 1-107
+internal/codegen/testdata/schema/get_tls_certificates.json
+  s_56ecd5e2439927::t_ec6aa34393b236 1-781
+internal/codegen/testdata/schema/modify_tls_certificate.json
+  s_56ecd5e2439927::t_183b470d4963bd 1-97
+internal/codegen/validate.go
+  s_56ecd5e2439927::t_6be41b9ac29aa5 206-217,242,248,378,380
+internal/codegen/validate_test.go
+  s_56ecd5e2439927::t_7cb7447e983070 35,1849-2254,2276-2281,2283-2284,2309-2321
+internal/gmptest/capture_sequence_test.go
+  s_56ecd5e2439927::t_f6b859d822cf38 682-683
+internal/gmptest/golden_request_test.go
+  s_56ecd5e2439927::t_ccabdf18936a60 122
+internal/gmptest/golden_response_test.go
+  s_56ecd5e2439927::t_abf46baba8939d 109
+internal/gmptest/redact_test.go
+  s_56ecd5e2439927::t_9a3c940d20ee79 109-138
+internal/gmptest/testdata/FIDELITY-SUMMARY.txt
+  s_56ecd5e2439927::t_9b1342f2abceca 13,19-339
+internal/gmptest/testdata/REQUEST-FIDELITY.txt
+  s_56ecd5e2439927::t_b30e1c6e4da9cb 11,16-336
+internal/gmptest/testdata/live/get_tls_certificates/004_fidelity.txt
+  s_56ecd5e2439927::t_ef100a03b73bb1 1-26
+internal/gmptest/testdata/live/get_tls_certificates/004_meta.json
+  s_56ecd5e2439927::t_2750ed56ea6ca6 1-11
+internal/gmptest/testdata/live/get_tls_certificates/004_request.xml
+  s_56ecd5e2439927::t_703477ca439ebc 1
+internal/gmptest/testdata/live/get_tls_certificates/004_response.xml
+  s_56ecd5e2439927::t_f204fca0fba4c8 1
+internal/schema/conform.go
+  s_56ecd5e2439927::t_b32d932aee6ad3 185-191,260-266
+internal/schema/conform_test.go
+  s_56ecd5e2439927::t_c487ea3651c96d 86-145
+internal/schema/gomodel.go
+  s_56ecd5e2439927::t_fa5304ae9d5c72 52-62,163-165,207-213
+internal/schema/gomodel_test.go
+  s_56ecd5e2439927::t_a12fcd7774ac5d 83-118
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "225097ec260c9d9d3cee87194a8bc1cd67a58509",
+  "prompts": {},
+  "sessions": {
+    "s_56ecd5e2439927": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_56ecd5e2439927",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    },
+    "s_6b74b50f8b69ed": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "019fdd9a-6605-7b1e-bab6-fd85490a37f6",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
