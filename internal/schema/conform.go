@@ -134,33 +134,53 @@ func sideOf(cmd Command, path string) string {
 }
 
 // walk compares one schema node against one Go node and recurses.
+//
+// byName maps a (kind, name) key to a *slice* of Go nodes: get_filters's two
+// same-wire-name <filters> fields (see internal/codegen's collision codec and
+// gomodel.go's gmpwire tag) give schema.Children two same-key entries too,
+// and each must be paired with its own Go field rather than both resolving
+// to whichever one a plain map kept. Pairing is by occurrence order — the
+// Nth schema child named X against the Nth Go field named X — which is sound
+// because both sides preserve declaration order and gvmd's schema declares
+// get_filters's two definitions in the same relative order the fields are
+// generated in. matchedCount tracks, per key, how many leading Go occurrences
+// are claimed; outside get_filters it's always 0 or 1, so this is a no-op
+// generalization of the single-valued lookup it replaces.
 func (c *Comparer) walk(res *Result, cmd Command, side string, s *Node, g *GoNode, path string, suspect map[string]bool) {
-	byName := map[string]*GoNode{}
+	byName := map[string][]*GoNode{}
 	for _, k := range g.Children {
-		byName[key(k.Kind, k.Name)] = k
+		kk := key(k.Kind, k.Name)
+		byName[kk] = append(byName[kk], k)
 	}
-	matched := map[string]bool{}
+	matchedCount := map[string]int{}
 
 	for _, sc := range s.Children {
 		kp := sc.Path(path)
+		kk := key(sc.Kind, sc.Name)
 		if suspect[kp] {
-			continue // the schema, not the struct, is what is wrong here
-		}
-		gc, ok := byName[key(sc.Kind, sc.Name)]
-		if !ok {
-			c.unmatchedSchema(res, cmd, side, sc, g, byName, matched, kp)
+			// The schema, not the struct, is what is wrong here — but a Go
+			// field that would have paired with this occurrence must not
+			// then look unpaired and be reported EXTRA on top of it.
+			matchedCount[kk]++
 			continue
 		}
-		matched[key(sc.Kind, sc.Name)] = true
-		c.compareNode(res, cmd, side, sc, gc, kp, suspect)
+		idx := matchedCount[kk]
+		list := byName[kk]
+		if idx >= len(list) {
+			c.unmatchedSchema(res, cmd, side, sc, g, byName, matchedCount, kp)
+			continue
+		}
+		matchedCount[kk] = idx + 1
+		c.compareNode(res, cmd, side, sc, list[idx], kp, suspect)
 	}
 
+	occSeen := map[string]int{}
 	for _, gc := range g.Children {
-		if matched[key(gc.Kind, gc.Name)] || gc.Synthetic && len(gc.Children) > 0 {
+		kk := key(gc.Kind, gc.Name)
+		idx := occSeen[kk]
+		occSeen[kk] = idx + 1
+		if idx < matchedCount[kk] || gc.Synthetic && len(gc.Children) > 0 {
 			continue
-		}
-		if hasSchemaChild(s, gc.Name) {
-			continue // reported as KIND, not as two separate findings
 		}
 		res.add(cmd, side, CatExtra, gc.Path(path), fmt.Sprintf(
 			"Go field %s %s has no counterpart in the schema", gc.GoName, gc.GoType))
@@ -170,15 +190,18 @@ func (c *Comparer) walk(res *Result, cmd Command, side string, s *Node, g *GoNod
 // unmatchedSchema handles a schema child with no same-kind Go field: either
 // the kind is wrong, or nothing models it at all.
 func (c *Comparer) unmatchedSchema(res *Result, cmd Command, side string, sc *Node, g *GoNode,
-	byName map[string]*GoNode, matched map[string]bool, kp string) {
+	byName map[string][]*GoNode, matchedCount map[string]int, kp string) {
 	// A Go field of the opposite kind is a KIND finding only if nothing else
 	// has claimed it. get_aggregates declares data_column twice — once as an
 	// attribute and once as <any><e>data_column</e></any> — and the attribute
 	// is modelled correctly; what is missing is the repeated element, not the
 	// attribute spelled wrongly.
 	other := otherKind(sc.Kind)
-	if gc, ok := byName[key(other, sc.Name)]; ok && !matched[key(other, sc.Name)] {
-		matched[key(other, sc.Name)] = true
+	otherKey := key(other, sc.Name)
+	if list := byName[otherKey]; matchedCount[otherKey] < len(list) {
+		idx := matchedCount[otherKey]
+		matchedCount[otherKey] = idx + 1
+		gc := list[idx]
 		res.add(cmd, side, CatKind, kp, fmt.Sprintf(
 			"schema declares %s, Go models it as %s (%s %s)", sc.Kind, other, gc.GoName, gc.GoType))
 		return
@@ -374,15 +397,6 @@ func (r *Result) add(cmd Command, side, cat, path, detail string) {
 	r.Findings = append(r.Findings, Finding{
 		Command: cmd.Name, Side: side, Category: cat, Path: path, Detail: detail,
 	})
-}
-
-func hasSchemaChild(s *Node, name string) bool {
-	for _, sc := range s.Children {
-		if sc.Name == name {
-			return true
-		}
-	}
-	return false
 }
 
 func otherKind(k Kind) Kind {

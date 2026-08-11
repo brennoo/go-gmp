@@ -108,4 +108,23 @@ var PointerOverrides = map[string]PointerOverride{
 	"modify_alert.comment": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
 	},
+	// modify_filter: a second live experiment (T-9, gvmd 26.36.1), run to
+	// answer the review finding that filter's review-only doc had asserted
+	// "no PointerOverrides entry needed" without testing it. Result: name and
+	// comment behave exactly like modify_alert's (omit leaves the stored
+	// value unchanged, explicit-empty clears it); term also distinguishes the
+	// two, though explicit-empty doesn't clear it to "" but resets it to
+	// gvmd's default filter term (e.g. "first=1 rows=11 sort=name") — still a
+	// real distinction a bare string+omitempty could never send. type showed
+	// no distinction (omit and explicit-empty both leave it unchanged), so it
+	// keeps the mechanical default and has no entry here.
+	"modify_filter.name": {
+		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <name> are distinct requests",
+	},
+	"modify_filter.comment": {
+		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
+	},
+	"modify_filter.term": {
+		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <term> are distinct requests (explicit-empty resets to gvmd's default term rather than leaving it unchanged)",
+	},
 }

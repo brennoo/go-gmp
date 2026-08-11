@@ -284,6 +284,90 @@ func TestNestedTagPathBuildsAWrapper(t *testing.T) {
 	}
 }
 
+// get_filters's two same-wire-name <filters> definitions, disambiguated by
+// <id> (see TestIDDisambiguatesSharedWireName): both nodes are named "x", so
+// walk's occurrence pairing rather than a plain name lookup is what tells
+// them apart.
+const duplicateWireName = `
+    <name>x</name>
+    <pattern><e>x</e><e>x2</e></pattern>
+    <ele>
+      <name>x</name>
+      <pattern><e>a</e></pattern>
+      <ele><name>a</name><pattern>text</pattern></ele>
+    </ele>
+    <ele>
+      <id>x2</id>
+      <name>x</name>
+      <pattern><e>b</e></pattern>
+      <ele><name>b</name><pattern>text</pattern></ele>
+    </ele>
+    <response><pattern><attrib><name>status</name><type>status</type><required>1</required></attrib></pattern></response>`
+
+func TestDuplicateWireNamePairsByOccurrence(t *testing.T) {
+	type first struct {
+		A string `xml:"a"`
+	}
+	type second struct {
+		B string `xml:"b"`
+	}
+	type req struct {
+		XMLName xml.Name `xml:"x"`
+		First   first    `xml:"x"`
+		Second  second   `xml:"-" gmpwire:"x"`
+	}
+	r := diff(t, duplicateWireName, &req{}, &respOK{})
+	if !r.Conformant() {
+		t.Errorf("Declaration order matches the schema's, got %v", render(r.Findings))
+	}
+}
+
+// If the comparer merely checked that "a" and "b" appear somewhere among the
+// two "x" occurrences, swapping which Go field holds which shape would still
+// look conformant. It doesn't: each occurrence is pairwise wrong.
+func TestDuplicateWireNamePairingIsPositional(t *testing.T) {
+	type first struct {
+		A string `xml:"a"`
+	}
+	type second struct {
+		B string `xml:"b"`
+	}
+	type req struct {
+		XMLName xml.Name `xml:"x"`
+		First   second   `xml:"x"`
+		Second  first    `xml:"-" gmpwire:"x"`
+	}
+	r := diff(t, duplicateWireName, &req{}, &respOK{})
+	if got := only(r, CatMissing); len(got) != 2 {
+		t.Errorf("Got %d MISSING, want 2 (one per swapped occurrence): %v", len(got), render(got))
+	}
+	if got := only(r, CatExtra); len(got) != 2 {
+		t.Errorf("Got %d EXTRA, want 2 (one per swapped occurrence): %v", len(got), render(got))
+	}
+}
+
+// A third Go field sharing the wire name has no schema occurrence left to
+// pair with once the first two are claimed, and must be reported EXTRA
+// rather than waved through because the name exists in the schema.
+func TestDuplicateWireNameExcessGoOccurrenceIsExtra(t *testing.T) {
+	type first struct {
+		A string `xml:"a"`
+	}
+	type second struct {
+		B string `xml:"b"`
+	}
+	type third struct {
+		C string `xml:"c"`
+	}
+	type req struct {
+		XMLName xml.Name `xml:"x"`
+		First   first    `xml:"x"`
+		Second  second   `xml:"-" gmpwire:"x"`
+		Third   third    `xml:"-" gmpwire:"x"`
+	}
+	wantOne(t, diff(t, duplicateWireName, &req{}, &respOK{}), CatExtra, "/x/x")
+}
+
 func TestFidelityCrossReference(t *testing.T) {
 	body := `
     <name>x</name>

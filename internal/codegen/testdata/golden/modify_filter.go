@@ -8,9 +8,9 @@ import "encoding/xml"
 type ModifyFilter struct {
 	XMLName  xml.Name `xml:"modify_filter"`
 	FilterID string   `xml:"filter_id,attr"`
-	Comment  string   `xml:"comment,omitempty"`
-	Name     string   `xml:"name,omitempty"`
-	Term     string   `xml:"term,omitempty"`
+	Comment  *string  `xml:"comment,omitempty"`
+	Name     *string  `xml:"name,omitempty"`
+	Term     *string  `xml:"term,omitempty"`
 	Type     string   `xml:"type,omitempty"`
 }
 

@@ -132,7 +132,17 @@ func fill(n *GoNode, t reflect.Type, seen map[reflect.Type]bool) {
 func addField(n *GoNode, f reflect.StructField, seen map[reflect.Type]bool) {
 	name, opts := splitTag(f.Tag.Get("xml"))
 	if name == "-" {
-		return
+		// internal/codegen's wire-tag collision codec also uses xml:"-" (the
+		// only tag `go vet`'s structtag check accepts on a duplicate wire
+		// name), but carries the field's real identity in a private
+		// `gmpwire` tag (see generate.go's writeField) that go vet doesn't
+		// inspect. A field genuinely excluded from the wire has no gmpwire
+		// tag and stays invisible, as before.
+		wireName, wireOpts := splitTag(f.Tag.Get("gmpwire"))
+		if wireName == "" {
+			return
+		}
+		name, opts = wireName, wireOpts
 	}
 	switch {
 	case f.Type == xmlNameType:

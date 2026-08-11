@@ -1565,8 +1565,15 @@ func TestAlertSortFieldNameIsAnAcceptedLoss(t *testing.T) {
 // the hand-written originals — this pins the pre-generation gate the family
 // was selected to exercise. create_filter and modify_filter are already
 // conformant. get_filters carries the family's entire actionable/suppressed
-// load, plus its own SCHEMA-DEFECT 3 (see
-// TestValidateFilterGeneratedMatchesOrImproves for what each one is).
+// load, plus its own SCHEMA-DEFECT 1 (see
+// TestValidateFilterGeneratedMatchesOrImproves for what each finding is).
+//
+// MISSING/EXTRA are 1/1, not the 2/5 an occurrence-blind comparer once
+// reported: internal/schema/conform.go's walk now pairs the schema's two
+// same-named "filters" children against Go fields by occurrence instead of
+// both resolving to the same node (see
+// TestValidateFilterGeneratedMatchesOrImproves), which was inflating these
+// counts even on the hand-written side.
 func TestValidateFilterBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_filter")
 
@@ -1574,7 +1581,12 @@ func TestValidateFilterBeforeMatchesKnownConformance(t *testing.T) {
 		"create_filter": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_filter": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_filters": {
-			actionable: map[string]int{schema.CatType: 2, schema.CatDefect: 3},
+			actionable: map[string]int{
+				schema.CatType:    2,
+				schema.CatDefect:  1,
+				schema.CatMissing: 1,
+				schema.CatExtra:   1,
+			},
 			suppressed: map[string]int{schema.CatOmitEmpty: 1},
 		},
 	}
@@ -1591,61 +1603,39 @@ func TestValidateFilterBeforeMatchesKnownConformance(t *testing.T) {
 // TestValidateFilterGeneratedMatchesOrImproves is the filter family's
 // pre-swap gate, run at the same rigour note through alert were.
 //
-// Generation closes both TYPE 2 findings (Filter.InUse/.Writable become
-// commands.GMPBool) and the 1 suppressed OMITEMPTY finding (Filters.Name
-// gains omitempty, tracking the schema's optional <name>). get_filters keeps
-// its SCHEMA-DEFECT 3 untouched: SCHEMA-DEFECT findings are copied from
-// cmd.Defects before any Go-type comparison ever runs, so no generated
-// output can move them — the same reasoning already on record for every
-// prior family. One of the three is the same generic empty-pattern class
-// already on record for a dozen other commands
-// (/get_filters_response/filter/alerts/alert/permissions). The other two are
-// new in kind, though not in severity, and both come from the same root
-// cause: gvmd's own schema defines two structurally unrelated elements that
-// both serialize to the wire tag <filters> — one carrying the echoed search
-// term (id/term/keywords), the other carrying the start/max pagination
-// window (see the live fixtures under
-// internal/gmptest/testdata/live/get_filters, each of which sends
-// <filters id="..."><term>...</term>...</filters> followed later by a bare
-// <filters start="1" max="1000"/>). gvmd's own schema doc disambiguates the
-// second definition with <id>filters2</id>, but the pattern that references
-// it, and every other <ele> in the corpus, resolves purely by <name> — this
-// is the only <id> disambiguator anywhere in the 40+ command files, so
-// nothing else depends on it — leaving the second <name>filters</name>
-// definition shadowed as a duplicate-ele (schema.CatDefect at
-// /get_filters_response/filters) and its <e>filters2</e> reference
-// unresolvable as a dangling-e (schema.CatDefect at
-// /get_filters_response/filters2). Generation faithfully reflects that: with
-// no def to resolve against, the dangling filters2 reference becomes a bare,
-// childless node, which the generator renders as a plain string field tagged
-// xml:"filters2" that gvmd never actually sends (the real second element is
-// tagged <filters>, not <filters2>) and which can never carry the start/max
-// attributes the wire really carries. This is not a new fidelity loss
-// introduced by generation, though: the hand-written get_filters.go already
-// models this as FilterInfo2{Start, Max} tagged xml:"filters2" — the same
-// wrong tag name, guessed by whoever wrote it by hand, likely from the
-// schema's <id> rather than gvmd's actual wire output — so it already fails
-// to decode the real <filters start=.../> today
-// (see internal/gmptest/testdata/live/get_filters/001_fidelity.txt's
-// DROPPED /get_filters_response/filters/@start and @max, and its ADDED
-// /get_filters_response/filters2 and its two attrs, both already present
-// before this review). Generation does not fix or worsen that functional
-// gap; it only changes the shape of the field nothing can ever fill, from a
-// two-field struct to a bare string. Fixing it correctly — modeling a
-// genuine second <filters start=... max=.../>> reusing the same wire tag as
-// the first <filters> — would need either the schema parser to resolve
-// shared <ele> references by <id> before falling back to <name>, or a
-// hand-maintained override; that is exactly the kind of decision an adoption
-// pass should make deliberately, not something review-only generation should
-// paper over, so it is left as an open question for whoever adopts filter
-// next rather than fixed here.
+// Generation closes the TYPE 2 findings (Filter.InUse/.Writable become
+// commands.GMPBool), the suppressed OMITEMPTY finding (Filters.Name gains
+// omitempty), and the MISSING/EXTRA findings the hand-written FilterInfo2
+// field produced by being wrongly tagged xml:"filters2" instead of the
+// wire's actual "filters". SCHEMA-DEFECT 1 is untouched (the generic
+// empty-pattern class already on record for a dozen other commands, at
+// /get_filters_response/filter/alerts/alert/permissions): those findings
+// are copied from cmd.Defects before any Go-type comparison runs.
+//
+// get_filters's <filters> collision (see get_filters.go's generated
+// UnmarshalXML/MarshalXML and TestGetFiltersCollisionRoundTrips) can't give
+// the second field a real xml:"filters" tag — go vet's structtag analyzer
+// statically rejects two fields sharing one tag. It carries xml:"-" instead,
+// plus a private gmpwire:"filters" tag recording its true wire identity.
+// internal/schema/gomodel.go's addField reads xml:"-" fields' gmpwire tag
+// (when present) to make them visible again, by name, with no import or
+// method added to commands/*.go; internal/schema/conform.go's walk pairs
+// same-name schema children against same-name Go fields by occurrence
+// instead of collapsing every occurrence onto the first match. Together
+// these let the comparer see both Filters and Filters2 correctly, closing
+// the gap to zero MISSING/EXTRA.
 func TestValidateFilterGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_filter")
 
 	wantAfter := map[string]counts{
 		"create_filter": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_filter": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_filters":   {actionable: map[string]int{schema.CatDefect: 3}, suppressed: map[string]int{}},
+		"get_filters": {
+			actionable: map[string]int{
+				schema.CatDefect: 1,
+			},
+			suppressed: map[string]int{},
+		},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }

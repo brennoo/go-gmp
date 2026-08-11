@@ -31,22 +31,22 @@ them, so response-side optionality is trusted and request-side is not.
 commands compared:            122
 fully conformant:             57
 with actionable findings:     65
-actionable findings:          601  (request 271, response 330)
-suppressed findings:          734
-confirmed by fidelity corpus: 68
+actionable findings:          603  (request 271, response 332)
+suppressed findings:          730
+confirmed by fidelity corpus: 69
 in the schema, not in Go:     0
 in Go, not in the schema:     0
 
 ### Findings by category
 
                  actionable suppressed
-  MISSING               206          0
+  MISSING               209          0
   EXTRA                 232          0
   CARDINALITY            39          0
   KIND                   17          0
-  OMITEMPTY               8        734
-  TYPE                   99          0
-  SCHEMA-DEFECT         109          0
+  OMITEMPTY               8        730
+  TYPE                   98          0
+  SCHEMA-DEFECT         107          0
 
 ### Schema defects by class
 
@@ -64,8 +64,8 @@ taken against upstream main (155 commands). Two reasons, both expected:
     <column> describes filter-term syntax, not an element or an attribute, so
     it is out of scope: 28 of the 31 UUID uses are of that kind.
 
-  dangling-e           2 sites in 2 commands
-  duplicate-ele       11 sites in 6 commands
+  dangling-e           1 sites in 1 commands
+  duplicate-ele       10 sites in 5 commands
   empty-pattern       44 sites in 23 commands
   no-pattern          17 sites in 4 commands
   recursion-cut        6 sites in 1 commands
@@ -77,9 +77,9 @@ taken against upstream main (155 commands). Two reasons, both expected:
 
   get_reports                  70   MISSING=55  EXTRA=6  CARDINALITY=5  TYPE=4
   create_report                52   MISSING=38  EXTRA=5  CARDINALITY=5  TYPE=4
-  get_tasks                    42   MISSING=11  EXTRA=15  CARDINALITY=7  TYPE=9
+  get_tasks                    41   MISSING=12  EXTRA=14  CARDINALITY=7  TYPE=8
+  get_targets                  31   MISSING=13  EXTRA=10  KIND=3  TYPE=5
   get_report_formats           30   MISSING=18  EXTRA=3  CARDINALITY=1  KIND=2  TYPE=6
-  get_targets                  30   MISSING=12  EXTRA=10  KIND=3  TYPE=5
   get_info                     22   MISSING=12  EXTRA=7  TYPE=3
   modify_target                19   EXTRA=19
   delete_agents                18   EXTRA=18
@@ -174,6 +174,7 @@ attributes, and one of its own captured request fixtures uses three of them.
   get_targets              /get_targets_response/target/ssh_elevate_credential/trash
   get_tasks                /get_tasks_response/task/last_report/report/result_count
   get_tasks                /get_tasks_response/task/report_count/*
+  get_tasks                /get_tasks_response/task/schedule_periods
   get_tickets              /get_tickets_response/filters/keywords
   help                     /help_response/schema
 
@@ -1437,8 +1438,12 @@ OMITEMPTY=7  TYPE=3  SCHEMA-DEFECT=1
 
 ### get_filters  (command_get_filters.xml)
 
-OMITEMPTY=1  TYPE=2  SCHEMA-DEFECT=3
+MISSING=1  EXTRA=1  OMITEMPTY=1  TYPE=2  SCHEMA-DEFECT=1
 
+  MISSING       response /get_filters_response/filters
+                required elem filters is not modelled
+  EXTRA         response /get_filters_response/filters2
+                Go field Filters2 commands.FilterInfo2 has no counterpart in the schema
   OMITEMPTY     response /get_filters_response/filters/name
                 schema says optional, Name string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
   TYPE          response /get_filters_response/filter/in_use
@@ -1447,10 +1452,6 @@ OMITEMPTY=1  TYPE=2  SCHEMA-DEFECT=3
                 schema type boolean is text ("" is true), Go Writable is bool: '7' fails to decode and '1' re-emits as 'true'
   SCHEMA-DEFECT response /get_filters_response/filter/alerts/alert/permissions
                 empty-pattern: pattern declares no content
-  SCHEMA-DEFECT response /get_filters_response/filters
-                duplicate-ele: redefined in the same scope
-  SCHEMA-DEFECT response /get_filters_response/filters2
-                dangling-e: no <ele> defines this name in scope
 
 ### get_groups  (command_get_groups.xml)
 
@@ -2633,7 +2634,7 @@ SCHEMA-DEFECT=1
 
 ### get_targets  (command_get_targets.xml)
 
-MISSING=12  EXTRA=10  KIND=3  OMITEMPTY=55  TYPE=5  SCHEMA-DEFECT=8
+MISSING=13  EXTRA=10  KIND=3  OMITEMPTY=53  TYPE=5  SCHEMA-DEFECT=8
 
   MISSING       response /get_targets_response/filters/keywords
                 required elem keywords is not modelled  [fidelity]
@@ -2645,6 +2646,8 @@ MISSING=12  EXTRA=10  KIND=3  OMITEMPTY=55  TYPE=5  SCHEMA-DEFECT=8
                 required elem trash is not modelled  [fidelity]
   MISSING       response /get_targets_response/target/krb5_credential/trash
                 required elem trash is not modelled  [fidelity]
+  MISSING       response /get_targets_response/target/permissions
+                required elem permissions is not modelled
   MISSING       response /get_targets_response/target/port_list/trash
                 required elem trash is not modelled  [fidelity]
   MISSING       response /get_targets_response/target/smb_credential/trash
@@ -2733,10 +2736,6 @@ MISSING=12  EXTRA=10  KIND=3  OMITEMPTY=55  TYPE=5  SCHEMA-DEFECT=8
                 schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
   OMITEMPTY     response /get_targets_response/target/permissions
                 schema says required, Permissions is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/permissions
-                schema says required, Permissions is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/permissions/permission/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
   OMITEMPTY     response /get_targets_response/target/permissions/permission/name
                 schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
   OMITEMPTY     response /get_targets_response/target/port_list
@@ -2824,7 +2823,7 @@ MISSING=12  EXTRA=10  KIND=3  OMITEMPTY=55  TYPE=5  SCHEMA-DEFECT=8
 
 ### get_tasks  (command_get_tasks.xml)
 
-MISSING=11  EXTRA=15  CARDINALITY=7  OMITEMPTY=9  TYPE=9  SCHEMA-DEFECT=4
+MISSING=12  EXTRA=14  CARDINALITY=7  OMITEMPTY=7  TYPE=8  SCHEMA-DEFECT=4
 
   MISSING       response /get_tasks_response/task/alert/trash
                 required elem trash is not modelled
@@ -2834,18 +2833,20 @@ MISSING=11  EXTRA=15  CARDINALITY=7  OMITEMPTY=9  TYPE=9  SCHEMA-DEFECT=4
                 optional elem compliance_count is not modelled
   MISSING       response /get_tasks_response/task/last_report/report/result_count
                 optional elem result_count is not modelled  [fidelity]
+  MISSING       response /get_tasks_response/task/name
+                optional elem name is not modelled
   MISSING       response /get_tasks_response/task/observers/#text
                 schema also declares character data (user_list) here; Go *commands.TaskObservers has no `,chardata` field
   MISSING       response /get_tasks_response/task/report_count/*
                 schema declares 1 children; Go models this as scalar int  [fidelity]
-  MISSING       response /get_tasks_response/task/schedule/icalendar
-                optional elem icalendar is not modelled
+  MISSING       response /get_tasks_response/task/schedule
+                optional elem schedule is not modelled
   MISSING       response /get_tasks_response/task/schedule/icalendar
                 optional elem icalendar is not modelled
   MISSING       response /get_tasks_response/task/schedule/timezone
                 optional elem timezone is not modelled
-  MISSING       response /get_tasks_response/task/schedule/timezone
-                optional elem timezone is not modelled
+  MISSING       response /get_tasks_response/task/schedule_periods
+                optional elem schedule_periods is not modelled  [fidelity]
   MISSING       response /get_tasks_response/task/user_tags
                 optional elem user_tags is not modelled
   EXTRA         response /get_tasks_response/task/config/type
@@ -2874,8 +2875,6 @@ MISSING=11  EXTRA=15  CARDINALITY=7  OMITEMPTY=9  TYPE=9  SCHEMA-DEFECT=4
                 Go field Trash bool has no counterpart in the schema
   EXTRA         response /get_tasks_response/task/schedule_periods/*
                 schema declares a "integer" leaf; Go models 1 children
-  EXTRA         response /get_tasks_response/task/schedule_periods/*
-                schema declares a "integer" leaf; Go models 1 children
   EXTRA         response /get_tasks_response/truncated
                 Go field Truncated string has no counterpart in the schema
   CARDINALITY   response /get_tasks_response/task/alterable
@@ -2902,10 +2901,6 @@ MISSING=11  EXTRA=15  CARDINALITY=7  OMITEMPTY=9  TYPE=9  SCHEMA-DEFECT=4
                 schema says required, Timestamp is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
   OMITEMPTY     response /get_tasks_response/task/name
                 schema says optional, Name string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_tasks_response/task/name
-                schema says optional, Name string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_tasks_response/task/schedule/trash
-                schema says required, Trash is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
   OMITEMPTY     response /get_tasks_response/task/schedule/trash
                 schema says required, Trash is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
   OMITEMPTY     response /get_tasks_response/task/target/trash
@@ -2920,8 +2915,6 @@ MISSING=11  EXTRA=15  CARDINALITY=7  OMITEMPTY=9  TYPE=9  SCHEMA-DEFECT=4
                 schema type text is text, Go ResultCount is int
   TYPE          response /get_tasks_response/task/scanner/type
                 schema type integer, Go Type is string (want int)
-  TYPE          response /get_tasks_response/task/schedule/trash
-                schema type boolean is text ("" is true), Go Trash is bool: '7' fails to decode and '1' re-emits as 'true'
   TYPE          response /get_tasks_response/task/schedule/trash
                 schema type boolean is text ("" is true), Go Trash is bool: '7' fails to decode and '1' re-emits as 'true'
   TYPE          response /get_tasks_response/task/target/trash

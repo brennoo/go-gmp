@@ -450,6 +450,46 @@ func TestDefectDuplicateDefinition(t *testing.T) {
 	}
 }
 
+// <ele><id> lets two definitions share one wire name: get_filters's second
+// <filters> definition carries <id>filters2</id> so a distinct <e>filters2</e>
+// reference can pick it out. This must resolve to two distinct nodes, both
+// named after the shared wire name rather than the disambiguating token, and
+// must not trip the id-less duplicate-definition or dangling-reference
+// defects that would otherwise fire here.
+func TestIDDisambiguatesSharedWireName(t *testing.T) {
+	cmd := parseOne(t, `
+    <name>x</name>
+    <pattern><e>x</e><e>x2</e></pattern>
+    <ele>
+      <name>x</name>
+      <pattern><e>a</e></pattern>
+      <ele><name>a</name><pattern>text</pattern></ele>
+    </ele>
+    <ele>
+      <id>x2</id>
+      <name>x</name>
+      <pattern><e>b</e></pattern>
+      <ele><name>b</name><pattern>text</pattern></ele>
+    </ele>
+    <response><pattern/></response>`)
+
+	if len(cmd.Request.Children) != 2 {
+		t.Fatalf("Got %d children, want 2: <id> must not collapse the two defs into one", len(cmd.Request.Children))
+	}
+	first, second := cmd.Request.Children[0], cmd.Request.Children[1]
+	if first.Name != "x" || second.Name != "x" {
+		t.Errorf("Got names %q/%q, want both %q: the wire name, not the disambiguating token", first.Name, second.Name, "x")
+	}
+	find(t, first, "a")
+	find(t, second, "b")
+	if hasDefect(cmd, DefectDuplicateEle, "/x/x") {
+		t.Errorf("<id> disambiguation must not be flagged as a duplicate definition: %v", cmd.Defects)
+	}
+	if hasDefect(cmd, DefectDanglingRef, "/x/x2") {
+		t.Errorf("<e>x2</e> must resolve through <id>, not be flagged dangling: %v", cmd.Defects)
+	}
+}
+
 // Defect 5: undefined type names resolved through the alias table.
 func TestDefectUndefinedTypeAliased(t *testing.T) {
 	cmd := parseOne(t, `

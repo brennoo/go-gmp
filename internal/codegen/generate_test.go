@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/brennoo/go-gmp/internal/schema"
 )
 
 // goldenDir holds the generator's committed output. These are .go files under
@@ -158,6 +160,289 @@ func TestGeneratedCodeCompiles(t *testing.T) {
 		t.Fatalf("Generated code does not compile on its own: %v\n%s", err, out)
 	}
 }
+
+// TestCollisionRequiresAttributeDiscriminators is the generation-time half
+// of finding 1's fix: attribute-signature dispatch (see
+// collisionDiscriminators/emitCollisionMethods) can only be generated when
+// every member of a same-wire-name collision carries at least one start-tag
+// attribute no sibling shares. This proves the guard fires when a member has
+// none — a collision the generator cannot safely disambiguate — rather than
+// trusting that the real corpus never exercises that shape.
+func TestCollisionRequiresAttributeDiscriminators(t *testing.T) {
+	cmds, err := LoadSnapshots(snapshotDir, []string{"get_filters"})
+	if err != nil {
+		t.Fatalf("Failed to load the get_filters snapshot: %v", err)
+	}
+	cmd := cmds[0]
+	occurrence := 0
+	found := false
+	for _, kid := range cmd.Response.Children {
+		if kid.Name != "filters" {
+			continue
+		}
+		if occurrence == 1 {
+			// Strip the pagination variant's attributes (start, max),
+			// leaving it with no signature at all to discriminate on.
+			var kept []*schema.Node
+			for _, c := range kid.Children {
+				if c.Kind != schema.KindAttribute {
+					kept = append(kept, c)
+				}
+			}
+			kid.Children = kept
+			found = true
+		}
+		occurrence++
+	}
+	if !found {
+		t.Fatal("get_filters's response no longer has a second <filters> child to weaken; did the snapshot change?")
+	}
+
+	if _, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides); err == nil {
+		t.Fatal("Generate succeeded with an attribute-less collision member; want an error")
+	} else if !strings.Contains(err.Error(), "no attribute that uniquely identifies it") {
+		t.Fatalf("Generate error = %q, want it to mention a missing discriminating attribute", err)
+	}
+}
+
+// TestGetFiltersCollisionRoundTrips proves, against a real captured response
+// and a battery of synthetic ones, that GetFiltersResponse's generated
+// UnmarshalXML/MarshalXML (get_filters.go's only collided shape — see
+// generate.go's emitCollisionMethods) separates the two sibling <filters>
+// elements by attribute signature, not by arrival order. It reuses
+// TestGeneratedCodeCompiles's scratch-module machinery, then goes one step
+// further: a `go run` package main, in the same module, that imports the
+// generated package and asserts on stdout (it is the only thing that can
+// import the generated types, so assertions have to run inside it).
+func TestGetFiltersCollisionRoundTrips(t *testing.T) {
+	goBin, err := exec.LookPath("go")
+	if err != nil {
+		t.Skipf("Skipping: no go toolchain on PATH (%v)", err)
+	}
+	got := generateOrFail(t)
+	if _, ok := got[CommandFile("get_filters")]; !ok {
+		t.Fatal("get_filters was not generated, so this test would not compile it")
+	}
+
+	fixture, err := filepath.Abs("../gmptest/testdata/live/get_filters/001_response.xml")
+	if err != nil {
+		t.Fatalf("Failed to resolve the fixture path: %v", err)
+	}
+	if _, err := os.Stat(fixture); err != nil {
+		t.Fatalf("Fixture not found: %v", err)
+	}
+
+	root, err := filepath.Abs("../..")
+	if err != nil {
+		t.Fatalf("Failed to resolve the module root: %v", err)
+	}
+	dir := t.TempDir()
+	pkgDir := filepath.Join(dir, "genproto")
+	if err := os.MkdirAll(pkgDir, 0o750); err != nil {
+		t.Fatalf("Failed to create the scratch package: %v", err)
+	}
+
+	goVersion, err := goDirective(filepath.Join(root, "go.mod"))
+	if err != nil {
+		t.Fatalf("Failed to read the module's go directive: %v", err)
+	}
+	gomod := "module gogmpcodegencheck\n\ngo " + goVersion + "\n\n" +
+		"require github.com/brennoo/go-gmp v0.0.0\n\n" +
+		"replace github.com/brennoo/go-gmp => " + root + "\n"
+	mustWriteFile(t, filepath.Join(dir, "go.mod"), gomod)
+	mustWriteFile(t, filepath.Join(pkgDir, "support.go"),
+		strings.Replace(supportShim(), "package "+targetPackage+"\n", "package genproto\n", 1))
+	for name, src := range got {
+		rewritten := strings.Replace(src, "\npackage "+targetPackage+"\n", "\npackage genproto\n", 1)
+		if rewritten == src {
+			t.Fatalf("%s: expected a %q package clause to rewrite", name, targetPackage)
+		}
+		mustWriteFile(t, filepath.Join(pkgDir, name), rewritten)
+	}
+	mustWriteFile(t, filepath.Join(dir, "main.go"), filtersRoundTripProgram)
+
+	cmd := exec.CommandContext(context.Background(), goBin, "run", ".", fixture)
+	cmd.Dir = dir
+	cmd.Env = append(os.Environ(), "GOWORK=off", "GOFLAGS=")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("Round-trip program failed: %v\n%s", err, out)
+	}
+	const want = "decode: Term=\"first=1 rows=10 sort=name\" Keywords=3 Start=1 Max=1000 Filters=0\n" +
+		"roundtrip: Term=\"first=1 rows=10 sort=name\" Keywords=3 Start=1 Max=1000 Filters=0\n" +
+		"zero-marshal-root: get_filters_response\n" +
+		"reset: Status=201 FilterCount=0 Term=\"t2\"\n" +
+		"extra-occurrence: GetFiltersResponse: unexpected extra <filters> element\n" +
+		"reversed-order: Term=\"reversed\" Keywords=0 Start=1 Max=1000 Filters=0\n" +
+		"solo-id: Term=\"solo-id\" Keywords=0 Start=0 Max=0 Filters=0\n" +
+		"solo-pagination: Term=\"\" Keywords=0 Start=5 Max=50 Filters=0\n" +
+		"unknown-signature: GetFiltersResponse: unrecognized <filters> element: no known variant's attributes are present\n" +
+		"ambiguous-signature: GetFiltersResponse: ambiguous <filters> element: attributes match more than one known variant\n"
+	if got := string(out); got != want {
+		t.Fatalf("Round-trip program printed:\n%s\nwant:\n%s", got, want)
+	}
+}
+
+// filtersRoundTripProgram is a `go run` main for TestGetFiltersCollisionRoundTrips.
+// It decodes the real fixture named on argv[1] and round-trips it, then runs
+// a battery of synthetic documents through the same decoder: a zero-value
+// marshal, a receiver reused across two decodes, an extra <filters>
+// occurrence, the two variants in reversed order, each variant alone, an
+// unrecognized attribute signature, and an ambiguous one.
+const filtersRoundTripProgram = `package main
+
+import (
+	"encoding/xml"
+	"fmt"
+	"os"
+
+	"gogmpcodegencheck/genproto"
+)
+
+func report(label string, r *genproto.GetFiltersResponse) {
+	fmt.Printf("%s: Term=%q Keywords=%d Start=%d Max=%d Filters=%d\n",
+		label, r.Filters.Term, len(r.Filters.Keywords.Keyword), r.Filters2.Start, r.Filters2.Max, len(r.Filter))
+}
+
+func main() {
+	data, err := os.ReadFile(os.Args[1])
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	var decoded genproto.GetFiltersResponse
+	if err := xml.Unmarshal(data, &decoded); err != nil {
+		fmt.Fprintln(os.Stderr, "decode:", err)
+		os.Exit(1)
+	}
+	report("decode", &decoded)
+
+	reencoded, err := xml.Marshal(&decoded)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "encode:", err)
+		os.Exit(1)
+	}
+	var roundtripped genproto.GetFiltersResponse
+	if err := xml.Unmarshal(reencoded, &roundtripped); err != nil {
+		fmt.Fprintln(os.Stderr, "re-decode:", err)
+		os.Exit(1)
+	}
+	report("roundtrip", &roundtripped)
+
+	// A zero-value marshal must not produce a nameless root element.
+	zeroBytes, err := xml.Marshal(&genproto.GetFiltersResponse{})
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "zero-marshal:", err)
+		os.Exit(1)
+	}
+	var zeroName struct{ XMLName xml.Name }
+	if err := xml.Unmarshal(zeroBytes, &zeroName); err != nil {
+		fmt.Fprintln(os.Stderr, "zero-marshal-decode:", err)
+		os.Exit(1)
+	}
+	fmt.Printf("zero-marshal-root: %s\n", zeroName.XMLName.Local)
+
+	// Decoding into an already-populated receiver must not leave data behind
+	// from the prior decode.
+	const doc1 = "<get_filters_response status=\"200\" status_text=\"OK\">" +
+		"<filters id=\"a\"><term>t1</term></filters>" +
+		"<sort><field>name<order>ascending</order></field></sort>" +
+		"<filters start=\"1\" max=\"10\"/>" +
+		"<filter_count>0<filtered>3</filtered><page>0</page></filter_count>" +
+		"<filter id=\"f1\"><name>one</name></filter>" +
+		"<filter id=\"f2\"><name>two</name></filter>" +
+		"</get_filters_response>"
+	const doc2 = "<get_filters_response status=\"201\" status_text=\"Created\">" +
+		"<filters id=\"b\"><term>t2</term></filters>" +
+		"<sort><field>name<order>ascending</order></field></sort>" +
+		"<filters start=\"2\" max=\"20\"/>" +
+		"<filter_count>0<filtered>0</filtered><page>0</page></filter_count>" +
+		"</get_filters_response>"
+	var reused genproto.GetFiltersResponse
+	if err := xml.Unmarshal([]byte(doc1), &reused); err != nil {
+		fmt.Fprintln(os.Stderr, "reset-doc1:", err)
+		os.Exit(1)
+	}
+	if err := xml.Unmarshal([]byte(doc2), &reused); err != nil {
+		fmt.Fprintln(os.Stderr, "reset-doc2:", err)
+		os.Exit(1)
+	}
+	fmt.Printf("reset: Status=%s FilterCount=%d Term=%q\n", reused.Status, len(reused.Filter), reused.Filters.Term)
+
+	// A third <filters> beyond the two schema-declared fields must fail
+	// loudly, not be silently skipped.
+	const doc3 = "<get_filters_response status=\"200\" status_text=\"OK\">" +
+		"<filters id=\"a\"><term>t1</term></filters>" +
+		"<filters start=\"1\" max=\"10\"/>" +
+		"<filters start=\"2\" max=\"20\"/>" +
+		"</get_filters_response>"
+	var extra genproto.GetFiltersResponse
+	if err := xml.Unmarshal([]byte(doc3), &extra); err == nil {
+		fmt.Println("extra-occurrence: no error (want one)")
+		os.Exit(1)
+	} else {
+		fmt.Printf("extra-occurrence: %v\n", err)
+	}
+
+	// Reversed schema order must still land by attribute signature, not by
+	// arrival order.
+	const docReversed = "<get_filters_response status=\"200\" status_text=\"OK\">" +
+		"<filters start=\"1\" max=\"1000\"/>" +
+		"<filters id=\"a\"><term>reversed</term></filters>" +
+		"</get_filters_response>"
+	var reversed genproto.GetFiltersResponse
+	if err := xml.Unmarshal([]byte(docReversed), &reversed); err != nil {
+		fmt.Fprintln(os.Stderr, "reversed-order:", err)
+		os.Exit(1)
+	}
+	report("reversed-order", &reversed)
+
+	// Either variant alone, with the other omitted, must still decode.
+	const docSoloID = "<get_filters_response status=\"200\" status_text=\"OK\">" +
+		"<filters id=\"a\"><term>solo-id</term></filters>" +
+		"</get_filters_response>"
+	var soloID genproto.GetFiltersResponse
+	if err := xml.Unmarshal([]byte(docSoloID), &soloID); err != nil {
+		fmt.Fprintln(os.Stderr, "solo-id:", err)
+		os.Exit(1)
+	}
+	report("solo-id", &soloID)
+
+	const docSoloPagination = "<get_filters_response status=\"200\" status_text=\"OK\">" +
+		"<filters start=\"5\" max=\"50\"/>" +
+		"</get_filters_response>"
+	var soloPagination genproto.GetFiltersResponse
+	if err := xml.Unmarshal([]byte(docSoloPagination), &soloPagination); err != nil {
+		fmt.Fprintln(os.Stderr, "solo-pagination:", err)
+		os.Exit(1)
+	}
+	report("solo-pagination", &soloPagination)
+
+	// A start tag matching no known variant must fail closed.
+	const docUnknown = "<get_filters_response status=\"200\" status_text=\"OK\">" +
+		"<filters foo=\"bar\"/>" +
+		"</get_filters_response>"
+	var unknown genproto.GetFiltersResponse
+	if err := xml.Unmarshal([]byte(docUnknown), &unknown); err == nil {
+		fmt.Println("unknown-signature: no error (want one)")
+		os.Exit(1)
+	} else {
+		fmt.Printf("unknown-signature: %v\n", err)
+	}
+
+	// A start tag matching both known variants must fail closed too.
+	const docAmbiguous = "<get_filters_response status=\"200\" status_text=\"OK\">" +
+		"<filters id=\"a\" start=\"1\"/>" +
+		"</get_filters_response>"
+	var ambiguous genproto.GetFiltersResponse
+	if err := xml.Unmarshal([]byte(docAmbiguous), &ambiguous); err == nil {
+		fmt.Println("ambiguous-signature: no error (want one)")
+		os.Exit(1)
+	} else {
+		fmt.Printf("ambiguous-signature: %v\n", err)
+	}
+}
+`
 
 // mustWriteFile is writeFile (scratch.go) with the *testing.T ceremony a test
 // wants but a reusable helper shouldn't carry.

@@ -225,13 +225,34 @@
         "Chardata": true
       },
       {
-        "Name": "filters2",
+        "Name": "filters",
         "Kind": 0,
         "Card": 0,
         "InChoice": false,
         "Type": "",
         "Alts": null,
-        "Children": null,
+        "Children": [
+          {
+            "Name": "start",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "integer",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "max",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "integer",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
         "Chardata": false
       },
       {
@@ -547,16 +568,6 @@
     "Chardata": false
   },
   "Defects": [
-    {
-      "Class": "dangling-e",
-      "Path": "/get_filters_response/filters2",
-      "Detail": "no \u003cele\u003e defines this name in scope"
-    },
-    {
-      "Class": "duplicate-ele",
-      "Path": "/get_filters_response/filters",
-      "Detail": "redefined in the same scope"
-    },
     {
       "Class": "empty-pattern",
       "Path": "/get_filters_response/filter/alerts/alert/permissions",

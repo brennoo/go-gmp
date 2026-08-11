@@ -163,6 +163,7 @@ type rawCommand struct {
 // rawEle covers <ele>, <element> and <response>: all three are "a pattern plus
 // the definitions of the names that pattern refers to".
 type rawEle struct {
+	ID      string      `xml:"id"`
 	Name    string      `xml:"name"`
 	Pattern *rawPattern `xml:"pattern"`
 	Type    *rawTypeRef `xml:"type"`
@@ -378,6 +379,14 @@ func (e *env) expandShared(n *Node, path string) {
 }
 
 // scope indexes an element's own <ele> definitions, reporting redefinitions.
+//
+// A def is keyed by its <id> when it has one, else by its <name>. <id> is the
+// DSL's escape hatch for two definitions that legitimately share one wire
+// name (get_filters's second <filters> definition carries <id>filters2</id>
+// precisely so a <e>filters2</e> reference can pick it out without colliding
+// with the first definition's own <e>filters</e> reference) — corpus-unique,
+// and a no-op for every def without one, since key == name already holds
+// there.
 func (e *env) scope(defs []rawEle, path string) map[string]*rawEle {
 	scope := make(map[string]*rawEle, len(defs))
 	for i := range defs {
@@ -385,11 +394,15 @@ func (e *env) scope(defs []rawEle, path string) map[string]*rawEle {
 		if nm == "" {
 			continue
 		}
-		if _, dup := scope[nm]; dup {
-			e.defect(DefectDuplicateEle, path+"/"+nm, "redefined in the same scope")
+		key := nm
+		if id := trim(defs[i].ID); id != "" {
+			key = id
+		}
+		if _, dup := scope[key]; dup {
+			e.defect(DefectDuplicateEle, path+"/"+key, "redefined in the same scope")
 			continue // first definition wins
 		}
-		scope[nm] = &defs[i]
+		scope[key] = &defs[i]
 	}
 	return scope
 }
@@ -471,6 +484,12 @@ func (e *env) child(n *Node, name string, scope map[string]*rawEle, card Card, c
 		}
 		return
 	}
+	// The definition's own name is the wire name; it only differs from the
+	// reference token (name) when scope() keyed this def by <id>, in which
+	// case the token was the id, not the name that actually appears on the
+	// wire. This is a no-op everywhere else in the corpus, where def.Name
+	// already equals name.
+	kid.Name = trim(def.Name)
 	switch {
 	case def.Type != nil:
 		kid.Type, kid.Alts = trim(def.Type.Text), trimAll(def.Type.Alts)

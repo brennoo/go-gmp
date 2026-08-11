@@ -2,7 +2,10 @@
 
 package commands
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"errors"
+)
 
 // GetFilters is a get_filters command request. See the GMP protocol docs for details.
 type GetFilters struct {
@@ -16,19 +19,151 @@ type GetFilters struct {
 
 // GetFiltersResponse is a get_filters command response. See the GMP protocol docs for details.
 type GetFiltersResponse struct {
-	XMLName     xml.Name    `xml:"get_filters_response"`
-	Status      string      `xml:"status,attr"`
-	StatusText  string      `xml:"status_text,attr"`
-	Filters     Filters     `xml:"filters"`
-	Sort        FilterSort  `xml:"sort"`
-	Filters2    string      `xml:"filters2"`
-	FilterCount FilterCount `xml:"filter_count"`
-	Filter      []Filter    `xml:"filter,omitempty"`
+	XMLName     xml.Name          `xml:"get_filters_response"`
+	Status      string            `xml:"status,attr"`
+	StatusText  string            `xml:"status_text,attr"`
+	Filters     Filters           `xml:"filters"`
+	Sort        FilterSort        `xml:"sort"`
+	Filters2    GetFiltersFilters `xml:"-" gmpwire:"filters"`
+	FilterCount FilterCount       `xml:"filter_count"`
+	Filter      []Filter          `xml:"filter,omitempty"`
 }
 
 // GetStatus returns the status and status text from the response.
 func (r *GetFiltersResponse) GetStatus() (string, string) {
 	return r.Status, r.StatusText
+}
+
+// classifyGetFiltersResponseFilters identifies which schema-declared <filters> variant a start tag
+// belongs to, from its attributes: GetFiltersResponse's colliding members are distinguished
+// by disjoint attribute signatures, not by arrival order, so a reordered or
+// malformed document fails closed instead of being misrouted.
+func classifyGetFiltersResponseFilters(attrs []xml.Attr) (int, error) {
+	has := map[string]bool{}
+	for _, a := range attrs {
+		has[a.Name.Local] = true
+	}
+	match := -1
+	if has["id"] {
+		if match != -1 && match != 0 {
+			return -1, errors.New("GetFiltersResponse: ambiguous <filters> element: attributes match more than one known variant")
+		}
+		match = 0
+	}
+	if has["max"] || has["start"] {
+		if match != -1 && match != 1 {
+			return -1, errors.New("GetFiltersResponse: ambiguous <filters> element: attributes match more than one known variant")
+		}
+		match = 1
+	}
+	if match == -1 {
+		return -1, errors.New("GetFiltersResponse: unrecognized <filters> element: no known variant's attributes are present")
+	}
+	return match, nil
+}
+
+// UnmarshalXML decodes GetFiltersResponse by hand: two of its fields share one wire tag,
+// which encoding/xml's reflection-based field routing cannot express. The
+// colliding members are told apart by attribute signature (see the
+// classify functions above), not by arrival order. See the generator's
+// emitCollisionMethods for why this is safe.
+func (r *GetFiltersResponse) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	*r = GetFiltersResponse{}
+	r.XMLName = start.Name
+	for _, a := range start.Attr {
+		switch a.Name.Local {
+		case "status":
+			r.Status = a.Value
+		case "status_text":
+			r.StatusText = a.Value
+		}
+	}
+	seenFilters := make([]bool, 2)
+	for {
+		tok, err := d.Token()
+		if err != nil {
+			return err
+		}
+		switch t := tok.(type) {
+		case xml.StartElement:
+			switch t.Name.Local {
+			case "filters":
+				idx, err := classifyGetFiltersResponseFilters(t.Attr)
+				if err != nil {
+					return err
+				}
+				if seenFilters[idx] {
+					return errors.New("GetFiltersResponse: unexpected extra <filters> element")
+				}
+				seenFilters[idx] = true
+				switch idx {
+				case 0:
+					if err := d.DecodeElement(&r.Filters, &t); err != nil {
+						return err
+					}
+				case 1:
+					if err := d.DecodeElement(&r.Filters2, &t); err != nil {
+						return err
+					}
+				}
+			case "sort":
+				if err := d.DecodeElement(&r.Sort, &t); err != nil {
+					return err
+				}
+			case "filter_count":
+				if err := d.DecodeElement(&r.FilterCount, &t); err != nil {
+					return err
+				}
+			case "filter":
+				var v Filter
+				if err := d.DecodeElement(&v, &t); err != nil {
+					return err
+				}
+				r.Filter = append(r.Filter, v)
+			default:
+				if err := d.Skip(); err != nil {
+					return err
+				}
+			}
+		case xml.EndElement:
+			return nil
+		}
+	}
+}
+
+// MarshalXML encodes GetFiltersResponse by hand, mirroring UnmarshalXML: manual
+// EncodeElement calls bypass the same reflection-based tag routing that
+// cannot express two fields sharing one wire tag.
+func (r *GetFiltersResponse) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	start.Name = r.XMLName
+	if start.Name.Local == "" {
+		start.Name.Local = "get_filters_response"
+	}
+	start.Attr = append(start.Attr[:0:0], xml.Attr{Name: xml.Name{Local: "status"}, Value: r.Status}, xml.Attr{Name: xml.Name{Local: "status_text"}, Value: r.StatusText})
+	if err := e.EncodeToken(start); err != nil {
+		return err
+	}
+	if err := e.EncodeElement(r.Filters, xml.StartElement{Name: xml.Name{Local: "filters"}}); err != nil {
+		return err
+	}
+	if err := e.EncodeElement(r.Sort, xml.StartElement{Name: xml.Name{Local: "sort"}}); err != nil {
+		return err
+	}
+	if err := e.EncodeElement(r.Filters2, xml.StartElement{Name: xml.Name{Local: "filters"}}); err != nil {
+		return err
+	}
+	if err := e.EncodeElement(r.FilterCount, xml.StartElement{Name: xml.Name{Local: "filter_count"}}); err != nil {
+		return err
+	}
+	for _, v := range r.Filter {
+		if err := e.EncodeElement(v, xml.StartElement{Name: xml.Name{Local: "filter"}}); err != nil {
+			return err
+		}
+	}
+	if err := e.EncodeToken(start.End()); err != nil {
+		return err
+	}
+	return nil
 }
 
 // Filters is the <filters> element of get_filters. See the GMP protocol docs for details.
@@ -60,6 +195,12 @@ type FilterSort struct {
 // FilterField is the <field> element of get_filters. See the GMP protocol docs for details.
 type FilterField struct {
 	Order string `xml:"order"`
+}
+
+// GetFiltersFilters is the <filters> element of get_filters. See the GMP protocol docs for details.
+type GetFiltersFilters struct {
+	Start int `xml:"start,attr"`
+	Max   int `xml:"max,attr"`
 }
 
 // FilterCount is the <filter_count> element of get_filters. See the GMP protocol docs for details.

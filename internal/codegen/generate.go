@@ -32,7 +32,12 @@ func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]Point
 	if len(cmds) == 0 {
 		return nil, fmt.Errorf("codegen: no commands to generate")
 	}
-	g := &gen{ov: ov, pf: pf, byHash: map[string]*structType{}, taken: map[string]bool{}}
+	g := &gen{
+		ov: ov, pf: pf,
+		byHash:      map[string]*structType{},
+		taken:       map[string]bool{},
+		needsErrors: map[*strings.Builder]bool{},
+	}
 
 	// Sorting decouples the output from the caller's slice order, so a
 	// reordered snapshot list cannot silently renumber disambiguated names.
@@ -164,6 +169,12 @@ type gen struct {
 	byHash map[string]*structType
 	types  []*structType   // first-occurrence order
 	taken  map[string]bool // every Go type name already handed out
+
+	// needsErrors marks, by output builder, a file whose generated collision
+	// codec (emitCollisionUnmarshal) reports an unexpected extra occurrence by
+	// returning an error rather than silently skipping it — see
+	// emitCollisionMethods' CardRequired guard.
+	needsErrors map[*strings.Builder]bool
 }
 
 // collect walks every command's request and response, recording one entry per
@@ -391,6 +402,14 @@ type field struct {
 	name   string
 	goType string
 	tag    string
+	node   *schema.Node // the node this field was built from; nil is never valid
+
+	// wireTag is the xml struct tag this field would have carried had it not
+	// lost a wire-name collision (see emitFields), preserved so writeField can
+	// still record its wire name — under a distinct tag key, since `go vet`'s
+	// structtag analyzer rejects two fields sharing one xml tag value outright
+	// — for internal/schema's gomodel.go to recover by reflection.
+	wireTag string
 }
 
 // fieldOf applies the DSL -> Go cardinality mapping. command is the request's
@@ -422,7 +441,7 @@ func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool) fiel
 	}
 	tag += opts
 
-	return field{name: uniqueName(goName(n.Name), used), goType: goType, tag: tag}
+	return field{name: uniqueName(goName(n.Name), used), goType: goType, tag: tag, node: n}
 }
 
 // emitChardata declares the field for a mixed-content node's bare text, if it
@@ -465,11 +484,17 @@ func (g *gen) emit() (map[string]string, error) {
 		file := c.Name + ".go"
 		needsXML[file] = true
 		b := get(file)
-		g.emitRequest(b, c)
-		g.emitResponse(b, c)
+		if err := g.emitRequest(b, c); err != nil {
+			return nil, err
+		}
+		if err := g.emitResponse(b, c); err != nil {
+			return nil, err
+		}
 	}
 	for _, st := range g.types {
-		g.emitStruct(get(st.file), st)
+		if err := g.emitStruct(get(st.file), st); err != nil {
+			return nil, err
+		}
 	}
 
 	out := make(map[string]string, len(files))
@@ -477,8 +502,24 @@ func (g *gen) emit() (map[string]string, error) {
 		var src strings.Builder
 		src.WriteString(GeneratedMarker + "\n\n")
 		src.WriteString("package " + targetPackage + "\n\n")
+		var imports []string
 		if needsXML[name] {
-			src.WriteString("import \"encoding/xml\"\n\n")
+			imports = append(imports, "encoding/xml")
+		}
+		if g.needsErrors[b] {
+			imports = append(imports, "errors")
+		}
+		switch len(imports) {
+		case 0:
+		case 1:
+			fmt.Fprintf(&src, "import %q\n\n", imports[0])
+		default:
+			sort.Strings(imports)
+			src.WriteString("import (\n")
+			for _, im := range imports {
+				fmt.Fprintf(&src, "%q\n", im)
+			}
+			src.WriteString(")\n\n")
 		}
 		src.WriteString(b.String())
 
@@ -491,18 +532,28 @@ func (g *gen) emit() (map[string]string, error) {
 	return out, nil
 }
 
-func (g *gen) emitRequest(b *strings.Builder, c *schema.Command) {
+func (g *gen) emitRequest(b *strings.Builder, c *schema.Command) error {
 	name := goName(c.Name)
 	fmt.Fprintf(b, "// %s is a %s command request. See the GMP protocol docs for details.\n", name, c.Name)
 	fmt.Fprintf(b, "type %s struct {\n", name)
 	used := map[string]bool{"XMLName": true}
 	fmt.Fprintf(b, "XMLName xml.Name `xml:%q`\n", c.Name)
 	g.emitChardata(b, c.Request, used)
-	g.emitFields(b, c.Request.Children, used, nil, c.Name)
+	fields, collided := g.emitFields(c.Request.Children, used, nil, c.Name)
+	for _, f := range fields {
+		writeField(b, f)
+	}
 	b.WriteString("}\n\n")
+
+	if collided {
+		if err := g.emitCollisionMethods(b, name, true, false, c.Request.Chardata, fields, c.Name); err != nil {
+			return fmt.Errorf("codegen: %s: request: %w", c.Name, err)
+		}
+	}
+	return nil
 }
 
-func (g *gen) emitResponse(b *strings.Builder, c *schema.Command) {
+func (g *gen) emitResponse(b *strings.Builder, c *schema.Command) error {
 	name := goName(c.Name) + "Response"
 	root := c.Response.Name
 	if root == "" {
@@ -519,25 +570,45 @@ func (g *gen) emitResponse(b *strings.Builder, c *schema.Command) {
 	b.WriteString("Status string `xml:\"status,attr\"`\n")
 	b.WriteString("StatusText string `xml:\"status_text,attr\"`\n")
 	g.emitChardata(b, c.Response, used)
-	g.emitFields(b, c.Response.Children, used, envelopeAttrs, c.Name)
+	fields, collided := g.emitFields(c.Response.Children, used, envelopeAttrs, c.Name)
+	for _, f := range fields {
+		writeField(b, f)
+	}
 	b.WriteString("}\n\n")
 
 	fmt.Fprintf(b, "// GetStatus returns the status and status text from the response.\n")
 	fmt.Fprintf(b, "func (r *%s) GetStatus() (string, string) {\n\treturn r.Status, r.StatusText\n}\n\n", name)
+
+	if collided {
+		if err := g.emitCollisionMethods(b, name, true, true, c.Response.Chardata, fields, root); err != nil {
+			return fmt.Errorf("codegen: %s: response: %w", c.Name, err)
+		}
+	}
+	return nil
 }
 
 // envelopeAttrs are the response attributes emitRequest/emitResponse already
 // declare by hand, and must not be declared a second time from the schema.
 var envelopeAttrs = map[string]bool{"status": true, "status_text": true}
 
-func (g *gen) emitStruct(b *strings.Builder, st *structType) {
+func (g *gen) emitStruct(b *strings.Builder, st *structType) error {
 	fmt.Fprintf(b, "// %s is the <%s> element of %s. See the GMP protocol docs for details.\n",
 		st.goName, st.node.Name, g.ownerOf(st))
 	fmt.Fprintf(b, "type %s struct {\n", st.goName)
 	used := map[string]bool{}
 	g.emitChardata(b, st.node, used)
-	g.emitFields(b, st.node.Children, used, nil, "")
+	fields, collided := g.emitFields(st.node.Children, used, nil, "")
+	for _, f := range fields {
+		writeField(b, f)
+	}
 	b.WriteString("}\n\n")
+
+	if collided {
+		if err := g.emitCollisionMethods(b, st.goName, false, false, st.node.Chardata, fields, ""); err != nil {
+			return fmt.Errorf("codegen: %s: %w", st.goName, err)
+		}
+	}
+	return nil
 }
 
 // ownerOf describes, for the doc comment, which commands reach a shape.
@@ -557,13 +628,346 @@ func (g *gen) ownerOf(st *structType) string {
 	return strings.Join(names[:len(names)-1], ", ") + " and " + names[len(names)-1]
 }
 
-func (g *gen) emitFields(b *strings.Builder, kids []*schema.Node, used, skipAttrs map[string]bool, command string) {
+// emitFields builds the field list for a struct's schema-derived children.
+// It reports collided when two KindElement children share one wire name — the
+// DSL's <id> escape hatch (see internal/schema's env.scope) lets that happen
+// deliberately (get_filters's two <filters> definitions) — since the second
+// and later occurrence cannot keep its own tag: encoding/xml's reflection-based
+// field routing rejects two fields with an identical explicit tag outright.
+// Attribute names cannot collide this way: a start tag cannot declare one
+// attribute twice.
+func (g *gen) emitFields(kids []*schema.Node, used, skipAttrs map[string]bool, command string) ([]field, bool) {
+	var fields []field
+	seen := map[string]bool{}
+	collided := false
 	for _, kid := range kids {
 		if kid.Kind == schema.KindAttribute && skipAttrs[kid.Name] {
 			continue
 		}
 		f := g.fieldOf(command, kid, used)
-		fmt.Fprintf(b, "%s %s `xml:%q`\n", f.name, f.goType, f.tag)
+		if kid.Kind == schema.KindElement {
+			if seen[kid.Name] {
+				f.wireTag = f.tag
+				f.tag = "-"
+				collided = true
+			}
+			seen[kid.Name] = true
+		}
+		fields = append(fields, f)
+	}
+	return fields, collided
+}
+
+func writeField(b *strings.Builder, f field) {
+	if f.wireTag != "" {
+		// gmpwire carries this field's real wire identity for
+		// internal/schema/gomodel.go's addField to recover by reflection —
+		// xml:"-" alone would make the field invisible to the structural
+		// conformance oracle, reopening the MISSING/EXTRA gap this tag exists
+		// to close.
+		fmt.Fprintf(b, "%s %s `xml:%q gmpwire:%q`\n", f.name, f.goType, f.tag, f.wireTag)
+		return
+	}
+	fmt.Fprintf(b, "%s %s `xml:%q`\n", f.name, f.goType, f.tag)
+}
+
+// --- duplicate-wire-tag codec generation -------------------------------------
+//
+// A struct built by emitFields can end up with two fields sharing one wire
+// name (see emitFields' doc comment). encoding/xml refuses to marshal or
+// unmarshal such a struct through its normal reflection-based path in either
+// direction ("field X with tag Y conflicts with field Z"), because both
+// directions build their field-routing table from struct tags. A custom
+// UnmarshalXML/MarshalXML pair sidesteps that lookup entirely by driving the
+// decoder/encoder directly.
+//
+// The decoder routes by attribute signature, not occurrence order: gvmd's
+// schema does not promise wire order matches declaration order, so routing
+// the Nth occurrence to the Nth field is unsound against a reordered
+// document. Instead collisionDiscriminators computes, per member, the
+// start-tag attribute name(s) that appear on it and no sibling (get_filters's
+// two <filters> are disjoint: one carries id/term/keywords/name, the other
+// start/max), and emitClassifyFunc emits a function that reads a decoded
+// start tag's attributes and returns which member they identify — failing
+// closed on zero matches or more than one, rather than guessing.
+//
+// Two shapes fail loudly rather than guess: mixed content combined with a
+// collision (chardata and a hand-driven token loop don't agree on who owns
+// the decoder's cursor), and a dynamic attribute field sharing a struct with
+// a collision (attribute names can't collide, so nothing in the corpus needs
+// this; out of scope until something does).
+func (g *gen) emitCollisionMethods(b *strings.Builder, typeName string, hasXMLName, envelope, chardata bool, fields []field, rootName string) error {
+	if chardata {
+		return fmt.Errorf("mixed content combined with a wire-tag collision is not supported")
+	}
+	for _, f := range fields {
+		if f.node.Kind == schema.KindAttribute {
+			return fmt.Errorf("dynamic attribute field %s cannot coexist with a wire-tag collision", f.name)
+		}
+	}
+	byName, order := collisionGroups(fields)
+	disc := map[string][][]string{}
+	for _, name := range order {
+		fs := byName[name]
+		if len(fs) < 2 {
+			continue
+		}
+		d, err := collisionDiscriminators(typeName, name, fs)
+		if err != nil {
+			return err
+		}
+		disc[name] = d
+	}
+	g.emitCollisionUnmarshal(b, typeName, hasXMLName, envelope, fields, disc)
+	g.emitCollisionMarshal(b, typeName, hasXMLName, envelope, fields, rootName)
+	return nil
+}
+
+// collisionDiscriminators computes, for each member of a same-wire-name
+// collision group, the start-tag attribute names that appear on that
+// member's schema node and on no sibling's — the signature that proves a
+// decoded start tag is this occurrence and not another. It errors when a
+// member has none, since dispatch can't fail closed without one.
+func collisionDiscriminators(typeName, name string, fs []field) ([][]string, error) {
+	attrSets := make([]map[string]bool, len(fs))
+	for i, f := range fs {
+		set := map[string]bool{}
+		for _, c := range f.node.Children {
+			if c.Kind == schema.KindAttribute {
+				set[c.Name] = true
+			}
+		}
+		attrSets[i] = set
+	}
+
+	disc := make([][]string, len(fs))
+	for i := range fs {
+		var names []string
+		for a := range attrSets[i] {
+			exclusive := true
+			for j := range fs {
+				if j != i && attrSets[j][a] {
+					exclusive = false
+					break
+				}
+			}
+			if exclusive {
+				names = append(names, a)
+			}
+		}
+		if len(names) == 0 {
+			return nil, fmt.Errorf("codegen: %s: wire-tag collision on <%s>: member %d (%s) has no "+
+				"attribute that uniquely identifies it among its siblings; attribute-signature dispatch "+
+				"requires every colliding member to be distinguishable by a start-tag attribute no sibling shares",
+				typeName, name, i, fs[i].name)
+		}
+		sort.Strings(names)
+		disc[i] = names
+	}
+	return disc, nil
+}
+
+// collisionGroups orders a collided struct's fields by their shared wire
+// name, first-occurrence order, so the emitted switch's case order matches
+// the struct's declaration order.
+func collisionGroups(fields []field) (byName map[string][]field, order []string) {
+	byName = map[string][]field{}
+	for _, f := range fields {
+		name := f.node.Name
+		if _, ok := byName[name]; !ok {
+			order = append(order, name)
+		}
+		byName[name] = append(byName[name], f)
+	}
+	return byName, order
+}
+
+func (g *gen) emitCollisionUnmarshal(b *strings.Builder, typeName string, hasXMLName, envelope bool, fields []field, disc map[string][][]string) {
+	byName, order := collisionGroups(fields)
+	// emitCollisionMethods only calls this when collided is true, which
+	// guarantees at least one name below has 2+ fields, so a classify
+	// function's "unrecognized"/"ambiguous" errors and the "unexpected extra
+	// occurrence" branch are always emitted, and this file always needs the
+	// errors package.
+	g.needsErrors[b] = true
+
+	for _, name := range order {
+		if len(byName[name]) > 1 {
+			g.emitClassifyFunc(b, typeName, name, disc[name])
+		}
+	}
+
+	fmt.Fprintf(b, "// UnmarshalXML decodes %s by hand: two of its fields share one wire tag,\n", typeName)
+	fmt.Fprintf(b, "// which encoding/xml's reflection-based field routing cannot express. The\n")
+	fmt.Fprintf(b, "// colliding members are told apart by attribute signature (see the\n")
+	fmt.Fprintf(b, "// classify functions above), not by arrival order. See the generator's\n")
+	fmt.Fprintf(b, "// emitCollisionMethods for why this is safe.\n")
+	fmt.Fprintf(b, "func (r *%s) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {\n", typeName)
+	// A decode target isn't necessarily zero-valued — decoding into an
+	// already-populated value (deliberately, or by reuse) must not leave
+	// stale data from whatever the receiver held before this call.
+	fmt.Fprintf(b, "*r = %s{}\n", typeName)
+	if hasXMLName {
+		b.WriteString("r.XMLName = start.Name\n")
+	}
+	if envelope {
+		b.WriteString("for _, a := range start.Attr {\n")
+		b.WriteString("switch a.Name.Local {\n")
+		b.WriteString("case \"status\":\nr.Status = a.Value\n")
+		b.WriteString("case \"status_text\":\nr.StatusText = a.Value\n")
+		b.WriteString("}\n}\n")
+	}
+	for _, name := range order {
+		if len(byName[name]) > 1 {
+			fmt.Fprintf(b, "seen%s := make([]bool, %d)\n", goName(name), len(byName[name]))
+		}
+	}
+	b.WriteString("for {\n")
+	b.WriteString("tok, err := d.Token()\n")
+	b.WriteString("if err != nil {\nreturn err\n}\n")
+	b.WriteString("switch t := tok.(type) {\n")
+	b.WriteString("case xml.StartElement:\n")
+	b.WriteString("switch t.Name.Local {\n")
+	for _, name := range order {
+		fs := byName[name]
+		fmt.Fprintf(b, "case %q:\n", name)
+		if len(fs) == 1 {
+			b.WriteString(decodeInto("r."+fs[0].name, fs[0]))
+			continue
+		}
+		fmt.Fprintf(b, "idx, err := %s(t.Attr)\n", classifyFuncName(typeName, name))
+		b.WriteString("if err != nil {\nreturn err\n}\n")
+		fmt.Fprintf(b, "if seen%s[idx] {\n", goName(name))
+		fmt.Fprintf(b, "return errors.New(%q)\n", fmt.Sprintf("%s: unexpected extra <%s> element", typeName, name))
+		b.WriteString("}\n")
+		fmt.Fprintf(b, "seen%s[idx] = true\n", goName(name))
+		b.WriteString("switch idx {\n")
+		for i, f := range fs {
+			fmt.Fprintf(b, "case %d:\n", i)
+			b.WriteString(decodeInto("r."+f.name, f))
+		}
+		b.WriteString("}\n")
+	}
+	b.WriteString("default:\nif err := d.Skip(); err != nil {\nreturn err\n}\n")
+	b.WriteString("}\n") // end switch t.Name.Local
+	b.WriteString("case xml.EndElement:\n")
+	b.WriteString("return nil\n")
+	b.WriteString("}\n") // end switch tok.(type)
+	b.WriteString("}\n") // end for
+	b.WriteString("}\n\n")
+}
+
+// classifyFuncName names the package-level function emitClassifyFunc emits
+// for one collision group, so emitCollisionUnmarshal's dispatch switch and
+// the function definition agree on what to call.
+func classifyFuncName(typeName, name string) string {
+	return "classify" + typeName + goName(name)
+}
+
+// emitClassifyFunc emits a function that identifies which member of a
+// same-wire-name collision group a decoded start tag's attributes belong to.
+// disc[i] is member i's discriminator attribute name(s), from
+// collisionDiscriminators; zero or multiple matches both fail closed.
+func (g *gen) emitClassifyFunc(b *strings.Builder, typeName, name string, disc [][]string) {
+	fnName := classifyFuncName(typeName, name)
+	fmt.Fprintf(b, "// %s identifies which schema-declared <%s> variant a start tag\n", fnName, name)
+	fmt.Fprintf(b, "// belongs to, from its attributes: %s's colliding members are distinguished\n", typeName)
+	b.WriteString("// by disjoint attribute signatures, not by arrival order, so a reordered or\n")
+	b.WriteString("// malformed document fails closed instead of being misrouted.\n")
+	fmt.Fprintf(b, "func %s(attrs []xml.Attr) (int, error) {\n", fnName)
+	b.WriteString("has := map[string]bool{}\n")
+	b.WriteString("for _, a := range attrs {\nhas[a.Name.Local] = true\n}\n")
+	b.WriteString("match := -1\n")
+	for i, names := range disc {
+		var conds []string
+		for _, nm := range names {
+			conds = append(conds, fmt.Sprintf("has[%q]", nm))
+		}
+		fmt.Fprintf(b, "if %s {\n", strings.Join(conds, " || "))
+		fmt.Fprintf(b, "if match != -1 && match != %d {\nreturn -1, errors.New(%q)\n}\n",
+			i, fmt.Sprintf("%s: ambiguous <%s> element: attributes match more than one known variant", typeName, name))
+		fmt.Fprintf(b, "match = %d\n", i)
+		b.WriteString("}\n")
+	}
+	fmt.Fprintf(b, "if match == -1 {\nreturn -1, errors.New(%q)\n}\n",
+		fmt.Sprintf("%s: unrecognized <%s> element: no known variant's attributes are present", typeName, name))
+	b.WriteString("return match, nil\n")
+	b.WriteString("}\n\n")
+}
+
+// decodeInto emits the statement(s) that decode one child element, held in
+// the loop variable t, into fieldExpr, matching the field's cardinality: a
+// slice appends a freshly decoded element, a pointer allocates before
+// decoding into it, and everything else decodes in place.
+func decodeInto(fieldExpr string, f field) string {
+	switch {
+	case strings.HasPrefix(f.goType, "[]"):
+		elem := strings.TrimPrefix(f.goType, "[]")
+		return fmt.Sprintf(
+			"var v %s\nif err := d.DecodeElement(&v, &t); err != nil {\nreturn err\n}\n%s = append(%s, v)\n",
+			elem, fieldExpr, fieldExpr)
+	case strings.HasPrefix(f.goType, "*"):
+		elem := strings.TrimPrefix(f.goType, "*")
+		return fmt.Sprintf(
+			"%s = new(%s)\nif err := d.DecodeElement(%s, &t); err != nil {\nreturn err\n}\n",
+			fieldExpr, elem, fieldExpr)
+	default:
+		return fmt.Sprintf(
+			"if err := d.DecodeElement(&%s, &t); err != nil {\nreturn err\n}\n",
+			fieldExpr)
+	}
+}
+
+func (g *gen) emitCollisionMarshal(b *strings.Builder, typeName string, hasXMLName, envelope bool, fields []field, rootName string) {
+	fmt.Fprintf(b, "// MarshalXML encodes %s by hand, mirroring UnmarshalXML: manual\n", typeName)
+	fmt.Fprintf(b, "// EncodeElement calls bypass the same reflection-based tag routing that\n")
+	fmt.Fprintf(b, "// cannot express two fields sharing one wire tag.\n")
+	fmt.Fprintf(b, "func (r *%s) MarshalXML(e *xml.Encoder, start xml.StartElement) error {\n", typeName)
+	if hasXMLName {
+		b.WriteString("start.Name = r.XMLName\n")
+		// xml.Marshal's own defaultStart falls back to the Go type name, not
+		// this type's declared wire name, when there is no field-tag context
+		// to read it from (true for any top-level Marshal call on a type with
+		// a custom MarshalXML) — so a zero-value r.XMLName must not be copied
+		// over that default verbatim, or the result has no name at all
+		// ("xml: start tag with no name"). Falling back to the literal,
+		// schema-known root name here matches what a plain XMLName struct tag
+		// would have produced through the reflection-based path.
+		fmt.Fprintf(b, "if start.Name.Local == \"\" {\nstart.Name.Local = %q\n}\n", rootName)
+	}
+	if envelope {
+		b.WriteString("start.Attr = append(start.Attr[:0:0], ")
+		b.WriteString(`xml.Attr{Name: xml.Name{Local: "status"}, Value: r.Status}, `)
+		b.WriteString("xml.Attr{Name: xml.Name{Local: \"status_text\"}, Value: r.StatusText})\n")
+	}
+	b.WriteString("if err := e.EncodeToken(start); err != nil {\nreturn err\n}\n")
+	for _, f := range fields {
+		b.WriteString(encodeStmt("r."+f.name, f))
+	}
+	b.WriteString("if err := e.EncodeToken(start.End()); err != nil {\nreturn err\n}\n")
+	b.WriteString("return nil\n")
+	b.WriteString("}\n\n")
+}
+
+// encodeStmt emits the statement(s) that encode fieldExpr as a child element
+// named after f.node's wire name, via a manual EncodeElement call — the part
+// that legally produces two same-named sibling elements, since it bypasses
+// the reflection-based tag lookup that would otherwise reject the second one.
+func encodeStmt(fieldExpr string, f field) string {
+	name := f.node.Name
+	switch {
+	case strings.HasPrefix(f.goType, "[]"):
+		return fmt.Sprintf(
+			"for _, v := range %s {\nif err := e.EncodeElement(v, xml.StartElement{Name: xml.Name{Local: %q}}); err != nil {\nreturn err\n}\n}\n",
+			fieldExpr, name)
+	case strings.HasPrefix(f.goType, "*"):
+		return fmt.Sprintf(
+			"if %s != nil {\nif err := e.EncodeElement(%s, xml.StartElement{Name: xml.Name{Local: %q}}); err != nil {\nreturn err\n}\n}\n",
+			fieldExpr, fieldExpr, name)
+	default:
+		return fmt.Sprintf(
+			"if err := e.EncodeElement(%s, xml.StartElement{Name: xml.Name{Local: %q}}); err != nil {\nreturn err\n}\n",
+			fieldExpr, name)
 	}
 }
 
