@@ -10,8 +10,7 @@ TRUNCATED
   (none)
 
 CHANGED
-  /get_filters_response/filter/in_use/#text                                "1" -> "true"
-  /get_filters_response/filter/writable/#text                              "1" -> "true"
+  (none)
 
 ADDED
   /get_filters_response/filter/owner                                       x1
@@ -22,14 +21,12 @@ ADDED
   /get_filters_response/filter_count/filtered/#text                        x1
   /get_filters_response/filter_count/page                                  x1
   /get_filters_response/filter_count/page/#text                            x1
-  /get_filters_response/filters                                            x1
+  /get_filters_response/filters                                            x2
   /get_filters_response/filters/@id                                        x1
+  /get_filters_response/filters/@max                                       x1
+  /get_filters_response/filters/@start                                     x1
   /get_filters_response/filters/keywords                                   x1
-  /get_filters_response/filters/name                                       x1
   /get_filters_response/filters/term                                       x1
-  /get_filters_response/filters2                                           x1
-  /get_filters_response/filters2/@max                                      x1
-  /get_filters_response/filters2/@start                                    x1
   /get_filters_response/sort                                               x1
   /get_filters_response/sort/field                                         x1
   /get_filters_response/sort/field/order                                   x1

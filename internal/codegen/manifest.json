@@ -30,8 +30,7 @@
     },
     {
       "name": "filter",
-      "commands": ["create_filter", "get_filters", "modify_filter"],
-      "review_only": true
+      "commands": ["create_filter", "get_filters", "modify_filter"]
     }
   ]
 }

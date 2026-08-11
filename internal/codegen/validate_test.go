@@ -1561,19 +1561,16 @@ func TestAlertSortFieldNameIsAnAcceptedLoss(t *testing.T) {
 
 // TestValidateFilterBeforeMatchesKnownConformance is the filter family's
 // counterpart to TestValidateBeforeMatchesKnownConformance. filter is
-// review_only, so commands/{create_filter,modify_filter,get_filters}.go are
-// the hand-written originals — this pins the pre-generation gate the family
-// was selected to exercise. create_filter and modify_filter are already
-// conformant. get_filters carries the family's entire actionable/suppressed
-// load, plus its own SCHEMA-DEFECT 1 (see
-// TestValidateFilterGeneratedMatchesOrImproves for what each finding is).
+// adopted, so commands/{create_filter,modify_filter,get_filters}.go are
+// already the generator's output — this is a drift detector on the committed
+// files, the same role every other adopted family's post-adoption "before"
+// test plays.
 //
-// MISSING/EXTRA are 1/1, not the 2/5 an occurrence-blind comparer once
-// reported: internal/schema/conform.go's walk now pairs the schema's two
-// same-named "filters" children against Go fields by occurrence instead of
-// both resolving to the same node (see
-// TestValidateFilterGeneratedMatchesOrImproves), which was inflating these
-// counts even on the hand-written side.
+// For the record, the pre-adoption hand-written numbers this used to pin, all
+// of which generation closed (see TestValidateFilterGeneratedMatchesOrImproves
+// for the per-finding explanation): get_filters carried actionable TYPE 2,
+// SCHEMA-DEFECT 1, MISSING 1, EXTRA 1, suppressed OMITEMPTY 1; create_filter
+// and modify_filter were already conformant.
 func TestValidateFilterBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_filter")
 
@@ -1582,12 +1579,9 @@ func TestValidateFilterBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_filter": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_filters": {
 			actionable: map[string]int{
-				schema.CatType:    2,
-				schema.CatDefect:  1,
-				schema.CatMissing: 1,
-				schema.CatExtra:   1,
+				schema.CatDefect: 1,
 			},
-			suppressed: map[string]int{schema.CatOmitEmpty: 1},
+			suppressed: map[string]int{},
 		},
 	}
 	for _, res := range before {
@@ -1601,14 +1595,15 @@ func TestValidateFilterBeforeMatchesKnownConformance(t *testing.T) {
 }
 
 // TestValidateFilterGeneratedMatchesOrImproves is the filter family's
-// pre-swap gate, run at the same rigour note through alert were.
+// post-swap gate, run at the same rigour every prior family's was.
 //
-// Generation closes the TYPE 2 findings (Filter.InUse/.Writable become
-// commands.GMPBool), the suppressed OMITEMPTY finding (Filters.Name gains
-// omitempty), and the MISSING/EXTRA findings the hand-written FilterInfo2
-// field produced by being wrongly tagged xml:"filters2" instead of the
-// wire's actual "filters". SCHEMA-DEFECT 1 is untouched (the generic
-// empty-pattern class already on record for a dozen other commands, at
+// What this run found while filter was still review_only: generation closed
+// the TYPE 2 findings (Filter.InUse/.Writable become commands.GMPBool), the
+// suppressed OMITEMPTY finding (Filters.Name gains omitempty), and the
+// MISSING/EXTRA findings the hand-written FilterInfo2 field produced by being
+// wrongly tagged xml:"filters2" instead of the wire's actual "filters".
+// SCHEMA-DEFECT 1 stayed untouched (the generic empty-pattern class already
+// on record for a dozen other commands, at
 // /get_filters_response/filter/alerts/alert/permissions): those findings
 // are copied from cmd.Defects before any Go-type comparison runs.
 //

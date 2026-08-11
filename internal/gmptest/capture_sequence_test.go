@@ -470,8 +470,9 @@ func (r *captureRun) lifecycleFilter(st *captureState) {
 
 	r.getByID("get_filters", "FilterID", st.filterID,
 		"lifecycle: get_filters for the filter just created")
+	modifiedTerm := "rows=3 first=1 sort=name"
 	r.send("modify_filter", "lifecycle: modify_filter term",
-		&commands.ModifyFilter{FilterID: st.filterID, Term: "rows=3 first=1 sort=name"})
+		&commands.ModifyFilter{FilterID: st.filterID, Term: &modifiedTerm})
 
 	r.send("delete_filter", "lifecycle: delete_filter into the trashcan, not ultimate",
 		&commands.DeleteFilter{FilterID: st.filterID, Ultimate: false})

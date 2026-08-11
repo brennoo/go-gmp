@@ -29,10 +29,10 @@ them, so response-side optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             57
-with actionable findings:     65
-actionable findings:          603  (request 271, response 332)
-suppressed findings:          730
+fully conformant:             58
+with actionable findings:     64
+actionable findings:          599  (request 271, response 328)
+suppressed findings:          729
 confirmed by fidelity corpus: 69
 in the schema, not in Go:     0
 in Go, not in the schema:     0
@@ -40,12 +40,12 @@ in Go, not in the schema:     0
 ### Findings by category
 
                  actionable suppressed
-  MISSING               209          0
-  EXTRA                 232          0
+  MISSING               208          0
+  EXTRA                 231          0
   CARDINALITY            39          0
   KIND                   17          0
-  OMITEMPTY               8        730
-  TYPE                   98          0
+  OMITEMPTY               8        729
+  TYPE                   96          0
   SCHEMA-DEFECT         107          0
 
 ### Schema defects by class
@@ -95,7 +95,7 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_aggregates               12   MISSING=5  EXTRA=5  CARDINALITY=2
   get_port_lists               12   MISSING=3  EXTRA=1  CARDINALITY=1  KIND=3  TYPE=4
   get_assets                   11   EXTRA=6  CARDINALITY=1  TYPE=4
-  ... and 45 more with fewer
+  ... and 44 more with fewer
 
 ### Confirmed by both oracles
 
@@ -1438,18 +1438,8 @@ OMITEMPTY=7  TYPE=3  SCHEMA-DEFECT=1
 
 ### get_filters  (command_get_filters.xml)
 
-MISSING=1  EXTRA=1  OMITEMPTY=1  TYPE=2  SCHEMA-DEFECT=1
+SCHEMA-DEFECT=1
 
-  MISSING       response /get_filters_response/filters
-                required elem filters is not modelled
-  EXTRA         response /get_filters_response/filters2
-                Go field Filters2 commands.FilterInfo2 has no counterpart in the schema
-  OMITEMPTY     response /get_filters_response/filters/name
-                schema says optional, Name string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  TYPE          response /get_filters_response/filter/in_use
-                schema type boolean is text ("" is true), Go InUse is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_filters_response/filter/writable
-                schema type boolean is text ("" is true), Go Writable is bool: '7' fails to decode and '1' re-emits as 'true'
   SCHEMA-DEFECT response /get_filters_response/filter/alerts/alert/permissions
                 empty-pattern: pattern declares no content
 

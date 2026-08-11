@@ -5,21 +5,16 @@ namespaces-seen:
 
 DROPPED
   /get_filters_response/filter_count/#text                                 x1
-  /get_filters_response/filters/@max                                       x1
-  /get_filters_response/filters/@start                                     x1
   /get_filters_response/sort/field/#text                                   x1
 
 TRUNCATED
-  /get_filters_response/filters                                            2 -> 1
+  (none)
 
 CHANGED
   (none)
 
 ADDED
-  /get_filters_response/filters/name                                       x1
-  /get_filters_response/filters2                                           x1
-  /get_filters_response/filters2/@max                                      x1
-  /get_filters_response/filters2/@start                                    x1
+  (none)
 
 DUPLICATED
   (none)

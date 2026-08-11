@@ -1010,7 +1010,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp := response.(*commands.GetFiltersResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.Filters = []commands.Filter{
+		resp.Filter = []commands.Filter{
 			{
 				ID:               "b493b7a8-7489-11df-a3ec-001164764cea",
 				Name:             "Single Targets",

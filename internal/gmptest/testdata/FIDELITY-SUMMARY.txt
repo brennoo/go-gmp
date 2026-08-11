@@ -12,7 +12,7 @@
 
 fixtures: 320   clean: 186   with-loss: 119   decode-errors: 14   advisory: 1
 commands with loss: 37 of 122
-distinct dropped paths: 257
+distinct dropped paths: 255
 
 ## Per fixture
 
@@ -152,11 +152,11 @@ get_features                 live      001 ok            dropped=1   truncated=0
 get_features                 upstream  001 ok            dropped=0   truncated=0   changed=1   added=0  
 get_feeds                    live      001 ok            dropped=0   truncated=0   changed=3   added=0  
 get_feeds                    upstream  001 ok            dropped=0   truncated=0   changed=3   added=0  
-get_filters                  live      001 ok            dropped=4   truncated=1   changed=0   added=4  
-get_filters                  live      002 ok            dropped=4   truncated=1   changed=0   added=4  
-get_filters                  live      003 ok            dropped=4   truncated=1   changed=2   added=4  
-get_filters                  upstream  001 ok            dropped=1   truncated=0   changed=2   added=19 
-get_filters                  upstream  002 ok            dropped=1   truncated=0   changed=2   added=19 
+get_filters                  live      001 ok            dropped=2   truncated=0   changed=0   added=0  
+get_filters                  live      002 ok            dropped=2   truncated=0   changed=0   added=0  
+get_filters                  live      003 ok            dropped=2   truncated=0   changed=0   added=0  
+get_filters                  upstream  001 ok            dropped=1   truncated=0   changed=0   added=17 
+get_filters                  upstream  002 ok            dropped=1   truncated=0   changed=0   added=17 
 get_groups                   live      001 ok            dropped=2   truncated=0   changed=0   added=0  
 get_groups                   live      002 ok            dropped=2   truncated=0   changed=0   added=0  
 get_groups                   live      003 ok            dropped=2   truncated=0   changed=0   added=0  
