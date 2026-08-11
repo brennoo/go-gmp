@@ -1,0 +1,77 @@
+client/client_alert_test.go
+  s_5e6db283fa7794::t_68a85e900a7871 17,20,23-24,31-34,79
+commands/alert_shared.go
+  s_5e6db283fa7794::t_7f23e8ff726b5d 1-32
+commands/create_alert.go
+  s_5e6db283fa7794::t_d9b4e9325130db 1-2,7,14-16,20
+commands/get_alerts.go
+  s_5e6db283fa7794::t_b8f9bcc9ce32e4 1-2,5,7,17,19-26,34-77,79-97,102-104,107-109,112-115,118-123,126-130,133-142,145-150,153-156,159-164,167-169,172-176
+commands/modify_alert.go
+  s_5e6db283fa7794::t_180455bbcd94cf 1-2,7,19
+docs/review-2026-08.md
+  s_5e6db283fa7794::t_74d9797bf4511c 16,19-23,25-34,290-359,361-391,395-402,414,1174
+internal/cmd/gengmp/main.go
+  s_5e6db283fa7794::t_a1c21bf26ccbac 106,140
+internal/codegen/check.go
+  s_5e6db283fa7794::t_d6edfd21cf9832 82,99
+internal/codegen/check_test.go
+  s_5e6db283fa7794::t_6b10d7499cf165 48,234
+internal/codegen/generate.go
+  s_5e6db283fa7794::t_1e31d3442fd415 28-31,35,85,102,161,396-401,410-411,501,522,539,560,565
+internal/codegen/generate_test.go
+  s_5e6db283fa7794::t_0b5c8451700bd5 192
+internal/codegen/manifest.json
+  s_5e6db283fa7794::t_6ab9afcff5caf8 29
+internal/codegen/manifest_test.go
+  s_5e6db283fa7794::t_d830fdf4405d12 27,31-33,40,54,58-59,71-74,87,190,205,244,251,299,303,337-338,357,361,412,424
+internal/codegen/overrides.go
+  s_5e6db283fa7794::t_2432e985a994d7 70-111
+internal/codegen/testdata/golden/modify_alert.go
+  s_5e6db283fa7794::t_dfca69704cc6f5 11-12
+internal/codegen/validate.go
+  s_5e6db283fa7794::t_93b05558f0c70f 98-102,218,224,354,356
+internal/codegen/validate_test.go
+  s_5e6db283fa7794::t_a60edcbbc61c15 35,1281-1287,1291,1293,1305,1308-1311,1314-1315,1318-1319,1322
+internal/gmptest/capture_sequence_test.go
+  s_5e6db283fa7794::t_bf486bd167c69c 637-640,650,652
+internal/gmptest/cases_alert.go
+  s_5e6db283fa7794::t_9fd328d5d8b6f5 7-10,15-16,18,20-21,23,29-32,37-40,43-67,69-74
+internal/gmptest/testdata/FIDELITY-SUMMARY.txt
+  s_5e6db283fa7794::t_f837dad90ba4ae 132-133
+internal/gmptest/testdata/REQUEST-FIDELITY.txt
+  s_5e6db283fa7794::t_54a8fddf50bc9f 20-22
+internal/gmptest/testdata/live/get_alerts/003_fidelity.txt
+  s_5e6db283fa7794::t_9022a4b1f5c15b 14,19-20
+internal/gmptest/testdata/requests/create_alert/active_false.xml
+  s_5e6db283fa7794::t_b78a5bdc25c96f 1
+internal/gmptest/testdata/requests/create_alert/active_true.xml
+  s_5e6db283fa7794::t_b919f3fd78ede4 1
+internal/gmptest/testdata/requests/create_alert/active_unset.xml
+  s_5e6db283fa7794::t_0d2593df4311ee 1
+internal/gmptest/testdata/requests/modify_alert/name_comment_empty.xml
+  s_5e6db283fa7794::t_9dd82fe80b0ad0 1
+internal/gmptest/testdata/requests/modify_alert/name_comment_set.xml
+  s_5e6db283fa7794::t_6221c0c5812581 1
+internal/gmptest/testdata/requests/modify_alert/name_comment_unset.xml
+  s_5e6db283fa7794::t_3040c6cc94504e 1
+internal/gmptest/testdata/upstream/get_alerts/001_fidelity.txt
+  s_5e6db283fa7794::t_ab6d62731bf925 13,16-17,20-21,25-39
+internal/schema/testdata/CONFORMANCE.md
+  s_5e6db283fa7794::t_0d9f19ad88fd85 32-35,43,47-48,98,193,1296
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "bc418c91fb0060b16d58cced336dda5bedf9bfbf",
+  "prompts": {},
+  "sessions": {
+    "s_5e6db283fa7794": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_5e6db283fa7794",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
