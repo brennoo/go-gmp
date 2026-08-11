@@ -8,8 +8,8 @@ import "encoding/xml"
 type ModifyAlert struct {
 	XMLName   xml.Name        `xml:"modify_alert"`
 	AlertID   string          `xml:"alert_id,attr"`
-	Name      string          `xml:"name,omitempty"`
-	Comment   string          `xml:"comment,omitempty"`
+	Name      *string         `xml:"name,omitempty"`
+	Comment   *string         `xml:"comment,omitempty"`
 	Filter    *AlertFilter    `xml:"filter,omitempty"`
 	Event     *AlertEvent     `xml:"event,omitempty"`
 	Condition *AlertCondition `xml:"condition,omitempty"`

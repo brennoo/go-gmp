@@ -67,3 +67,45 @@ var TypeOverrides = map[string]Override{
 		Reason: "T-5e: same as iso_time",
 	},
 }
+
+// PointerOverride keeps one command's optional field pointer-typed even
+// though its Go type is not in pointerScalars (generate.go), because live
+// protocol evidence contradicts pointerScalars' generator-wide default
+// assumption for that specific field.
+type PointerOverride struct {
+	Reason string
+}
+
+// PointerOverrides is keyed by "<command>.<element or attribute name>", and
+// only ever applies to a command's own top-level request/response fields
+// (fieldOf's command argument is empty for a nested struct's fields, which
+// have no single owning command, so no key here can ever match one).
+//
+// pointerScalars documents a generator-wide default: "in this protocol an
+// empty string and an absent element mean the same thing", so an optional
+// string field is never a pointer. A live experiment against gvmd 26.36.1
+// (Greenbone Community Edition), run to answer the question review-only
+// `alert` had left open, proved that default wrong for modify_alert's name
+// and comment: omitting the element leaves the stored value unchanged, while
+// sending it empty (`<comment></comment>`) clears it. A bare `string` with
+// `,omitempty` can only ever send the first form, so adoption's mechanical
+// string-not-pointer conversion silently removed a request `alert`'s
+// hand-written `*string` could express. See docs/review-2026-08.md's `alert
+// adopted` section for the experiment and the reasoning below.
+//
+// The table stays this narrow on purpose. git history shows modify_role,
+// modify_group, modify_tag and modify_schedule were never `*string` for
+// their optional text fields even before T-9 — there is no adoption-caused
+// regression to undo there, only the same untested assumption modify_alert's
+// result now calls into question. Widening pointerScalars' string rule (or
+// this table) to cover them, or any future family, needs its own live
+// evidence first; it is not made here on the strength of one family's
+// result.
+var PointerOverrides = map[string]PointerOverride{
+	"modify_alert.name": {
+		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <name> are distinct requests",
+	},
+	"modify_alert.comment": {
+		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
+	},
+}

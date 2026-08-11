@@ -11,15 +11,13 @@ TRUNCATED
   (none)
 
 CHANGED
-  /get_alerts_response/alert/active/#text                                  "1" -> "true"
-  /get_alerts_response/alert/in_use/#text                                  "0" -> "false"
-  /get_alerts_response/alert/writable/#text                                "1" -> "true"
+  (none)
 
 ADDED
   /get_alerts_response/alert/filter                                        x1
-  /get_alerts_response/alert/filter/@id                                    x1
   /get_alerts_response/alert/filter/name                                   x1
-  /get_alerts_response/alert/tasks                                         x1
+  /get_alerts_response/alert/filter/trash                                  x1
+  /get_alerts_response/alert/filter/trash/#text                            x1
 
 DUPLICATED
   (none)

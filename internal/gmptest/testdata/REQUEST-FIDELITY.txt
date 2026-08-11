@@ -17,9 +17,9 @@ authenticate                 live      001 clean         dropped=0   truncated=0
 authenticate                 live      002 clean         dropped=0   truncated=0   changed=0   added=0  
 authenticate                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
 authenticate                 upstream  002 clean         dropped=0   truncated=0   changed=0   added=0  
-create_alert                 live      001 clean         dropped=0   truncated=0   changed=0   added=0  
-create_alert                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
-create_alert                 upstream  002 clean         dropped=0   truncated=0   changed=0   added=0  
+create_alert                 live      001 clean         dropped=0   truncated=0   changed=0   added=2  
+create_alert                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=2  
+create_alert                 upstream  002 clean         dropped=0   truncated=0   changed=0   added=2  
 create_asset                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  
 create_config                live      001 clean         dropped=0   truncated=0   changed=0   added=0  
 create_config                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0  

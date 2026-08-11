@@ -634,9 +634,10 @@ func (r *captureRun) lifecycleAlert(st *captureState) {
 		&commands.CreateAlert{
 			Name:      r.resourceName("alert"),
 			Comment:   captureComment,
-			Event:     commands.AlertEvent{Text: "Task run status changed", Data: []commands.AlertData{{Name: "status", Text: "Done"}}},
-			Condition: commands.AlertCondition{Text: "Always"},
-			Method:    commands.AlertMethod{Text: "Syslog"},
+			Event:     commands.AlertEvent{Value: "Task run status changed", Data: []commands.AlertData{{Name: "status", Value: "Done"}}},
+			Condition: commands.AlertCondition{Value: "Always"},
+			Method:    commands.AlertMethod{Value: "Syslog"},
+			Filter:    commands.AlertFilter{ID: st.filterID},
 		},
 		func(id string) {
 			r.send("delete_alert", "teardown: delete_alert ultimate",
@@ -646,9 +647,9 @@ func (r *captureRun) lifecycleAlert(st *captureState) {
 		return
 	}
 	r.getByID("get_alerts", "AlertID", st.alertID, "lifecycle: get_alerts for the alert just created")
-	comment := captureComment + " (modified)"
+	modifiedComment := captureComment + " (modified)"
 	r.send("modify_alert", "lifecycle: modify_alert comment",
-		&commands.ModifyAlert{AlertID: st.alertID, Comment: &comment})
+		&commands.ModifyAlert{AlertID: st.alertID, Comment: &modifiedComment})
 }
 
 func (r *captureRun) lifecycleTLSCertificate(st *captureState) {

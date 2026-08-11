@@ -10,17 +10,33 @@ TRUNCATED
   (none)
 
 CHANGED
-  /get_alerts_response/alert/in_use/#text                                  "1" -> "true"
-  /get_alerts_response/alert/writable/#text                                "1" -> "true"
+  (none)
 
 ADDED
+  /get_alerts_response/alert/active                                        x1
+  /get_alerts_response/alert/active/#text                                  x1
   /get_alerts_response/alert/filter                                        x1
-  /get_alerts_response/alert/filter/@id                                    x1
   /get_alerts_response/alert/filter/name                                   x1
+  /get_alerts_response/alert/filter/trash                                  x1
+  /get_alerts_response/alert/filter/trash/#text                            x1
   /get_alerts_response/alert/owner                                         x1
   /get_alerts_response/alert/owner/name                                    x1
   /get_alerts_response/alert/permissions                                   x1
-  /get_alerts_response/alert/tasks                                         x1
+  /get_alerts_response/alert_count                                         x1
+  /get_alerts_response/alert_count/filtered                                x1
+  /get_alerts_response/alert_count/filtered/#text                          x1
+  /get_alerts_response/alert_count/page                                    x1
+  /get_alerts_response/alert_count/page/#text                              x1
+  /get_alerts_response/alerts                                              x1
+  /get_alerts_response/alerts/@max                                         x1
+  /get_alerts_response/alerts/@start                                       x1
+  /get_alerts_response/filters                                             x1
+  /get_alerts_response/filters/@id                                         x1
+  /get_alerts_response/filters/keywords                                    x1
+  /get_alerts_response/filters/term                                        x1
+  /get_alerts_response/sort                                                x1
+  /get_alerts_response/sort/field                                          x1
+  /get_alerts_response/sort/field/order                                    x1
 
 DUPLICATED
   (none)

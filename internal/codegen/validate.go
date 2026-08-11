@@ -95,11 +95,11 @@ type CommandRoots struct {
 // on gmptest.Registry's entries.
 //
 // "Before" means different things per family, deliberately. For an adopted
-// family (note, override, role, group, tag, schedule) these types are already
-// the generator's output, so the comparison is a drift detector on the
-// committed files. For a review-only family these are still the hand-written
-// originals, so the comparison is the pre-swap gate every one of those
-// families went through before adoption.
+// family (note, override, role, group, tag, schedule, alert) these types are
+// already the generator's output, so the comparison is a drift detector on
+// the committed files. For a review-only family these are still the
+// hand-written originals, so the comparison is the pre-swap gate every one of
+// those families went through before adoption.
 //
 // The map is written out by hand rather than derived from the manifest because
 // reflection needs the concrete types: adding a family here is the one place
@@ -215,13 +215,13 @@ func packageDir() (string, error) {
 // mechanism this file's package doc explains. The temporary directory it
 // creates under testdata/ is removed before it returns, on both the success
 // and the error path.
-func GeneratedGoRoots(cmds []schema.Command, ov map[string]Override) (map[string]CommandRoots, error) {
+func GeneratedGoRoots(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride) (map[string]CommandRoots, error) {
 	goBin, err := exec.LookPath("go")
 	if err != nil {
 		return nil, fmt.Errorf("%w (%w)", ErrNoGoToolchain, err)
 	}
 
-	files, err := Generate(cmds, ov)
+	files, err := Generate(cmds, ov, pf)
 	if err != nil {
 		return nil, fmt.Errorf("codegen: generate: %w", err)
 	}
@@ -351,9 +351,9 @@ func reflectHelperSource(cmds []schema.Command, genImportPath string) (string, e
 // dropped is the fidelity corpus's per-command dropped-path set
 // (schema.LoadDroppedPaths); passing nil just means no [fidelity]
 // cross-reference, not an error.
-func Validate(cmds []schema.Command, ov map[string]Override, dropped map[string]map[string]bool) (before, after []schema.Result, err error) {
+func Validate(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, dropped map[string]map[string]bool) (before, after []schema.Result, err error) {
 	beforeRoots := BeforeGoRoots()
-	afterRoots, err := GeneratedGoRoots(cmds, ov)
+	afterRoots, err := GeneratedGoRoots(cmds, ov, pf)
 	if err != nil {
 		return nil, nil, err
 	}

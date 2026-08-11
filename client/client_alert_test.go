@@ -14,24 +14,24 @@ func TestCreateAlert(t *testing.T) {
 	}
 
 	condData := []commands.AlertData{
-		{Name: "severity", Text: "5.5"},
+		{Name: "severity", Value: "5.5"},
 	}
 	evtData := []commands.AlertData{
-		{Name: "status", Text: "Done"},
+		{Name: "status", Value: "Done"},
 	}
 	methData := []commands.AlertData{
-		{Name: "to_address", Text: "test@example.org"},
-		{Name: "from_address", Text: "alert@example.org"},
+		{Name: "to_address", Value: "test@example.org"},
+		{Name: "from_address", Value: "alert@example.org"},
 	}
 
 	cmd := &commands.CreateAlert{
 		Name:      "Test Alert",
 		Comment:   "",
 		Copy:      "",
-		Condition: commands.AlertCondition{Text: "Severity at least", Data: condData},
-		Event:     commands.AlertEvent{Text: "Task run status changed", Data: evtData},
-		Method:    commands.AlertMethod{Text: "Email", Data: methData},
-		Filter:    nil,                  // filter
+		Condition: commands.AlertCondition{Value: "Severity at least", Data: condData},
+		Event:     commands.AlertEvent{Value: "Task run status changed", Data: evtData},
+		Method:    commands.AlertMethod{Value: "Email", Data: methData},
+		Filter:    commands.AlertFilter{ID: "6a4bd0ea-6a68-4a7c-8b3a-5f6c9d9c5c11"},
 		Active:    commands.Bool(false), // active
 	}
 	resp, err := cli.CreateAlert(context.Background(), cmd)
@@ -76,9 +76,9 @@ func TestModifyAlert(t *testing.T) {
 	}
 
 	alertID := "914b59f8-25f5-4c8f-832c-2379cd625236"
+	filter := &commands.AlertFilter{ID: "7a06bd00-7e4a-4669-b7d7-8fe65ec64a41"}
 	name := "Updated Alert Name"
 	comment := "Updated comment"
-	filter := &commands.AlertFilter{ID: "7a06bd00-7e4a-4669-b7d7-8fe65ec64a41"}
 	cmd := &commands.ModifyAlert{
 		AlertID: alertID,
 		Name:    &name,

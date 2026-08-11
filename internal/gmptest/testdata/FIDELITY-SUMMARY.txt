@@ -129,8 +129,8 @@ get_aggregates               live      003 ok            dropped=1   truncated=1
 get_aggregates               upstream  001 ok            dropped=3   truncated=1   changed=0   added=0  
 get_alerts                   live      001 ok            dropped=2   truncated=0   changed=0   added=0  
 get_alerts                   live      002 ok            dropped=2   truncated=0   changed=0   added=0  
-get_alerts                   live      003 ok            dropped=2   truncated=0   changed=3   added=4  
-get_alerts                   upstream  001 ok            dropped=1   truncated=0   changed=2   added=7  
+get_alerts                   live      003 ok            dropped=2   truncated=0   changed=0   added=4  
+get_alerts                   upstream  001 ok            dropped=1   truncated=0   changed=0   added=24 
 get_assets                   live      001 ok            dropped=2   truncated=0   changed=0   added=0  
 get_assets                   live      002 ok            dropped=2   truncated=0   changed=0   added=0  
 get_assets                   upstream  001 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0  

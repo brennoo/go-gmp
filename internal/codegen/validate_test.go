@@ -32,7 +32,7 @@ func validateOrSkip(t *testing.T, command string) (before, after []schema.Result
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	before, after, err = Validate(cmds, TypeOverrides, nil)
+	before, after, err = Validate(cmds, TypeOverrides, PointerOverrides, nil)
 	if err != nil {
 		if errors.Is(err, ErrNoGoToolchain) {
 			t.Skipf("Skipping: %v", err)
@@ -1278,32 +1278,19 @@ func TestScheduleSortFieldNameIsAnAcceptedLoss(t *testing.T) {
 	}
 }
 
-// TestValidateAlertBeforeMatchesHandWritten is the alert family's counterpart
-// to TestValidateBeforeMatchesKnownConformance, and like the other families'
-// pre-adoption versions it still pins genuinely hand-written numbers: alert is
-// review_only in the manifest, so commands/{create_alert,modify_alert,
-// get_alerts}.go have not been swapped and these are the counts the generated
-// types have to match or beat.
-//
-// create_alert's one suppressed OMITEMPTY (Filter tagged omitempty where the
-// schema says required — a request-side over-constraint) and get_alerts's
-// load (2 MISSING for method/data/certificate_info and method/data/credential,
-// both entirely unmodeled; 4 TYPE for InUse/Writable/Active/filter.Trash,
-// hand-written *bool where the schema's lexical boolean needs GMPBool; 2
-// SCHEMA-DEFECT for the two empty-pattern permissions elements; 7 suppressed
-// OMITEMPTY for the pagination/filter/sort/count wrappers) are real gaps in
-// the hand-written code, the same shape every prior family's review-only
-// stage found. modify_alert is already fully conformant.
-func TestValidateAlertBeforeMatchesHandWritten(t *testing.T) {
+// TestValidateAlertBeforeMatchesKnownConformance is the alert family's
+// counterpart to TestValidateBeforeMatchesKnownConformance. alert is adopted,
+// so commands/{create_alert,modify_alert,get_alerts}.go are already the
+// generator's output — this is a drift detector on the committed files, the
+// same role, group, tag, and schedule's post-adoption "before" tests already
+// are.
+func TestValidateAlertBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_alert")
 
 	want := map[string]counts{
-		"create_alert": {actionable: map[string]int{}, suppressed: map[string]int{schema.CatOmitEmpty: 1}},
+		"create_alert": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_alert": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_alerts": {
-			actionable: map[string]int{schema.CatMissing: 2, schema.CatType: 4, schema.CatDefect: 2},
-			suppressed: map[string]int{schema.CatOmitEmpty: 7},
-		},
+		"get_alerts":   {actionable: map[string]int{schema.CatDefect: 2}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -1315,23 +1302,24 @@ func TestValidateAlertBeforeMatchesHandWritten(t *testing.T) {
 	}
 }
 
-// TestValidateAlertGeneratedMatchesOrImproves is the alert family's pre-swap
+// TestValidateAlertGeneratedMatchesOrImproves is the alert family's post-swap
 // gate, run at the same rigour every prior family's was.
 //
-// Generation closes create_alert's suppressed OMITEMPTY (Filter becomes a
-// required, non-pointer value); closes get_alerts's 2 MISSING findings by
-// modeling method/data/credential and method/data/certificate_info (as
+// What this run found while alert was still review_only: generation closed
+// create_alert's suppressed OMITEMPTY (Filter becomes a required, non-pointer
+// value); closed get_alerts's 2 MISSING findings by modeling
+// method/data/credential and method/data/certificate_info (as
 // AlertCredential/AlertCertificateInfo on a get_alerts-specific
 // AlertMethodData, since create_alert's and modify_alert's simpler <data>
-// shape stays the shared AlertData); closes all 4 TYPE findings via
-// InUse/Writable/Active/filter.Trash becoming commands.GMPBool; and closes
+// shape stays the shared AlertData); closed all 4 TYPE findings via
+// InUse/Writable/Active/filter.Trash becoming commands.GMPBool; and closed
 // all 7 suppressed OMITEMPTY findings by making Filters/Sort/Alerts/AlertCount
 // and their required children non-pointer, non-omitempty values, while the
-// optional <tasks> and <user_tags> wrappers become pointers. modify_alert's
-// Name/Comment also drop their hand-written *string in favor of a plain
+// optional <tasks> and <user_tags> wrappers became pointers. modify_alert's
+// Name/Comment also dropped their hand-written *string in favor of a plain
 // string (the convention every other adopted family's Name/Comment already
 // follows), a change schema.Comparer has no category for either side of, so
-// it moves no number here. create_alert and modify_alert stay otherwise
+// it moved no number here. create_alert and modify_alert stayed otherwise
 // clean throughout. get_alerts keeps its SCHEMA-DEFECT 2 untouched:
 // SCHEMA-DEFECT findings are copied from cmd.Defects before any Go-type
 // comparison ever runs, so no generated output can move them — the same

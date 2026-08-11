@@ -25,14 +25,14 @@ const sharedFileSuffix = "_shared.go"
 // Generate renders Go source for every command in cmds.
 //
 // It returns a filename -> gofmt'd source map. The output is a pure function
-// of (cmds, ov): no clock, no filesystem, no map iteration order leaks into
-// it, and nothing here reads vendor/XML. That is what lets the golden test in
-// generate_test.go run in CI with only the committed JSON snapshot.
-func Generate(cmds []schema.Command, ov map[string]Override) (map[string]string, error) {
+// of (cmds, ov, pf): no clock, no filesystem, no map iteration order leaks
+// into it, and nothing here reads vendor/XML. That is what lets the golden
+// test in generate_test.go run in CI with only the committed JSON snapshot.
+func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride) (map[string]string, error) {
 	if len(cmds) == 0 {
 		return nil, fmt.Errorf("codegen: no commands to generate")
 	}
-	g := &gen{ov: ov, byHash: map[string]*structType{}, taken: map[string]bool{}}
+	g := &gen{ov: ov, pf: pf, byHash: map[string]*structType{}, taken: map[string]bool{}}
 
 	// Sorting decouples the output from the caller's slice order, so a
 	// reordered snapshot list cannot silently renumber disambiguated names.
@@ -82,7 +82,7 @@ func Generate(cmds []schema.Command, ov map[string]Override) (map[string]string,
 // cmds may contain commands in any order and must cover every command the
 // manifest names; a command not claimed by any family is an error, since it
 // would otherwise be silently dropped.
-func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override) (map[string]string, error) {
+func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride) (map[string]string, error) {
 	byName := make(map[string]schema.Command, len(cmds))
 	for _, c := range cmds {
 		byName[c.Name] = c
@@ -99,7 +99,7 @@ func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override) (map
 			}
 			fam = append(fam, c)
 		}
-		files, err := Generate(fam, ov)
+		files, err := Generate(fam, ov, pf)
 		if err != nil {
 			return nil, fmt.Errorf("codegen: family %q: %w", f.Name, err)
 		}
@@ -158,6 +158,7 @@ type use struct {
 type gen struct {
 	cmds   []schema.Command
 	ov     map[string]Override
+	pf     map[string]PointerOverride
 	family string
 
 	byHash map[string]*structType
@@ -392,8 +393,12 @@ type field struct {
 	tag    string
 }
 
-// fieldOf applies the DSL -> Go cardinality mapping.
-func (g *gen) fieldOf(n *schema.Node, used map[string]bool) field {
+// fieldOf applies the DSL -> Go cardinality mapping. command is the request's
+// or response's own command name, used only to look up PointerOverrides; it
+// is "" when n belongs to a nested struct (emitStruct), since a shape shared
+// by more than one command has no single owner for that table to key on —
+// see PointerOverrides' doc comment.
+func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool) field {
 	base := g.goTypeOf(n)
 	goType, opts := base, ""
 
@@ -402,7 +407,8 @@ func (g *gen) fieldOf(n *schema.Node, used map[string]bool) field {
 		goType = "[]" + base
 		opts = ",omitempty"
 	case schema.CardOptional:
-		if len(n.Children) > 0 || pointerScalars[base] {
+		_, forced := g.pf[command+"."+n.Name]
+		if len(n.Children) > 0 || pointerScalars[base] || forced {
 			goType = "*" + base
 		}
 		opts = ",omitempty"
@@ -492,7 +498,7 @@ func (g *gen) emitRequest(b *strings.Builder, c *schema.Command) {
 	used := map[string]bool{"XMLName": true}
 	fmt.Fprintf(b, "XMLName xml.Name `xml:%q`\n", c.Name)
 	g.emitChardata(b, c.Request, used)
-	g.emitFields(b, c.Request.Children, used, nil)
+	g.emitFields(b, c.Request.Children, used, nil, c.Name)
 	b.WriteString("}\n\n")
 }
 
@@ -513,7 +519,7 @@ func (g *gen) emitResponse(b *strings.Builder, c *schema.Command) {
 	b.WriteString("Status string `xml:\"status,attr\"`\n")
 	b.WriteString("StatusText string `xml:\"status_text,attr\"`\n")
 	g.emitChardata(b, c.Response, used)
-	g.emitFields(b, c.Response.Children, used, envelopeAttrs)
+	g.emitFields(b, c.Response.Children, used, envelopeAttrs, c.Name)
 	b.WriteString("}\n\n")
 
 	fmt.Fprintf(b, "// GetStatus returns the status and status text from the response.\n")
@@ -530,7 +536,7 @@ func (g *gen) emitStruct(b *strings.Builder, st *structType) {
 	fmt.Fprintf(b, "type %s struct {\n", st.goName)
 	used := map[string]bool{}
 	g.emitChardata(b, st.node, used)
-	g.emitFields(b, st.node.Children, used, nil)
+	g.emitFields(b, st.node.Children, used, nil, "")
 	b.WriteString("}\n\n")
 }
 
@@ -551,12 +557,12 @@ func (g *gen) ownerOf(st *structType) string {
 	return strings.Join(names[:len(names)-1], ", ") + " and " + names[len(names)-1]
 }
 
-func (g *gen) emitFields(b *strings.Builder, kids []*schema.Node, used, skipAttrs map[string]bool) {
+func (g *gen) emitFields(b *strings.Builder, kids []*schema.Node, used, skipAttrs map[string]bool, command string) {
 	for _, kid := range kids {
 		if kid.Kind == schema.KindAttribute && skipAttrs[kid.Name] {
 			continue
 		}
-		f := g.fieldOf(kid, used)
+		f := g.fieldOf(command, kid, used)
 		fmt.Fprintf(b, "%s %s `xml:%q`\n", f.name, f.goType, f.tag)
 	}
 }

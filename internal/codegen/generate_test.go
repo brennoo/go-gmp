@@ -189,7 +189,7 @@ func generateManifest(t *testing.T, m Manifest) map[string]string {
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	out, err := GenerateAll(m, cmds, TypeOverrides)
+	out, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides)
 	if err != nil {
 		t.Fatalf("GenerateAll failed: %v", err)
 	}

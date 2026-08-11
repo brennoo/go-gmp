@@ -1,1 +1,1 @@
-<create_alert><name>Draft alert</name><condition>Always</condition><event>Task run status changed</event><method>Syslog</method></create_alert>
+<create_alert><name>Draft alert</name><condition>Always</condition><event>Task run status changed</event><method>Syslog</method><filter id="6a4bd0ea-6a68-4a7c-8b3a-5f6c9d9c5c11"></filter></create_alert>

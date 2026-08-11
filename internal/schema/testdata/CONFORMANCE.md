@@ -29,10 +29,10 @@ them, so response-side optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             56
-with actionable findings:     66
-actionable findings:          607  (request 271, response 336)
-suppressed findings:          742
+fully conformant:             57
+with actionable findings:     65
+actionable findings:          601  (request 271, response 330)
+suppressed findings:          734
 confirmed by fidelity corpus: 68
 in the schema, not in Go:     0
 in Go, not in the schema:     0
@@ -40,12 +40,12 @@ in Go, not in the schema:     0
 ### Findings by category
 
                  actionable suppressed
-  MISSING               208          0
+  MISSING               206          0
   EXTRA                 232          0
   CARDINALITY            39          0
   KIND                   17          0
-  OMITEMPTY               8        742
-  TYPE                  103          0
+  OMITEMPTY               8        734
+  TYPE                   99          0
   SCHEMA-DEFECT         109          0
 
 ### Schema defects by class
@@ -95,7 +95,7 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_aggregates               12   MISSING=5  EXTRA=5  CARDINALITY=2
   get_port_lists               12   MISSING=3  EXTRA=1  CARDINALITY=1  KIND=3  TYPE=4
   get_assets                   11   EXTRA=6  CARDINALITY=1  TYPE=4
-  ... and 46 more with fewer
+  ... and 45 more with fewer
 
 ### Confirmed by both oracles
 
@@ -190,10 +190,7 @@ OMITEMPTY=2
 
 ### create_alert  (command_create_alert.xml)
 
-OMITEMPTY=1
-
-  OMITEMPTY     request  /create_alert/filter
-                schema says required, Filter is tagged omitempty  [suppressed: request-side over-constraint]
+conformant
 
 ### create_asset  (command_create_asset.xml)
 
@@ -1296,34 +1293,8 @@ MISSING=5  EXTRA=5  CARDINALITY=2  OMITEMPTY=30
 
 ### get_alerts  (command_get_alerts.xml)
 
-MISSING=2  OMITEMPTY=7  TYPE=4  SCHEMA-DEFECT=2
+SCHEMA-DEFECT=2
 
-  MISSING       response /get_alerts_response/alert/method/data/certificate_info
-                optional elem certificate_info is not modelled
-  MISSING       response /get_alerts_response/alert/method/data/credential
-                optional elem credential is not modelled
-  OMITEMPTY     response /get_alerts_response/alert/filter/@id
-                schema says optional, ID string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_alerts_response/alert/filter/trash
-                schema says required, Trash is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_alerts_response/alert/tasks
-                schema says optional,  (wrapper) has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_alerts_response/alert_count
-                schema says required, AlertCount is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_alerts_response/alerts
-                schema says required, AlertsInfo is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_alerts_response/filters
-                schema says required, Filters is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_alerts_response/sort
-                schema says required, Sort is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  TYPE          response /get_alerts_response/alert/active
-                schema type boolean is text ("" is true), Go Active is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_alerts_response/alert/filter/trash
-                schema type boolean is text ("" is true), Go Trash is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_alerts_response/alert/in_use
-                schema type boolean is text ("" is true), Go InUse is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_alerts_response/alert/writable
-                schema type boolean is text ("" is true), Go Writable is bool: '7' fails to decode and '1' re-emits as 'true'
   SCHEMA-DEFECT response /get_alerts_response/alert/filter/permissions
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_alerts_response/alert/tasks/task/permissions
