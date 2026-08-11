@@ -1,0 +1,20 @@
+internal/codegen/validate_test.go
+  s_6b74b50f8b69ed::t_a4ec5ee30bf4ec 1571-1576,1584-1589,1606-1626
+  s_6b74b50f8b69ed::t_750b9221f4f286 1568-1570,1633-1638
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "c9444ff2b3f2ddc05d074cff401f2219b8c19b8e",
+  "prompts": {},
+  "sessions": {
+    "s_6b74b50f8b69ed": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "019fdd9a-6605-7b1e-bab6-fd85490a37f6",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
