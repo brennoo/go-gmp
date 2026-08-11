@@ -29,37 +29,47 @@ func TestCommittedManifest(t *testing.T) {
 	// get_overrides,modify_override,override_shared,create_role,get_roles,
 	// modify_role,create_group,get_groups,modify_group,create_tag,get_tags,
 	// modify_tag,tag_shared,create_schedule,get_schedules,modify_schedule}.go
-	// are all the generator's output.
+	// are all the generator's output. alert is review-only: its snapshot and
+	// golden output are extracted and committed under
+	// internal/codegen/testdata/{schema,golden}/ for review, but commands/ is
+	// untouched.
 	assertFamily(t, m, "get_notes", "note", false)
 	assertFamily(t, m, "get_overrides", "override", false)
 	assertFamily(t, m, "get_roles", "role", false)
 	assertFamily(t, m, "get_groups", "group", false)
 	assertFamily(t, m, "get_tags", "tag", false)
 	assertFamily(t, m, "get_schedules", "schedule", false)
+	assertFamily(t, m, "get_alerts", "alert", true)
 	if _, ok := m.FamilyOf("delete_note"); ok {
 		t.Error("FamilyOf(delete_note) claims a family the manifest does not declare")
 	}
 
 	want := []string{
-		"create_group", "create_note", "create_override", "create_role", "create_schedule", "create_tag",
-		"get_groups", "get_notes", "get_overrides", "get_roles", "get_schedules", "get_tags", "modify_group",
-		"modify_note", "modify_override", "modify_role", "modify_schedule", "modify_tag",
+		"create_alert", "create_group", "create_note", "create_override", "create_role", "create_schedule",
+		"create_tag", "get_alerts", "get_groups", "get_notes", "get_overrides", "get_roles", "get_schedules",
+		"get_tags", "modify_alert", "modify_group", "modify_note", "modify_override", "modify_role",
+		"modify_schedule", "modify_tag",
 	}
 	if got := m.AllCommands(); strings.Join(got, ",") != strings.Join(want, ",") {
 		t.Errorf("AllCommands() = %v, want %v", got, want)
 	}
-	wantAdopted := want
+	wantAdopted := []string{
+		"create_group", "create_note", "create_override", "create_role", "create_schedule", "create_tag",
+		"get_groups", "get_notes", "get_overrides", "get_roles", "get_schedules", "get_tags", "modify_group",
+		"modify_note", "modify_override", "modify_role", "modify_schedule", "modify_tag",
+	}
 	if got := m.Adopted().AllCommands(); strings.Join(got, ",") != strings.Join(wantAdopted, ",") {
 		t.Errorf("Adopted().AllCommands() = %v, want %v", got, wantAdopted)
 	}
-	if got := m.ReviewOnlyFamilies(); len(got) != 0 {
-		t.Errorf("ReviewOnlyFamilies() = %v, want none", got)
+	if got := m.ReviewOnlyFamilies(); strings.Join(got, ",") != "alert" {
+		t.Errorf("ReviewOnlyFamilies() = %v, want [alert]", got)
 	}
 
 	assertFiles(t, "ExpectedOutputFiles", m.ExpectedOutputFiles("commands"), []string{
-		"create_group.go", "create_note.go", "create_override.go", "create_role.go", "create_schedule.go",
-		"create_tag.go", "get_groups.go", "get_notes.go", "get_overrides.go", "get_roles.go", "get_schedules.go",
-		"get_tags.go", "group_shared.go", "modify_group.go", "modify_note.go", "modify_override.go",
+		"alert_shared.go", "create_alert.go", "create_group.go", "create_note.go", "create_override.go",
+		"create_role.go", "create_schedule.go", "create_tag.go", "get_alerts.go", "get_groups.go",
+		"get_notes.go", "get_overrides.go", "get_roles.go", "get_schedules.go", "get_tags.go",
+		"group_shared.go", "modify_alert.go", "modify_group.go", "modify_note.go", "modify_override.go",
 		"modify_role.go", "modify_schedule.go", "modify_tag.go", "note_shared.go", "override_shared.go",
 		"role_shared.go", "schedule_shared.go", "tag_shared.go",
 	})
@@ -79,7 +89,7 @@ func TestCommittedManifest(t *testing.T) {
 // assertFamily checks that command is owned by the named family, that the
 // family's shared file follows the convention, and that its ReviewOnly flag
 // matches reviewOnly.
-func assertFamily(t *testing.T, m Manifest, command, family string, reviewOnly bool) { //nolint:unparam // every family is adopted right now; the next review-only family will pass true again
+func assertFamily(t *testing.T, m Manifest, command, family string, reviewOnly bool) {
 	t.Helper()
 	f, ok := m.FamilyOf(command)
 	if !ok {

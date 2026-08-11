@@ -179,6 +179,18 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.GetSchedules{}),
 			Response: schema.ModelOf(&commands.GetSchedulesResponse{}),
 		},
+		"create_alert": {
+			Request:  schema.ModelOf(&commands.CreateAlert{}),
+			Response: schema.ModelOf(&commands.CreateAlertResponse{}),
+		},
+		"modify_alert": {
+			Request:  schema.ModelOf(&commands.ModifyAlert{}),
+			Response: schema.ModelOf(&commands.ModifyAlertResponse{}),
+		},
+		"get_alerts": {
+			Request:  schema.ModelOf(&commands.GetAlerts{}),
+			Response: schema.ModelOf(&commands.GetAlertsResponse{}),
+		},
 	}
 }
 

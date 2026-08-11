@@ -1278,6 +1278,299 @@ func TestScheduleSortFieldNameIsAnAcceptedLoss(t *testing.T) {
 	}
 }
 
+// TestValidateAlertBeforeMatchesHandWritten is the alert family's counterpart
+// to TestValidateBeforeMatchesKnownConformance, and like the other families'
+// pre-adoption versions it still pins genuinely hand-written numbers: alert is
+// review_only in the manifest, so commands/{create_alert,modify_alert,
+// get_alerts}.go have not been swapped and these are the counts the generated
+// types have to match or beat.
+//
+// create_alert's one suppressed OMITEMPTY (Filter tagged omitempty where the
+// schema says required — a request-side over-constraint) and get_alerts's
+// load (2 MISSING for method/data/certificate_info and method/data/credential,
+// both entirely unmodeled; 4 TYPE for InUse/Writable/Active/filter.Trash,
+// hand-written *bool where the schema's lexical boolean needs GMPBool; 2
+// SCHEMA-DEFECT for the two empty-pattern permissions elements; 7 suppressed
+// OMITEMPTY for the pagination/filter/sort/count wrappers) are real gaps in
+// the hand-written code, the same shape every prior family's review-only
+// stage found. modify_alert is already fully conformant.
+func TestValidateAlertBeforeMatchesHandWritten(t *testing.T) {
+	before, _ := validateOrSkip(t, "create_alert")
+
+	want := map[string]counts{
+		"create_alert": {actionable: map[string]int{}, suppressed: map[string]int{schema.CatOmitEmpty: 1}},
+		"modify_alert": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_alerts": {
+			actionable: map[string]int{schema.CatMissing: 2, schema.CatType: 4, schema.CatDefect: 2},
+			suppressed: map[string]int{schema.CatOmitEmpty: 7},
+		},
+	}
+	for _, res := range before {
+		w, ok := want[res.Command]
+		if !ok {
+			t.Errorf("%s: unexpected command in Validate's before results", res.Command)
+			continue
+		}
+		assertCounts(t, "before", res.Command, w, countFindings(res.Findings))
+	}
+}
+
+// TestValidateAlertGeneratedMatchesOrImproves is the alert family's pre-swap
+// gate, run at the same rigour every prior family's was.
+//
+// Generation closes create_alert's suppressed OMITEMPTY (Filter becomes a
+// required, non-pointer value); closes get_alerts's 2 MISSING findings by
+// modeling method/data/credential and method/data/certificate_info (as
+// AlertCredential/AlertCertificateInfo on a get_alerts-specific
+// AlertMethodData, since create_alert's and modify_alert's simpler <data>
+// shape stays the shared AlertData); closes all 4 TYPE findings via
+// InUse/Writable/Active/filter.Trash becoming commands.GMPBool; and closes
+// all 7 suppressed OMITEMPTY findings by making Filters/Sort/Alerts/AlertCount
+// and their required children non-pointer, non-omitempty values, while the
+// optional <tasks> and <user_tags> wrappers become pointers. modify_alert's
+// Name/Comment also drop their hand-written *string in favor of a plain
+// string (the convention every other adopted family's Name/Comment already
+// follows), a change schema.Comparer has no category for either side of, so
+// it moves no number here. create_alert and modify_alert stay otherwise
+// clean throughout. get_alerts keeps its SCHEMA-DEFECT 2 untouched:
+// SCHEMA-DEFECT findings are copied from cmd.Defects before any Go-type
+// comparison ever runs, so no generated output can move them — the same
+// reasoning already on record for every prior family.
+//
+// Two losses the comparer cannot see, recorded here for the same reason
+// role's, group's, tag's, and schedule's were:
+//
+//   - AlertCount: the schema's declared <pattern> for alert_count is only
+//     <e>filtered</e><e>page</e>, no text token anywhere, yet live captures
+//     send a bare total ahead of those children. See
+//     TestAlertCountBareTotalIsAnAcceptedLoss below.
+//   - AlertField: the schema's declared <pattern> for <field> (inside <sort>)
+//     is likewise <e>order</e> with no text token, yet the same live captures
+//     send the sort field's name as bare text ahead of <order>. See
+//     TestAlertSortFieldNameIsAnAcceptedLoss below.
+func TestValidateAlertGeneratedMatchesOrImproves(t *testing.T) {
+	before, after := validateOrSkip(t, "create_alert")
+
+	wantAfter := map[string]counts{
+		"create_alert": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_alert": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_alerts":   {actionable: map[string]int{schema.CatDefect: 2}, suppressed: map[string]int{}},
+	}
+	assertMatchesOrImproves(t, before, after, wantAfter)
+}
+
+// alertCountProbe mirrors testdata/golden/get_alerts.go's AlertCount field,
+// byte for byte — keep the two in sync. It exists to decode real get_alerts
+// fixtures with the exact shape the generator emits today, without pulling in
+// the out-of-process GeneratedGoRoots machinery just to observe one field.
+// See scheduleCountProbe above for the identical precedent.
+type alertCountProbe struct {
+	XMLName    xml.Name `xml:"get_alerts_response"`
+	AlertCount struct {
+		Filtered int `xml:"filtered"`
+		Page     int `xml:"page"`
+	} `xml:"alert_count"`
+}
+
+// alertCountEvidence is alertCountProbe plus a ",chardata" field the
+// generated shape does not have, proving what the fixture actually contains
+// independent of what the generated shape can retain.
+type alertCountEvidence struct {
+	XMLName    xml.Name `xml:"get_alerts_response"`
+	AlertCount struct {
+		Value    string `xml:",chardata"`
+		Filtered int    `xml:"filtered"`
+		Page     int    `xml:"page"`
+	} `xml:"alert_count"`
+}
+
+// TestAlertCountBareTotalIsAnAcceptedLoss is the alert family's counterpart
+// to TestScheduleCountBareTotalIsAnAcceptedLoss: live gvmd captures under
+// internal/gmptest/testdata/live/get_alerts send a bare total ahead of
+// <filtered>/<page>, but the schema's declared <pattern> for alert_count is
+// only <e>filtered</e><e>page</e>, with no text token anywhere in it. There
+// is nothing for the schema-side parser to see: the pattern the generator
+// draws from simply never declares this content, so generation cannot
+// recover it, and schema.Comparer — which only compares against what the
+// pattern declares — correctly reports no finding for it either.
+//
+// This is the same class of gap as create_override's result-as-text loss and
+// role_count/group_count/tag_count/schedule_count's identical shape
+// (docs/review-2026-08.md's "Accepted evidence" note): the schema's own
+// declared structure and its own examples disagree, and per the
+// generate-only-what-the-schema-declares principle, the fix is to document
+// the loss, not to add a field the schema never asked for.
+//
+// Each fixture is decoded twice, into two structurally identical types that
+// differ only in one field, so the test proves both halves of the claim
+// against the actual wire bytes rather than assuming either: alertCountEvidence
+// (which has a ,chardata field) proves the bare total is really there;
+// alertCountProbe (an exact mirror of the generated AlertCount) proves that,
+// with only Filtered/Page to decode into, that same total has nowhere to go.
+func TestAlertCountBareTotalIsAnAcceptedLoss(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	cases := []struct {
+		provenance string
+		path       string
+		wantTotal  string
+		wantChild  int
+	}{
+		{"live_001", filepath.Join(gmptestDir, "live", "get_alerts", "001_response.xml"), "0", 0},
+		{"live_002", filepath.Join(gmptestDir, "live", "get_alerts", "002_response.xml"), "0", 0},
+		{"live_003", filepath.Join(gmptestDir, "live", "get_alerts", "003_response.xml"), "1", 1},
+	}
+	for _, tc := range cases {
+		t.Run(tc.provenance, func(t *testing.T) {
+			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", tc.path, err)
+			}
+
+			// First, prove the wire actually carries the bare total: decode
+			// with a ,chardata field the generated shape lacks.
+			var evidence alertCountEvidence
+			if err := xml.Unmarshal(data, &evidence); err != nil {
+				t.Fatalf("decoding %s into alertCountEvidence: %v", tc.path, err)
+			}
+			if got := strings.TrimSpace(evidence.AlertCount.Value); got != tc.wantTotal {
+				t.Fatalf("%s: alert_count bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
+					tc.path, got, tc.wantTotal)
+			}
+			if evidence.AlertCount.Filtered != tc.wantChild || evidence.AlertCount.Page != tc.wantChild {
+				t.Fatalf("%s: alertCountEvidence children = %+v, want Filtered=Page=%d",
+					tc.path, evidence.AlertCount, tc.wantChild)
+			}
+
+			// Second, prove the exact generated shape retains the children
+			// but has nowhere to put that total.
+			var got alertCountProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into alertCountProbe: %v", tc.path, err)
+			}
+			if got.AlertCount.Filtered != tc.wantChild || got.AlertCount.Page != tc.wantChild {
+				t.Errorf("alertCountProbe = %+v, want Filtered=Page=%d (the generated shape changed unexpectedly)",
+					got.AlertCount, tc.wantChild)
+			}
+			// alertCountProbe has no field that could have captured
+			// evidence.AlertCount.Value — that silent drop, now proven
+			// against the actual fixture bytes rather than assumed, is the
+			// accepted loss this test exists to pin.
+		})
+	}
+}
+
+// alertSortFieldProbe mirrors testdata/golden/get_alerts.go's
+// AlertSort/AlertField fields, byte for byte — keep the two in sync. Same
+// rationale as alertCountProbe: decode real fixtures with the exact shape
+// the generator emits today, without the out-of-process GeneratedGoRoots
+// machinery.
+type alertSortFieldProbe struct {
+	XMLName xml.Name `xml:"get_alerts_response"`
+	Sort    struct {
+		Field struct {
+			Order string `xml:"order"`
+		} `xml:"field"`
+	} `xml:"sort"`
+}
+
+// alertSortFieldEvidence is alertSortFieldProbe plus a ",chardata" field on
+// Field that the generated AlertField does not have, proving what the
+// fixture actually contains independent of what the generated shape can
+// retain.
+type alertSortFieldEvidence struct {
+	XMLName xml.Name `xml:"get_alerts_response"`
+	Sort    struct {
+		Field struct {
+			Value string `xml:",chardata"`
+			Order string `xml:"order"`
+		} `xml:"field"`
+	} `xml:"sort"`
+}
+
+// TestAlertSortFieldNameIsAnAcceptedLoss is
+// TestAlertCountBareTotalIsAnAcceptedLoss's counterpart for the other half of
+// the same contradiction: live gvmd captures under
+// internal/gmptest/testdata/live/get_alerts send the sort field's name as
+// bare text ahead of <order> ("name" in each fixture here), but the schema's
+// declared <pattern> for <field> (inside <sort>) is only <e>order</e>, with
+// no text token anywhere in it. There is nothing for the schema-side parser
+// to see: the pattern the generator draws from simply never declares this
+// content, so generation cannot recover it, and schema.Comparer — which only
+// compares against what the pattern declares — correctly reports no finding
+// for it either.
+//
+// This is the same class of gap as alert_count's bare total above and
+// role/group/tag/schedule's identical shape (docs/review-2026-08.md's
+// "Accepted evidence" note): the schema's own declared structure and its own
+// examples disagree, and per the generate-only-what-the-schema-declares
+// principle, the fix is to document the loss, not to add a field the schema
+// never asked for.
+//
+// Each fixture is decoded twice, into two structurally identical types that
+// differ only in one field, so the test proves both halves of the claim
+// against the actual wire bytes rather than assuming either:
+// alertSortFieldEvidence (which has a ,chardata field on Field) proves the
+// bare field name is really there; alertSortFieldProbe (an exact mirror of
+// the generated AlertSort/AlertField) proves that, with only Order to decode
+// into, that same name has nowhere to go.
+func TestAlertSortFieldNameIsAnAcceptedLoss(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	cases := []struct {
+		provenance string
+		path       string
+		wantName   string
+		wantOrder  string
+	}{
+		{"live_001", filepath.Join(gmptestDir, "live", "get_alerts", "001_response.xml"), "name", "ascending"},
+		{"live_002", filepath.Join(gmptestDir, "live", "get_alerts", "002_response.xml"), "name", "ascending"},
+		{"live_003", filepath.Join(gmptestDir, "live", "get_alerts", "003_response.xml"), "name", "ascending"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.provenance, func(t *testing.T) {
+			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", tc.path, err)
+			}
+
+			var evidence alertSortFieldEvidence
+			if err := xml.Unmarshal(data, &evidence); err != nil {
+				t.Fatalf("decoding %s into alertSortFieldEvidence: %v", tc.path, err)
+			}
+			if got := strings.TrimSpace(evidence.Sort.Field.Value); got != tc.wantName {
+				t.Fatalf("%s: sort/field bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
+					tc.path, got, tc.wantName)
+			}
+			if evidence.Sort.Field.Order != tc.wantOrder {
+				t.Fatalf("%s: alertSortFieldEvidence order = %q, want %q",
+					tc.path, evidence.Sort.Field.Order, tc.wantOrder)
+			}
+
+			var got alertSortFieldProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into alertSortFieldProbe: %v", tc.path, err)
+			}
+			if got.Sort.Field.Order != tc.wantOrder {
+				t.Errorf("alertSortFieldProbe order = %q, want %q (the generated shape changed unexpectedly)",
+					got.Sort.Field.Order, tc.wantOrder)
+			}
+			// alertSortFieldProbe has no field that could have captured
+			// evidence.Sort.Field.Value — that silent drop, now proven against
+			// the actual fixture bytes rather than assumed, is the accepted
+			// loss this test exists to pin.
+		})
+	}
+}
+
 // assertMatchesOrImproves is the shared body of the two match-or-improve gates:
 // the exact expected "after" counts, plus the two general rules that hold for
 // any family — no category may grow, and the schema's own defects may not move.
