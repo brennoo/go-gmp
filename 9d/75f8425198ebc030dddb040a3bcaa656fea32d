@@ -1,0 +1,25 @@
+docs/review-2026-08.md
+  s_943c6e2dc6d4fb::t_ea06e8e1373e5e 300-312,318-325,365-369
+internal/codegen/generate.go
+  s_943c6e2dc6d4fb::t_497ab0361a3869 583,588
+internal/codegen/manifest_test.go
+  s_943c6e2dc6d4fb::t_89dd2f300fceda 335-395
+internal/codegen/testdata/golden/get_alerts.go
+  s_943c6e2dc6d4fb::t_3f425edcd2b987 139-140
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "9d75f8425198ebc030dddb040a3bcaa656fea32d",
+  "prompts": {},
+  "sessions": {
+    "s_943c6e2dc6d4fb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_943c6e2dc6d4fb",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
