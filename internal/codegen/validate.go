@@ -203,6 +203,18 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.GetFilters{}),
 			Response: schema.ModelOf(&commands.GetFiltersResponse{}),
 		},
+		"create_tls_certificate": {
+			Request:  schema.ModelOf(&commands.CreateTLSCertificate{}),
+			Response: schema.ModelOf(&commands.CreateTLSCertificateResponse{}),
+		},
+		"modify_tls_certificate": {
+			Request:  schema.ModelOf(&commands.ModifyTLSCertificate{}),
+			Response: schema.ModelOf(&commands.ModifyTLSCertificateResponse{}),
+		},
+		"get_tls_certificates": {
+			Request:  schema.ModelOf(&commands.GetTLSCertificates{}),
+			Response: schema.ModelOf(&commands.GetTLSCertificatesResponse{}),
+		},
 	}
 }
 
@@ -227,13 +239,13 @@ func packageDir() (string, error) {
 // mechanism this file's package doc explains. The temporary directory it
 // creates under testdata/ is removed before it returns, on both the success
 // and the error path.
-func GeneratedGoRoots(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride) (map[string]CommandRoots, error) {
+func GeneratedGoRoots(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, fo map[string][]FieldOverride) (map[string]CommandRoots, error) {
 	goBin, err := exec.LookPath("go")
 	if err != nil {
 		return nil, fmt.Errorf("%w (%w)", ErrNoGoToolchain, err)
 	}
 
-	files, err := Generate(cmds, ov, pf)
+	files, err := Generate(cmds, ov, pf, fo)
 	if err != nil {
 		return nil, fmt.Errorf("codegen: generate: %w", err)
 	}
@@ -363,9 +375,9 @@ func reflectHelperSource(cmds []schema.Command, genImportPath string) (string, e
 // dropped is the fidelity corpus's per-command dropped-path set
 // (schema.LoadDroppedPaths); passing nil just means no [fidelity]
 // cross-reference, not an error.
-func Validate(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, dropped map[string]map[string]bool) (before, after []schema.Result, err error) {
+func Validate(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, fo map[string][]FieldOverride, dropped map[string]map[string]bool) (before, after []schema.Result, err error) {
 	beforeRoots := BeforeGoRoots()
-	afterRoots, err := GeneratedGoRoots(cmds, ov, pf)
+	afterRoots, err := GeneratedGoRoots(cmds, ov, pf, fo)
 	if err != nil {
 		return nil, nil, err
 	}

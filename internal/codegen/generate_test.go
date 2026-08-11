@@ -198,7 +198,7 @@ func TestCollisionRequiresAttributeDiscriminators(t *testing.T) {
 		t.Fatal("get_filters's response no longer has a second <filters> child to weaken; did the snapshot change?")
 	}
 
-	if _, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides); err == nil {
+	if _, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, FieldOverrides); err == nil {
 		t.Fatal("Generate succeeded with an attribute-less collision member; want an error")
 	} else if !strings.Contains(err.Error(), "no attribute that uniquely identifies it") {
 		t.Fatalf("Generate error = %q, want it to mention a missing discriminating attribute", err)
@@ -444,6 +444,175 @@ func main() {
 }
 `
 
+// TestTLSCertificateGeneratedRoundTrips proves the real generated
+// GetTLSCertificatesResponse/ModifyTLSCertificate agree with the two
+// FieldOverride entries in overrides.go (T-9 finding 3), and pins down
+// ModifyTLSCertificate's omit/explicit-empty/set wire shape (finding 4) as a
+// generator-level stand-in for internal/gmptest/cases_tls_certificate.go,
+// which cannot exist until tls_certificate is adopted.
+func TestTLSCertificateGeneratedRoundTrips(t *testing.T) {
+	goBin, err := exec.LookPath("go")
+	if err != nil {
+		t.Skipf("Skipping: no go toolchain on PATH (%v)", err)
+	}
+	got := generateOrFail(t)
+	if _, ok := got[CommandFile("get_tls_certificates")]; !ok {
+		t.Fatal("get_tls_certificates was not generated, so this test would not compile it")
+	}
+	if _, ok := got[CommandFile("modify_tls_certificate")]; !ok {
+		t.Fatal("modify_tls_certificate was not generated, so this test would not compile it")
+	}
+
+	upstreamFixture, err := filepath.Abs("../gmptest/testdata/upstream/get_tls_certificates/001_response.xml")
+	if err != nil {
+		t.Fatalf("Failed to resolve the upstream fixture path: %v", err)
+	}
+	if _, err := os.Stat(upstreamFixture); err != nil {
+		t.Fatalf("Upstream fixture not found: %v", err)
+	}
+	liveFixture, err := filepath.Abs("../gmptest/testdata/live/get_tls_certificates/004_response.xml")
+	if err != nil {
+		t.Fatalf("Failed to resolve the live fixture path: %v", err)
+	}
+	if _, err := os.Stat(liveFixture); err != nil {
+		t.Fatalf("Live fixture not found: %v", err)
+	}
+
+	root, err := filepath.Abs("../..")
+	if err != nil {
+		t.Fatalf("Failed to resolve the module root: %v", err)
+	}
+	dir := t.TempDir()
+	pkgDir := filepath.Join(dir, "genproto")
+	if err := os.MkdirAll(pkgDir, 0o750); err != nil {
+		t.Fatalf("Failed to create the scratch package: %v", err)
+	}
+
+	goVersion, err := goDirective(filepath.Join(root, "go.mod"))
+	if err != nil {
+		t.Fatalf("Failed to read the module's go directive: %v", err)
+	}
+	gomod := "module gogmpcodegencheck\n\ngo " + goVersion + "\n\n" +
+		"require github.com/brennoo/go-gmp v0.0.0\n\n" +
+		"replace github.com/brennoo/go-gmp => " + root + "\n"
+	mustWriteFile(t, filepath.Join(dir, "go.mod"), gomod)
+	mustWriteFile(t, filepath.Join(pkgDir, "support.go"),
+		strings.Replace(supportShim(), "package "+targetPackage+"\n", "package genproto\n", 1))
+	for name, src := range got {
+		rewritten := strings.Replace(src, "\npackage "+targetPackage+"\n", "\npackage genproto\n", 1)
+		if rewritten == src {
+			t.Fatalf("%s: expected a %q package clause to rewrite", name, targetPackage)
+		}
+		mustWriteFile(t, filepath.Join(pkgDir, name), rewritten)
+	}
+	mustWriteFile(t, filepath.Join(dir, "main.go"), tlsCertificateRoundTripProgram)
+
+	cmd := exec.CommandContext(context.Background(), goBin, "run", ".", upstreamFixture, liveFixture)
+	cmd.Dir = dir
+	cmd.Env = append(os.Environ(), "GOWORK=off", "GOFLAGS=")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("Round-trip program failed: %v\n%s", err, out)
+	}
+
+	const upstreamCert = `MIIDNjCCAp+gAwIBAgIBATANBgkqhkiG9w0BAQQFADCBqTELM[...]`
+	// Must match gmptest.RedactionPlaceholder (internal/gmptest/redact.go).
+	const liveCert = `[REDACTED-BY-GO-GMP-CAPTURE]`
+	want := "upstream-decode: Value=\"" + upstreamCert + "\" Format=\"DER\" Valid=true\n" +
+		"upstream-roundtrip: Value=\"" + upstreamCert + "\" Format=\"DER\" Valid=true\n" +
+		"live-decode: Value=\"" + liveCert + "\" Format=\"PEM\" Valid=true\n" +
+		"live-roundtrip: Value=\"" + liveCert + "\" Format=\"PEM\" Valid=true\n" +
+		"marshal-name-nil: <modify_tls_certificate tls_certificate_id=\"tid-1\"></modify_tls_certificate>\n" +
+		"marshal-name-empty: <modify_tls_certificate tls_certificate_id=\"tid-1\"><name></name></modify_tls_certificate>\n" +
+		"marshal-name-set: <modify_tls_certificate tls_certificate_id=\"tid-1\"><name>new-name</name></modify_tls_certificate>\n" +
+		"marshal-comment-nil: <modify_tls_certificate tls_certificate_id=\"tid-1\"></modify_tls_certificate>\n" +
+		"marshal-comment-empty: <modify_tls_certificate tls_certificate_id=\"tid-1\"><comment></comment></modify_tls_certificate>\n" +
+		"marshal-comment-set: <modify_tls_certificate tls_certificate_id=\"tid-1\"><comment>new-comment</comment></modify_tls_certificate>\n" +
+		"marshal-trust-nil: <modify_tls_certificate tls_certificate_id=\"tid-1\"></modify_tls_certificate>\n" +
+		"marshal-trust-false: <modify_tls_certificate tls_certificate_id=\"tid-1\"><trust>0</trust></modify_tls_certificate>\n" +
+		"marshal-trust-true: <modify_tls_certificate tls_certificate_id=\"tid-1\"><trust>1</trust></modify_tls_certificate>\n"
+	if got := string(out); got != want {
+		t.Fatalf("Round-trip program printed:\n%s\nwant:\n%s", got, want)
+	}
+}
+
+// tlsCertificateRoundTripProgram is a `go run` main for
+// TestTLSCertificateGeneratedRoundTrips. argv[1] is the upstream fixture,
+// argv[2] the live one; it decodes and round-trips each through the real
+// generated GetTLSCertificatesResponse, then exercises
+// ModifyTLSCertificate's marshal shape across the omit/explicit-empty/set
+// matrix on Name, Comment and Trust.
+const tlsCertificateRoundTripProgram = `package main
+
+import (
+	"encoding/xml"
+	"fmt"
+	"os"
+
+	"gogmpcodegencheck/genproto"
+)
+
+func report(label string, r *genproto.GetTLSCertificatesResponse) {
+	c := r.TLSCertificate[0]
+	fmt.Printf("%s: Value=%q Format=%q Valid=%t\n", label, c.Certificate.Value, c.Certificate.Format, bool(c.Valid))
+}
+
+func decodeAndRoundTrip(path, decodeLabel, roundtripLabel string) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	var decoded genproto.GetTLSCertificatesResponse
+	if err := xml.Unmarshal(data, &decoded); err != nil {
+		fmt.Fprintln(os.Stderr, "decode:", err)
+		os.Exit(1)
+	}
+	report(decodeLabel, &decoded)
+
+	reencoded, err := xml.Marshal(&decoded)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "encode:", err)
+		os.Exit(1)
+	}
+	var roundtripped genproto.GetTLSCertificatesResponse
+	if err := xml.Unmarshal(reencoded, &roundtripped); err != nil {
+		fmt.Fprintln(os.Stderr, "re-decode:", err)
+		os.Exit(1)
+	}
+	report(roundtripLabel, &roundtripped)
+}
+
+func marshalModify(label string, m genproto.ModifyTLSCertificate) {
+	out, err := xml.Marshal(&m)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, label, "marshal:", err)
+		os.Exit(1)
+	}
+	fmt.Printf("%s: %s\n", label, out)
+}
+
+func main() {
+	decodeAndRoundTrip(os.Args[1], "upstream-decode", "upstream-roundtrip")
+	decodeAndRoundTrip(os.Args[2], "live-decode", "live-roundtrip")
+
+	empty, name, comment := "", "new-name", "new-comment"
+	trustFalse, trustTrue := genproto.GMPBool(false), genproto.GMPBool(true)
+
+	// Stand-in for internal/gmptest/cases_tls_certificate.go: that file needs
+	// commands.ModifyTLSCertificate, which does not exist until adoption.
+	marshalModify("marshal-name-nil", genproto.ModifyTLSCertificate{TLSCertificateID: "tid-1"})
+	marshalModify("marshal-name-empty", genproto.ModifyTLSCertificate{TLSCertificateID: "tid-1", Name: &empty})
+	marshalModify("marshal-name-set", genproto.ModifyTLSCertificate{TLSCertificateID: "tid-1", Name: &name})
+	marshalModify("marshal-comment-nil", genproto.ModifyTLSCertificate{TLSCertificateID: "tid-1"})
+	marshalModify("marshal-comment-empty", genproto.ModifyTLSCertificate{TLSCertificateID: "tid-1", Comment: &empty})
+	marshalModify("marshal-comment-set", genproto.ModifyTLSCertificate{TLSCertificateID: "tid-1", Comment: &comment})
+	marshalModify("marshal-trust-nil", genproto.ModifyTLSCertificate{TLSCertificateID: "tid-1"})
+	marshalModify("marshal-trust-false", genproto.ModifyTLSCertificate{TLSCertificateID: "tid-1", Trust: &trustFalse})
+	marshalModify("marshal-trust-true", genproto.ModifyTLSCertificate{TLSCertificateID: "tid-1", Trust: &trustTrue})
+}
+`
+
 // mustWriteFile is writeFile (scratch.go) with the *testing.T ceremony a test
 // wants but a reusable helper shouldn't carry.
 func mustWriteFile(t *testing.T, path, content string) {
@@ -474,7 +643,7 @@ func generateManifest(t *testing.T, m Manifest) map[string]string {
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	out, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides)
+	out, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides)
 	if err != nil {
 		t.Fatalf("GenerateAll failed: %v", err)
 	}
@@ -491,6 +660,97 @@ func manifestOrFail(t *testing.T) Manifest {
 		t.Fatalf("Failed to load the manifest: %v", err)
 	}
 	return m
+}
+
+// --- fieldOverridesFor cross-use consistency (bug #2 regression tests) -----
+
+// twinFieldOverrideCommands builds two commands, cmd_a and cmd_b, whose
+// responses each declare a structurally identical nested <thing> shape (same
+// name, same <leaf> child), so Generate's structural dedup collapses them into
+// one shared structType reached by two different (command, path) uses — the
+// exact situation fieldOverridesFor's cross-use consistency check exists for.
+// Built directly rather than loaded from a snapshot, same spirit as
+// TestGenerateAllIsPerFamily's synthetic twin family.
+func twinFieldOverrideCommands() (cmdA, cmdB schema.Command) {
+	shape := func(rootName string) *schema.Node {
+		return &schema.Node{
+			Name: rootName,
+			Children: []*schema.Node{
+				{
+					Name: "thing", Kind: schema.KindElement, Card: schema.CardRequired,
+					Children: []*schema.Node{
+						{Name: "leaf", Kind: schema.KindElement, Card: schema.CardRequired, Type: "text"},
+					},
+				},
+			},
+		}
+	}
+	cmdA = schema.Command{Name: "cmd_a", Request: &schema.Node{Name: "cmd_a"}, Response: shape("cmd_a_response")}
+	cmdB = schema.Command{Name: "cmd_b", Request: &schema.Node{Name: "cmd_b"}, Response: shape("cmd_b_response")}
+	return cmdA, cmdB
+}
+
+func TestFieldOverridesCrossUseMismatchOnMissingKey(t *testing.T) {
+	cmdA, cmdB := twinFieldOverrideCommands()
+	fo := map[string][]FieldOverride{
+		"cmd_a:/thing": {{Name: "extra", GoType: "string", Reason: "t"}},
+	}
+	_, err := Generate([]schema.Command{cmdA, cmdB}, TypeOverrides, PointerOverrides, fo)
+	if err == nil {
+		t.Fatal("Generate succeeded; want an error: cmd_b's use has no matching override while cmd_a's does")
+	}
+	if !strings.Contains(err.Error(), "cmd_a:/thing") || !strings.Contains(err.Error(), "cmd_b:/thing") {
+		t.Fatalf("Generate error = %q, want it to name both cmd_a:/thing and cmd_b:/thing", err.Error())
+	}
+}
+
+func TestFieldOverridesCrossUseMismatchOnDifferentEntries(t *testing.T) {
+	cmdA, cmdB := twinFieldOverrideCommands()
+	fo := map[string][]FieldOverride{
+		"cmd_a:/thing": {{Name: "extra", GoType: "string", Reason: "t"}},
+		"cmd_b:/thing": {{Name: "other", GoType: "string", Reason: "t"}},
+	}
+	_, err := Generate([]schema.Command{cmdA, cmdB}, TypeOverrides, PointerOverrides, fo)
+	if err == nil {
+		t.Fatal("Generate succeeded; want an error: cmd_a and cmd_b disagree on the override for the shared <thing> shape")
+	}
+	if !strings.Contains(err.Error(), "cmd_a:/thing") || !strings.Contains(err.Error(), "cmd_b:/thing") {
+		t.Fatalf("Generate error = %q, want it to name both cmd_a:/thing and cmd_b:/thing", err.Error())
+	}
+}
+
+func TestFieldOverridesCrossUseIdenticalEntriesSucceed(t *testing.T) {
+	cmdA, cmdB := twinFieldOverrideCommands()
+	fo := map[string][]FieldOverride{
+		"cmd_a:/thing": {{Name: "extra", GoType: "string", Reason: "t"}},
+		"cmd_b:/thing": {{Name: "extra", GoType: "string", Reason: "t"}},
+	}
+	out, err := Generate([]schema.Command{cmdA, cmdB}, TypeOverrides, PointerOverrides, fo)
+	if err != nil {
+		t.Fatalf("Generate failed with identical overrides on both uses: %v", err)
+	}
+	var all strings.Builder
+	for _, src := range out {
+		all.WriteString(src)
+	}
+	if got := strings.Count(all.String(), `gmpoverride:"t"`); got != 1 {
+		t.Fatalf(`gmpoverride:"t" appears %d times across the generated output, want exactly 1 `+
+			`(the structurally-shared struct must be emitted once, not once per use)`, got)
+	}
+}
+
+func TestFieldOverridesSchemaChildCollision(t *testing.T) {
+	cmdA, _ := twinFieldOverrideCommands()
+	fo := map[string][]FieldOverride{
+		"cmd_a:/thing": {{Name: "leaf", GoType: "string", Reason: "t"}},
+	}
+	_, err := Generate([]schema.Command{cmdA}, TypeOverrides, PointerOverrides, fo)
+	if err == nil {
+		t.Fatal("Generate succeeded; want an error: the override's Name duplicates <thing>'s schema-declared <leaf> child")
+	}
+	if !strings.Contains(err.Error(), "duplicate") {
+		t.Fatalf("Generate error = %q, want it to mention the duplicate", err.Error())
+	}
 }
 
 // firstDiff points at the first differing line, so a failure names the change

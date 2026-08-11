@@ -45,7 +45,7 @@ func writeTestFile(t *testing.T, path, content string) {
 
 func checkOrFail(t *testing.T, m Manifest, schemaDir, outDir string) Report {
 	t.Helper()
-	r, err := CheckOutput(m, schemaDir, outDir, TypeOverrides, PointerOverrides)
+	r, err := CheckOutput(m, schemaDir, outDir, TypeOverrides, PointerOverrides, FieldOverrides)
 	if err != nil {
 		t.Fatalf("CheckOutput failed: %v", err)
 	}
@@ -231,7 +231,7 @@ func TestCheckOutputWritesNothing(t *testing.T) {
 	}
 	dirty := dirState(t, dir)
 
-	if _, err := CheckOutput(manifestOrFail(t), snapshotDir, dir, TypeOverrides, PointerOverrides); err != nil {
+	if _, err := CheckOutput(manifestOrFail(t), snapshotDir, dir, TypeOverrides, PointerOverrides, FieldOverrides); err != nil {
 		t.Fatalf("CheckOutput failed: %v", err)
 	}
 	if got := dirState(t, dir); got != dirty {

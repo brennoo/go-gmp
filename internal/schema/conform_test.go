@@ -83,6 +83,66 @@ func TestExtraField(t *testing.T) {
 	wantOne(t, r, CatExtra, "/x/c")
 }
 
+// internal/codegen's FieldOverrides mechanism adds a real, evidence-backed
+// field the schema's own pattern never declares (e.g. tls_certificate's
+// <valid>), recording the evidence in a gmpoverride struct tag. The
+// resulting EXTRA finding must still fire — the schema still declares no
+// such field — but come back suppressed, with Reason carrying the evidence.
+func TestExtraFieldWithOverrideReasonIsSuppressed(t *testing.T) {
+	type req struct {
+		XMLName xml.Name `xml:"x"`
+		A       string   `xml:"a"`
+		B       string   `xml:"b,omitempty"`
+		C       string   `xml:"c,omitempty" gmpoverride:"live evidence for c"`
+	}
+	r := diff(t, twoFields, &req{}, &respOK{})
+	if got := only(r, CatExtra); len(got) != 0 {
+		t.Errorf("A suppressed finding must not show up in the actionable count, got %v", render(got))
+	}
+	var found bool
+	for _, f := range r.Findings {
+		if f.Path == "/x/c" && f.Category == CatExtra && f.Suppressed && f.Reason == "live evidence for c" {
+			found = true
+		}
+	}
+	if !found {
+		t.Errorf("Expected a suppressed CatExtra finding at /x/c with the override's reason, got %v", render(r.Findings))
+	}
+}
+
+// The chardata counterpart to TestExtraFieldWithOverrideReasonIsSuppressed:
+// FieldOverrides can also add a ",chardata" field the schema declares no
+// text token for (e.g. tls_certificate's <certificate> bytes), via
+// checkChardata's ChardataOverrideReason path rather than walk()'s
+// OverrideReason path.
+func TestChardataWithOverrideReasonIsSuppressed(t *testing.T) {
+	body := `
+    <name>x</name>
+    <pattern><e>a</e></pattern>
+    <ele><name>a</name><pattern><attrib><name>fmt</name><type>text</type></attrib></pattern></ele>
+    <response><pattern><attrib><name>status</name><type>status</type><required>1</required></attrib></pattern></response>`
+	type req struct {
+		XMLName xml.Name `xml:"x"`
+		A       struct {
+			Value string `xml:",chardata" gmpoverride:"live evidence for a's text"`
+			Fmt   string `xml:"fmt,attr"`
+		} `xml:"a"`
+	}
+	r := diff(t, body, &req{}, &respOK{})
+	if got := only(r, CatExtra); len(got) != 0 {
+		t.Errorf("A suppressed finding must not show up in the actionable count, got %v", render(got))
+	}
+	var found bool
+	for _, f := range r.Findings {
+		if f.Path == "/x/a/#text" && f.Category == CatExtra && f.Suppressed && f.Reason == "live evidence for a's text" {
+			found = true
+		}
+	}
+	if !found {
+		t.Errorf("Expected a suppressed CatExtra finding at /x/a/#text with the override's reason, got %v", render(r.Findings))
+	}
+}
+
 func TestConformantPairHasNoFindings(t *testing.T) {
 	type req struct {
 		XMLName xml.Name `xml:"x"`

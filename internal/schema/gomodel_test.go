@@ -80,6 +80,42 @@ func TestModelOfReadsGmpwireOnExcludedField(t *testing.T) {
 	}
 }
 
+// internal/codegen's FieldOverrides mechanism adds a real, evidence-backed
+// field the schema's own pattern never declares, and records why in a
+// private gmpoverride tag. ModelOf must recover that reason onto the leaf's
+// GoNode, or conform.go would have nothing to key its suppression off.
+func TestModelOfReadsGmpoverrideOnLeafField(t *testing.T) {
+	type Root struct {
+		XMLName xml.Name `xml:"root"`
+		A       string   `xml:"a" gmpoverride:"evidence for a"`
+	}
+	root := ModelOf(&Root{}).Root
+	if len(root.Children) != 1 {
+		t.Fatalf("got %d children, want 1: %+v", len(root.Children), root.Children)
+	}
+	if got := root.Children[0].OverrideReason; got != "evidence for a" {
+		t.Errorf("got OverrideReason %q, want %q", got, "evidence for a")
+	}
+}
+
+// A ",chardata" field sets Chardata on its *parent* node rather than
+// creating a child of its own (see addField), so a gmpoverride tag on a
+// chardata field must land on the parent as ChardataOverrideReason instead
+// of OverrideReason.
+func TestModelOfReadsGmpoverrideOnChardataField(t *testing.T) {
+	type Root struct {
+		XMLName xml.Name `xml:"root"`
+		Value   string   `xml:",chardata" gmpoverride:"evidence for chardata"`
+	}
+	root := ModelOf(&Root{}).Root
+	if root.OverrideReason != "" {
+		t.Errorf("got OverrideReason %q on the root, want empty", root.OverrideReason)
+	}
+	if got := root.ChardataOverrideReason; got != "evidence for chardata" {
+		t.Errorf("got ChardataOverrideReason %q, want %q", got, "evidence for chardata")
+	}
+}
+
 func TestModelOfFlattensAnonymousFieldEvenWithATag(t *testing.T) {
 	type Embedded struct {
 		A string `xml:"a"`

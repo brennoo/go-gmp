@@ -31,6 +31,11 @@
     {
       "name": "filter",
       "commands": ["create_filter", "get_filters", "modify_filter"]
+    },
+    {
+      "name": "tls_certificate",
+      "commands": ["create_tls_certificate", "get_tls_certificates", "modify_tls_certificate"],
+      "review_only": true
     }
   ]
 }

@@ -3,6 +3,7 @@ package codegen
 import (
 	"fmt"
 	"go/format"
+	"go/parser"
 	"sort"
 	"strings"
 
@@ -28,15 +29,16 @@ const sharedFileSuffix = "_shared.go"
 // of (cmds, ov, pf): no clock, no filesystem, no map iteration order leaks
 // into it, and nothing here reads vendor/XML. That is what lets the golden
 // test in generate_test.go run in CI with only the committed JSON snapshot.
-func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride) (map[string]string, error) {
+func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, fo map[string][]FieldOverride) (map[string]string, error) {
 	if len(cmds) == 0 {
 		return nil, fmt.Errorf("codegen: no commands to generate")
 	}
 	g := &gen{
-		ov: ov, pf: pf,
+		ov: ov, pf: pf, fo: fo,
 		byHash:      map[string]*structType{},
 		taken:       map[string]bool{},
 		needsErrors: map[*strings.Builder]bool{},
+		foConsumed:  map[string]bool{},
 	}
 
 	// Sorting decouples the output from the caller's slice order, so a
@@ -55,8 +57,101 @@ func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]Point
 
 	g.family = familyPrefix(g.cmds)
 	g.collect()
+	if err := g.validateFieldOverrides(); err != nil {
+		return nil, err
+	}
 	g.name()
-	return g.emit()
+	out, err := g.emit()
+	if err != nil {
+		return nil, err
+	}
+	if err := g.checkFieldOverridesConsumed(); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// validateFieldOverrides checks the shape of every FieldOverrides entry in
+// g.fo, independent of which command is in scope for this call: these are
+// defects in the table itself (a typo'd GoType, a missing Reason, two
+// chardata entries fighting over one struct), not something that could ever
+// become valid depending on which family is being generated. Keys are sorted
+// first so a bad entry is reported the same way regardless of Go's random map
+// iteration order.
+func (g *gen) validateFieldOverrides() error {
+	keys := make([]string, 0, len(g.fo))
+	for k := range g.fo {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, key := range keys {
+		hasChardata := false
+		type nameAttr struct {
+			name string
+			attr bool
+		}
+		seen := map[nameAttr]bool{}
+
+		for i, e := range g.fo[key] {
+			if e.Reason == "" {
+				return fmt.Errorf("codegen: FieldOverrides[%q][%d]: Reason is empty", key, i)
+			}
+			if e.GoType == "" {
+				return fmt.Errorf("codegen: FieldOverrides[%q][%d]: GoType is empty", key, i)
+			}
+			if _, err := parser.ParseExpr(e.GoType); err != nil {
+				return fmt.Errorf("codegen: FieldOverrides[%q][%d]: GoType %q is not a valid Go type expression: %w", key, i, e.GoType, err)
+			}
+			if e.Chardata {
+				if e.Name != "" || e.Attr || e.OmitEmpty {
+					return fmt.Errorf("codegen: FieldOverrides[%q][%d]: Chardata is mutually exclusive with Name, Attr and OmitEmpty", key, i)
+				}
+				if hasChardata {
+					return fmt.Errorf("codegen: FieldOverrides[%q]: more than one chardata override", key)
+				}
+				hasChardata = true
+				continue
+			}
+			if e.Name == "" {
+				return fmt.Errorf("codegen: FieldOverrides[%q][%d]: Name is empty on a non-chardata override", key, i)
+			}
+			na := nameAttr{name: e.Name, attr: e.Attr}
+			if seen[na] {
+				return fmt.Errorf("codegen: FieldOverrides[%q]: duplicate wire name %q (attr=%v)", key, e.Name, e.Attr)
+			}
+			seen[na] = true
+		}
+	}
+	return nil
+}
+
+// checkFieldOverridesConsumed fails the build on a stale or mistyped
+// FieldOverrides entry: one whose command is among g.cmds (so this call was
+// in a position to apply it) but which never matched a node emitStruct
+// looked up. An entry whose command isn't part of this call at all is not
+// checked here — GenerateAll and CheckOutput both call Generate once per
+// family, often with only a subset of FieldOverrides' commands in scope (a
+// review-only family's commands, for instance, never reach CheckOutput's
+// Adopted()-filtered calls), so "unconsumed" only means something once the
+// relevant command was actually part of the run.
+func (g *gen) checkFieldOverridesConsumed() error {
+	present := make(map[string]bool, len(g.cmds))
+	for i := range g.cmds {
+		present[g.cmds[i].Name] = true
+	}
+	var stale []string
+	for key := range g.fo {
+		command, _, _ := strings.Cut(key, ":")
+		if present[command] && !g.foConsumed[key] {
+			stale = append(stale, key)
+		}
+	}
+	if len(stale) == 0 {
+		return nil
+	}
+	sort.Strings(stale)
+	return fmt.Errorf("codegen: FieldOverrides entry(ies) never matched a generated field: %s", strings.Join(stale, ", "))
 }
 
 // GenerateAll renders every family in m, one Generate call per family, and
@@ -87,7 +182,7 @@ func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]Point
 // cmds may contain commands in any order and must cover every command the
 // manifest names; a command not claimed by any family is an error, since it
 // would otherwise be silently dropped.
-func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride) (map[string]string, error) {
+func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, fo map[string][]FieldOverride) (map[string]string, error) {
 	byName := make(map[string]schema.Command, len(cmds))
 	for _, c := range cmds {
 		byName[c.Name] = c
@@ -104,7 +199,7 @@ func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf m
 			}
 			fam = append(fam, c)
 		}
-		files, err := Generate(fam, ov, pf)
+		files, err := Generate(fam, ov, pf, fo)
 		if err != nil {
 			return nil, fmt.Errorf("codegen: family %q: %w", f.Name, err)
 		}
@@ -164,6 +259,7 @@ type gen struct {
 	cmds   []schema.Command
 	ov     map[string]Override
 	pf     map[string]PointerOverride
+	fo     map[string][]FieldOverride
 	family string
 
 	byHash map[string]*structType
@@ -175,6 +271,20 @@ type gen struct {
 	// returning an error rather than silently skipping it — see
 	// emitCollisionMethods' CardRequired guard.
 	needsErrors map[*strings.Builder]bool
+
+	// foConsumed records which FieldOverrides keys matched a node during this
+	// run, so checkFieldOverridesConsumed can flag a stale one.
+	foConsumed map[string]bool
+}
+
+// fieldOverrideKey builds a FieldOverrides key from a structType's use: the
+// command that reached it, the ancestor path (outermost first, excluding the
+// node itself), and the node's own name.
+func fieldOverrideKey(command string, path []string, name string) string {
+	full := make([]string, 0, len(path)+1)
+	full = append(full, path...)
+	full = append(full, name)
+	return command + ":/" + strings.Join(full, "/")
 }
 
 // collect walks every command's request and response, recording one entry per
@@ -410,6 +520,12 @@ type field struct {
 	// structtag analyzer rejects two fields sharing one xml tag value outright
 	// — for internal/schema's gomodel.go to recover by reflection.
 	wireTag string
+
+	// overrideReason is non-empty when this field was synthesized from
+	// FieldOverrides rather than the schema; writeField emits it as a
+	// gmpoverride tag for internal/schema/gomodel.go to recover, and
+	// conform.go's comparer uses it to suppress the resulting EXTRA finding.
+	overrideReason string
 }
 
 // fieldOf applies the DSL -> Go cardinality mapping. command is the request's
@@ -449,11 +565,24 @@ func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool) fiel
 // matching the hand-written override types this generator is meant to match
 // (e.g. commands.OverrideText's Text field precedes its Excerpt attribute).
 func (g *gen) emitChardata(b *strings.Builder, n *schema.Node, used map[string]bool) {
-	if !n.Chardata {
-		return
+	g.emitChardataOverridable(b, n, used, nil)
+}
+
+// emitChardataOverridable is emitChardata plus a FieldOverrides chardata
+// entry for the same node, if any. The schema wins when both are set: a node
+// the schema itself declares Chardata for has no need of the override, and
+// double-declaring the field would collide. override is only ever non-nil
+// from emitStruct, since FieldOverrides addresses nested struct shapes by
+// path, and a command's own request/response envelope has none.
+func (g *gen) emitChardataOverridable(b *strings.Builder, n *schema.Node, used map[string]bool, override *FieldOverride) {
+	switch {
+	case n.Chardata:
+		name := uniqueName("Value", used)
+		fmt.Fprintf(b, "%s %s `xml:\",chardata\"`\n", name, g.scalarGoType(n.Type))
+	case override != nil:
+		name := uniqueName("Value", used)
+		fmt.Fprintf(b, "%s %s `xml:\",chardata\" gmpoverride:%q`\n", name, override.GoType, override.Reason)
 	}
-	name := uniqueName("Value", used)
-	fmt.Fprintf(b, "%s %s `xml:\",chardata\"`\n", name, g.scalarGoType(n.Type))
 }
 
 func uniqueName(name string, used map[string]bool) string {
@@ -596,19 +725,162 @@ func (g *gen) emitStruct(b *strings.Builder, st *structType) error {
 		st.goName, st.node.Name, g.ownerOf(st))
 	fmt.Fprintf(b, "type %s struct {\n", st.goName)
 	used := map[string]bool{}
-	g.emitChardata(b, st.node, used)
+
+	extra, chardataOverride, err := g.fieldOverridesFor(st)
+	if err != nil {
+		return err
+	}
+	g.emitChardataOverridable(b, st.node, used, chardataOverride)
 	fields, collided := g.emitFields(st.node.Children, used, nil, "")
+	for _, ov := range extra {
+		fields = append(fields, g.overrideField(ov, used))
+	}
 	for _, f := range fields {
 		writeField(b, f)
 	}
 	b.WriteString("}\n\n")
 
+	chardata := st.node.Chardata || chardataOverride != nil
 	if collided {
-		if err := g.emitCollisionMethods(b, st.goName, false, false, st.node.Chardata, fields, ""); err != nil {
+		if err := g.emitCollisionMethods(b, st.goName, false, false, chardata, fields, ""); err != nil {
 			return fmt.Errorf("codegen: %s: %w", st.goName, err)
 		}
 	}
 	return nil
+}
+
+// overrideResult is one key's resolved FieldOverrides for a structType: the
+// chardata entry, if any, and the ordinary element/attribute entries.
+type overrideResult struct {
+	extra    []FieldOverride
+	chardata *FieldOverride
+}
+
+// fieldOverridesFor looks up st in FieldOverrides by every path it was
+// reached from. FieldOverrides' doc comment says a shape keyed this way must
+// be reached by exactly one command, so every use has to resolve to the same
+// overrideResult — including a use with no matching g.fo entry at all, which
+// resolves to the empty overrideResult rather than being skipped: skipping it
+// is exactly what let an override on one use silently leak onto a structurally
+// -deduplicated sibling use that had none. Any disagreement between two uses'
+// results is an error instead of a silent pick.
+func (g *gen) fieldOverridesFor(st *structType) (extra []FieldOverride, chardataOverride *FieldOverride, err error) {
+	seen := map[string]bool{}
+	haveFirst := false
+	var firstKey string
+	var first overrideResult
+
+	for _, u := range st.uses {
+		key := fieldOverrideKey(u.command, u.path, st.node.Name)
+		if seen[key] {
+			continue
+		}
+		seen[key] = true
+
+		var res overrideResult
+		if entries, ok := g.fo[key]; ok {
+			g.foConsumed[key] = true
+			for _, e := range entries {
+				e := e
+				if e.Chardata {
+					res.chardata = &e
+					continue
+				}
+				if schemaChildCollision(st.node, e) {
+					return nil, nil, fmt.Errorf(
+						"codegen: FieldOverrides[%q]: override %q duplicates an existing schema-declared child of <%s>",
+						key, e.Name, st.node.Name)
+				}
+				res.extra = append(res.extra, e)
+			}
+		}
+
+		if !haveFirst {
+			haveFirst, firstKey, first = true, key, res
+			extra, chardataOverride = res.extra, res.chardata
+			continue
+		}
+		if !overrideResultEqual(&first, &res) {
+			return nil, nil, fmt.Errorf(
+				"codegen: %s: FieldOverrides for %q and %q disagree; a structurally-deduplicated type "+
+					"must resolve to the same override set from every path that reaches it",
+				st.goName, firstKey, key)
+		}
+	}
+	return extra, chardataOverride, nil
+}
+
+// schemaChildCollision reports whether e would duplicate an already
+// schema-declared child of node: same wire name, same attribute-vs-element
+// kind. A FieldOverride exists to add a field the schema cannot produce, so
+// one that shadows a real schema field is a defect in the table, not a
+// legitimate addition.
+func schemaChildCollision(node *schema.Node, e FieldOverride) bool {
+	kind := schema.KindElement
+	if e.Attr {
+		kind = schema.KindAttribute
+	}
+	for _, c := range node.Children {
+		if c.Name == e.Name && c.Kind == kind {
+			return true
+		}
+	}
+	return false
+}
+
+// overrideResultEqual compares two resolved overrideResults for value
+// equality: chardata by value (nil only equals nil), extra as a multiset
+// (content, not order — a single key's slice is ordered in practice, but nothing
+// should rely on that to prove equality).
+func overrideResultEqual(a, b *overrideResult) bool {
+	switch {
+	case a.chardata == nil && b.chardata != nil, a.chardata != nil && b.chardata == nil:
+		return false
+	case a.chardata != nil && b.chardata != nil && *a.chardata != *b.chardata:
+		return false
+	}
+	if len(a.extra) != len(b.extra) {
+		return false
+	}
+	used := make([]bool, len(b.extra))
+	for _, x := range a.extra {
+		found := false
+		for j, y := range b.extra {
+			if !used[j] && x == y {
+				used[j] = true
+				found = true
+				break
+			}
+		}
+		if !found {
+			return false
+		}
+	}
+	return true
+}
+
+// overrideField builds the Go field for one non-chardata FieldOverride, via a
+// synthetic schema.Node so it participates in the same collision/attribute
+// machinery a schema-declared field would (see emitCollisionMethods).
+func (g *gen) overrideField(ov FieldOverride, used map[string]bool) field {
+	kind := schema.KindElement
+	if ov.Attr {
+		kind = schema.KindAttribute
+	}
+	node := &schema.Node{Name: ov.Name, Kind: kind, Card: schema.CardRequired}
+
+	tag := ov.Name
+	if ov.Attr {
+		tag += ",attr"
+	}
+	if ov.OmitEmpty {
+		tag += ",omitempty"
+	}
+
+	return field{
+		name: uniqueName(goName(ov.Name), used), goType: ov.GoType, tag: tag, node: node,
+		overrideReason: ov.Reason,
+	}
 }
 
 // ownerOf describes, for the doc comment, which commands reach a shape.
@@ -659,16 +931,19 @@ func (g *gen) emitFields(kids []*schema.Node, used, skipAttrs map[string]bool, c
 }
 
 func writeField(b *strings.Builder, f field) {
-	if f.wireTag != "" {
+	switch {
+	case f.wireTag != "":
 		// gmpwire carries this field's real wire identity for
 		// internal/schema/gomodel.go's addField to recover by reflection —
 		// xml:"-" alone would make the field invisible to the structural
 		// conformance oracle, reopening the MISSING/EXTRA gap this tag exists
 		// to close.
 		fmt.Fprintf(b, "%s %s `xml:%q gmpwire:%q`\n", f.name, f.goType, f.tag, f.wireTag)
-		return
+	case f.overrideReason != "":
+		fmt.Fprintf(b, "%s %s `xml:%q gmpoverride:%q`\n", f.name, f.goType, f.tag, f.overrideReason)
+	default:
+		fmt.Fprintf(b, "%s %s `xml:%q`\n", f.name, f.goType, f.tag)
 	}
-	fmt.Fprintf(b, "%s %s `xml:%q`\n", f.name, f.goType, f.tag)
 }
 
 // --- duplicate-wire-tag codec generation -------------------------------------
@@ -984,6 +1259,7 @@ var initialisms = map[string]string{
 	"cpe":       "CPE",
 	"cve":       "CVE",
 	"cvss":      "CVSS",
+	"dn":        "DN",
 	"dns":       "DNS",
 	"http":      "HTTP",
 	"icalendar": "ICalendar",

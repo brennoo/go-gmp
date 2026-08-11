@@ -1,0 +1,781 @@
+{
+  "Name": "get_tls_certificates",
+  "File": "command_get_tls_certificates.xml",
+  "Request": {
+    "Name": "get_tls_certificates",
+    "Kind": 0,
+    "Card": 0,
+    "InChoice": false,
+    "Type": "",
+    "Alts": null,
+    "Children": [
+      {
+        "Name": "tls_certificate_id",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "uuid",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "filter",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "filt_id",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "uuid",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "include_certificate_data",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "boolean",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      }
+    ],
+    "Chardata": false
+  },
+  "Response": {
+    "Name": "get_tls_certificates_response",
+    "Kind": 0,
+    "Card": 0,
+    "InChoice": false,
+    "Type": "",
+    "Alts": null,
+    "Children": [
+      {
+        "Name": "status",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "status",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "status_text",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "filters",
+        "Kind": 0,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "id",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "uuid",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "term",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "keywords",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "keyword",
+                "Kind": 0,
+                "Card": 2,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "column",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "relation",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "",
+                    "Alts": [
+                      "=",
+                      ":",
+                      "~",
+                      "\u003e",
+                      "\u003c"
+                    ],
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "value",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  }
+                ],
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          },
+          {
+            "Name": "name",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      },
+      {
+        "Name": "sort",
+        "Kind": 0,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "field",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "order",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "",
+                "Alts": [
+                  "ascending",
+                  "descending"
+                ],
+                "Children": null,
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          }
+        ],
+        "Chardata": true
+      },
+      {
+        "Name": "tls_certificates",
+        "Kind": 0,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "start",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "integer",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "max",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "integer",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      },
+      {
+        "Name": "tls_certificate_count",
+        "Kind": 0,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "filtered",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "integer",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "page",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "integer",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      },
+      {
+        "Name": "tls_certificate",
+        "Kind": 0,
+        "Card": 2,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "id",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "uuid",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "owner",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "name",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "name",
+                "Alts": null,
+                "Children": null,
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          },
+          {
+            "Name": "name",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "comment",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "creation_time",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "iso_time",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "modification_time",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "iso_time",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "writable",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "boolean",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "in_use",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "boolean",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "permissions",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "permission",
+                "Kind": 0,
+                "Card": 2,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "name",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "name",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  }
+                ],
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          },
+          {
+            "Name": "certificate",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "format",
+                "Kind": 1,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": null,
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          },
+          {
+            "Name": "sha256_fingerprint",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "md5_fingerprint",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "trust",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "boolean",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "time_status",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": [
+              "expired",
+              "inactive",
+              "unknown",
+              "valid"
+            ],
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "activation_time",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "iso_time",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "expiration_time",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "iso_time",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "subject_dn",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "issuer_dn",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "serial",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "last_seen",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "iso_time",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "sources",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "source",
+                "Kind": 0,
+                "Card": 2,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "id",
+                    "Kind": 1,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "uuid",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "timestamp",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "iso_time",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "tls_versions",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "origin",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "",
+                    "Alts": null,
+                    "Children": [
+                      {
+                        "Name": "id",
+                        "Kind": 1,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "uuid",
+                        "Alts": null,
+                        "Children": null,
+                        "Chardata": false
+                      },
+                      {
+                        "Name": "origin_type",
+                        "Kind": 0,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "text",
+                        "Alts": null,
+                        "Children": null,
+                        "Chardata": false
+                      },
+                      {
+                        "Name": "origin_id",
+                        "Kind": 0,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "text",
+                        "Alts": null,
+                        "Children": null,
+                        "Chardata": false
+                      },
+                      {
+                        "Name": "origin_data",
+                        "Kind": 0,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "text",
+                        "Alts": null,
+                        "Children": null,
+                        "Chardata": false
+                      },
+                      {
+                        "Name": "report",
+                        "Kind": 0,
+                        "Card": 1,
+                        "InChoice": false,
+                        "Type": "",
+                        "Alts": null,
+                        "Children": [
+                          {
+                            "Name": "id",
+                            "Kind": 1,
+                            "Card": 1,
+                            "InChoice": false,
+                            "Type": "uuid",
+                            "Alts": null,
+                            "Children": null,
+                            "Chardata": false
+                          },
+                          {
+                            "Name": "date",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "iso_time",
+                            "Alts": null,
+                            "Children": null,
+                            "Chardata": false
+                          },
+                          {
+                            "Name": "task",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "",
+                            "Alts": null,
+                            "Children": [
+                              {
+                                "Name": "id",
+                                "Kind": 1,
+                                "Card": 0,
+                                "InChoice": false,
+                                "Type": "uuid",
+                                "Alts": null,
+                                "Children": null,
+                                "Chardata": false
+                              },
+                              {
+                                "Name": "name",
+                                "Kind": 0,
+                                "Card": 0,
+                                "InChoice": false,
+                                "Type": "text",
+                                "Alts": null,
+                                "Children": null,
+                                "Chardata": false
+                              }
+                            ],
+                            "Chardata": false
+                          }
+                        ],
+                        "Chardata": false
+                      }
+                    ],
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "location",
+                    "Kind": 0,
+                    "Card": 1,
+                    "InChoice": false,
+                    "Type": "",
+                    "Alts": null,
+                    "Children": [
+                      {
+                        "Name": "id",
+                        "Kind": 1,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "uuid",
+                        "Alts": null,
+                        "Children": null,
+                        "Chardata": false
+                      },
+                      {
+                        "Name": "host",
+                        "Kind": 0,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "",
+                        "Alts": null,
+                        "Children": [
+                          {
+                            "Name": "ip",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "text",
+                            "Alts": null,
+                            "Children": null,
+                            "Chardata": false
+                          },
+                          {
+                            "Name": "asset",
+                            "Kind": 0,
+                            "Card": 0,
+                            "InChoice": false,
+                            "Type": "",
+                            "Alts": null,
+                            "Children": [
+                              {
+                                "Name": "id",
+                                "Kind": 1,
+                                "Card": 1,
+                                "InChoice": false,
+                                "Type": "uuid",
+                                "Alts": null,
+                                "Children": null,
+                                "Chardata": false
+                              }
+                            ],
+                            "Chardata": false
+                          }
+                        ],
+                        "Chardata": false
+                      },
+                      {
+                        "Name": "port",
+                        "Kind": 0,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "integer",
+                        "Alts": null,
+                        "Children": null,
+                        "Chardata": false
+                      }
+                    ],
+                    "Chardata": false
+                  }
+                ],
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      }
+    ],
+    "Chardata": false
+  },
+  "Defects": null
+}

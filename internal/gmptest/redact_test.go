@@ -106,6 +106,36 @@ func TestRedactPathsHandlesEveryOccurrenceOfARepeatedPath(t *testing.T) {
 	}
 }
 
+// TestRedactPathsRedactsTLSCertificateData proves the committed
+// get_tls_certificates spec actually reaches the certificate bytes: this is
+// the one response element the whole family exists to protect, and it only
+// appears in the wire document when IncludeCertificateData was requested.
+func TestRedactPathsRedactsTLSCertificateData(t *testing.T) {
+	const fakeDER = "MIIBSynthEXAMPLEnotarealcertificateFAKEbase64QQQQ=="
+	doc := []byte(`<get_tls_certificates_response status="200" status_text="OK">` +
+		`<tls_certificate id="a"><name>fixture</name>` +
+		`<certificate format="DER">` + fakeDER + `</certificate>` +
+		`</tls_certificate></get_tls_certificates_response>`)
+
+	got, applied, err := RedactPaths(doc,
+		redactionSpecs["get_tls_certificates"])
+	if err != nil {
+		t.Fatalf("RedactPaths returned an error: %v", err)
+	}
+	if strings.Contains(string(got), fakeDER) {
+		t.Errorf("The certificate bytes survived redaction:\n%s", got)
+	}
+	if !strings.Contains(string(got), RedactionPlaceholder) {
+		t.Errorf("No placeholder was written:\n%s", got)
+	}
+	if !strings.Contains(string(got), `format="DER"`) {
+		t.Errorf("The sibling format attribute should be untouched:\n%s", got)
+	}
+	if len(applied) != 1 || applied[0] != "/get_tls_certificates_response/tls_certificate/certificate/#text" {
+		t.Errorf("applied = %v, want the one spec path", applied)
+	}
+}
+
 // TestRedactPathsDistinguishesDepth guards against a prefix or suffix match
 // standing in for a real path comparison: only the fully qualified path is a
 // hit, so a <password> somewhere else in the tree is left alone.

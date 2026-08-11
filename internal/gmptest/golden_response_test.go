@@ -106,7 +106,7 @@ func TestFidelitySummary(t *testing.T) {
 			droppedPaths[d.Path]++
 		}
 
-		lines = append(lines, fmt.Sprintf("%-28s %-9s %-3s %-13s dropped=%-3d truncated=%-3d changed=%-3d added=%-3d",
+		lines = append(lines, fmt.Sprintf("%-28s %-9s %-3s %-13s dropped=%-3d truncated=%-3d changed=%-3d added=%d",
 			f.Command, f.Provenance, f.ID, status, len(fid.Dropped), len(fid.Truncated), len(fid.Changed), len(fid.Added)))
 	}
 

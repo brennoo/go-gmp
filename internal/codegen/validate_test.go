@@ -32,7 +32,7 @@ func validateOrSkip(t *testing.T, command string) (before, after []schema.Result
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	before, after, err = Validate(cmds, TypeOverrides, PointerOverrides, nil)
+	before, after, err = Validate(cmds, TypeOverrides, PointerOverrides, FieldOverrides, nil)
 	if err != nil {
 		if errors.Is(err, ErrNoGoToolchain) {
 			t.Skipf("Skipping: %v", err)
@@ -1846,6 +1846,412 @@ func TestFilterSortFieldNameIsAnAcceptedLoss(t *testing.T) {
 	}
 }
 
+// TestValidateTLSCertificateBeforeMatchesKnownConformance is the
+// tls_certificate family's counterpart to
+// TestValidateBeforeMatchesKnownConformance. tls_certificate is review_only,
+// so commands/{create_tls_certificate,modify_tls_certificate,
+// get_tls_certificates}.go are the hand-written originals — this pins the
+// pre-generation gate the family was selected to exercise. create_
+// and modify_tls_certificate are already conformant. get_tls_certificates
+// carries the family's entire load and has zero SCHEMA-DEFECT findings (its
+// three snapshots all have a nil cmd.Defects) — the first family reviewed so
+// far with none at all. See
+// TestValidateTLSCertificateGeneratedMatchesOrImproves for what each finding
+// is and whether generation closes it.
+func TestValidateTLSCertificateBeforeMatchesKnownConformance(t *testing.T) {
+	before, _ := validateOrSkip(t, "create_tls_certificate")
+
+	want := map[string]counts{
+		"create_tls_certificate": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_tls_certificate": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_tls_certificates": {
+			actionable: map[string]int{
+				schema.CatMissing: 5,
+				schema.CatExtra:   5,
+				schema.CatKind:    2,
+				schema.CatType:    3,
+			},
+			suppressed: map[string]int{
+				schema.CatOmitEmpty: 33,
+			},
+		},
+	}
+	for _, res := range before {
+		w, ok := want[res.Command]
+		if !ok {
+			t.Errorf("%s: unexpected command in Validate's before results", res.Command)
+			continue
+		}
+		assertCounts(t, "before", res.Command, w, countFindings(res.Findings))
+	}
+}
+
+// TestValidateTLSCertificateGeneratedMatchesOrImproves is the tls_certificate
+// family's pre-swap gate, run at the same rigour note through filter were.
+//
+// Generation closes three of get_tls_certificates's five EXTRA findings and
+// all of MISSING/KIND/TYPE, leaving only two EXTRA findings — both
+// suppressed, via FieldOverrides — on all three commands:
+//
+//   - MISSING 5: @filt_id on the request (GetTLSCertificates gains FiltID),
+//     and /tls_certificate/sources/source/{location,origin,timestamp,
+//     tls_versions}. The hand-written TLSCertificateSource only models
+//     Type/ID attrs; the schema's actual source pattern is id(attr) plus
+//     required timestamp/tls_versions/origin and optional location, none of
+//     which the hand-written struct carries at all.
+//   - EXTRA 5: /filters/comment (schema's filters pattern has no comment
+//     child), /tls_certificate/sources/source/@type (the hand-written Type
+//     attr the schema's source pattern never declares), /truncated (schema's
+//     get_tls_certificates_response pattern never declares it), plus the two
+//     discussed below — closed differently from the other three.
+//   - KIND 2: tls_certificate_count/filtered and /page are schema elements
+//     that the hand-written TLSCertificateCount models as attrs; generation
+//     fixes both to plain int elements.
+//   - TYPE 3: in_use/trust/writable become commands.GMPBool, the same
+//     lexical-boolean fix every other family needed.
+//   - OMITEMPTY 33 (suppressed): the hand-written struct tags most response
+//     fields ,omitempty despite the schema marking them required; inert on
+//     decode, so suppressed rather than actionable, per checkOmitEmpty.
+//
+// Two of the five EXTRA findings deserve individual comment beyond "closed":
+//
+// /tls_certificate/certificate/#text (the hand-written TLSCertificateData's
+// chardata field) is not dropped: FieldOverrides adds a chardata override at
+// "get_tls_certificates:/tls_certificate/certificate", so
+// TLSCertificateCertificate keeps a Value field alongside Format. The
+// schema's certificate pattern truly has no chardata token (Chardata: false
+// in the committed snapshot), yet the upstream bundled example
+// (internal/gmptest/testdata/upstream/get_tls_certificates/001_response.xml)
+// sends real base64 certificate bytes as that element's text — evidence
+// strong enough to keep the field rather than silently drop it. The finding
+// still fires (the schema still declares no chardata here) but comes back
+// Suppressed, with Reason citing that evidence. See
+// TestTLSCertificateDataRoundTrips below.
+//
+// /tls_certificate/valid is handled the same way, via a FieldOverride at
+// "get_tls_certificates:/tls_certificate" that adds a Valid GMPBool field.
+// Unlike every other EXTRA above, this is not the generated shape losing
+// content the schema declares elsewhere — the schema's tls_certificate
+// pattern never references a valid child at all (confirmed against both the
+// parsed snapshot and the raw command_get_tls_certificates.xml). Live
+// traffic proves gvmd sends it regardless
+// (internal/gmptest/testdata/live/get_tls_certificates/003_response.xml has
+// <valid>1</valid>, matched by the upstream example above), so the override
+// keeps the field, and the resulting EXTRA finding is suppressed with a
+// Reason citing both fixtures.
+//
+// Also worth flagging as a review artifact rather than a schema-conformance
+// finding: the generated SubjectDN/IssuerDN field names now match the
+// hand-written SubjectDN/IssuerDN (and get_reports.go's own SubjectDN)
+// casing, since internal/codegen/generate.go's initialisms table gained a
+// "dn" entry as part of the same pass. schema.Comparer only compares wire
+// tags, not Go identifier casing, so this produces no finding in either
+// count above.
+func TestValidateTLSCertificateGeneratedMatchesOrImproves(t *testing.T) {
+	before, after := validateOrSkip(t, "create_tls_certificate")
+
+	wantAfter := map[string]counts{
+		"create_tls_certificate": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_tls_certificate": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_tls_certificates":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 2}},
+	}
+	assertMatchesOrImproves(t, before, after, wantAfter)
+}
+
+// tlsCertificateCountProbe mirrors testdata/golden/get_tls_certificates.go's
+// TLSCertificateCount field, byte for byte — keep the two in sync. Same
+// rationale as filterCountProbe: decode real fixtures with the exact shape
+// the generator emits today, without the out-of-process GeneratedGoRoots
+// machinery.
+type tlsCertificateCountProbe struct {
+	XMLName             xml.Name `xml:"get_tls_certificates_response"`
+	TLSCertificateCount struct {
+		Filtered int `xml:"filtered"`
+		Page     int `xml:"page"`
+	} `xml:"tls_certificate_count"`
+}
+
+// tlsCertificateCountEvidence is tlsCertificateCountProbe plus a ",chardata"
+// field the generated shape does not have, proving what the fixture
+// actually contains independent of what the generated shape can retain.
+type tlsCertificateCountEvidence struct {
+	XMLName             xml.Name `xml:"get_tls_certificates_response"`
+	TLSCertificateCount struct {
+		Value    string `xml:",chardata"`
+		Filtered int    `xml:"filtered"`
+		Page     int    `xml:"page"`
+	} `xml:"tls_certificate_count"`
+}
+
+// TestTLSCertificateCountBareTotalIsAnAcceptedLoss is the tls_certificate
+// family's counterpart to TestFilterCountBareTotalIsAnAcceptedLoss: live
+// gvmd captures under internal/gmptest/testdata/live/get_tls_certificates
+// send a bare total ahead of <filtered>/<page>, but the schema's declared
+// <pattern> for tls_certificate_count is only <e>filtered</e><e>page</e>,
+// with no text token anywhere in it. There is nothing for the schema-side
+// parser to see: the pattern the generator draws from simply never declares
+// this content, so generation cannot recover it, and schema.Comparer —
+// which only compares against what the pattern declares — correctly
+// reports no finding for it either.
+//
+// This is the same class of gap as role_count/group_count/tag_count/
+// schedule_count/alert_count/filter_count's identical shape
+// (docs/review-2026-08.md's "Accepted evidence" note): the schema's own
+// declared structure and its own examples disagree, and per the
+// generate-only-what-the-schema-declares principle, the fix is to document
+// the loss, not to add a field the schema never asked for.
+//
+// Each fixture is decoded twice, into two structurally identical types that
+// differ only in one field, so the test proves both halves of the claim
+// against the actual wire bytes rather than assuming either:
+// tlsCertificateCountEvidence (which has a ,chardata field) proves the bare
+// total is really there; tlsCertificateCountProbe (an exact mirror of the
+// generated TLSCertificateCount) proves that, with only Filtered/Page to
+// decode into, that same total has nowhere to go.
+func TestTLSCertificateCountBareTotalIsAnAcceptedLoss(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	cases := []struct {
+		provenance string
+		path       string
+		wantTotal  string
+		wantChild  int
+	}{
+		{"live_001", filepath.Join(gmptestDir, "live", "get_tls_certificates", "001_response.xml"), "0", 0},
+		{"live_002", filepath.Join(gmptestDir, "live", "get_tls_certificates", "002_response.xml"), "0", 0},
+		{"live_003", filepath.Join(gmptestDir, "live", "get_tls_certificates", "003_response.xml"), "1", 1},
+	}
+	for _, tc := range cases {
+		t.Run(tc.provenance, func(t *testing.T) {
+			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", tc.path, err)
+			}
+
+			var evidence tlsCertificateCountEvidence
+			if err := xml.Unmarshal(data, &evidence); err != nil {
+				t.Fatalf("decoding %s into tlsCertificateCountEvidence: %v", tc.path, err)
+			}
+			if got := strings.TrimSpace(evidence.TLSCertificateCount.Value); got != tc.wantTotal {
+				t.Fatalf("%s: tls_certificate_count bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
+					tc.path, got, tc.wantTotal)
+			}
+			if evidence.TLSCertificateCount.Filtered != tc.wantChild || evidence.TLSCertificateCount.Page != tc.wantChild {
+				t.Fatalf("%s: tlsCertificateCountEvidence children = %+v, want Filtered=Page=%d",
+					tc.path, evidence.TLSCertificateCount, tc.wantChild)
+			}
+
+			var got tlsCertificateCountProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into tlsCertificateCountProbe: %v", tc.path, err)
+			}
+			if got.TLSCertificateCount.Filtered != tc.wantChild || got.TLSCertificateCount.Page != tc.wantChild {
+				t.Errorf("tlsCertificateCountProbe = %+v, want Filtered=Page=%d (the generated shape changed unexpectedly)",
+					got.TLSCertificateCount, tc.wantChild)
+			}
+			// tlsCertificateCountProbe has no field that could have captured
+			// evidence.TLSCertificateCount.Value — that silent drop, now
+			// proven against the actual fixture bytes rather than assumed,
+			// is the accepted loss this test exists to pin.
+		})
+	}
+}
+
+// tlsCertificateSortFieldProbe mirrors testdata/golden/get_tls_certificates.
+// go's TLSCertificateSort/TLSCertificateField fields, byte for byte — keep
+// the two in sync. Same rationale as filterSortFieldProbe: decode real
+// fixtures with the exact shape the generator emits today, without the
+// out-of-process GeneratedGoRoots machinery.
+type tlsCertificateSortFieldProbe struct {
+	XMLName xml.Name `xml:"get_tls_certificates_response"`
+	Sort    struct {
+		Field struct {
+			Order string `xml:"order"`
+		} `xml:"field"`
+	} `xml:"sort"`
+}
+
+// tlsCertificateSortFieldEvidence is tlsCertificateSortFieldProbe plus a
+// ",chardata" field on Field that the generated TLSCertificateField does not
+// have, proving what the fixture actually contains independent of what the
+// generated shape can retain.
+type tlsCertificateSortFieldEvidence struct {
+	XMLName xml.Name `xml:"get_tls_certificates_response"`
+	Sort    struct {
+		Field struct {
+			Value string `xml:",chardata"`
+			Order string `xml:"order"`
+		} `xml:"field"`
+	} `xml:"sort"`
+}
+
+// TestTLSCertificateSortFieldNameIsAnAcceptedLoss is
+// TestTLSCertificateCountBareTotalIsAnAcceptedLoss's counterpart for the
+// other half of the same contradiction: live gvmd captures under
+// internal/gmptest/testdata/live/get_tls_certificates send the sort field's
+// name as bare text ahead of <order> ("name" in each fixture here), but the
+// schema's declared <pattern> for <field> (inside <sort>) is only
+// <e>order</e>, with no text token anywhere in it. There is nothing for the
+// schema-side parser to see: the pattern the generator draws from simply
+// never declares this content, so generation cannot recover it, and
+// schema.Comparer — which only compares against what the pattern declares —
+// correctly reports no finding for it either.
+//
+// This is the same class of gap as tls_certificate_count's bare total above
+// and role/group/tag/schedule/alert/filter's identical shape
+// (docs/review-2026-08.md's "Accepted evidence" note): the schema's own
+// declared structure and its own examples disagree, and per the
+// generate-only-what-the-schema-declares principle, the fix is to document
+// the loss, not to add a field the schema never asked for.
+//
+// Each fixture is decoded twice, into two structurally identical types that
+// differ only in one field, so the test proves both halves of the claim
+// against the actual wire bytes rather than assuming either:
+// tlsCertificateSortFieldEvidence (which has a ,chardata field on Field)
+// proves the bare field name is really there; tlsCertificateSortFieldProbe
+// (an exact mirror of the generated TLSCertificateSort/TLSCertificateField)
+// proves that, with only Order to decode into, that same name has nowhere
+// to go.
+func TestTLSCertificateSortFieldNameIsAnAcceptedLoss(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	cases := []struct {
+		provenance string
+		path       string
+		wantName   string
+		wantOrder  string
+	}{
+		{"live_001", filepath.Join(gmptestDir, "live", "get_tls_certificates", "001_response.xml"), "name", "ascending"},
+		{"live_002", filepath.Join(gmptestDir, "live", "get_tls_certificates", "002_response.xml"), "name", "ascending"},
+		{"live_003", filepath.Join(gmptestDir, "live", "get_tls_certificates", "003_response.xml"), "name", "ascending"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.provenance, func(t *testing.T) {
+			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", tc.path, err)
+			}
+
+			var evidence tlsCertificateSortFieldEvidence
+			if err := xml.Unmarshal(data, &evidence); err != nil {
+				t.Fatalf("decoding %s into tlsCertificateSortFieldEvidence: %v", tc.path, err)
+			}
+			if got := strings.TrimSpace(evidence.Sort.Field.Value); got != tc.wantName {
+				t.Fatalf("%s: sort/field bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
+					tc.path, got, tc.wantName)
+			}
+			if evidence.Sort.Field.Order != tc.wantOrder {
+				t.Fatalf("%s: tlsCertificateSortFieldEvidence order = %q, want %q",
+					tc.path, evidence.Sort.Field.Order, tc.wantOrder)
+			}
+
+			var got tlsCertificateSortFieldProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into tlsCertificateSortFieldProbe: %v", tc.path, err)
+			}
+			if got.Sort.Field.Order != tc.wantOrder {
+				t.Errorf("tlsCertificateSortFieldProbe order = %q, want %q (the generated shape changed unexpectedly)",
+					got.Sort.Field.Order, tc.wantOrder)
+			}
+			// tlsCertificateSortFieldProbe has no field that could have
+			// captured evidence.Sort.Field.Value — that silent drop, now
+			// proven against the actual fixture bytes rather than assumed,
+			// is the accepted loss this test exists to pin.
+		})
+	}
+}
+
+// tlsCertificateDataProbeCert mirrors testdata/golden/get_tls_certificates.
+// go's TLSCertificateCertificate, byte for byte — keep the two in sync,
+// including the FieldOverride-added Value field.
+type tlsCertificateDataProbeCert struct {
+	Value  string `xml:",chardata"`
+	Format string `xml:"format,attr"`
+}
+
+// tlsCertificateDataProbe mirrors testdata/golden/get_tls_certificates.go's
+// TLSCertificate.Certificate field. Unlike the count/sort-field probes
+// above, this is the first probe shaped around a repeated element
+// (tls_certificate is a slice); the fixture used here has exactly one
+// entry, so index 0 is always the one under test.
+type tlsCertificateDataProbe struct {
+	XMLName        xml.Name `xml:"get_tls_certificates_response"`
+	TLSCertificate []struct {
+		Certificate tlsCertificateDataProbeCert `xml:"certificate"`
+	} `xml:"tls_certificate"`
+}
+
+// TestTLSCertificateDataRoundTrips proves the FieldOverride at
+// "get_tls_certificates:/tls_certificate/certificate" (internal/codegen/
+// overrides.go) actually recovers the base64 certificate bytes gvmd sends,
+// rather than merely silencing the schema-conformance finding for the gap.
+//
+// The schema's certificate pattern declares only a format attribute, no
+// chardata token anywhere (Chardata: false in the committed snapshot and in
+// the raw command_get_tls_certificates.xml), yet gvmd's own bundled example
+// sends real base64-encoded certificate bytes as that element's text. None
+// of the three live captures under
+// internal/gmptest/testdata/live/get_tls_certificates set
+// include_certificate_data, so <certificate> is always empty there — the
+// only fixture that demonstrates this is gvmd's own upstream example
+// (internal/gmptest/testdata/upstream/get_tls_certificates/001_response.xml).
+//
+// The test decodes that fixture, confirms Value actually captured non-empty
+// base64 content and Format is "DER", then marshals the decoded certificate
+// back out and decodes it again, confirming the same content and format
+// attribute survive the round trip.
+func TestTLSCertificateDataRoundTrips(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	path := filepath.Join(dir, "..", "gmptest", "testdata", "upstream", "get_tls_certificates", "001_response.xml")
+
+	data, err := os.ReadFile(path) //nolint:gosec // fixed test-fixture path under this package's own tree
+	if err != nil {
+		t.Fatalf("reading %s: %v", path, err)
+	}
+
+	var got tlsCertificateDataProbe
+	if err := xml.Unmarshal(data, &got); err != nil {
+		t.Fatalf("decoding %s into tlsCertificateDataProbe: %v", path, err)
+	}
+	if len(got.TLSCertificate) != 1 {
+		t.Fatalf("%s: got %d tls_certificate entries, want 1", path, len(got.TLSCertificate))
+	}
+	cert := got.TLSCertificate[0].Certificate
+	value := strings.TrimSpace(cert.Value)
+	if value == "" {
+		t.Fatalf("%s: certificate bare text is empty — fixture no longer demonstrates the FieldOverride's evidence", path)
+	}
+	if cert.Format != "DER" {
+		t.Fatalf("%s: certificate format = %q, want %q", path, cert.Format, "DER")
+	}
+
+	out, err := xml.Marshal(cert)
+	if err != nil {
+		t.Fatalf("marshaling certificate back out: %v", err)
+	}
+	var roundTripped tlsCertificateDataProbeCert
+	if err := xml.Unmarshal(out, &roundTripped); err != nil {
+		t.Fatalf("decoding round-tripped certificate: %v", err)
+	}
+	if got := strings.TrimSpace(roundTripped.Value); got != value {
+		t.Errorf("round-tripped certificate value = %q, want %q", got, value)
+	}
+	if roundTripped.Format != "DER" {
+		t.Errorf("round-tripped certificate format = %q, want %q", roundTripped.Format, "DER")
+	}
+}
+
 // assertMatchesOrImproves is the shared body of the two match-or-improve gates:
 // the exact expected "after" counts, plus the two general rules that hold for
 // any family — no category may grow, and the schema's own defects may not move.
@@ -1867,12 +2273,15 @@ func assertMatchesOrImproves(t *testing.T, before, after []schema.Result, wantAf
 
 		// The general, snapshot-independent rule: nothing regresses. Every
 		// category present after generation must already have been present
-		// before it (no brand-new problem class), and no category's count may
-		// increase (no problem the hand-written code didn't already have,
-		// getting worse).
+		// before it (no brand-new problem class), and no category's total
+		// count (actionable plus suppressed) may increase. The two are
+		// combined, rather than checked independently, because a finding can
+		// legitimately move from actionable to suppressed within a category
+		// (e.g. a FieldOverride turning a bare EXTRA into a suppressed one)
+		// without either side alone reflecting "no regression".
 		b := countFindings(beforeByCmd[res.Command].Findings)
-		assertNoRegression(t, res.Command, "actionable", b.actionable, got.actionable)
-		assertNoRegression(t, res.Command, "suppressed", b.suppressed, got.suppressed)
+		assertNoRegression(t, res.Command, "actionable+suppressed",
+			addCounts(b.actionable, b.suppressed), addCounts(got.actionable, got.suppressed))
 
 		// SCHEMA-DEFECT findings are copied from cmd.Defects verbatim,
 		// independent of req/resp — they must be byte-identical before and
@@ -1895,6 +2304,19 @@ func assertCounts(t *testing.T, phase, cmd string, want, got counts) {
 			t.Errorf("%s %s: suppressed %s = %d, want %d", phase, cmd, cat, got.suppressed[cat], want.suppressed[cat])
 		}
 	}
+}
+
+// addCounts sums two per-category count maps, used to compare actionable and
+// suppressed totals combined rather than as two independent ledgers.
+func addCounts(a, b map[string]int) map[string]int {
+	out := make(map[string]int, len(a)+len(b))
+	for c, n := range a {
+		out[c] += n
+	}
+	for c, n := range b {
+		out[c] += n
+	}
+	return out
 }
 
 func assertNoRegression(t *testing.T, cmd, phase string, before, after map[string]int) {

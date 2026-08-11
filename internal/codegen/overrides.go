@@ -101,6 +101,44 @@ type PointerOverride struct {
 // this table) to cover them, or any future family, needs its own live
 // evidence first; it is not made here on the strength of one family's
 // result.
+// FieldOverride adds a field to a generated struct that the schema's own
+// declared pattern does not, and structurally cannot, produce — a real,
+// evidence-backed protocol field the schema simply never declares.
+type FieldOverride struct {
+	Name      string // wire element/attribute name; ignored when Chardata
+	Attr      bool
+	Chardata  bool // this struct's own `,chardata` field; mutually exclusive with Name/Attr
+	GoType    string
+	OmitEmpty bool
+	Reason    string // cites the live/upstream evidence
+}
+
+// FieldOverrides is keyed "<command>:/<ancestor>/.../<node-name>" — the same
+// addressing style as PointerOverrides's "<command>.<field>", extended with a
+// path since this targets a nested struct reached from a command, not only
+// a command's top-level request/response envelope. Scope is deliberately
+// narrow: a structurally deduplicated shape reached by more than one
+// (command, path) use is only allowed when every use resolves to the same
+// effective override set (fieldOverridesFor, generate.go) — a use that
+// disagrees, or has no entry at all, fails the build rather than leaking one
+// use's override onto another. Only emitStruct consults this table (not
+// emitRequest/emitResponse) — widening either needs its own evidence, not a
+// speculative entry now.
+var FieldOverrides = map[string][]FieldOverride{
+	"get_tls_certificates:/tls_certificate": {{
+		Name: "valid", GoType: "GMPBool",
+		Reason: "T-9 finding 1: schema's tls_certificate pattern never declares <valid>, but " +
+			"internal/gmptest/testdata/live/get_tls_certificates/003_response.xml and the upstream " +
+			"example both send <valid>1</valid> as real data",
+	}},
+	"get_tls_certificates:/tls_certificate/certificate": {{
+		Chardata: true, GoType: "string",
+		Reason: "T-9 finding 2: schema's certificate pattern declares only @format, no chardata token, " +
+			"but internal/gmptest/testdata/upstream/get_tls_certificates/001_response.xml sends real " +
+			"base64 certificate bytes as this element's text (see IncludeCertificateData)",
+	}},
+}
+
 var PointerOverrides = map[string]PointerOverride{
 	"modify_alert.name": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <name> are distinct requests",
@@ -126,5 +164,24 @@ var PointerOverrides = map[string]PointerOverride{
 	},
 	"modify_filter.term": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <term> are distinct requests (explicit-empty resets to gvmd's default term rather than leaving it unchanged)",
+	},
+	// modify_tls_certificate: a third live experiment (T-9, gvmd 26.36.1), run
+	// to answer the review-only doc's unsubstantiated "no PointerOverrides
+	// entry needed" claim for name/comment/copy, the same claim already
+	// disproven once for modify_filter. Result: name and comment behave
+	// exactly like modify_alert's/modify_filter's (omit leaves the stored
+	// value unchanged, explicit-empty clears it to ""). copy did not: omit,
+	// explicit-empty, and setting it to a second real certificate's UUID all
+	// returned 200 OK but left the target certificate's name, comment, and
+	// both fingerprints completely unchanged in every case, so unlike
+	// create_tls_certificate's copy (which clones at creation) this field is
+	// observably inert on modify_tls_certificate in this gvmd version -- omit
+	// and explicit-empty are not merely equivalent, all three tested inputs
+	// are. No override is warranted for a field with no observable effect.
+	"modify_tls_certificate.name": {
+		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <name> are distinct requests",
+	},
+	"modify_tls_certificate.comment": {
+		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
 	},
 }

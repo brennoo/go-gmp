@@ -31,7 +31,9 @@ func TestCommittedManifest(t *testing.T) {
 	// create_tag,get_tags,modify_tag,tag_shared,create_schedule,
 	// get_schedules,modify_schedule,create_alert,get_alerts,modify_alert,
 	// alert_shared,create_filter,get_filters,modify_filter}.go are all the
-	// generator's output.
+	// generator's output. tls_certificate is review-only:
+	// commands/{create_tls_certificate,get_tls_certificates,
+	// modify_tls_certificate}.go are still hand-written.
 	assertFamily(t, m, "get_notes", "note", false)
 	assertFamily(t, m, "get_overrides", "override", false)
 	assertFamily(t, m, "get_roles", "role", false)
@@ -40,35 +42,43 @@ func TestCommittedManifest(t *testing.T) {
 	assertFamily(t, m, "get_schedules", "schedule", false)
 	assertFamily(t, m, "get_alerts", "alert", false)
 	assertFamily(t, m, "get_filters", "filter", false)
+	assertFamily(t, m, "get_tls_certificates", "tls_certificate", true)
 	if _, ok := m.FamilyOf("delete_note"); ok {
 		t.Error("FamilyOf(delete_note) claims a family the manifest does not declare")
 	}
 
 	want := []string{
 		"create_alert", "create_filter", "create_group", "create_note", "create_override", "create_role",
-		"create_schedule", "create_tag", "get_alerts", "get_filters", "get_groups", "get_notes",
-		"get_overrides", "get_roles", "get_schedules", "get_tags", "modify_alert", "modify_filter",
-		"modify_group", "modify_note", "modify_override", "modify_role", "modify_schedule", "modify_tag",
+		"create_schedule", "create_tag", "create_tls_certificate", "get_alerts", "get_filters", "get_groups",
+		"get_notes", "get_overrides", "get_roles", "get_schedules", "get_tags", "get_tls_certificates",
+		"modify_alert", "modify_filter", "modify_group", "modify_note", "modify_override", "modify_role",
+		"modify_schedule", "modify_tag", "modify_tls_certificate",
 	}
 	if got := m.AllCommands(); strings.Join(got, ",") != strings.Join(want, ",") {
 		t.Errorf("AllCommands() = %v, want %v", got, want)
 	}
-	wantAdopted := want
+	wantAdopted := []string{
+		"create_alert", "create_filter", "create_group", "create_note", "create_override", "create_role",
+		"create_schedule", "create_tag", "get_alerts", "get_filters", "get_groups", "get_notes",
+		"get_overrides", "get_roles", "get_schedules", "get_tags", "modify_alert", "modify_filter",
+		"modify_group", "modify_note", "modify_override", "modify_role", "modify_schedule", "modify_tag",
+	}
 	if got := m.Adopted().AllCommands(); strings.Join(got, ",") != strings.Join(wantAdopted, ",") {
 		t.Errorf("Adopted().AllCommands() = %v, want %v", got, wantAdopted)
 	}
-	if got := m.ReviewOnlyFamilies(); len(got) != 0 {
-		t.Errorf("ReviewOnlyFamilies() = %v, want none", got)
+	if got := m.ReviewOnlyFamilies(); len(got) != 1 || got[0] != "tls_certificate" {
+		t.Errorf("ReviewOnlyFamilies() = %v, want [tls_certificate]", got)
 	}
 
 	assertFiles(t, "ExpectedOutputFiles", m.ExpectedOutputFiles("commands"), []string{
 		"alert_shared.go", "create_alert.go", "create_filter.go", "create_group.go", "create_note.go",
-		"create_override.go", "create_role.go", "create_schedule.go", "create_tag.go", "filter_shared.go",
-		"get_alerts.go", "get_filters.go", "get_groups.go", "get_notes.go", "get_overrides.go",
-		"get_roles.go", "get_schedules.go", "get_tags.go", "group_shared.go", "modify_alert.go",
-		"modify_filter.go", "modify_group.go", "modify_note.go", "modify_override.go", "modify_role.go",
-		"modify_schedule.go", "modify_tag.go", "note_shared.go", "override_shared.go", "role_shared.go",
-		"schedule_shared.go", "tag_shared.go",
+		"create_override.go", "create_role.go", "create_schedule.go", "create_tag.go",
+		"create_tls_certificate.go", "filter_shared.go", "get_alerts.go", "get_filters.go", "get_groups.go",
+		"get_notes.go", "get_overrides.go", "get_roles.go", "get_schedules.go", "get_tags.go",
+		"get_tls_certificates.go", "group_shared.go", "modify_alert.go", "modify_filter.go",
+		"modify_group.go", "modify_note.go", "modify_override.go", "modify_role.go", "modify_schedule.go",
+		"modify_tag.go", "modify_tls_certificate.go", "note_shared.go", "override_shared.go",
+		"role_shared.go", "schedule_shared.go", "tag_shared.go", "tls_certificate_shared.go",
 	})
 	assertFiles(t, "Adopted().ExpectedOutputFiles", m.Adopted().ExpectedOutputFiles("commands"), []string{
 		"alert_shared.go", "create_alert.go", "create_filter.go", "create_group.go", "create_note.go",
@@ -191,7 +201,7 @@ func TestGenerateAllIsPerFamily(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	alone, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides)
+	alone, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides)
 	if err != nil {
 		t.Fatalf("GenerateAll failed: %v", err)
 	}
@@ -206,7 +216,7 @@ func TestGenerateAllIsPerFamily(t *testing.T) {
 	}
 	twin.Name = "get_twins"
 	two := Manifest{Families: append(append([]Family{}, m.Families...), Family{Name: "twin", Commands: []string{"get_twins"}})}
-	both, err := GenerateAll(two, append(append([]schema.Command{}, cmds...), twin), TypeOverrides, PointerOverrides)
+	both, err := GenerateAll(two, append(append([]schema.Command{}, cmds...), twin), TypeOverrides, PointerOverrides, FieldOverrides)
 	if err != nil {
 		t.Fatalf("GenerateAll with a second family failed: %v", err)
 	}
@@ -245,14 +255,14 @@ func TestRealFamiliesGenerateIndependently(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides)
+	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides)
 	if err != nil {
 		t.Fatalf("GenerateAll failed: %v", err)
 	}
 
 	accounted := 0
 	for _, f := range m.Families {
-		alone, err := GenerateAll(Manifest{Families: []Family{f}}, cmds, TypeOverrides, PointerOverrides)
+		alone, err := GenerateAll(Manifest{Families: []Family{f}}, cmds, TypeOverrides, PointerOverrides, FieldOverrides)
 		if err != nil {
 			t.Fatalf("GenerateAll(%s alone) failed: %v", f.Name, err)
 		}
@@ -300,11 +310,11 @@ func TestScheduleICalendarNamingIsStable(t *testing.T) {
 	if !ok {
 		t.Fatal("The manifest no longer declares a schedule family")
 	}
-	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides)
+	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, FieldOverrides)
 	if err != nil {
 		t.Fatalf("GenerateAll(schedule alone) failed: %v", err)
 	}
-	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides)
+	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides)
 	if err != nil {
 		t.Fatalf("GenerateAll(full manifest) failed: %v", err)
 	}
@@ -358,11 +368,11 @@ func TestAlertFingerprintNamingIsStable(t *testing.T) {
 	if !ok {
 		t.Fatal("The manifest no longer declares an alert family")
 	}
-	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides)
+	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, FieldOverrides)
 	if err != nil {
 		t.Fatalf("GenerateAll(alert alone) failed: %v", err)
 	}
-	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides)
+	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides)
 	if err != nil {
 		t.Fatalf("GenerateAll(full manifest) failed: %v", err)
 	}
@@ -392,6 +402,66 @@ func TestAlertFingerprintNamingIsStable(t *testing.T) {
 	}
 }
 
+// TestTLSCertificateDNNamingIsStable pins the fix for "dn" in generate.go's
+// initialisms table: get_tls_certificates's subject_dn/issuer_dn elements
+// and the hand-written commands/get_tls_certificates.go and
+// commands/get_reports.go both already spell the Go fields
+// SubjectDN/IssuerDN. Without the table entry goName would instead render
+// them SubjectDn/IssuerDn — a naming regression against the hand-written
+// original tls_certificate is being reviewed against (T-9).
+//
+// As with TestScheduleICalendarNamingIsStable and
+// TestAlertFingerprintNamingIsStable, generating tls_certificate alone and
+// generating it alongside every other family in the committed manifest must
+// produce byte-identical output for this reason: initialisms is a
+// package-level table with no per-family state, so nothing about combining
+// families could plausibly move this spelling. This test pins both: the
+// exact identifiers, and that no other family's presence changes them.
+func TestTLSCertificateDNNamingIsStable(t *testing.T) {
+	m := manifestOrFail(t)
+	cmds, err := LoadSnapshots(snapshotDir, m.AllCommands())
+	if err != nil {
+		t.Fatalf("Failed to load the committed snapshots: %v", err)
+	}
+
+	fam, ok := m.FamilyOf("get_tls_certificates")
+	if !ok {
+		t.Fatal("The manifest no longer declares a tls_certificate family")
+	}
+	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, FieldOverrides)
+	if err != nil {
+		t.Fatalf("GenerateAll(tls_certificate alone) failed: %v", err)
+	}
+	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides)
+	if err != nil {
+		t.Fatalf("GenerateAll(full manifest) failed: %v", err)
+	}
+
+	const name = "get_tls_certificates.go"
+	aloneSrc, ok := alone[name]
+	if !ok {
+		t.Fatalf("Generating tls_certificate alone did not emit %s", name)
+	}
+	togetherSrc, ok := together[name]
+	if !ok {
+		t.Fatalf("Generating the full manifest did not emit %s", name)
+	}
+	if aloneSrc != togetherSrc {
+		t.Errorf("%s differs between generating tls_certificate alone and generating the full manifest\n%s",
+			name, firstDiff(aloneSrc, togetherSrc))
+	}
+	for _, want := range []string{"SubjectDN", "IssuerDN"} {
+		if !strings.Contains(aloneSrc, want) {
+			t.Errorf("%s does not spell the field %s", name, want)
+		}
+	}
+	for _, unwanted := range []string{"SubjectDn ", "SubjectDn\t", "IssuerDn ", "IssuerDn\t"} {
+		if strings.Contains(aloneSrc, unwanted) {
+			t.Errorf("%s contains %q; want the fixed DN casing", name, unwanted)
+		}
+	}
+}
+
 func findCommand(cmds []schema.Command, name string) (schema.Command, bool) {
 	for _, c := range cmds {
 		if c.Name == name {
@@ -413,7 +483,7 @@ func TestGenerateAllRejectsAnUnknownFamilyName(t *testing.T) {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
 	wrong := Manifest{Families: []Family{{Name: "annotation", Commands: m.AllCommands()}}}
-	if _, err := GenerateAll(wrong, cmds, TypeOverrides, PointerOverrides); err == nil ||
+	if _, err := GenerateAll(wrong, cmds, TypeOverrides, PointerOverrides, FieldOverrides); err == nil ||
 		!strings.Contains(err.Error(), "naming convention") {
 		t.Fatalf("GenerateAll error = %v, want a naming-convention complaint", err)
 	}
@@ -425,7 +495,7 @@ func TestGenerateAllNeedsEverySnapshot(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	if _, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides); err == nil ||
+	if _, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides); err == nil ||
 		!strings.Contains(err.Error(), "no snapshot loaded for get_notes") {
 		t.Fatalf("GenerateAll error = %v, want a missing-snapshot complaint", err)
 	}

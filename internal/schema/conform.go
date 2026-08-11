@@ -182,8 +182,13 @@ func (c *Comparer) walk(res *Result, cmd Command, side string, s *Node, g *GoNod
 		if idx < matchedCount[kk] || gc.Synthetic && len(gc.Children) > 0 {
 			continue
 		}
-		res.add(cmd, side, CatExtra, gc.Path(path), fmt.Sprintf(
-			"Go field %s %s has no counterpart in the schema", gc.GoName, gc.GoType))
+		f := Finding{Command: cmd.Name, Side: side, Category: CatExtra, Path: gc.Path(path), Detail: fmt.Sprintf(
+			"Go field %s %s has no counterpart in the schema", gc.GoName, gc.GoType)}
+		if gc.OverrideReason != "" {
+			f.Suppressed = true
+			f.Reason = gc.OverrideReason
+		}
+		res.Findings = append(res.Findings, f)
 	}
 }
 
@@ -252,8 +257,13 @@ func (c *Comparer) checkChardata(res *Result, cmd Command, side string, s *Node,
 		f.Confirmed = c.confirmed(cmd.Name, path)
 		res.Findings = append(res.Findings, f)
 	case !s.Chardata && g.Chardata:
-		res.add(cmd, side, CatExtra, path+"/#text", fmt.Sprintf(
-			"Go %s has a `,chardata` field; schema declares no character data here", g.GoType))
+		f := Finding{Command: cmd.Name, Side: side, Category: CatExtra, Path: path + "/#text", Detail: fmt.Sprintf(
+			"Go %s has a `,chardata` field; schema declares no character data here", g.GoType)}
+		if g.ChardataOverrideReason != "" {
+			f.Suppressed = true
+			f.Reason = g.ChardataOverrideReason
+		}
+		res.Findings = append(res.Findings, f)
 	}
 }
 

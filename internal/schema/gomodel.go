@@ -49,6 +49,17 @@ type GoNode struct {
 	// CatchAll is set when the struct has a `,any` field, so unknown children
 	// are captured rather than dropped and EXTRA/MISSING mean less.
 	CatchAll bool
+
+	// OverrideReason is non-empty when this leaf's struct tag carries a
+	// gmpoverride tag: a real, evidence-backed protocol field the schema's own
+	// declared pattern does not produce. See internal/codegen's
+	// FieldOverrides.
+	OverrideReason string
+	// ChardataOverrideReason is OverrideReason's chardata counterpart. A
+	// `,chardata` field sets Chardata on its *parent* node rather than
+	// creating a child of its own (see addField), so the override reason has
+	// to live there too.
+	ChardataOverrideReason string
 }
 
 // GoRoot is the model of one command's request or response type.
@@ -149,6 +160,9 @@ func addField(n *GoNode, f reflect.StructField, seen map[reflect.Type]bool) {
 		return
 	case opts["chardata"], opts["cdata"]:
 		n.Chardata = true
+		if reason := f.Tag.Get("gmpoverride"); reason != "" {
+			n.ChardataOverrideReason = reason
+		}
 		return
 	case opts["any"]:
 		n.CatchAll = true
@@ -190,12 +204,13 @@ func wrapper(parent *GoNode, step string) *GoNode {
 
 func leafNode(name string, f reflect.StructField, opts map[string]bool) *GoNode {
 	kid := &GoNode{
-		Name:      name,
-		GoName:    f.Name,
-		GoType:    f.Type.String(),
-		OmitEmpty: opts["omitempty"],
-		Pointer:   f.Type.Kind() == reflect.Pointer,
-		Slice:     f.Type.Kind() == reflect.Slice && f.Type.Elem().Kind() != reflect.Uint8,
+		Name:           name,
+		GoName:         f.Name,
+		GoType:         f.Type.String(),
+		OmitEmpty:      opts["omitempty"],
+		Pointer:        f.Type.Kind() == reflect.Pointer,
+		Slice:          f.Type.Kind() == reflect.Slice && f.Type.Elem().Kind() != reflect.Uint8,
+		OverrideReason: f.Tag.Get("gmpoverride"),
 	}
 	if opts["attr"] {
 		kid.Kind = KindAttribute
