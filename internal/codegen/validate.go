@@ -97,9 +97,9 @@ type CommandRoots struct {
 // "Before" means different things per family, deliberately. For an adopted
 // family (note, override, role, group, tag, schedule, alert) these types are
 // already the generator's output, so the comparison is a drift detector on
-// the committed files. For a review-only family these are still the
+// the committed files. For a review-only family (filter) these are still the
 // hand-written originals, so the comparison is the pre-swap gate every one of
-// those families went through before adoption.
+// the adopted families went through before adoption.
 //
 // The map is written out by hand rather than derived from the manifest because
 // reflection needs the concrete types: adding a family here is the one place
@@ -190,6 +190,18 @@ func BeforeGoRoots() map[string]CommandRoots {
 		"get_alerts": {
 			Request:  schema.ModelOf(&commands.GetAlerts{}),
 			Response: schema.ModelOf(&commands.GetAlertsResponse{}),
+		},
+		"create_filter": {
+			Request:  schema.ModelOf(&commands.CreateFilter{}),
+			Response: schema.ModelOf(&commands.CreateFilterResponse{}),
+		},
+		"modify_filter": {
+			Request:  schema.ModelOf(&commands.ModifyFilter{}),
+			Response: schema.ModelOf(&commands.ModifyFilterResponse{}),
+		},
+		"get_filters": {
+			Request:  schema.ModelOf(&commands.GetFilters{}),
+			Response: schema.ModelOf(&commands.GetFiltersResponse{}),
 		},
 	}
 }

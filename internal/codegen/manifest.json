@@ -27,6 +27,11 @@
     {
       "name": "alert",
       "commands": ["create_alert", "get_alerts", "modify_alert"]
+    },
+    {
+      "name": "filter",
+      "commands": ["create_filter", "get_filters", "modify_filter"],
+      "review_only": true
     }
   ]
 }

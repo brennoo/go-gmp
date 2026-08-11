@@ -1559,6 +1559,308 @@ func TestAlertSortFieldNameIsAnAcceptedLoss(t *testing.T) {
 	}
 }
 
+// TestValidateFilterBeforeMatchesKnownConformance is the filter family's
+// counterpart to TestValidateBeforeMatchesKnownConformance. filter is
+// review_only, so commands/{create_filter,modify_filter,get_filters}.go are
+// the hand-written originals — this pins the pre-generation gate the family
+// was selected to exercise. create_filter and modify_filter are already
+// conformant. get_filters carries the family's entire actionable/suppressed
+// load, plus its own SCHEMA-DEFECT 3 (see
+// TestValidateFilterGeneratedMatchesOrImproves for what each one is).
+func TestValidateFilterBeforeMatchesKnownConformance(t *testing.T) {
+	before, _ := validateOrSkip(t, "create_filter")
+
+	want := map[string]counts{
+		"create_filter": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_filter": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_filters": {
+			actionable: map[string]int{schema.CatType: 2, schema.CatDefect: 3},
+			suppressed: map[string]int{schema.CatOmitEmpty: 1},
+		},
+	}
+	for _, res := range before {
+		w, ok := want[res.Command]
+		if !ok {
+			t.Errorf("%s: unexpected command in Validate's before results", res.Command)
+			continue
+		}
+		assertCounts(t, "before", res.Command, w, countFindings(res.Findings))
+	}
+}
+
+// TestValidateFilterGeneratedMatchesOrImproves is the filter family's
+// pre-swap gate, run at the same rigour note through alert were.
+//
+// Generation closes both TYPE 2 findings (Filter.InUse/.Writable become
+// commands.GMPBool) and the 1 suppressed OMITEMPTY finding (Filters.Name
+// gains omitempty, tracking the schema's optional <name>). get_filters keeps
+// its SCHEMA-DEFECT 3 untouched: SCHEMA-DEFECT findings are copied from
+// cmd.Defects before any Go-type comparison ever runs, so no generated
+// output can move them — the same reasoning already on record for every
+// prior family. One of the three is the same generic empty-pattern class
+// already on record for a dozen other commands
+// (/get_filters_response/filter/alerts/alert/permissions). The other two are
+// new in kind, though not in severity, and both come from the same root
+// cause: gvmd's own schema defines two structurally unrelated elements that
+// both serialize to the wire tag <filters> — one carrying the echoed search
+// term (id/term/keywords), the other carrying the start/max pagination
+// window (see the live fixtures under
+// internal/gmptest/testdata/live/get_filters, each of which sends
+// <filters id="..."><term>...</term>...</filters> followed later by a bare
+// <filters start="1" max="1000"/>). gvmd's own schema doc disambiguates the
+// second definition with <id>filters2</id>, but the pattern that references
+// it, and every other <ele> in the corpus, resolves purely by <name> — this
+// is the only <id> disambiguator anywhere in the 40+ command files, so
+// nothing else depends on it — leaving the second <name>filters</name>
+// definition shadowed as a duplicate-ele (schema.CatDefect at
+// /get_filters_response/filters) and its <e>filters2</e> reference
+// unresolvable as a dangling-e (schema.CatDefect at
+// /get_filters_response/filters2). Generation faithfully reflects that: with
+// no def to resolve against, the dangling filters2 reference becomes a bare,
+// childless node, which the generator renders as a plain string field tagged
+// xml:"filters2" that gvmd never actually sends (the real second element is
+// tagged <filters>, not <filters2>) and which can never carry the start/max
+// attributes the wire really carries. This is not a new fidelity loss
+// introduced by generation, though: the hand-written get_filters.go already
+// models this as FilterInfo2{Start, Max} tagged xml:"filters2" — the same
+// wrong tag name, guessed by whoever wrote it by hand, likely from the
+// schema's <id> rather than gvmd's actual wire output — so it already fails
+// to decode the real <filters start=.../> today
+// (see internal/gmptest/testdata/live/get_filters/001_fidelity.txt's
+// DROPPED /get_filters_response/filters/@start and @max, and its ADDED
+// /get_filters_response/filters2 and its two attrs, both already present
+// before this review). Generation does not fix or worsen that functional
+// gap; it only changes the shape of the field nothing can ever fill, from a
+// two-field struct to a bare string. Fixing it correctly — modeling a
+// genuine second <filters start=... max=.../>> reusing the same wire tag as
+// the first <filters> — would need either the schema parser to resolve
+// shared <ele> references by <id> before falling back to <name>, or a
+// hand-maintained override; that is exactly the kind of decision an adoption
+// pass should make deliberately, not something review-only generation should
+// paper over, so it is left as an open question for whoever adopts filter
+// next rather than fixed here.
+func TestValidateFilterGeneratedMatchesOrImproves(t *testing.T) {
+	before, after := validateOrSkip(t, "create_filter")
+
+	wantAfter := map[string]counts{
+		"create_filter": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_filter": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_filters":   {actionable: map[string]int{schema.CatDefect: 3}, suppressed: map[string]int{}},
+	}
+	assertMatchesOrImproves(t, before, after, wantAfter)
+}
+
+// filterCountProbe mirrors testdata/golden/get_filters.go's FilterCount
+// field, byte for byte — keep the two in sync. It exists to decode real
+// get_filters fixtures with the exact shape the generator emits today,
+// without pulling in the out-of-process GeneratedGoRoots machinery just to
+// observe one field. See roleCountProbe/groupCountProbe/scheduleCountProbe
+// above for the identical precedent.
+type filterCountProbe struct {
+	XMLName     xml.Name `xml:"get_filters_response"`
+	FilterCount struct {
+		Filtered int `xml:"filtered"`
+		Page     int `xml:"page"`
+	} `xml:"filter_count"`
+}
+
+// filterCountEvidence is filterCountProbe plus a ",chardata" field the
+// generated shape does not have, proving what the fixture actually contains
+// independent of what the generated shape can retain.
+type filterCountEvidence struct {
+	XMLName     xml.Name `xml:"get_filters_response"`
+	FilterCount struct {
+		Value    string `xml:",chardata"`
+		Filtered int    `xml:"filtered"`
+		Page     int    `xml:"page"`
+	} `xml:"filter_count"`
+}
+
+// TestFilterCountBareTotalIsAnAcceptedLoss is the filter family's
+// counterpart to TestScheduleCountBareTotalIsAnAcceptedLoss: live gvmd
+// captures under internal/gmptest/testdata/live/get_filters send a bare
+// total ahead of <filtered>/<page>, but the schema's declared <pattern> for
+// filter_count is only <e>filtered</e><e>page</e>, with no text token
+// anywhere in it. There is nothing for the schema-side parser to see: the
+// pattern the generator draws from simply never declares this content, so
+// generation cannot recover it, and schema.Comparer — which only compares
+// against what the pattern declares — correctly reports no finding for it
+// either.
+//
+// This is the same class of gap as create_override's result-as-text loss and
+// role_count/group_count/tag_count/schedule_count/alert_count's identical
+// shape (docs/review-2026-08.md's "Accepted evidence" note): the schema's
+// own declared structure and its own examples disagree, and per the
+// generate-only-what-the-schema-declares principle, the fix is to document
+// the loss, not to add a field the schema never asked for.
+//
+// Each fixture is decoded twice, into two structurally identical types that
+// differ only in one field, so the test proves both halves of the claim
+// against the actual wire bytes rather than assuming either:
+// filterCountEvidence (which has a ,chardata field) proves the bare total is
+// really there; filterCountProbe (an exact mirror of the generated
+// FilterCount) proves that, with only Filtered/Page to decode into, that
+// same total has nowhere to go.
+func TestFilterCountBareTotalIsAnAcceptedLoss(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	cases := []struct {
+		provenance string
+		path       string
+		wantTotal  string
+		wantChild  int
+	}{
+		{"live_001", filepath.Join(gmptestDir, "live", "get_filters", "001_response.xml"), "0", 0},
+		{"live_002", filepath.Join(gmptestDir, "live", "get_filters", "002_response.xml"), "0", 0},
+		{"live_003", filepath.Join(gmptestDir, "live", "get_filters", "003_response.xml"), "1", 1},
+	}
+	for _, tc := range cases {
+		t.Run(tc.provenance, func(t *testing.T) {
+			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", tc.path, err)
+			}
+
+			var evidence filterCountEvidence
+			if err := xml.Unmarshal(data, &evidence); err != nil {
+				t.Fatalf("decoding %s into filterCountEvidence: %v", tc.path, err)
+			}
+			if got := strings.TrimSpace(evidence.FilterCount.Value); got != tc.wantTotal {
+				t.Fatalf("%s: filter_count bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
+					tc.path, got, tc.wantTotal)
+			}
+			if evidence.FilterCount.Filtered != tc.wantChild || evidence.FilterCount.Page != tc.wantChild {
+				t.Fatalf("%s: filterCountEvidence children = %+v, want Filtered=Page=%d",
+					tc.path, evidence.FilterCount, tc.wantChild)
+			}
+
+			var got filterCountProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into filterCountProbe: %v", tc.path, err)
+			}
+			if got.FilterCount.Filtered != tc.wantChild || got.FilterCount.Page != tc.wantChild {
+				t.Errorf("filterCountProbe = %+v, want Filtered=Page=%d (the generated shape changed unexpectedly)",
+					got.FilterCount, tc.wantChild)
+			}
+			// filterCountProbe has no field that could have captured
+			// evidence.FilterCount.Value — that silent drop, now proven
+			// against the actual fixture bytes rather than assumed, is the
+			// accepted loss this test exists to pin.
+		})
+	}
+}
+
+// filterSortFieldProbe mirrors testdata/golden/get_filters.go's
+// FilterSort/FilterField fields, byte for byte — keep the two in sync. Same
+// rationale as filterCountProbe: decode real fixtures with the exact shape
+// the generator emits today, without the out-of-process GeneratedGoRoots
+// machinery.
+type filterSortFieldProbe struct {
+	XMLName xml.Name `xml:"get_filters_response"`
+	Sort    struct {
+		Field struct {
+			Order string `xml:"order"`
+		} `xml:"field"`
+	} `xml:"sort"`
+}
+
+// filterSortFieldEvidence is filterSortFieldProbe plus a ",chardata" field
+// on Field that the generated FilterField does not have, proving what the
+// fixture actually contains independent of what the generated shape can
+// retain.
+type filterSortFieldEvidence struct {
+	XMLName xml.Name `xml:"get_filters_response"`
+	Sort    struct {
+		Field struct {
+			Value string `xml:",chardata"`
+			Order string `xml:"order"`
+		} `xml:"field"`
+	} `xml:"sort"`
+}
+
+// TestFilterSortFieldNameIsAnAcceptedLoss is
+// TestFilterCountBareTotalIsAnAcceptedLoss's counterpart for the other half
+// of the same contradiction: live gvmd captures under
+// internal/gmptest/testdata/live/get_filters send the sort field's name as
+// bare text ahead of <order> ("name" in each fixture here), but the schema's
+// declared <pattern> for <field> (inside <sort>) is only <e>order</e>, with
+// no text token anywhere in it. There is nothing for the schema-side parser
+// to see: the pattern the generator draws from simply never declares this
+// content, so generation cannot recover it, and schema.Comparer — which only
+// compares against what the pattern declares — correctly reports no finding
+// for it either.
+//
+// This is the same class of gap as filter_count's bare total above and
+// role/group/tag/schedule/alert's identical shape (docs/review-2026-08.md's
+// "Accepted evidence" note): the schema's own declared structure and its own
+// examples disagree, and per the generate-only-what-the-schema-declares
+// principle, the fix is to document the loss, not to add a field the schema
+// never asked for.
+//
+// Each fixture is decoded twice, into two structurally identical types that
+// differ only in one field, so the test proves both halves of the claim
+// against the actual wire bytes rather than assuming either:
+// filterSortFieldEvidence (which has a ,chardata field on Field) proves the
+// bare field name is really there; filterSortFieldProbe (an exact mirror of
+// the generated FilterSort/FilterField) proves that, with only Order to
+// decode into, that same name has nowhere to go.
+func TestFilterSortFieldNameIsAnAcceptedLoss(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	cases := []struct {
+		provenance string
+		path       string
+		wantName   string
+		wantOrder  string
+	}{
+		{"live_001", filepath.Join(gmptestDir, "live", "get_filters", "001_response.xml"), "name", "ascending"},
+		{"live_002", filepath.Join(gmptestDir, "live", "get_filters", "002_response.xml"), "name", "ascending"},
+		{"live_003", filepath.Join(gmptestDir, "live", "get_filters", "003_response.xml"), "name", "ascending"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.provenance, func(t *testing.T) {
+			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", tc.path, err)
+			}
+
+			var evidence filterSortFieldEvidence
+			if err := xml.Unmarshal(data, &evidence); err != nil {
+				t.Fatalf("decoding %s into filterSortFieldEvidence: %v", tc.path, err)
+			}
+			if got := strings.TrimSpace(evidence.Sort.Field.Value); got != tc.wantName {
+				t.Fatalf("%s: sort/field bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
+					tc.path, got, tc.wantName)
+			}
+			if evidence.Sort.Field.Order != tc.wantOrder {
+				t.Fatalf("%s: filterSortFieldEvidence order = %q, want %q",
+					tc.path, evidence.Sort.Field.Order, tc.wantOrder)
+			}
+
+			var got filterSortFieldProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into filterSortFieldProbe: %v", tc.path, err)
+			}
+			if got.Sort.Field.Order != tc.wantOrder {
+				t.Errorf("filterSortFieldProbe order = %q, want %q (the generated shape changed unexpectedly)",
+					got.Sort.Field.Order, tc.wantOrder)
+			}
+			// filterSortFieldProbe has no field that could have captured
+			// evidence.Sort.Field.Value — that silent drop, now proven
+			// against the actual fixture bytes rather than assumed, is the
+			// accepted loss this test exists to pin.
+		})
+	}
+}
+
 // assertMatchesOrImproves is the shared body of the two match-or-improve gates:
 // the exact expected "after" counts, plus the two general rules that hold for
 // any family — no category may grow, and the schema's own defects may not move.
