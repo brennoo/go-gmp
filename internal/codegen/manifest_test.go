@@ -332,6 +332,67 @@ func TestScheduleICalendarNamingIsStable(t *testing.T) {
 	}
 }
 
+// TestAlertFingerprintNamingIsStable pins the fix for "md5"/"sha256" in
+// generate.go's initialisms table: get_alerts's certificate_info element
+// exposes md5_fingerprint/sha256_fingerprint, and the hand-written
+// commands/get_reports.go, commands/get_scanners.go, and
+// commands/get_tls_certificates.go all already spell these fields
+// MD5Fingerprint/SHA256Fingerprint. Without the table entries goName would
+// instead render them Md5Fingerprint/Sha256Fingerprint — an inconsistent
+// public API that would force an avoidable rename if alert is later
+// adopted or aligned with those other commands.
+//
+// As with TestScheduleICalendarNamingIsStable, generating alert alone and
+// generating it alongside every other real family in the committed manifest
+// must produce byte-identical output for this reason: initialisms is a
+// package-level table with no per-family state, so nothing about combining
+// families could plausibly move this spelling. This test pins both: the
+// exact identifiers, and that no other family's presence changes them.
+func TestAlertFingerprintNamingIsStable(t *testing.T) {
+	m := manifestOrFail(t)
+	cmds, err := LoadSnapshots(snapshotDir, m.AllCommands())
+	if err != nil {
+		t.Fatalf("Failed to load the committed snapshots: %v", err)
+	}
+
+	fam, ok := m.FamilyOf("get_alerts")
+	if !ok {
+		t.Fatal("The manifest no longer declares an alert family")
+	}
+	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides)
+	if err != nil {
+		t.Fatalf("GenerateAll(alert alone) failed: %v", err)
+	}
+	together, err := GenerateAll(m, cmds, TypeOverrides)
+	if err != nil {
+		t.Fatalf("GenerateAll(full manifest) failed: %v", err)
+	}
+
+	const name = "get_alerts.go"
+	aloneSrc, ok := alone[name]
+	if !ok {
+		t.Fatalf("Generating alert alone did not emit %s", name)
+	}
+	togetherSrc, ok := together[name]
+	if !ok {
+		t.Fatalf("Generating the full manifest did not emit %s", name)
+	}
+	if aloneSrc != togetherSrc {
+		t.Errorf("%s differs between generating alert alone and generating the full manifest\n%s",
+			name, firstDiff(aloneSrc, togetherSrc))
+	}
+	for _, want := range []string{"MD5Fingerprint", "SHA256Fingerprint"} {
+		if !strings.Contains(aloneSrc, want) {
+			t.Errorf("%s does not spell the field %s", name, want)
+		}
+	}
+	for _, unwanted := range []string{"Md5Fingerprint", "Sha256Fingerprint"} {
+		if strings.Contains(aloneSrc, unwanted) {
+			t.Errorf("%s spells the field %s instead of the fixed-casing form", name, unwanted)
+		}
+	}
+}
+
 func findCommand(cmds []schema.Command, name string) (schema.Command, bool) {
 	for _, c := range cmds {
 		if c.Name == name {
