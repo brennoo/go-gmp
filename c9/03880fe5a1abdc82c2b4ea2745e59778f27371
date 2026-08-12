@@ -1,0 +1,59 @@
+commands/modify_group.go
+  s_53f2b07267cee4::t_1501eccef1fc65 8-9
+commands/modify_role.go
+  s_53f2b07267cee4::t_d9f2832045170e 8-9
+commands/modify_tag.go
+  s_53f2b07267cee4::t_0cc27754a808d9 13-14
+internal/cmd/gengmp/main.go
+  s_53f2b07267cee4::t_56f304308b2225 106,140
+internal/codegen/check.go
+  s_53f2b07267cee4::t_32dad47d934053 82,99
+internal/codegen/check_test.go
+  s_53f2b07267cee4::t_ec66097c40fb0a 48,234
+internal/codegen/generate.go
+  s_53f2b07267cee4::t_5c9319140842c8 32,37,42,64-66,75-77,81-124,236,253,314,330-334,724-730
+internal/codegen/generate_test.go
+  s_53f2b07267cee4::t_95b8e15c2c3c9d 201,613,665,680,695,714
+internal/codegen/manifest_test.go
+  s_53f2b07267cee4::t_38310ead8459e9 205,220,259,266,314,318,372,376,432,436,487,499
+internal/codegen/overrides.go
+  s_53f2b07267cee4::t_8798e8e1ab57ec 96-128,212-249
+internal/codegen/overrides_test.go
+  s_53f2b07267cee4::t_a71d27bbf45174 112
+internal/codegen/testdata/golden/modify_group.go
+  s_53f2b07267cee4::t_f688b91a02b79c 8-9
+internal/codegen/testdata/golden/modify_role.go
+  s_53f2b07267cee4::t_c4cb03c84ea9eb 8-9
+internal/codegen/testdata/golden/modify_tag.go
+  s_53f2b07267cee4::t_f2a6abc05cc6a2 13-14
+internal/codegen/validate.go
+  s_53f2b07267cee4::t_547caffd0c04c8 242,248,378,380
+internal/codegen/validate_test.go
+  s_53f2b07267cee4::t_8086ba01ada2cf 35
+internal/gmptest/capture_sequence_test.go
+  s_53f2b07267cee4::t_7cd4e5191a7f0a 520
+internal/gmptest/cases_tag.go
+  s_53f2b07267cee4::t_36fef470fea26d 40,46,53-75
+internal/gmptest/testdata/requests/modify_tag/value_comment_empty.xml
+  s_53f2b07267cee4::t_1b9f670c86a1cc 1
+internal/gmptest/testdata/requests/modify_tag/value_comment_set.xml
+  s_53f2b07267cee4::t_4cd07e635f1db7 1
+internal/gmptest/testdata/requests/modify_tag/value_comment_unset.xml
+  s_53f2b07267cee4::t_66991a6ab41ac6 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "c903880fe5a1abdc82c2b4ea2745e59778f27371",
+  "prompts": {},
+  "sessions": {
+    "s_53f2b07267cee4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_53f2b07267cee4",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
