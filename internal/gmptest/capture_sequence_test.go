@@ -517,7 +517,7 @@ func (r *captureRun) lifecycleTag(st *captureState) {
 	}
 	r.getByID("get_tags", "TagID", st.tagID, "lifecycle: get_tags for the tag just created")
 	r.send("modify_tag", "lifecycle: modify_tag value",
-		&commands.ModifyTag{TagID: st.tagID, Value: "fixture-modified"})
+		&commands.ModifyTag{TagID: st.tagID, Value: ptr("fixture-modified")})
 }
 
 func (r *captureRun) lifecycleGroup(st *captureState) {

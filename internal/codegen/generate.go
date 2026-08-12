@@ -29,16 +29,17 @@ const sharedFileSuffix = "_shared.go"
 // of (cmds, ov, pf): no clock, no filesystem, no map iteration order leaks
 // into it, and nothing here reads vendor/XML. That is what lets the golden
 // test in generate_test.go run in CI with only the committed JSON snapshot.
-func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, fo map[string][]FieldOverride) (map[string]string, error) {
+func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, fo map[string][]FieldOverride, cw map[string]CommandWarning) (map[string]string, error) {
 	if len(cmds) == 0 {
 		return nil, fmt.Errorf("codegen: no commands to generate")
 	}
 	g := &gen{
-		ov: ov, pf: pf, fo: fo,
+		ov: ov, pf: pf, fo: fo, cw: cw,
 		byHash:      map[string]*structType{},
 		taken:       map[string]bool{},
 		needsErrors: map[*strings.Builder]bool{},
 		foConsumed:  map[string]bool{},
+		cwConsumed:  map[string]bool{},
 	}
 
 	// Sorting decouples the output from the caller's slice order, so a
@@ -60,6 +61,9 @@ func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]Point
 	if err := g.validateFieldOverrides(); err != nil {
 		return nil, err
 	}
+	if err := g.validateCommandWarnings(); err != nil {
+		return nil, err
+	}
 	g.name()
 	out, err := g.emit()
 	if err != nil {
@@ -68,7 +72,54 @@ func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]Point
 	if err := g.checkFieldOverridesConsumed(); err != nil {
 		return nil, err
 	}
+	if err := g.checkCommandWarningsConsumed(); err != nil {
+		return nil, err
+	}
 	return out, nil
+}
+
+// validateCommandWarnings checks the shape of every CommandWarnings entry in
+// g.cw, independent of which command is in scope for this call, the same
+// reasoning validateFieldOverrides applies to g.fo.
+func (g *gen) validateCommandWarnings() error {
+	keys := make([]string, 0, len(g.cw))
+	for k := range g.cw {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, key := range keys {
+		w := g.cw[key]
+		if w.Text == "" {
+			return fmt.Errorf("codegen: CommandWarnings[%q]: Text is empty", key)
+		}
+		if w.Reason == "" {
+			return fmt.Errorf("codegen: CommandWarnings[%q]: Reason is empty", key)
+		}
+	}
+	return nil
+}
+
+// checkCommandWarningsConsumed fails the build on a stale or mistyped
+// CommandWarnings entry, mirroring checkFieldOverridesConsumed's scoping:
+// only a command that was actually part of this call can make "never
+// emitted" mean anything.
+func (g *gen) checkCommandWarningsConsumed() error {
+	present := make(map[string]bool, len(g.cmds))
+	for i := range g.cmds {
+		present[g.cmds[i].Name] = true
+	}
+	var stale []string
+	for command := range g.cw {
+		if present[command] && !g.cwConsumed[command] {
+			stale = append(stale, command)
+		}
+	}
+	if len(stale) == 0 {
+		return nil
+	}
+	sort.Strings(stale)
+	return fmt.Errorf("codegen: CommandWarnings entry(ies) never attached to a generated command: %s", strings.Join(stale, ", "))
 }
 
 // validateFieldOverrides checks the shape of every FieldOverrides entry in
@@ -182,7 +233,7 @@ func (g *gen) checkFieldOverridesConsumed() error {
 // cmds may contain commands in any order and must cover every command the
 // manifest names; a command not claimed by any family is an error, since it
 // would otherwise be silently dropped.
-func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, fo map[string][]FieldOverride) (map[string]string, error) {
+func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, fo map[string][]FieldOverride, cw map[string]CommandWarning) (map[string]string, error) {
 	byName := make(map[string]schema.Command, len(cmds))
 	for _, c := range cmds {
 		byName[c.Name] = c
@@ -199,7 +250,7 @@ func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf m
 			}
 			fam = append(fam, c)
 		}
-		files, err := Generate(fam, ov, pf, fo)
+		files, err := Generate(fam, ov, pf, fo, cw)
 		if err != nil {
 			return nil, fmt.Errorf("codegen: family %q: %w", f.Name, err)
 		}
@@ -260,6 +311,7 @@ type gen struct {
 	ov     map[string]Override
 	pf     map[string]PointerOverride
 	fo     map[string][]FieldOverride
+	cw     map[string]CommandWarning
 	family string
 
 	byHash map[string]*structType
@@ -275,6 +327,11 @@ type gen struct {
 	// foConsumed records which FieldOverrides keys matched a node during this
 	// run, so checkFieldOverridesConsumed can flag a stale one.
 	foConsumed map[string]bool
+
+	// cwConsumed records which CommandWarnings keys were attached to a
+	// generated command during this run, so checkCommandWarningsConsumed can
+	// flag a stale one.
+	cwConsumed map[string]bool
 }
 
 // fieldOverrideKey builds a FieldOverrides key from a structType's use: the
@@ -664,6 +721,13 @@ func (g *gen) emit() (map[string]string, error) {
 func (g *gen) emitRequest(b *strings.Builder, c *schema.Command) error {
 	name := goName(c.Name)
 	fmt.Fprintf(b, "// %s is a %s command request. See the GMP protocol docs for details.\n", name, c.Name)
+	if w, ok := g.cw[c.Name]; ok {
+		g.cwConsumed[c.Name] = true
+		b.WriteString("//\n")
+		for _, line := range strings.Split(w.Text, "\n") {
+			fmt.Fprintf(b, "// %s\n", line)
+		}
+	}
 	fmt.Fprintf(b, "type %s struct {\n", name)
 	used := map[string]bool{"XMLName": true}
 	fmt.Fprintf(b, "XMLName xml.Name `xml:%q`\n", c.Name)

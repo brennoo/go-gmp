@@ -202,7 +202,7 @@ func TestGenerateAllIsPerFamily(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	alone, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides)
+	alone, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides, CommandWarnings)
 	if err != nil {
 		t.Fatalf("GenerateAll failed: %v", err)
 	}
@@ -217,7 +217,7 @@ func TestGenerateAllIsPerFamily(t *testing.T) {
 	}
 	twin.Name = "get_twins"
 	two := Manifest{Families: append(append([]Family{}, m.Families...), Family{Name: "twin", Commands: []string{"get_twins"}})}
-	both, err := GenerateAll(two, append(append([]schema.Command{}, cmds...), twin), TypeOverrides, PointerOverrides, FieldOverrides)
+	both, err := GenerateAll(two, append(append([]schema.Command{}, cmds...), twin), TypeOverrides, PointerOverrides, FieldOverrides, CommandWarnings)
 	if err != nil {
 		t.Fatalf("GenerateAll with a second family failed: %v", err)
 	}
@@ -256,14 +256,14 @@ func TestRealFamiliesGenerateIndependently(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides)
+	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides, CommandWarnings)
 	if err != nil {
 		t.Fatalf("GenerateAll failed: %v", err)
 	}
 
 	accounted := 0
 	for _, f := range m.Families {
-		alone, err := GenerateAll(Manifest{Families: []Family{f}}, cmds, TypeOverrides, PointerOverrides, FieldOverrides)
+		alone, err := GenerateAll(Manifest{Families: []Family{f}}, cmds, TypeOverrides, PointerOverrides, FieldOverrides, CommandWarnings)
 		if err != nil {
 			t.Fatalf("GenerateAll(%s alone) failed: %v", f.Name, err)
 		}
@@ -311,11 +311,11 @@ func TestScheduleICalendarNamingIsStable(t *testing.T) {
 	if !ok {
 		t.Fatal("The manifest no longer declares a schedule family")
 	}
-	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, FieldOverrides)
+	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, FieldOverrides, CommandWarnings)
 	if err != nil {
 		t.Fatalf("GenerateAll(schedule alone) failed: %v", err)
 	}
-	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides)
+	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides, CommandWarnings)
 	if err != nil {
 		t.Fatalf("GenerateAll(full manifest) failed: %v", err)
 	}
@@ -369,11 +369,11 @@ func TestAlertFingerprintNamingIsStable(t *testing.T) {
 	if !ok {
 		t.Fatal("The manifest no longer declares an alert family")
 	}
-	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, FieldOverrides)
+	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, FieldOverrides, CommandWarnings)
 	if err != nil {
 		t.Fatalf("GenerateAll(alert alone) failed: %v", err)
 	}
-	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides)
+	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides, CommandWarnings)
 	if err != nil {
 		t.Fatalf("GenerateAll(full manifest) failed: %v", err)
 	}
@@ -429,11 +429,11 @@ func TestTLSCertificateDNNamingIsStable(t *testing.T) {
 	if !ok {
 		t.Fatal("The manifest no longer declares a tls_certificate family")
 	}
-	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, FieldOverrides)
+	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, FieldOverrides, CommandWarnings)
 	if err != nil {
 		t.Fatalf("GenerateAll(tls_certificate alone) failed: %v", err)
 	}
-	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides)
+	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides, CommandWarnings)
 	if err != nil {
 		t.Fatalf("GenerateAll(full manifest) failed: %v", err)
 	}
@@ -484,7 +484,7 @@ func TestGenerateAllRejectsAnUnknownFamilyName(t *testing.T) {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
 	wrong := Manifest{Families: []Family{{Name: "annotation", Commands: m.AllCommands()}}}
-	if _, err := GenerateAll(wrong, cmds, TypeOverrides, PointerOverrides, FieldOverrides); err == nil ||
+	if _, err := GenerateAll(wrong, cmds, TypeOverrides, PointerOverrides, FieldOverrides, CommandWarnings); err == nil ||
 		!strings.Contains(err.Error(), "naming convention") {
 		t.Fatalf("GenerateAll error = %v, want a naming-convention complaint", err)
 	}
@@ -496,7 +496,7 @@ func TestGenerateAllNeedsEverySnapshot(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	if _, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides); err == nil ||
+	if _, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides, CommandWarnings); err == nil ||
 		!strings.Contains(err.Error(), "no snapshot loaded for get_notes") {
 		t.Fatalf("GenerateAll error = %v, want a missing-snapshot complaint", err)
 	}

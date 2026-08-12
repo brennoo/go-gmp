@@ -37,17 +37,40 @@ func init() {
 	// round-trip distinctly.
 	RegisterRequestCase("modify_tag", "active_true", &commands.ModifyTag{
 		TagID:  "f1e2d3c4-b5a6-4978-8695-a4b3c2d1e0f9",
-		Value:  "production",
+		Value:  ptr("production"),
 		Active: commands.Bool(true),
 	})
 
 	RegisterRequestCase("modify_tag", "active_unset", &commands.ModifyTag{
 		TagID:   "f1e2d3c4-b5a6-4978-8695-a4b3c2d1e0f9",
-		Comment: "no longer actively enforced",
+		Comment: ptr("no longer actively enforced"),
 	})
 
 	RegisterRequestCase("modify_tag", "active_false", &commands.ModifyTag{
 		TagID:  "f1e2d3c4-b5a6-4978-8695-a4b3c2d1e0f9",
 		Active: commands.Bool(false),
+	})
+
+	// ModifyTag.Value/.Comment are *string (internal/codegen/overrides.go's
+	// PointerOverrides): a live test against gvmd 26.36.1 proved omitting
+	// <value>/<comment> leaves the stored value unchanged while sending it
+	// explicitly empty clears it — Name showed no such distinction and keeps
+	// the mechanical string default. See docs/review-2026-08.md's
+	// post-tls_certificate revisit section. These three cases pin all three
+	// wire shapes side by side.
+	RegisterRequestCase("modify_tag", "value_comment_unset", &commands.ModifyTag{
+		TagID: "f1e2d3c4-b5a6-4978-8695-a4b3c2d1e0f9",
+	})
+
+	RegisterRequestCase("modify_tag", "value_comment_empty", &commands.ModifyTag{
+		TagID:   "f1e2d3c4-b5a6-4978-8695-a4b3c2d1e0f9",
+		Value:   ptr(""),
+		Comment: ptr(""),
+	})
+
+	RegisterRequestCase("modify_tag", "value_comment_set", &commands.ModifyTag{
+		TagID:   "f1e2d3c4-b5a6-4978-8695-a4b3c2d1e0f9",
+		Value:   ptr("decommissioned"),
+		Comment: ptr("Rotated during Q3 audit"),
 	})
 }

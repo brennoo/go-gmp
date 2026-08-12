@@ -93,14 +93,39 @@ type PointerOverride struct {
 // hand-written `*string` could express. See docs/review-2026-08.md's `alert
 // adopted` section for the experiment and the reasoning below.
 //
-// The table stays this narrow on purpose. git history shows modify_role,
-// modify_group, modify_tag and modify_schedule were never `*string` for
-// their optional text fields even before T-9 — there is no adoption-caused
-// regression to undo there, only the same untested assumption modify_alert's
-// result now calls into question. Widening pointerScalars' string rule (or
-// this table) to cover them, or any future family, needs its own live
-// evidence first; it is not made here on the strength of one family's
-// result.
+// The table stayed narrow on purpose until the post-tls_certificate T-9
+// revisit pass ran the same live experiment (gvmd 26.36.1) against every
+// remaining family with optional text fields: modify_role, modify_group,
+// modify_tag and modify_schedule. Results, one per family below.
+//
+// modify_role and modify_group: name, comment and users are NOT like
+// modify_alert's — omitting an element does not leave the stored value
+// unchanged. A bare `<modify_role role_id="..."/>` with every optional
+// element absent returns 200 OK but clears name, comment and users
+// unconditionally, and sending only `<comment>` still wipes the other two
+// even though they were never mentioned. Omitted and explicit-empty are
+// equivalent here, just not to "unchanged" — a pointer type could not
+// express a third wire state that does not exist, so no override is
+// warranted. The real hazard is behavioral, not a typing gap: a caller who
+// means to change only one field silently blanks the rest. See
+// docs/review-2026-08.md's post-tls_certificate revisit section.
+//
+// modify_tag: name behaves like modify_role/modify_group's fields do NOT —
+// omitted and explicit-empty both leave the stored name unchanged, so it
+// keeps the mechanical string default. value and comment behave like
+// modify_alert's (omit leaves the stored value unchanged, explicit-empty
+// clears it), so both get an entry below.
+//
+// modify_schedule: name, comment, icalendar and timezone all behave like
+// modify_tag's name — omitted and explicit-empty are indistinguishable,
+// both leaving the stored value unchanged — so none gets an entry. A
+// separate, unrelated wire quirk surfaced while testing timezone: gvmd
+// rejects a request that sends `<timezone>` without also sending
+// `<icalendar>` ("ICALENDAR element is required"), even though the schema
+// declares both independently optional. That is a cross-field requirement
+// the server enforces and the schema does not describe, not an
+// omit-vs-explicit-empty distinction, so it does not belong in this table
+// either.
 // FieldOverride adds a field to a generated struct that the schema's own
 // declared pattern does not, and structurally cannot, produce — a real,
 // evidence-backed protocol field the schema simply never declares.
@@ -183,5 +208,43 @@ var PointerOverrides = map[string]PointerOverride{
 	},
 	"modify_tls_certificate.comment": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
+	},
+	// modify_tag: the post-tls_certificate T-9 revisit pass's live experiment.
+	// value and comment behave like modify_alert's; name did not (see the
+	// doc comment above this table) and keeps the mechanical default.
+	"modify_tag.value": {
+		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <value> are distinct requests",
+	},
+	"modify_tag.comment": {
+		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
+	},
+}
+
+// CommandWarning attaches a public-facing behavioral-hazard note to a
+// generated command's doc comment: wire behavior a caller could not infer
+// from the struct's field types alone, and that emitRequest would otherwise
+// leave undocumented anywhere but this table and an internal review doc.
+type CommandWarning struct {
+	Text   string // one or more sentences, emitted verbatim as doc-comment lines
+	Reason string // cites the live/upstream evidence
+}
+
+// CommandWarnings is keyed by command name. Unlike PointerOverrides and
+// FieldOverrides, a warning changes no generated field or type — it exists
+// only to surface a hazard the wire shape alone does not reveal.
+var CommandWarnings = map[string]CommandWarning{
+	"modify_role": {
+		Text: "Name, Comment and Users are cleared whenever any of them is omitted from a " +
+			"request, not left unchanged: gvmd requires all three together, so a request meant " +
+			"to change only one silently blanks the other two.",
+		Reason: "T-9: live gvmd 26.36.1 test proved omitted fields are cleared rather than left " +
+			"unchanged; see docs/review-2026-08.md's post-tls_certificate revisit section",
+	},
+	"modify_group": {
+		Text: "Name, Comment and Users are cleared whenever any of them is omitted from a " +
+			"request, not left unchanged: gvmd requires all three together, so a request meant " +
+			"to change only one silently blanks the other two.",
+		Reason: "T-9: live gvmd 26.36.1 test proved omitted fields are cleared rather than left " +
+			"unchanged; see docs/review-2026-08.md's post-tls_certificate revisit section",
 	},
 }

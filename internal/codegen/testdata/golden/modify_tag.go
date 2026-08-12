@@ -10,8 +10,8 @@ type ModifyTag struct {
 	TagID     string              `xml:"tag_id,attr"`
 	Name      string              `xml:"name,omitempty"`
 	Resources *ModifyTagResources `xml:"resources,omitempty"`
-	Value     string              `xml:"value,omitempty"`
-	Comment   string              `xml:"comment,omitempty"`
+	Value     *string             `xml:"value,omitempty"`
+	Comment   *string             `xml:"comment,omitempty"`
 	Active    *GMPBool            `xml:"active,omitempty"`
 }
 

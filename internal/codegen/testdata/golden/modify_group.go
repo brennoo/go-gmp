@@ -5,6 +5,8 @@ package commands
 import "encoding/xml"
 
 // ModifyGroup is a modify_group command request. See the GMP protocol docs for details.
+//
+// Name, Comment and Users are cleared whenever any of them is omitted from a request, not left unchanged: gvmd requires all three together, so a request meant to change only one silently blanks the other two.
 type ModifyGroup struct {
 	XMLName xml.Name `xml:"modify_group"`
 	GroupID string   `xml:"group_id,attr"`

@@ -32,7 +32,7 @@ func validateOrSkip(t *testing.T, command string) (before, after []schema.Result
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	before, after, err = Validate(cmds, TypeOverrides, PointerOverrides, FieldOverrides, nil)
+	before, after, err = Validate(cmds, TypeOverrides, PointerOverrides, FieldOverrides, CommandWarnings, nil)
 	if err != nil {
 		if errors.Is(err, ErrNoGoToolchain) {
 			t.Skipf("Skipping: %v", err)

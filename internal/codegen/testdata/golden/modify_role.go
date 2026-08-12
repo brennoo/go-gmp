@@ -5,6 +5,8 @@ package commands
 import "encoding/xml"
 
 // ModifyRole is a modify_role command request. See the GMP protocol docs for details.
+//
+// Name, Comment and Users are cleared whenever any of them is omitted from a request, not left unchanged: gvmd requires all three together, so a request meant to change only one silently blanks the other two.
 type ModifyRole struct {
 	XMLName xml.Name `xml:"modify_role"`
 	RoleID  string   `xml:"role_id,attr"`
