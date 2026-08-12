@@ -32,7 +32,8 @@ func TestCommittedManifest(t *testing.T) {
 	// create_schedule,get_schedules,modify_schedule,create_alert,get_alerts,
 	// modify_alert,alert_shared,create_filter,get_filters,modify_filter,
 	// create_tls_certificate,get_tls_certificates,modify_tls_certificate}.go
-	// are all the generator's output.
+	// are all the generator's output. permission is review-only: its goldens
+	// live only under internal/codegen/testdata/golden, not commands/.
 	assertFamily(t, m, "get_notes", "note", false)
 	assertFamily(t, m, "get_overrides", "override", false)
 	assertFamily(t, m, "get_roles", "role", false)
@@ -42,16 +43,18 @@ func TestCommittedManifest(t *testing.T) {
 	assertFamily(t, m, "get_alerts", "alert", false)
 	assertFamily(t, m, "get_filters", "filter", false)
 	assertFamily(t, m, "get_tls_certificates", "tls_certificate", false)
+	assertFamily(t, m, "get_permissions", "permission", true)
 	if _, ok := m.FamilyOf("delete_note"); ok {
 		t.Error("FamilyOf(delete_note) claims a family the manifest does not declare")
 	}
 
 	want := []string{
-		"create_alert", "create_filter", "create_group", "create_note", "create_override", "create_role",
-		"create_schedule", "create_tag", "create_tls_certificate", "get_alerts", "get_filters", "get_groups",
-		"get_notes", "get_overrides", "get_roles", "get_schedules", "get_tags", "get_tls_certificates",
-		"modify_alert", "modify_filter", "modify_group", "modify_note", "modify_override", "modify_role",
-		"modify_schedule", "modify_tag", "modify_tls_certificate",
+		"create_alert", "create_filter", "create_group", "create_note", "create_override", "create_permission",
+		"create_role", "create_schedule", "create_tag", "create_tls_certificate", "get_alerts", "get_filters",
+		"get_groups", "get_notes", "get_overrides", "get_permissions", "get_roles", "get_schedules", "get_tags",
+		"get_tls_certificates", "modify_alert", "modify_filter", "modify_group", "modify_note",
+		"modify_override", "modify_permission", "modify_role", "modify_schedule", "modify_tag",
+		"modify_tls_certificate",
 	}
 	if got := m.AllCommands(); strings.Join(got, ",") != strings.Join(want, ",") {
 		t.Errorf("AllCommands() = %v, want %v", got, want)
@@ -66,19 +69,20 @@ func TestCommittedManifest(t *testing.T) {
 	if got := m.Adopted().AllCommands(); strings.Join(got, ",") != strings.Join(wantAdopted, ",") {
 		t.Errorf("Adopted().AllCommands() = %v, want %v", got, wantAdopted)
 	}
-	if got := m.ReviewOnlyFamilies(); len(got) != 0 {
-		t.Errorf("ReviewOnlyFamilies() = %v, want []", got)
+	if got := m.ReviewOnlyFamilies(); strings.Join(got, ",") != "permission" {
+		t.Errorf("ReviewOnlyFamilies() = %v, want [permission]", got)
 	}
 
 	assertFiles(t, "ExpectedOutputFiles", m.ExpectedOutputFiles("commands"), []string{
 		"alert_shared.go", "create_alert.go", "create_filter.go", "create_group.go", "create_note.go",
-		"create_override.go", "create_role.go", "create_schedule.go", "create_tag.go",
+		"create_override.go", "create_permission.go", "create_role.go", "create_schedule.go", "create_tag.go",
 		"create_tls_certificate.go", "filter_shared.go", "get_alerts.go", "get_filters.go", "get_groups.go",
-		"get_notes.go", "get_overrides.go", "get_roles.go", "get_schedules.go", "get_tags.go",
-		"get_tls_certificates.go", "group_shared.go", "modify_alert.go", "modify_filter.go",
-		"modify_group.go", "modify_note.go", "modify_override.go", "modify_role.go", "modify_schedule.go",
-		"modify_tag.go", "modify_tls_certificate.go", "note_shared.go", "override_shared.go",
-		"role_shared.go", "schedule_shared.go", "tag_shared.go", "tls_certificate_shared.go",
+		"get_notes.go", "get_overrides.go", "get_permissions.go", "get_roles.go", "get_schedules.go",
+		"get_tags.go", "get_tls_certificates.go", "group_shared.go", "modify_alert.go", "modify_filter.go",
+		"modify_group.go", "modify_note.go", "modify_override.go", "modify_permission.go", "modify_role.go",
+		"modify_schedule.go", "modify_tag.go", "modify_tls_certificate.go", "note_shared.go",
+		"override_shared.go", "permission_shared.go", "role_shared.go", "schedule_shared.go", "tag_shared.go",
+		"tls_certificate_shared.go",
 	})
 	assertFiles(t, "Adopted().ExpectedOutputFiles", m.Adopted().ExpectedOutputFiles("commands"), []string{
 		"alert_shared.go", "create_alert.go", "create_filter.go", "create_group.go", "create_note.go",
@@ -99,7 +103,7 @@ func TestCommittedManifest(t *testing.T) {
 // assertFamily checks that command is owned by the named family, that the
 // family's shared file follows the convention, and that its ReviewOnly flag
 // matches reviewOnly.
-func assertFamily(t *testing.T, m Manifest, command, family string, reviewOnly bool) { //nolint:unparam // every family is adopted right now; the next review-only family will pass true again
+func assertFamily(t *testing.T, m Manifest, command, family string, reviewOnly bool) {
 	t.Helper()
 	f, ok := m.FamilyOf(command)
 	if !ok {

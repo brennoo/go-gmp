@@ -2244,6 +2244,380 @@ func TestTLSCertificateDataRoundTrips(t *testing.T) {
 	}
 }
 
+// TestValidatePermissionBeforeMatchesKnownConformance is the permission
+// family's counterpart to TestValidateRoleBeforeMatchesKnownConformance.
+// permission is review-only, so these types are still the hand-written
+// originals in commands/{create_permission,get_permissions,
+// modify_permission}.go — this pins the pre-swap numbers against
+// internal/schema/testdata/CONFORMANCE.md's own sections for those three
+// commands, the same gate every adopted family passed through before
+// adoption.
+func TestValidatePermissionBeforeMatchesKnownConformance(t *testing.T) {
+	before, _ := validateOrSkip(t, "create_permission")
+
+	want := map[string]counts{
+		"create_permission": {
+			actionable: map[string]int{
+				schema.CatExtra:     8,
+				schema.CatOmitEmpty: 2,
+			},
+			suppressed: map[string]int{
+				schema.CatOmitEmpty: 3,
+			},
+		},
+		"modify_permission": {
+			actionable: map[string]int{
+				schema.CatExtra:     8,
+				schema.CatOmitEmpty: 2,
+			},
+			suppressed: map[string]int{
+				schema.CatOmitEmpty: 2,
+			},
+		},
+		"get_permissions": {
+			actionable: map[string]int{
+				schema.CatMissing: 1,
+				schema.CatExtra:   1,
+				schema.CatType:    5,
+				schema.CatDefect:  2,
+			},
+			suppressed: map[string]int{
+				schema.CatOmitEmpty: 29,
+			},
+		},
+	}
+	for _, res := range before {
+		w, ok := want[res.Command]
+		if !ok {
+			t.Errorf("%s: unexpected command in Validate's before results", res.Command)
+			continue
+		}
+		assertCounts(t, "before", res.Command, w, countFindings(res.Findings))
+	}
+}
+
+// TestValidatePermissionGeneratedMatchesOrImproves is the permission family's
+// pre-adoption look at what generation would close, run at the same rigour
+// every prior family's was — with no expectation yet that anyone runs
+// hack/generate.sh against it, since permission stays review-only until a
+// later adoption commit.
+//
+// What this run found: generation drops the request-side subject/resource's
+// fabricated Name/Permissions/Trash/Deleted fields (the family-local
+// PermissionSubject/PermissionResource in testdata/golden/
+// permission_shared.go carry only the schema's own id+type), closing all 8
+// EXTRA findings on both create_permission and modify_permission; their
+// ID fields gain the omitempty the schema's optional id attribute calls for,
+// and their Type fields lose the omitempty the hand-written struct added
+// despite the schema marking it required — closing every OMITEMPTY finding
+// on both commands too. On get_permissions, PermissionSort gains a
+// `,chardata` field (closing the MISSING sort/#text finding, since unlike
+// every prior family's <sort>, get_permissions's own schema pattern declares
+// "text" directly alongside <field> — see
+// TestPermissionSortFieldNameIsAnAcceptedLoss below for the field-level gap
+// that does NOT close), GetPermissionsSubject drops the schema-absent
+// Deleted field (closing the one EXTRA finding), every response field's
+// omitempty tag now matches the schema's own required/optional split
+// (closing all 29 suppressed OMITEMPTY findings), and in_use/resource.
+// deleted/resource.trash/subject.trash/writable become commands.GMPBool
+// (closing all 5 TYPE findings). The 2 SCHEMA-DEFECT findings on resource/
+// permissions and subject/permissions stay untouched — copied from
+// cmd.Defects before any Go-type comparison runs, same as every other
+// family's empty-pattern class.
+func TestValidatePermissionGeneratedMatchesOrImproves(t *testing.T) {
+	before, after := validateOrSkip(t, "create_permission")
+
+	wantAfter := map[string]counts{
+		"create_permission": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_permission": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_permissions": {
+			actionable: map[string]int{
+				schema.CatDefect: 2,
+			},
+			suppressed: map[string]int{},
+		},
+	}
+	assertMatchesOrImproves(t, before, after, wantAfter)
+}
+
+// permissionCountProbe mirrors testdata/golden/get_permissions.go's
+// PermissionCount field, byte for byte — keep the two in sync. See
+// filterCountProbe above for the identical precedent.
+type permissionCountProbe struct {
+	XMLName         xml.Name `xml:"get_permissions_response"`
+	PermissionCount struct {
+		Filtered int `xml:"filtered"`
+		Page     int `xml:"page"`
+	} `xml:"permission_count"`
+}
+
+// permissionCountEvidence is permissionCountProbe plus a ",chardata" field
+// the generated shape does not have, proving what the fixture actually
+// contains independent of what the generated shape can retain.
+type permissionCountEvidence struct {
+	XMLName         xml.Name `xml:"get_permissions_response"`
+	PermissionCount struct {
+		Value    string `xml:",chardata"`
+		Filtered int    `xml:"filtered"`
+		Page     int    `xml:"page"`
+	} `xml:"permission_count"`
+}
+
+// TestPermissionCountBareTotalIsAnAcceptedLoss is the permission family's
+// counterpart to TestFilterCountBareTotalIsAnAcceptedLoss: live gvmd
+// captures under internal/gmptest/testdata/live/get_permissions, and gvmd's
+// own bundled/upstream example under
+// internal/gmptest/testdata/upstream/get_permissions, all send a bare total
+// ahead of <filtered>/<page>, but the schema's declared <pattern> for
+// permission_count is only <e>filtered</e><e>page</e>, with no text token
+// anywhere in it. There is nothing for the schema-side parser to see: the
+// pattern the generator draws from simply never declares this content, so
+// generation cannot recover it, and schema.Comparer — which only compares
+// against what the pattern declares — correctly reports no finding for it
+// either.
+//
+// This is the same class of gap as role_count/group_count/tag_count/
+// schedule_count/alert_count/filter_count/tls_certificate_count's identical
+// shape (docs/review-2026-08.md's "Accepted evidence" note): the schema's
+// own declared structure and its own examples disagree, and per the
+// generate-only-what-the-schema-declares principle, the fix is to document
+// the loss, not to add a field the schema never asked for.
+//
+// Each fixture is decoded twice, into two structurally identical types that
+// differ only in one field, so the test proves both halves of the claim
+// against the actual wire bytes rather than assuming either:
+// permissionCountEvidence (which has a ,chardata field) proves the bare
+// total is really there; permissionCountProbe (an exact mirror of the
+// generated PermissionCount) proves that, with only Filtered/Page to decode
+// into, that same total has nowhere to go.
+func TestPermissionCountBareTotalIsAnAcceptedLoss(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	cases := []struct {
+		provenance string
+		path       string
+		wantTotal  string
+		wantFilter int
+		wantPage   int
+	}{
+		{"live_001", filepath.Join(gmptestDir, "live", "get_permissions", "001_response.xml"), "260", 260, 10},
+		{"live_002", filepath.Join(gmptestDir, "live", "get_permissions", "002_response.xml"), "260", 260, 2},
+		{"live_003", filepath.Join(gmptestDir, "live", "get_permissions", "003_response.xml"), "262", 1, 1},
+		{"upstream_001", filepath.Join(gmptestDir, "upstream", "get_permissions", "001_response.xml"), "1", 1, 1},
+	}
+	for _, tc := range cases {
+		t.Run(tc.provenance, func(t *testing.T) {
+			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", tc.path, err)
+			}
+
+			var evidence permissionCountEvidence
+			if err := xml.Unmarshal(data, &evidence); err != nil {
+				t.Fatalf("decoding %s into permissionCountEvidence: %v", tc.path, err)
+			}
+			if got := strings.TrimSpace(evidence.PermissionCount.Value); got != tc.wantTotal {
+				t.Fatalf("%s: permission_count bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
+					tc.path, got, tc.wantTotal)
+			}
+			if evidence.PermissionCount.Filtered != tc.wantFilter || evidence.PermissionCount.Page != tc.wantPage {
+				t.Fatalf("%s: permissionCountEvidence children = %+v, want Filtered=%d Page=%d",
+					tc.path, evidence.PermissionCount, tc.wantFilter, tc.wantPage)
+			}
+
+			var got permissionCountProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into permissionCountProbe: %v", tc.path, err)
+			}
+			if got.PermissionCount.Filtered != tc.wantFilter || got.PermissionCount.Page != tc.wantPage {
+				t.Errorf("permissionCountProbe = %+v, want Filtered=%d Page=%d (the generated shape changed unexpectedly)",
+					got.PermissionCount, tc.wantFilter, tc.wantPage)
+			}
+			// permissionCountProbe has no field that could have captured
+			// evidence.PermissionCount.Value — that silent drop, now proven
+			// against the actual fixture bytes rather than assumed, is the
+			// accepted loss this test exists to pin.
+		})
+	}
+}
+
+// permissionSortFieldProbe mirrors testdata/golden/get_permissions.go's
+// PermissionSort/PermissionField fields, byte for byte, including the
+// schema-derived Value chardata field on Sort itself — keep the two in
+// sync. Same rationale as permissionCountProbe.
+type permissionSortFieldProbe struct {
+	XMLName xml.Name `xml:"get_permissions_response"`
+	Sort    struct {
+		Value string `xml:",chardata"`
+		Field struct {
+			Order string `xml:"order"`
+		} `xml:"field"`
+	} `xml:"sort"`
+}
+
+// permissionSortFieldEvidence is permissionSortFieldProbe plus a ",chardata"
+// field on Field that the generated PermissionField does not have, proving
+// what the fixture actually contains independent of what the generated
+// shape can retain.
+type permissionSortFieldEvidence struct {
+	XMLName xml.Name `xml:"get_permissions_response"`
+	Sort    struct {
+		Field struct {
+			Value string `xml:",chardata"`
+			Order string `xml:"order"`
+		} `xml:"field"`
+	} `xml:"sort"`
+}
+
+// TestPermissionSortFieldNameIsAnAcceptedLoss is
+// TestPermissionCountBareTotalIsAnAcceptedLoss's counterpart for the other
+// half of the same contradiction: live gvmd captures under
+// internal/gmptest/testdata/live/get_permissions, and gvmd's own
+// bundled/upstream example, send the sort field's name as bare text inside
+// <field> ("name" in every fixture here), but the schema's declared
+// <pattern> for <field> (inside <sort>) is only <e>order</e>, with no text
+// token anywhere in it. There is nothing for the schema-side parser to see:
+// the pattern the generator draws from simply never declares this content,
+// so generation cannot recover it, and schema.Comparer — which only
+// compares against what the pattern declares — correctly reports no
+// finding for it either.
+//
+// get_permissions's schema does declare a text token one level up, directly
+// on <sort> itself (<pattern>text<e>field</e></pattern> in
+// command_get_permissions.xml), so PermissionSort does get a real,
+// schema-derived Value field, closing the MISSING sort/#text finding. But
+// that field and the field-name loss pinned here are not the same thing:
+// Go's encoding/xml assigns a ",chardata" field only the text nodes that
+// are direct children of that element, and in every fixture on record the
+// only direct-child text of <sort> is indentation whitespace (or nothing at
+// all in the live fixtures' compact XML) — "name" is a child of <field>,
+// one level down, not of <sort>. TestPermissionSortValueIsWhitespaceOnly
+// below proves PermissionSort.Value never holds anything but that
+// whitespace; do not read the MISSING finding closing as evidence that
+// PermissionSort.Value captures the observed sort field name.
+//
+// This is the same class of gap as permission_count's bare total above and
+// role/group/tag/schedule/alert/filter/tls_certificate's identical shape
+// (docs/review-2026-08.md's "Accepted evidence" note): the schema's own
+// declared structure and its own examples disagree, and per the
+// generate-only-what-the-schema-declares principle, the fix is to document
+// the loss, not to add a field the schema never asked for.
+//
+// Each fixture is decoded twice, into two structurally identical types that
+// differ only in one field, so the test proves both halves of the claim
+// against the actual wire bytes rather than assuming either:
+// permissionSortFieldEvidence (which has a ,chardata field on Field) proves
+// the bare field name is really there; permissionSortFieldProbe (an exact
+// mirror of the generated PermissionSort/PermissionField) proves that, with
+// only Order to decode into, that same name has nowhere to go.
+func TestPermissionSortFieldNameIsAnAcceptedLoss(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	cases := []struct {
+		provenance string
+		path       string
+		wantName   string
+		wantOrder  string
+	}{
+		{"live_001", filepath.Join(gmptestDir, "live", "get_permissions", "001_response.xml"), "name", "ascending"},
+		{"live_002", filepath.Join(gmptestDir, "live", "get_permissions", "002_response.xml"), "name", "ascending"},
+		{"live_003", filepath.Join(gmptestDir, "live", "get_permissions", "003_response.xml"), "name", "ascending"},
+		{"upstream_001", filepath.Join(gmptestDir, "upstream", "get_permissions", "001_response.xml"), "name", "ascending"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.provenance, func(t *testing.T) {
+			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", tc.path, err)
+			}
+
+			var evidence permissionSortFieldEvidence
+			if err := xml.Unmarshal(data, &evidence); err != nil {
+				t.Fatalf("decoding %s into permissionSortFieldEvidence: %v", tc.path, err)
+			}
+			if got := strings.TrimSpace(evidence.Sort.Field.Value); got != tc.wantName {
+				t.Fatalf("%s: sort/field bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
+					tc.path, got, tc.wantName)
+			}
+			if evidence.Sort.Field.Order != tc.wantOrder {
+				t.Fatalf("%s: permissionSortFieldEvidence order = %q, want %q",
+					tc.path, evidence.Sort.Field.Order, tc.wantOrder)
+			}
+
+			var got permissionSortFieldProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into permissionSortFieldProbe: %v", tc.path, err)
+			}
+			if got.Sort.Field.Order != tc.wantOrder {
+				t.Errorf("permissionSortFieldProbe order = %q, want %q (the generated shape changed unexpectedly)",
+					got.Sort.Field.Order, tc.wantOrder)
+			}
+			// permissionSortFieldProbe.Sort.Field has no field that could
+			// have captured evidence.Sort.Field.Value — that silent drop,
+			// now proven against the actual fixture bytes rather than
+			// assumed, is the accepted loss this test exists to pin.
+			if got := strings.TrimSpace(got.Sort.Value); got != "" {
+				t.Errorf("permissionSortFieldProbe.Sort.Value = %q, want empty — PermissionSort.Value was expected to hold only indentation whitespace, not %q",
+					got, got)
+			}
+		})
+	}
+}
+
+// TestPermissionSortValueIsWhitespaceOnly guards against the same
+// misreading TestPermissionSortFieldNameIsAnAcceptedLoss's doc comment
+// warns about: generation closes the MISSING sort/#text finding by giving
+// PermissionSort a real ",chardata" field, because get_permissions's schema
+// — uniquely among every family reviewed so far — declares a text token
+// directly on <sort>'s own pattern. That closure is schema-accurate, but it
+// is not evidence PermissionSort.Value carries the sort field's name: in
+// every fixture on record, the only text that is a direct child of <sort>
+// (as opposed to a child of the nested <field>) is XML indentation
+// whitespace, or nothing at all in the live fixtures' compact encoding. The
+// meaningful "name" text lives one level down, inside <field>, which is
+// exactly the accepted loss TestPermissionSortFieldNameIsAnAcceptedLoss
+// pins — PermissionSort.Value and that loss are not the same field and
+// closing the former says nothing about the latter.
+func TestPermissionSortValueIsWhitespaceOnly(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	paths := []string{
+		filepath.Join(gmptestDir, "live", "get_permissions", "001_response.xml"),
+		filepath.Join(gmptestDir, "live", "get_permissions", "002_response.xml"),
+		filepath.Join(gmptestDir, "live", "get_permissions", "003_response.xml"),
+		filepath.Join(gmptestDir, "upstream", "get_permissions", "001_response.xml"),
+	}
+	for _, path := range paths {
+		t.Run(filepath.Base(filepath.Dir(path))+"/"+filepath.Base(path), func(t *testing.T) {
+			data, err := os.ReadFile(path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", path, err)
+			}
+
+			var got permissionSortFieldProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into permissionSortFieldProbe: %v", path, err)
+			}
+			if v := strings.TrimSpace(got.Sort.Value); v != "" {
+				t.Fatalf("%s: PermissionSort.Value = %q after trimming, want empty — fixture no longer demonstrates that this field captures only formatting whitespace, not the sort field name",
+					path, v)
+			}
+		})
+	}
+}
+
 // assertMatchesOrImproves is the shared body of the two match-or-improve gates:
 // the exact expected "after" counts, plus the two general rules that hold for
 // any family — no category may grow, and the schema's own defects may not move.

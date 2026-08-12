@@ -95,11 +95,12 @@ type CommandRoots struct {
 // on gmptest.Registry's entries.
 //
 // "Before" means different things per family, deliberately. For an adopted
-// family (note, override, role, group, tag, schedule, alert) these types are
-// already the generator's output, so the comparison is a drift detector on
-// the committed files. For a review-only family (filter) these are still the
-// hand-written originals, so the comparison is the pre-swap gate every one of
-// the adopted families went through before adoption.
+// family (note, override, role, group, tag, schedule, alert, filter,
+// tls_certificate) these types are already the generator's output, so the
+// comparison is a drift detector on the committed files. For a review-only
+// family (permission) these are still the hand-written originals, so the
+// comparison is the pre-swap gate every one of the adopted families went
+// through before adoption.
 //
 // The map is written out by hand rather than derived from the manifest because
 // reflection needs the concrete types: adding a family here is the one place
@@ -214,6 +215,18 @@ func BeforeGoRoots() map[string]CommandRoots {
 		"get_tls_certificates": {
 			Request:  schema.ModelOf(&commands.GetTLSCertificates{}),
 			Response: schema.ModelOf(&commands.GetTLSCertificatesResponse{}),
+		},
+		"create_permission": {
+			Request:  schema.ModelOf(&commands.CreatePermission{}),
+			Response: schema.ModelOf(&commands.CreatePermissionResponse{}),
+		},
+		"modify_permission": {
+			Request:  schema.ModelOf(&commands.ModifyPermission{}),
+			Response: schema.ModelOf(&commands.ModifyPermissionResponse{}),
+		},
+		"get_permissions": {
+			Request:  schema.ModelOf(&commands.GetPermissions{}),
+			Response: schema.ModelOf(&commands.GetPermissionsResponse{}),
 		},
 	}
 }
