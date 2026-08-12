@@ -1848,33 +1848,24 @@ func TestFilterSortFieldNameIsAnAcceptedLoss(t *testing.T) {
 
 // TestValidateTLSCertificateBeforeMatchesKnownConformance is the
 // tls_certificate family's counterpart to
-// TestValidateBeforeMatchesKnownConformance. tls_certificate is review_only,
-// so commands/{create_tls_certificate,modify_tls_certificate,
-// get_tls_certificates}.go are the hand-written originals — this pins the
-// pre-generation gate the family was selected to exercise. create_
-// and modify_tls_certificate are already conformant. get_tls_certificates
-// carries the family's entire load and has zero SCHEMA-DEFECT findings (its
-// three snapshots all have a nil cmd.Defects) — the first family reviewed so
-// far with none at all. See
-// TestValidateTLSCertificateGeneratedMatchesOrImproves for what each finding
-// is and whether generation closes it.
+// TestValidateBeforeMatchesKnownConformance. tls_certificate is adopted, so
+// commands/{create_tls_certificate,modify_tls_certificate,
+// get_tls_certificates}.go are already the generator's output — this is a
+// drift detector on the committed files, the same role every other adopted
+// family's post-adoption "before" test plays.
+//
+// For the record, the pre-adoption hand-written numbers this used to pin, all
+// of which generation closed (see TestValidateTLSCertificateGeneratedMatchesOrImproves
+// for the per-finding explanation): get_tls_certificates carried actionable
+// MISSING 5, EXTRA 5, KIND 2, TYPE 3, suppressed OMITEMPTY 33; create_
+// and modify_tls_certificate were already conformant.
 func TestValidateTLSCertificateBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_tls_certificate")
 
 	want := map[string]counts{
 		"create_tls_certificate": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_tls_certificate": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_tls_certificates": {
-			actionable: map[string]int{
-				schema.CatMissing: 5,
-				schema.CatExtra:   5,
-				schema.CatKind:    2,
-				schema.CatType:    3,
-			},
-			suppressed: map[string]int{
-				schema.CatOmitEmpty: 33,
-			},
-		},
+		"get_tls_certificates":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 2}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -1887,11 +1878,12 @@ func TestValidateTLSCertificateBeforeMatchesKnownConformance(t *testing.T) {
 }
 
 // TestValidateTLSCertificateGeneratedMatchesOrImproves is the tls_certificate
-// family's pre-swap gate, run at the same rigour note through filter were.
+// family's post-swap gate, run at the same rigour every prior family's was.
 //
-// Generation closes three of get_tls_certificates's five EXTRA findings and
-// all of MISSING/KIND/TYPE, leaving only two EXTRA findings — both
-// suppressed, via FieldOverrides — on all three commands:
+// What this run found while tls_certificate was still review_only: generation
+// closed three of get_tls_certificates's five EXTRA findings and all of
+// MISSING/KIND/TYPE, leaving only two EXTRA findings — both suppressed, via
+// FieldOverrides — on all three commands:
 //
 //   - MISSING 5: @filt_id on the request (GetTLSCertificates gains FiltID),
 //     and /tls_certificate/sources/source/{location,origin,timestamp,

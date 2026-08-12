@@ -24,16 +24,15 @@ func loadManifestErr(t *testing.T, body string) string {
 func TestCommittedManifest(t *testing.T) {
 	m := manifestOrFail(t)
 
-	// note, override, role, group, tag, schedule, alert, and filter are all
-	// adopted: commands/{create_note,get_notes,modify_note,note_shared,
-	// create_override,get_overrides,modify_override,override_shared,
-	// create_role,get_roles,modify_role,create_group,get_groups,modify_group,
-	// create_tag,get_tags,modify_tag,tag_shared,create_schedule,
-	// get_schedules,modify_schedule,create_alert,get_alerts,modify_alert,
-	// alert_shared,create_filter,get_filters,modify_filter}.go are all the
-	// generator's output. tls_certificate is review-only:
-	// commands/{create_tls_certificate,get_tls_certificates,
-	// modify_tls_certificate}.go are still hand-written.
+	// note, override, role, group, tag, schedule, alert, filter, and
+	// tls_certificate are all adopted: commands/{create_note,get_notes,
+	// modify_note,note_shared,create_override,get_overrides,modify_override,
+	// override_shared,create_role,get_roles,modify_role,create_group,
+	// get_groups,modify_group,create_tag,get_tags,modify_tag,tag_shared,
+	// create_schedule,get_schedules,modify_schedule,create_alert,get_alerts,
+	// modify_alert,alert_shared,create_filter,get_filters,modify_filter,
+	// create_tls_certificate,get_tls_certificates,modify_tls_certificate}.go
+	// are all the generator's output.
 	assertFamily(t, m, "get_notes", "note", false)
 	assertFamily(t, m, "get_overrides", "override", false)
 	assertFamily(t, m, "get_roles", "role", false)
@@ -42,7 +41,7 @@ func TestCommittedManifest(t *testing.T) {
 	assertFamily(t, m, "get_schedules", "schedule", false)
 	assertFamily(t, m, "get_alerts", "alert", false)
 	assertFamily(t, m, "get_filters", "filter", false)
-	assertFamily(t, m, "get_tls_certificates", "tls_certificate", true)
+	assertFamily(t, m, "get_tls_certificates", "tls_certificate", false)
 	if _, ok := m.FamilyOf("delete_note"); ok {
 		t.Error("FamilyOf(delete_note) claims a family the manifest does not declare")
 	}
@@ -59,15 +58,16 @@ func TestCommittedManifest(t *testing.T) {
 	}
 	wantAdopted := []string{
 		"create_alert", "create_filter", "create_group", "create_note", "create_override", "create_role",
-		"create_schedule", "create_tag", "get_alerts", "get_filters", "get_groups", "get_notes",
-		"get_overrides", "get_roles", "get_schedules", "get_tags", "modify_alert", "modify_filter",
-		"modify_group", "modify_note", "modify_override", "modify_role", "modify_schedule", "modify_tag",
+		"create_schedule", "create_tag", "create_tls_certificate", "get_alerts", "get_filters", "get_groups",
+		"get_notes", "get_overrides", "get_roles", "get_schedules", "get_tags", "get_tls_certificates",
+		"modify_alert", "modify_filter", "modify_group", "modify_note", "modify_override", "modify_role",
+		"modify_schedule", "modify_tag", "modify_tls_certificate",
 	}
 	if got := m.Adopted().AllCommands(); strings.Join(got, ",") != strings.Join(wantAdopted, ",") {
 		t.Errorf("Adopted().AllCommands() = %v, want %v", got, wantAdopted)
 	}
-	if got := m.ReviewOnlyFamilies(); len(got) != 1 || got[0] != "tls_certificate" {
-		t.Errorf("ReviewOnlyFamilies() = %v, want [tls_certificate]", got)
+	if got := m.ReviewOnlyFamilies(); len(got) != 0 {
+		t.Errorf("ReviewOnlyFamilies() = %v, want []", got)
 	}
 
 	assertFiles(t, "ExpectedOutputFiles", m.ExpectedOutputFiles("commands"), []string{
@@ -82,12 +82,13 @@ func TestCommittedManifest(t *testing.T) {
 	})
 	assertFiles(t, "Adopted().ExpectedOutputFiles", m.Adopted().ExpectedOutputFiles("commands"), []string{
 		"alert_shared.go", "create_alert.go", "create_filter.go", "create_group.go", "create_note.go",
-		"create_override.go", "create_role.go", "create_schedule.go", "create_tag.go", "filter_shared.go",
-		"get_alerts.go", "get_filters.go", "get_groups.go", "get_notes.go", "get_overrides.go",
-		"get_roles.go", "get_schedules.go", "get_tags.go", "group_shared.go", "modify_alert.go",
-		"modify_filter.go", "modify_group.go", "modify_note.go", "modify_override.go", "modify_role.go",
-		"modify_schedule.go", "modify_tag.go", "note_shared.go", "override_shared.go", "role_shared.go",
-		"schedule_shared.go", "tag_shared.go",
+		"create_override.go", "create_role.go", "create_schedule.go", "create_tag.go",
+		"create_tls_certificate.go", "filter_shared.go", "get_alerts.go", "get_filters.go", "get_groups.go",
+		"get_notes.go", "get_overrides.go", "get_roles.go", "get_schedules.go", "get_tags.go",
+		"get_tls_certificates.go", "group_shared.go", "modify_alert.go", "modify_filter.go",
+		"modify_group.go", "modify_note.go", "modify_override.go", "modify_role.go", "modify_schedule.go",
+		"modify_tag.go", "modify_tls_certificate.go", "note_shared.go", "override_shared.go",
+		"role_shared.go", "schedule_shared.go", "tag_shared.go", "tls_certificate_shared.go",
 	})
 
 	if got, want := m.SnapshotPath("d", "get_notes"), SnapshotPath("d", "get_notes"); got != want {
@@ -344,8 +345,8 @@ func TestScheduleICalendarNamingIsStable(t *testing.T) {
 // TestAlertFingerprintNamingIsStable pins the fix for "md5"/"sha256" in
 // generate.go's initialisms table: get_alerts's certificate_info element
 // exposes md5_fingerprint/sha256_fingerprint, and the hand-written
-// commands/get_reports.go, commands/get_scanners.go, and
-// commands/get_tls_certificates.go all already spell these fields
+// commands/get_reports.go and commands/get_scanners.go, plus the adopted
+// commands/get_tls_certificates.go, all already spell these fields
 // MD5Fingerprint/SHA256Fingerprint. Without the table entries goName would
 // instead render them Md5Fingerprint/Sha256Fingerprint — an inconsistent
 // public API that alert's adoption (commands/get_alerts.go is now the
@@ -403,12 +404,12 @@ func TestAlertFingerprintNamingIsStable(t *testing.T) {
 }
 
 // TestTLSCertificateDNNamingIsStable pins the fix for "dn" in generate.go's
-// initialisms table: get_tls_certificates's subject_dn/issuer_dn elements
-// and the hand-written commands/get_tls_certificates.go and
-// commands/get_reports.go both already spell the Go fields
-// SubjectDN/IssuerDN. Without the table entry goName would instead render
-// them SubjectDn/IssuerDn — a naming regression against the hand-written
-// original tls_certificate is being reviewed against (T-9).
+// initialisms table: get_tls_certificates's subject_dn/issuer_dn elements and
+// the hand-written commands/get_reports.go both already spell the Go fields
+// SubjectDN/IssuerDN, and the adopted commands/get_tls_certificates.go must
+// match. Without the table entry goName would instead render them
+// SubjectDn/IssuerDn — a public API regression against the casing
+// tls_certificate's own adoption locked in (T-9).
 //
 // As with TestScheduleICalendarNamingIsStable and
 // TestAlertFingerprintNamingIsStable, generating tls_certificate alone and

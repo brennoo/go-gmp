@@ -29,10 +29,10 @@ them, so response-side optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             58
-with actionable findings:     64
-actionable findings:          599  (request 271, response 328)
-suppressed findings:          729
+fully conformant:             59
+with actionable findings:     63
+actionable findings:          584  (request 270, response 314)
+suppressed findings:          698
 confirmed by fidelity corpus: 69
 in the schema, not in Go:     0
 in Go, not in the schema:     0
@@ -40,12 +40,12 @@ in Go, not in the schema:     0
 ### Findings by category
 
                  actionable suppressed
-  MISSING               208          0
-  EXTRA                 231          0
+  MISSING               203          0
+  EXTRA                 226          2
   CARDINALITY            39          0
-  KIND                   17          0
-  OMITEMPTY               8        729
-  TYPE                   96          0
+  KIND                   15          0
+  OMITEMPTY               8        696
+  TYPE                   93          0
   SCHEMA-DEFECT         107          0
 
 ### Schema defects by class
@@ -89,13 +89,13 @@ taken against upstream main (155 commands). Two reasons, both expected:
   create_target                17   EXTRA=17
   create_task                  17   MISSING=1  EXTRA=15  CARDINALITY=1
   get_tickets                  16   MISSING=6  EXTRA=4  KIND=3  TYPE=3
-  get_tls_certificates         15   MISSING=5  EXTRA=5  KIND=2  TYPE=3
   modify_config                14   EXTRA=6  CARDINALITY=3  OMITEMPTY=2  TYPE=3
   modify_task                  13   MISSING=1  EXTRA=12
   get_aggregates               12   MISSING=5  EXTRA=5  CARDINALITY=2
   get_port_lists               12   MISSING=3  EXTRA=1  CARDINALITY=1  KIND=3  TYPE=4
   get_assets                   11   EXTRA=6  CARDINALITY=1  TYPE=4
-  ... and 44 more with fewer
+  create_permission            10   EXTRA=8  OMITEMPTY=2
+  ... and 43 more with fewer
 
 ### Confirmed by both oracles
 
@@ -3005,104 +3005,12 @@ MISSING=6  EXTRA=4  KIND=3  OMITEMPTY=23  TYPE=3
 
 ### get_tls_certificates  (command_get_tls_certificates.xml)
 
-MISSING=5  EXTRA=5  KIND=2  OMITEMPTY=33  TYPE=3
+EXTRA=2
 
-  MISSING       request  /get_tls_certificates/@filt_id
-                optional attr filt_id is not modelled
-  MISSING       response /get_tls_certificates_response/tls_certificate/sources/source/location
-                optional elem location is not modelled
-  MISSING       response /get_tls_certificates_response/tls_certificate/sources/source/origin
-                required elem origin is not modelled
-  MISSING       response /get_tls_certificates_response/tls_certificate/sources/source/timestamp
-                required elem timestamp is not modelled
-  MISSING       response /get_tls_certificates_response/tls_certificate/sources/source/tls_versions
-                required elem tls_versions is not modelled
-  EXTRA         response /get_tls_certificates_response/filters/comment
-                Go field Comment string has no counterpart in the schema
   EXTRA         response /get_tls_certificates_response/tls_certificate/certificate/#text
-                Go *commands.TLSCertificateData has a `,chardata` field; schema declares no character data here
-  EXTRA         response /get_tls_certificates_response/tls_certificate/sources/source/@type
-                Go field Type string has no counterpart in the schema
+                Go commands.TLSCertificateCertificate has a `,chardata` field; schema declares no character data here  [suppressed: T-9 finding 2: schema's certificate pattern declares only @format, no chardata token, but internal/gmptest/testdata/upstream/get_tls_certificates/001_response.xml sends real base64 certificate bytes as this element's text (see IncludeCertificateData)]
   EXTRA         response /get_tls_certificates_response/tls_certificate/valid
-                Go field Valid bool has no counterpart in the schema
-  EXTRA         response /get_tls_certificates_response/truncated
-                Go field Truncated string has no counterpart in the schema
-  KIND          response /get_tls_certificates_response/tls_certificate_count/filtered
-                schema declares elem, Go models it as attr (Filtered int)
-  KIND          response /get_tls_certificates_response/tls_certificate_count/page
-                schema declares elem, Go models it as attr (Page int)
-  OMITEMPTY     response /get_tls_certificates_response/filters
-                schema says required, Filters is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/filters/@id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/filters/keywords
-                schema says required, Keywords is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/filters/keywords/keyword/column
-                schema says required, Column is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/filters/keywords/keyword/relation
-                schema says required, Relation is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/filters/keywords/keyword/value
-                schema says required, Value is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/filters/term
-                schema says required, Term is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/sort
-                schema says required, Sort is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/sort/field
-                schema says required, Field is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/sort/field/order
-                schema says required, Order is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/tls_certificate/activation_time
-                schema says required, ActivationTime is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/tls_certificate/certificate
-                schema says required, Certificate is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/tls_certificate/comment
-                schema says required, Comment is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/tls_certificate/creation_time
-                schema says required, CreationTime is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/tls_certificate/expiration_time
-                schema says required, ExpirationTime is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/tls_certificate/in_use
-                schema says required, InUse is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/tls_certificate/issuer_dn
-                schema says required, IssuerDN is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/tls_certificate/last_seen
-                schema says required, LastSeen is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/tls_certificate/md5_fingerprint
-                schema says required, MD5Fingerprint is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/tls_certificate/modification_time
-                schema says required, ModificationTime is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/tls_certificate/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/tls_certificate/owner
-                schema says required, Owner is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/tls_certificate/permissions
-                schema says required, Permissions is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/tls_certificate/serial
-                schema says required, Serial is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/tls_certificate/sha256_fingerprint
-                schema says required, SHA256Fingerprint is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/tls_certificate/subject_dn
-                schema says required, SubjectDN is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/tls_certificate/time_status
-                schema says required, TimeStatus is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/tls_certificate/trust
-                schema says required, Trust is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/tls_certificate/writable
-                schema says required, Writable is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/tls_certificate_count
-                schema says required, TLSCertificateCount is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/tls_certificates
-                schema says required, TLSCertificatesInfo is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/tls_certificates/@max
-                schema says required, Max is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tls_certificates_response/tls_certificates/@start
-                schema says required, Start is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  TYPE          response /get_tls_certificates_response/tls_certificate/in_use
-                schema type boolean is text ("" is true), Go InUse is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_tls_certificates_response/tls_certificate/trust
-                schema type boolean is text ("" is true), Go Trust is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_tls_certificates_response/tls_certificate/writable
-                schema type boolean is text ("" is true), Go Writable is bool: '7' fails to decode and '1' re-emits as 'true'
+                Go field Valid commands.GMPBool has no counterpart in the schema  [suppressed: T-9 finding 1: schema's tls_certificate pattern never declares <valid>, but internal/gmptest/testdata/live/get_tls_certificates/003_response.xml and the upstream example both send <valid>1</valid> as real data]
 
 ### get_users  (command_get_users.xml)
 

@@ -4,11 +4,8 @@ decode: ok
 namespaces-seen: 
 
 DROPPED
-  /get_tls_certificates_response/filters/@id                               x1
   /get_tls_certificates_response/sort/field/#text                          x1
   /get_tls_certificates_response/tls_certificate_count/#text               x1
-  /get_tls_certificates_response/tls_certificate_count/filtered            x1  (+1 descendant paths)
-  /get_tls_certificates_response/tls_certificate_count/page                x1  (+1 descendant paths)
 
 TRUNCATED
   (none)

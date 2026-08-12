@@ -445,11 +445,16 @@ func main() {
 `
 
 // TestTLSCertificateGeneratedRoundTrips proves the real generated
-// GetTLSCertificatesResponse/ModifyTLSCertificate agree with the two
-// FieldOverride entries in overrides.go (T-9 finding 3), and pins down
-// ModifyTLSCertificate's omit/explicit-empty/set wire shape (finding 4) as a
-// generator-level stand-in for internal/gmptest/cases_tls_certificate.go,
-// which cannot exist until tls_certificate is adopted.
+// GetTLSCertificatesResponse agrees with the two FieldOverride entries in
+// overrides.go (T-9 finding 3) — that certificate data, format, and validity
+// survive a decode/re-encode/re-decode round trip through the generated type
+// for both the upstream bundled example and a redacted live capture.
+//
+// ModifyTLSCertificate's omit/explicit-empty/set wire shape (finding 4) used
+// to be pinned here too, as a generator-level stand-in for
+// internal/gmptest/cases_tls_certificate.go, which could not exist until
+// tls_certificate was adopted. Now that it is adopted, that coverage lives in
+// the real cases_tls_certificate.go instead.
 func TestTLSCertificateGeneratedRoundTrips(t *testing.T) {
 	goBin, err := exec.LookPath("go")
 	if err != nil {
@@ -458,9 +463,6 @@ func TestTLSCertificateGeneratedRoundTrips(t *testing.T) {
 	got := generateOrFail(t)
 	if _, ok := got[CommandFile("get_tls_certificates")]; !ok {
 		t.Fatal("get_tls_certificates was not generated, so this test would not compile it")
-	}
-	if _, ok := got[CommandFile("modify_tls_certificate")]; !ok {
-		t.Fatal("modify_tls_certificate was not generated, so this test would not compile it")
 	}
 
 	upstreamFixture, err := filepath.Abs("../gmptest/testdata/upstream/get_tls_certificates/001_response.xml")
@@ -521,16 +523,7 @@ func TestTLSCertificateGeneratedRoundTrips(t *testing.T) {
 	want := "upstream-decode: Value=\"" + upstreamCert + "\" Format=\"DER\" Valid=true\n" +
 		"upstream-roundtrip: Value=\"" + upstreamCert + "\" Format=\"DER\" Valid=true\n" +
 		"live-decode: Value=\"" + liveCert + "\" Format=\"PEM\" Valid=true\n" +
-		"live-roundtrip: Value=\"" + liveCert + "\" Format=\"PEM\" Valid=true\n" +
-		"marshal-name-nil: <modify_tls_certificate tls_certificate_id=\"tid-1\"></modify_tls_certificate>\n" +
-		"marshal-name-empty: <modify_tls_certificate tls_certificate_id=\"tid-1\"><name></name></modify_tls_certificate>\n" +
-		"marshal-name-set: <modify_tls_certificate tls_certificate_id=\"tid-1\"><name>new-name</name></modify_tls_certificate>\n" +
-		"marshal-comment-nil: <modify_tls_certificate tls_certificate_id=\"tid-1\"></modify_tls_certificate>\n" +
-		"marshal-comment-empty: <modify_tls_certificate tls_certificate_id=\"tid-1\"><comment></comment></modify_tls_certificate>\n" +
-		"marshal-comment-set: <modify_tls_certificate tls_certificate_id=\"tid-1\"><comment>new-comment</comment></modify_tls_certificate>\n" +
-		"marshal-trust-nil: <modify_tls_certificate tls_certificate_id=\"tid-1\"></modify_tls_certificate>\n" +
-		"marshal-trust-false: <modify_tls_certificate tls_certificate_id=\"tid-1\"><trust>0</trust></modify_tls_certificate>\n" +
-		"marshal-trust-true: <modify_tls_certificate tls_certificate_id=\"tid-1\"><trust>1</trust></modify_tls_certificate>\n"
+		"live-roundtrip: Value=\"" + liveCert + "\" Format=\"PEM\" Valid=true\n"
 	if got := string(out); got != want {
 		t.Fatalf("Round-trip program printed:\n%s\nwant:\n%s", got, want)
 	}
@@ -539,9 +532,7 @@ func TestTLSCertificateGeneratedRoundTrips(t *testing.T) {
 // tlsCertificateRoundTripProgram is a `go run` main for
 // TestTLSCertificateGeneratedRoundTrips. argv[1] is the upstream fixture,
 // argv[2] the live one; it decodes and round-trips each through the real
-// generated GetTLSCertificatesResponse, then exercises
-// ModifyTLSCertificate's marshal shape across the omit/explicit-empty/set
-// matrix on Name, Comment and Trust.
+// generated GetTLSCertificatesResponse.
 const tlsCertificateRoundTripProgram = `package main
 
 import (
@@ -583,33 +574,9 @@ func decodeAndRoundTrip(path, decodeLabel, roundtripLabel string) {
 	report(roundtripLabel, &roundtripped)
 }
 
-func marshalModify(label string, m genproto.ModifyTLSCertificate) {
-	out, err := xml.Marshal(&m)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, label, "marshal:", err)
-		os.Exit(1)
-	}
-	fmt.Printf("%s: %s\n", label, out)
-}
-
 func main() {
 	decodeAndRoundTrip(os.Args[1], "upstream-decode", "upstream-roundtrip")
 	decodeAndRoundTrip(os.Args[2], "live-decode", "live-roundtrip")
-
-	empty, name, comment := "", "new-name", "new-comment"
-	trustFalse, trustTrue := genproto.GMPBool(false), genproto.GMPBool(true)
-
-	// Stand-in for internal/gmptest/cases_tls_certificate.go: that file needs
-	// commands.ModifyTLSCertificate, which does not exist until adoption.
-	marshalModify("marshal-name-nil", genproto.ModifyTLSCertificate{TLSCertificateID: "tid-1"})
-	marshalModify("marshal-name-empty", genproto.ModifyTLSCertificate{TLSCertificateID: "tid-1", Name: &empty})
-	marshalModify("marshal-name-set", genproto.ModifyTLSCertificate{TLSCertificateID: "tid-1", Name: &name})
-	marshalModify("marshal-comment-nil", genproto.ModifyTLSCertificate{TLSCertificateID: "tid-1"})
-	marshalModify("marshal-comment-empty", genproto.ModifyTLSCertificate{TLSCertificateID: "tid-1", Comment: &empty})
-	marshalModify("marshal-comment-set", genproto.ModifyTLSCertificate{TLSCertificateID: "tid-1", Comment: &comment})
-	marshalModify("marshal-trust-nil", genproto.ModifyTLSCertificate{TLSCertificateID: "tid-1"})
-	marshalModify("marshal-trust-false", genproto.ModifyTLSCertificate{TLSCertificateID: "tid-1", Trust: &trustFalse})
-	marshalModify("marshal-trust-true", genproto.ModifyTLSCertificate{TLSCertificateID: "tid-1", Trust: &trustTrue})
 }
 `
 

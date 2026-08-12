@@ -34,8 +34,7 @@
     },
     {
       "name": "tls_certificate",
-      "commands": ["create_tls_certificate", "get_tls_certificates", "modify_tls_certificate"],
-      "review_only": true
+      "commands": ["create_tls_certificate", "get_tls_certificates", "modify_tls_certificate"]
     }
   ]
 }

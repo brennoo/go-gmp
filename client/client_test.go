@@ -1609,7 +1609,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.ModifyTLSCertificate); ok {
-		if cmd.TLSCertificateID == "8a925978-59d0-494b-a837-40b271569727" && cmd.Name == "Renamed Example Certificate" {
+		if cmd.TLSCertificateID == "8a925978-59d0-494b-a837-40b271569727" && cmd.Name != nil && *cmd.Name == "Renamed Example Certificate" {
 			(*response.(*commands.ModifyTLSCertificateResponse)).Status = "200"
 			(*response.(*commands.ModifyTLSCertificateResponse)).StatusText = "OK"
 		} else {
@@ -1622,10 +1622,10 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp := response.(*commands.GetTLSCertificatesResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.TLSCertificates = []commands.TLSCertificate{
+		resp.TLSCertificate = []commands.TLSCertificate{
 			{
 				ID:    "ba36ed15-92fa-4ae0-af53-bad8ce472f18",
-				Owner: &commands.TLSCertificateOwner{Name: "admin"},
+				Owner: commands.TLSCertificateOwner{Name: "admin"},
 				Name:  "Example Certificate",
 			},
 		}

@@ -39,22 +39,6 @@ func init() {
 		Duration: commands.Int(0),
 	})
 
-	// GetTLSCertificates.IncludeCertificateData is *bool: unset, true, and an
-	// explicit false all round-trip distinctly.
-	RegisterRequestCase("get_tls_certificates", "include_data_true", &commands.GetTLSCertificates{
-		Filter:                 "rows=-1",
-		IncludeCertificateData: commands.Bool(true),
-	})
-
-	RegisterRequestCase("get_tls_certificates", "include_data_unset", &commands.GetTLSCertificates{
-		TLSCertificateID: "7c8d9e0f-1a2b-3c4d-5e6f-7a8b9c0d1e2f",
-	})
-
-	RegisterRequestCase("get_tls_certificates", "include_data_false", &commands.GetTLSCertificates{
-		Filter:                 "rows=-1",
-		IncludeCertificateData: commands.Bool(false),
-	})
-
 	// GetVulns.Trash is *bool: unset, true, and an explicit false all
 	// round-trip distinctly.
 	RegisterRequestCase("get_vulns", "trash_true", &commands.GetVulns{

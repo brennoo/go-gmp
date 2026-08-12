@@ -681,8 +681,9 @@ func (r *captureRun) lifecycleTLSCertificate(st *captureState) {
 		"lifecycle: get_tls_certificates for the certificate just created")
 	r.send("get_tls_certificates", "lifecycle: get_tls_certificates with include_certificate_data, certificate redacted",
 		&commands.GetTLSCertificates{TLSCertificateID: st.tlsCertID, IncludeCertificateData: commands.Bool(true)})
+	modifiedComment := captureComment + " (modified)"
 	r.send("modify_tls_certificate", "lifecycle: modify_tls_certificate comment",
-		&commands.ModifyTLSCertificate{TLSCertificateID: st.tlsCertID, Comment: captureComment + " (modified)"})
+		&commands.ModifyTLSCertificate{TLSCertificateID: st.tlsCertID, Comment: &modifiedComment})
 }
 
 func (r *captureRun) lifecycleConfig(st *captureState) {
