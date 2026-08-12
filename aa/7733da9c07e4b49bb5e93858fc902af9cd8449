@@ -1,0 +1,65 @@
+client/client_permission_test.go
+  s_7a0cd914f9c342::t_6bc81258d05dbc 19,42,108-109
+client/client_test.go
+  s_7a0cd914f9c342::t_b0ea3dcf1ee9f5 1374,1395
+commands/create_permission.go
+  s_7a0cd914f9c342::t_588e1811ff3184 1-2,7,11,17,22
+commands/get_permissions.go
+  s_7a0cd914f9c342::t_019a5ea212c73a 1-2,5,7,13,16,18-25,33-38,41-43,46-50,53-56,59-61,64-67,70-73,76-94,97-99,102-104,107-114,117-123,126-137
+commands/modify_permission.go
+  s_7a0cd914f9c342::t_b136a1dc310823 1-2,7-9,19
+commands/permission_shared.go
+  s_7a0cd914f9c342::t_e9510b89aec99a 1-15
+docs/review-2026-08.md
+  s_7a0cd914f9c342::t_672ce916a46ea6 752-760,819-860,1657
+internal/codegen/manifest.json
+  s_7a0cd914f9c342::t_f17282590fd297 41
+internal/codegen/manifest_test.go
+  s_7a0cd914f9c342::t_ce06ca4a9719fc 27-46,63-68,73-74,90,92-97,106-110,122-123
+internal/codegen/overrides.go
+  s_7a0cd914f9c342::t_2e8b45ea50015f 250-256
+internal/codegen/testdata/golden/modify_permission.go
+  s_7a0cd914f9c342::t_44ccddbeee06c2 8-9
+internal/codegen/validate_test.go
+  s_7a0cd914f9c342::t_60a26d1cf509a7 2249-2259,2264-2265,2268,2270,2284,2286-2287
+internal/gmptest/capture_sequence_test.go
+  s_7a0cd914f9c342::t_a366da34bf89ce 588
+internal/gmptest/cases_permission.go
+  s_7a0cd914f9c342::t_efe82e2fcb5e90 11,19-49,59-67
+internal/gmptest/testdata/FIDELITY-SUMMARY.txt
+  s_7a0cd914f9c342::t_a42aacf12a45f6 15,182-185
+internal/gmptest/testdata/REQUEST-FIDELITY.txt
+  s_7a0cd914f9c342::t_792c44e2846616 42
+internal/gmptest/testdata/live/get_permissions/001_fidelity.txt
+  s_7a0cd914f9c342::t_5b8a0fcfe030bf 7-8
+internal/gmptest/testdata/live/get_permissions/002_fidelity.txt
+  s_7a0cd914f9c342::t_ddb1f6f319a841 7-8
+internal/gmptest/testdata/live/get_permissions/003_fidelity.txt
+  s_7a0cd914f9c342::t_04036e3fe030a1 7-8,16
+internal/gmptest/testdata/requests/modify_permission/name_comment_subject.xml
+  s_7a0cd914f9c342::t_5d9daa7b9ee9e1 1
+internal/gmptest/testdata/requests/modify_permission/resource_omitted.xml
+  s_7a0cd914f9c342::t_c8a7e3ae203d79 1
+internal/gmptest/testdata/requests/modify_permission/subject_and_resource.xml
+  s_7a0cd914f9c342::t_dd7c5f8bffe8fb 1
+internal/gmptest/testdata/upstream/get_permissions/001_fidelity.txt
+  s_7a0cd914f9c342::t_d4e915a4174134 17,20-34
+internal/schema/testdata/CONFORMANCE.md
+  s_7a0cd914f9c342::t_64593528013711 32-35,43-44,47-48,97-98,244,1602,3176
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "aa7733da9c07e4b49bb5e93858fc902af9cd8449",
+  "prompts": {},
+  "sessions": {
+    "s_7a0cd914f9c342": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_7a0cd914f9c342",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
