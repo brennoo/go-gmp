@@ -39,7 +39,7 @@ create_note                  upstream  001 ok            dropped=1   truncated=0
 create_override              live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_override              upstream  001 ok            dropped=1   truncated=0   changed=0   added=1
 create_permission            live      001 clean         dropped=0   truncated=0   changed=0   added=0
-create_permission            upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
+create_permission            upstream  001 clean         dropped=0   truncated=0   changed=0   added=1
 create_permission            upstream  002 clean         dropped=0   truncated=0   changed=0   added=0
 create_port_list             live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_port_list             upstream  001 clean         dropped=0   truncated=0   changed=0   added=0

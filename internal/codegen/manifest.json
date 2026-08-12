@@ -38,8 +38,7 @@
     },
     {
       "name": "permission",
-      "commands": ["create_permission", "get_permissions", "modify_permission"],
-      "review_only": true
+      "commands": ["create_permission", "get_permissions", "modify_permission"]
     }
   ]
 }

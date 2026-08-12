@@ -1371,7 +1371,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.CreatePermission); ok {
-		if cmd.Name == "get_targets" && cmd.Subject != nil && cmd.Subject.ID == "66abe5ce-c011-11e3-b96e-406186ea4fc5" && cmd.Subject.Type == "user" && cmd.Resource != nil && cmd.Resource.ID == "b493b7a8-7489-11df-a3ec-002264764cea" {
+		if cmd.Name == "get_targets" && cmd.Subject.ID == "66abe5ce-c011-11e3-b96e-406186ea4fc5" && cmd.Subject.Type == "user" && cmd.Resource != nil && cmd.Resource.ID == "b493b7a8-7489-11df-a3ec-002264764cea" {
 			(*response.(*commands.CreatePermissionResponse)).Status = "201"
 			(*response.(*commands.CreatePermissionResponse)).StatusText = "OK, resource created"
 			(*response.(*commands.CreatePermissionResponse)).ID = "created-permission-id"
@@ -1392,7 +1392,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	if _, ok := command.(*commands.GetPermissions); ok {
 		(*response.(*commands.GetPermissionsResponse)).Status = "200"
 		(*response.(*commands.GetPermissionsResponse)).StatusText = "OK"
-		(*response.(*commands.GetPermissionsResponse)).Permissions = []commands.Permission{
+		(*response.(*commands.GetPermissionsResponse)).Permission = []commands.Permission{
 			{
 				ID:               "b493b7a8-7489-11df-a3ec-002264764cea",
 				Name:             "Management",

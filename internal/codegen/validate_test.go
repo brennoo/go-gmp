@@ -2246,44 +2246,28 @@ func TestTLSCertificateDataRoundTrips(t *testing.T) {
 
 // TestValidatePermissionBeforeMatchesKnownConformance is the permission
 // family's counterpart to TestValidateRoleBeforeMatchesKnownConformance.
-// permission is review-only, so these types are still the hand-written
-// originals in commands/{create_permission,get_permissions,
-// modify_permission}.go — this pins the pre-swap numbers against
-// internal/schema/testdata/CONFORMANCE.md's own sections for those three
-// commands, the same gate every adopted family passed through before
-// adoption.
+// permission is adopted, so commands/{create_permission,get_permissions,
+// modify_permission}.go are already the generator's output — this is a drift
+// detector on the committed files, the same role every other adopted
+// family's post-adoption "before" test plays.
+//
+// For the record, the pre-adoption hand-written numbers this used to pin, all
+// of which generation closed except the two SCHEMA-DEFECT findings (see
+// TestValidatePermissionGeneratedMatchesOrImproves for the per-finding
+// explanation): create_ and modify_permission each carried actionable
+// EXTRA 8, OMITEMPTY 2, suppressed OMITEMPTY 3/2; get_permissions carried
+// actionable MISSING 1, EXTRA 1, TYPE 5, DEFECT 2, suppressed OMITEMPTY 29.
 func TestValidatePermissionBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_permission")
 
 	want := map[string]counts{
-		"create_permission": {
-			actionable: map[string]int{
-				schema.CatExtra:     8,
-				schema.CatOmitEmpty: 2,
-			},
-			suppressed: map[string]int{
-				schema.CatOmitEmpty: 3,
-			},
-		},
-		"modify_permission": {
-			actionable: map[string]int{
-				schema.CatExtra:     8,
-				schema.CatOmitEmpty: 2,
-			},
-			suppressed: map[string]int{
-				schema.CatOmitEmpty: 2,
-			},
-		},
+		"create_permission": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_permission": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_permissions": {
 			actionable: map[string]int{
-				schema.CatMissing: 1,
-				schema.CatExtra:   1,
-				schema.CatType:    5,
-				schema.CatDefect:  2,
+				schema.CatDefect: 2,
 			},
-			suppressed: map[string]int{
-				schema.CatOmitEmpty: 29,
-			},
+			suppressed: map[string]int{},
 		},
 	}
 	for _, res := range before {
@@ -2297,12 +2281,10 @@ func TestValidatePermissionBeforeMatchesKnownConformance(t *testing.T) {
 }
 
 // TestValidatePermissionGeneratedMatchesOrImproves is the permission family's
-// pre-adoption look at what generation would close, run at the same rigour
-// every prior family's was — with no expectation yet that anyone runs
-// hack/generate.sh against it, since permission stays review-only until a
-// later adoption commit.
+// post-swap gate, run at the same rigour every prior family's was.
 //
-// What this run found: generation drops the request-side subject/resource's
+// What this run found while permission was still review_only: generation
+// drops the request-side subject/resource's
 // fabricated Name/Permissions/Trash/Deleted fields (the family-local
 // PermissionSubject/PermissionResource in testdata/golden/
 // permission_shared.go carry only the schema's own id+type), closing all 8

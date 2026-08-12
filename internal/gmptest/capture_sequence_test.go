@@ -585,7 +585,7 @@ func (r *captureRun) lifecyclePermission(st *captureState) {
 		&commands.CreatePermission{
 			Name:    "get_tasks",
 			Comment: captureComment,
-			Subject: &commands.PermissionSubject{ID: st.userID, Type: "user"},
+			Subject: commands.PermissionSubject{ID: st.userID, Type: "user"},
 		},
 		func(id string) {
 			r.send("delete_permission", "teardown: delete_permission ultimate",

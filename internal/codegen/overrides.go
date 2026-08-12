@@ -247,4 +247,11 @@ var CommandWarnings = map[string]CommandWarning{
 		Reason: "T-9: live gvmd 26.36.1 test proved omitted fields are cleared rather than left " +
 			"unchanged; see docs/review-2026-08.md's post-tls_certificate revisit section",
 	},
+	"modify_permission": {
+		Text: "Subject is required by current gvmd even though the schema marks it optional: " +
+			"omitting it fails the request with \"400 Error in SUBJECT\", even when only Name or " +
+			"Comment is being changed.",
+		Reason: "T-9: live gvmd test against the running instance confirmed the omitted-subject " +
+			"rejection; see docs/review-2026-08.md's `permission adopted` section",
+	},
 }

@@ -5,6 +5,8 @@ package commands
 import "encoding/xml"
 
 // ModifyPermission is a modify_permission command request. See the GMP protocol docs for details.
+//
+// Subject is required by current gvmd even though the schema marks it optional: omitting it fails the request with "400 Error in SUBJECT", even when only Name or Comment is being changed.
 type ModifyPermission struct {
 	XMLName      xml.Name            `xml:"modify_permission"`
 	PermissionID string              `xml:"permission_id,attr"`

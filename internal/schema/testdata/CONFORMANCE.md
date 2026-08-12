@@ -29,10 +29,10 @@ them, so response-side optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             59
-with actionable findings:     63
-actionable findings:          584  (request 270, response 314)
-suppressed findings:          698
+fully conformant:             62
+with actionable findings:     60
+actionable findings:          557  (request 250, response 307)
+suppressed findings:          664
 confirmed by fidelity corpus: 69
 in the schema, not in Go:     0
 in Go, not in the schema:     0
@@ -40,12 +40,12 @@ in Go, not in the schema:     0
 ### Findings by category
 
                  actionable suppressed
-  MISSING               203          0
-  EXTRA                 226          2
+  MISSING               202          0
+  EXTRA                 209          2
   CARDINALITY            39          0
   KIND                   15          0
-  OMITEMPTY               8        696
-  TYPE                   93          0
+  OMITEMPTY               4        662
+  TYPE                   88          0
   SCHEMA-DEFECT         107          0
 
 ### Schema defects by class
@@ -94,8 +94,8 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_aggregates               12   MISSING=5  EXTRA=5  CARDINALITY=2
   get_port_lists               12   MISSING=3  EXTRA=1  CARDINALITY=1  KIND=3  TYPE=4
   get_assets                   11   EXTRA=6  CARDINALITY=1  TYPE=4
-  create_permission            10   EXTRA=8  OMITEMPTY=2
-  ... and 43 more with fewer
+  get_agents                    9   MISSING=7  TYPE=2
+  ... and 40 more with fewer
 
 ### Confirmed by both oracles
 
@@ -241,34 +241,7 @@ conformant
 
 ### create_permission  (command_create_permission.xml)
 
-EXTRA=8  OMITEMPTY=5
-
-  EXTRA         request  /create_permission/resource/deleted
-                Go field Deleted bool has no counterpart in the schema
-  EXTRA         request  /create_permission/resource/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /create_permission/resource/permissions
-                Go field Permissions *commands.PermissionList has no counterpart in the schema
-  EXTRA         request  /create_permission/resource/trash
-                Go field Trash bool has no counterpart in the schema
-  EXTRA         request  /create_permission/subject/deleted
-                Go field Deleted bool has no counterpart in the schema
-  EXTRA         request  /create_permission/subject/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /create_permission/subject/permissions
-                Go field Permissions *commands.PermissionList has no counterpart in the schema
-  EXTRA         request  /create_permission/subject/trash
-                Go field Trash bool has no counterpart in the schema
-  OMITEMPTY     request  /create_permission/resource/@id
-                schema says optional, ID string has no omitempty and is always emitted
-  OMITEMPTY     request  /create_permission/resource/type
-                schema says required, Type is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /create_permission/subject/@id
-                schema says optional, ID string has no omitempty and is always emitted
-  OMITEMPTY     request  /create_permission/subject/type
-                schema says required, Type is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     response /create_permission_response/@id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
+conformant
 
 ### create_port_list  (command_create_port_list.xml)
 
@@ -1626,80 +1599,8 @@ SCHEMA-DEFECT=2
 
 ### get_permissions  (command_get_permissions.xml)
 
-MISSING=1  EXTRA=1  OMITEMPTY=29  TYPE=5  SCHEMA-DEFECT=2
+SCHEMA-DEFECT=2
 
-  MISSING       response /get_permissions_response/sort/#text
-                schema also declares character data (text) here; Go *commands.PermissionSort has no `,chardata` field
-  EXTRA         response /get_permissions_response/permission/subject/deleted
-                Go field Deleted bool has no counterpart in the schema
-  OMITEMPTY     response /get_permissions_response/filters
-                schema says required, Filters is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission/comment
-                schema says required, Comment is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission/creation_time
-                schema says required, CreationTime is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission/in_use
-                schema says required, InUse is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission/modification_time
-                schema says required, ModificationTime is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission/owner
-                schema says required, Owner is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission/owner/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission/permissions
-                schema says required, Permissions is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission/permissions/permission/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission/resource
-                schema says required, Resource is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission/resource/@id
-                schema says optional, ID string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_permissions_response/permission/resource/deleted
-                schema says required, Deleted is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission/resource/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission/resource/trash
-                schema says required, Trash is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission/resource/type
-                schema says required, Type is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission/subject
-                schema says required, Subject is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission/subject/@id
-                schema says optional, ID string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_permissions_response/permission/subject/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission/subject/trash
-                schema says required, Trash is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission/subject/type
-                schema says required, Type is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission/user_tags/count
-                schema says required, Count is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission/user_tags/tag/comment
-                schema says required, Comment is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission/user_tags/tag/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission/user_tags/tag/value
-                schema says required, Value is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission/writable
-                schema says required, Writable is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permission_count
-                schema says required, Count is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/permissions
-                schema says required, Pagination is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_permissions_response/sort
-                schema says required, Sort is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  TYPE          response /get_permissions_response/permission/in_use
-                schema type boolean is text ("" is true), Go InUse is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_permissions_response/permission/resource/deleted
-                schema type boolean is text ("" is true), Go Deleted is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_permissions_response/permission/resource/trash
-                schema type boolean is text ("" is true), Go Trash is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_permissions_response/permission/subject/trash
-                schema type boolean is text ("" is true), Go Trash is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_permissions_response/permission/writable
-                schema type boolean is text ("" is true), Go Writable is bool: '7' fails to decode and '1' re-emits as 'true'
   SCHEMA-DEFECT response /get_permissions_response/permission/resource/permissions
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_permissions_response/permission/subject/permissions
@@ -3272,32 +3173,7 @@ conformant
 
 ### modify_permission  (command_modify_permission.xml)
 
-EXTRA=8  OMITEMPTY=4
-
-  EXTRA         request  /modify_permission/resource/deleted
-                Go field Deleted bool has no counterpart in the schema
-  EXTRA         request  /modify_permission/resource/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /modify_permission/resource/permissions
-                Go field Permissions *commands.PermissionList has no counterpart in the schema
-  EXTRA         request  /modify_permission/resource/trash
-                Go field Trash bool has no counterpart in the schema
-  EXTRA         request  /modify_permission/subject/deleted
-                Go field Deleted bool has no counterpart in the schema
-  EXTRA         request  /modify_permission/subject/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /modify_permission/subject/permissions
-                Go field Permissions *commands.PermissionList has no counterpart in the schema
-  EXTRA         request  /modify_permission/subject/trash
-                Go field Trash bool has no counterpart in the schema
-  OMITEMPTY     request  /modify_permission/resource/@id
-                schema says optional, ID string has no omitempty and is always emitted
-  OMITEMPTY     request  /modify_permission/resource/type
-                schema says required, Type is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /modify_permission/subject/@id
-                schema says optional, ID string has no omitempty and is always emitted
-  OMITEMPTY     request  /modify_permission/subject/type
-                schema says required, Type is tagged omitempty  [suppressed: request-side over-constraint]
+conformant
 
 ### modify_port_list  (command_modify_port_list.xml)
 

@@ -4,15 +4,8 @@ decode: ok
 namespaces-seen: 
 
 DROPPED
-  /get_permissions_response/permission/comment                             x10
-  /get_permissions_response/permission/in_use                              x10  (+1 descendant paths)
-  /get_permissions_response/permission/owner/name                          x10
-  /get_permissions_response/permission/resource/deleted                    x10  (+1 descendant paths)
-  /get_permissions_response/permission/resource/name                       x10
-  /get_permissions_response/permission/resource/trash                      x10  (+1 descendant paths)
-  /get_permissions_response/permission/resource/type                       x10
-  /get_permissions_response/permission/subject/trash                       x10  (+1 descendant paths)
-  /get_permissions_response/permission/writable                            x10  (+1 descendant paths)
+  /get_permissions_response/permission/resource/@id                        x10
+  /get_permissions_response/permission/resource/permissions                x10
   /get_permissions_response/permission_count/#text                         x1
   /get_permissions_response/sort/field/#text                               x1
 
