@@ -1,0 +1,41 @@
+docs/review-2026-08.md
+  s_27aff5f24ea5f4::t_01dbbe7eaef65d 752-828
+internal/codegen/manifest.json
+  s_27aff5f24ea5f4::t_4b762d90bcc05f 38-42
+internal/codegen/manifest_test.go
+  s_27aff5f24ea5f4::t_df666ed304ba85 35-36,46,52-57,72-73,78,80-85,106
+internal/codegen/testdata/golden/create_permission.go
+  s_27aff5f24ea5f4::t_889eea5ff98e70 1-28
+internal/codegen/testdata/golden/get_permissions.go
+  s_27aff5f24ea5f4::t_05fbc6e4726549 1-138
+internal/codegen/testdata/golden/modify_permission.go
+  s_27aff5f24ea5f4::t_b92370bab7ce64 1-27
+internal/codegen/testdata/golden/permission_shared.go
+  s_27aff5f24ea5f4::t_7d0958cf20e405 1-15
+internal/codegen/testdata/schema/create_permission.json
+  s_27aff5f24ea5f4::t_2330cbe201a875 1-149
+internal/codegen/testdata/schema/get_permissions.json
+  s_27aff5f24ea5f4::t_c4c8d243564934 1-632
+internal/codegen/testdata/schema/modify_permission.json
+  s_27aff5f24ea5f4::t_d8d7101d8e5a49 1-139
+internal/codegen/validate.go
+  s_27aff5f24ea5f4::t_ce534364a4d2cf 98-103,219-230
+internal/codegen/validate_test.go
+  s_27aff5f24ea5f4::t_ac277dfcadc9cd 2247-2620
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "55d94a3356486d67323c733d7923a0346e283080",
+  "prompts": {},
+  "sessions": {
+    "s_27aff5f24ea5f4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_27aff5f24ea5f4",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
