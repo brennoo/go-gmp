@@ -1,0 +1,65 @@
+client/client_test.go
+  s_573fe233ac3680::t_56b0a9ffcd3a76 1612,1625,1628
+client/client_tls_certificate_test.go
+  s_573fe233ac3680::t_9d4cdb2ad76bad 41,44,75-76,78
+commands/create_tls_certificate.go
+  s_573fe233ac3680::t_e563e25e883189 1-2,7,10,14,17
+commands/get_tls_certificates.go
+  s_573fe233ac3680::t_78a09cb5ecba4b 1-2,5,7,12,16,18-25,33-76,78-102,107,109,112,117-119,123,128,130-134,137-143,146-150,153-156,159-163,166-169,172-174
+commands/modify_tls_certificate.go
+  s_573fe233ac3680::t_44b84d22c2dc4d 1-2,7,11,13-14,17
+docs/review-2026-08.md
+  s_573fe233ac3680::t_6a980053983b9f 16-34,578-581,583-590,669-692,729,731,733-748,787,1547
+internal/codegen/manifest.json
+  s_573fe233ac3680::t_7d337fb8600ddb 37
+internal/codegen/manifest_test.go
+  s_573fe233ac3680::t_a81c8ea8437462 27-35,44,61-64,69-70,85-91,348-349,407-412
+internal/gmptest/capture_sequence_test.go
+  s_573fe233ac3680::t_cc54fcf5ebf044 684,686
+internal/gmptest/cases_tls_certificate.go
+  s_573fe233ac3680::t_ba46d5751e088b 1-82
+internal/gmptest/testdata/FIDELITY-SUMMARY.txt
+  s_573fe233ac3680::t_95b8a6b7be9ce4 15,252-256
+internal/gmptest/testdata/live/get_tls_certificates/003_fidelity.txt
+  s_573fe233ac3680::t_2c36106ac28cd0 14
+internal/gmptest/testdata/live/get_tls_certificates/004_fidelity.txt
+  s_573fe233ac3680::t_ae3c5215a6bf97 14
+internal/gmptest/testdata/requests/create_tls_certificate/trust_false.xml
+  s_573fe233ac3680::t_a1a63996c9a072 1
+internal/gmptest/testdata/requests/create_tls_certificate/trust_true.xml
+  s_573fe233ac3680::t_857966a725ddae 1
+internal/gmptest/testdata/requests/create_tls_certificate/trust_unset.xml
+  s_573fe233ac3680::t_9559615825eb9f 1
+internal/gmptest/testdata/requests/modify_tls_certificate/name_comment_empty.xml
+  s_573fe233ac3680::t_61cc2e43d929f8 1
+internal/gmptest/testdata/requests/modify_tls_certificate/name_comment_set.xml
+  s_573fe233ac3680::t_550f66d1bda75a 1
+internal/gmptest/testdata/requests/modify_tls_certificate/name_comment_unset.xml
+  s_573fe233ac3680::t_acc747ce623db5 1
+internal/gmptest/testdata/requests/modify_tls_certificate/trust_false.xml
+  s_573fe233ac3680::t_cd54e3e431f642 1
+internal/gmptest/testdata/requests/modify_tls_certificate/trust_true.xml
+  s_573fe233ac3680::t_04c44100cbbfc8 1
+internal/gmptest/testdata/requests/modify_tls_certificate/trust_unset.xml
+  s_573fe233ac3680::t_a6d82fceb19002 1
+internal/gmptest/testdata/upstream/get_tls_certificates/001_fidelity.txt
+  s_573fe233ac3680::t_33096e63932ebc 14,19-21
+internal/schema/testdata/CONFORMANCE.md
+  s_573fe233ac3680::t_842ec2ceae0e36 32-35,43-44,46-48,97-98,3008,3011,3013
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "f3c22db83ed99224956d482a5e82833b6914fa76",
+  "prompts": {},
+  "sessions": {
+    "s_573fe233ac3680": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_573fe233ac3680",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
