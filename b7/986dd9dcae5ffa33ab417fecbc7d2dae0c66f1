@@ -1,0 +1,45 @@
+docs/review-2026-08.md
+  s_7011eb9b228dd0::t_edd33ea13ae4b1 862-899,1695
+internal/codegen/generate_test.go
+  s_7011eb9b228dd0::t_21aaa1430f386c 583-844
+internal/codegen/manifest.json
+  s_7011eb9b228dd0::t_505cf307a14450 42-46
+internal/codegen/manifest_test.go
+  s_7011eb9b228dd0::t_401b42dc687f40 37-49,56-60,76-77,83-89,109-111,123-124
+internal/codegen/overrides.go
+  s_7011eb9b228dd0::t_ecec3d33869a25 221-240,277-283
+internal/codegen/testdata/golden/create_ticket.go
+  s_7011eb9b228dd0::t_579ec1ddd8fc91 1-28
+internal/codegen/testdata/golden/get_tickets.go
+  s_7011eb9b228dd0::t_5dec65ebc3b9a7 1-156
+internal/codegen/testdata/golden/modify_ticket.go
+  s_7011eb9b228dd0::t_88b297c5e147da 1-31
+internal/codegen/testdata/golden/ticket_shared.go
+  s_7011eb9b228dd0::t_cc30d04bc3c729 1-18
+internal/codegen/testdata/schema/create_ticket.json
+  s_7011eb9b228dd0::t_228260290ec500 1-140
+internal/codegen/testdata/schema/get_tickets.json
+  s_7011eb9b228dd0::t_b7e74fb0cd5e2b 1-756
+internal/codegen/testdata/schema/modify_ticket.json
+  s_7011eb9b228dd0::t_9871532c728069 1-139
+internal/codegen/validate.go
+  s_7011eb9b228dd0::t_59c1092fc52f53 231-242
+internal/codegen/validate_test.go
+  s_7011eb9b228dd0::t_8ff404cc2bef27 2603-2846
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "b7986dd9dcae5ffa33ab417fecbc7d2dae0c66f1",
+  "prompts": {},
+  "sessions": {
+    "s_7011eb9b228dd0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_7011eb9b228dd0",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
