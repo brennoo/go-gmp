@@ -1,0 +1,45 @@
+docs/review-2026-08.md
+  s_00e9c56cebaa1f::t_561f96f5ea9595 910-983,1779
+internal/codegen/generate_test.go
+  s_00e9c56cebaa1f::t_13d2b6c1943d33 842-1179
+internal/codegen/manifest.json
+  s_00e9c56cebaa1f::t_07d459ad3c92b1 46-50
+internal/codegen/manifest_test.go
+  s_00e9c56cebaa1f::t_f9b90772ff40a0 38-51,57-63,79-80,84-90,113-115,127-128
+internal/codegen/overrides.go
+  s_00e9c56cebaa1f::t_1285111c264764 241-255,299-311
+internal/codegen/testdata/golden/create_credential.go
+  s_00e9c56cebaa1f::t_8d493af7795030 1-38
+internal/codegen/testdata/golden/credential_shared.go
+  s_00e9c56cebaa1f::t_c56c8b3878246e 1-21
+internal/codegen/testdata/golden/get_credentials.go
+  s_00e9c56cebaa1f::t_e3443e0c34febb 1-189
+internal/codegen/testdata/golden/modify_credential.go
+  s_00e9c56cebaa1f::t_c8e94579f7c291 1-38
+internal/codegen/testdata/schema/create_credential.json
+  s_00e9c56cebaa1f::t_62f1a023c80c92 1-285
+internal/codegen/testdata/schema/get_credentials.json
+  s_00e9c56cebaa1f::t_9e6ff49798fe54 1-935
+internal/codegen/testdata/schema/modify_credential.json
+  s_00e9c56cebaa1f::t_22a1604a09a417 1-256
+internal/codegen/validate.go
+  s_00e9c56cebaa1f::t_69e3ffa882c756 99-103,243-254
+internal/codegen/validate_test.go
+  s_00e9c56cebaa1f::t_4a5a9cb2cfba52 2847-3122
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "3b29147e970756abab492391cf26dcde013c15c7",
+  "prompts": {},
+  "sessions": {
+    "s_00e9c56cebaa1f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_00e9c56cebaa1f",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
