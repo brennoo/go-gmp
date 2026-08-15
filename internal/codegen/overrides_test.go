@@ -141,6 +141,27 @@ func TestCheckProvenanceRejectsMixedBatch(t *testing.T) {
 	}
 }
 
+// TestCheckProvenanceAllowsDifferentExtractionTimes proves the gate reads
+// schema identity, not the clock. Adding a family re-extracts only its own
+// snapshots, so every adoption after the first presents a batch of mixed
+// timestamps over one unchanged schema.
+func TestCheckProvenanceAllowsDifferentExtractionTimes(t *testing.T) {
+	cmdA := minimalCommand()
+	cmdA.Name = "cmd_a"
+	cmdA.Request = &schema.Node{Name: "cmd_a"}
+	cmdA.Response = &schema.Node{Name: "cmd_a_response"}
+
+	cmdB := minimalCommand()
+	cmdB.Name = "cmd_b"
+	cmdB.Request = &schema.Node{Name: "cmd_b"}
+	cmdB.Response = &schema.Node{Name: "cmd_b_response"}
+	cmdB.Provenance.ExtractedAt = cmdA.Provenance.ExtractedAt.Add(time.Hour)
+
+	if _, err := Generate([]schema.Command{cmdA, cmdB}, TypeOverrides, PointerOverrides, FieldOverrides, CommandWarnings, nil); err != nil {
+		t.Fatalf("Generate failed on one schema extracted at two times: %v", err)
+	}
+}
+
 // TestCheckProvenanceAcceptsConsistentBatch proves the mirror case: identical,
 // complete provenance across every command in the batch passes.
 func TestCheckProvenanceAcceptsConsistentBatch(t *testing.T) {

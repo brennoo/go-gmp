@@ -103,9 +103,9 @@ var validExtractionMethods = map[schema.ExtractionMethod]bool{
 }
 
 // checkProvenance fails the build when any command's schema provenance is
-// absent or malformed, or when commands in this call disagree on provenance —
-// T-16a's fail-closed gate. It does not check ExtractedAt against the current
-// time: Generate's output must stay a pure function of its inputs.
+// absent or malformed, or when commands in this call describe different
+// schemas — T-16a's fail-closed gate. It does not check ExtractedAt against the
+// current time: Generate's output must stay a pure function of its inputs.
 func (g *gen) checkProvenance() error {
 	for i := range g.cmds {
 		c := &g.cmds[i]
@@ -135,12 +135,22 @@ func (g *gen) checkProvenance() error {
 	}
 	first := g.cmds[0].Provenance
 	for i := 1; i < len(g.cmds); i++ {
-		if g.cmds[i].Provenance != first {
-			return fmt.Errorf("codegen: mixed schema provenance: %s and %s were not extracted together (%+v vs %+v)",
+		if !sameSchemaSource(g.cmds[i].Provenance, first) {
+			return fmt.Errorf("codegen: mixed schema provenance: %s and %s describe different schemas (%+v vs %+v)",
 				g.cmds[0].Name, g.cmds[i].Name, first, g.cmds[i].Provenance)
 		}
 	}
 	return nil
+}
+
+// sameSchemaSource compares everything but ExtractedAt, which says when a
+// snapshot was written rather than what it was written from. Adding one family
+// re-extracts only its own snapshots, so a batch routinely mixes timestamps
+// while SourceSHA256 and ParsedSHA256 — the fields that actually identify the
+// schema — agree.
+func sameSchemaSource(a, b schema.Provenance) bool {
+	a.ExtractedAt, b.ExtractedAt = time.Time{}, time.Time{}
+	return a == b
 }
 
 // validDefectClasses are schema.parse.go's eight Defect* constants, checked
