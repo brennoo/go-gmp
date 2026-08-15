@@ -1,0 +1,43 @@
+docs/review-2026-08.md
+  s_6f9d4b3f23424f::t_4a577087342b1f 1005-1073,1869
+internal/codegen/generate_test.go
+  s_6f9d4b3f23424f::t_9db3847dd30093 1180-1486
+internal/codegen/manifest.json
+  s_6f9d4b3f23424f::t_144eb257f98b69 50-54
+internal/codegen/manifest_test.go
+  s_6f9d4b3f23424f::t_02f91f4cbc973b 40-54,61,63-66,83-84,89-98,119-121,133-134
+internal/codegen/overrides.go
+  s_6f9d4b3f23424f::t_8bf6d17acfa4a4 312-320
+internal/codegen/testdata/golden/create_port_list.go
+  s_6f9d4b3f23424f::t_c54f2d6c131e86 1-27
+internal/codegen/testdata/golden/get_port_lists.go
+  s_6f9d4b3f23424f::t_65d2291b0c6964 1-157
+internal/codegen/testdata/golden/modify_port_list.go
+  s_6f9d4b3f23424f::t_c81e6cbc9b8bd6 1-27
+internal/codegen/testdata/schema/create_port_list.json
+  s_6f9d4b3f23424f::t_19265e3420d131 1-103
+internal/codegen/testdata/schema/get_port_lists.json
+  s_6f9d4b3f23424f::t_09db6c16618d9f 1-700
+internal/codegen/testdata/schema/modify_port_list.json
+  s_6f9d4b3f23424f::t_1a2b79c2b4eb9f 1-77
+internal/codegen/validate.go
+  s_6f9d4b3f23424f::t_bd54323f098fa4 99-101,255-266
+internal/codegen/validate_test.go
+  s_6f9d4b3f23424f::t_0c1606687c8414 3115-3376
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "898d4e353160d9f2e92c7d1857656f4bad078f5a",
+  "prompts": {},
+  "sessions": {
+    "s_6f9d4b3f23424f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_6f9d4b3f23424f",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
