@@ -42,8 +42,7 @@
     },
     {
       "name": "ticket",
-      "commands": ["create_ticket", "get_tickets", "modify_ticket"],
-      "review_only": true
+      "commands": ["create_ticket", "get_tickets", "modify_ticket"]
     }
   ]
 }

@@ -23,17 +23,12 @@ func NewTicketIterator(client Client, ctx context.Context, opts PaginationOption
 			return client.GetTicketsRaw(ctx, cmd)
 		},
 		func(resp *commands.GetTicketsResponse) []*commands.Ticket {
-			items := make([]*commands.Ticket, len(resp.Tickets))
-			for i := range resp.Tickets {
-				items[i] = &resp.Tickets[i]
+			items := make([]*commands.Ticket, len(resp.Ticket))
+			for i := range resp.Ticket {
+				items[i] = &resp.Ticket[i]
 			}
 			return items
 		},
-		func(resp *commands.GetTicketsResponse) int {
-			if resp.TicketCount != nil {
-				return resp.TicketCount.Filtered
-			}
-			return 0
-		},
+		func(resp *commands.GetTicketsResponse) int { return resp.TicketCount.Filtered },
 	)
 }

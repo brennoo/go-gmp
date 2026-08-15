@@ -1528,7 +1528,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.CreateTicket); ok {
-		if cmd.Result.ID == "138c1216-4acb-4ded-bef3-7fab80eac8c7" && cmd.Assigned.User.ID == "33e92d3e-a379-4c46-a4cf-88c8201ab710" {
+		if cmd.Result.ID == "138c1216-4acb-4ded-bef3-7fab80eac8c7" && cmd.AssignedTo.User.ID == "33e92d3e-a379-4c46-a4cf-88c8201ab710" {
 			(*response.(*commands.CreateTicketResponse)).Status = "201"
 			(*response.(*commands.CreateTicketResponse)).StatusText = "OK, resource created"
 			(*response.(*commands.CreateTicketResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
@@ -1543,7 +1543,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp.StatusText = "OK"
 		if cmd.Filter != "" {
 			// Return mock data for pagination
-			resp.Tickets = []commands.Ticket{
+			resp.Ticket = []commands.Ticket{
 				{
 					ID:     "ticket-1",
 					Name:   "Test Ticket 1",
@@ -1557,7 +1557,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 			}
 		} else {
 			// Return original data for specific requests
-			resp.Tickets = []commands.Ticket{
+			resp.Ticket = []commands.Ticket{
 				{
 					ID:               "93cd2f71-48c3-4cf2-b542-5b256f59cae0",
 					Name:             "OpenSSH Denial of Service Vulnerability - Jan16",
@@ -1571,8 +1571,8 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 				},
 			}
 		}
-		resp.TicketCount = &commands.TicketCount{
-			Filtered: len(resp.Tickets),
+		resp.TicketCount = commands.TicketCount{
+			Filtered: len(resp.Ticket),
 			Page:     1,
 		}
 	}
@@ -1732,12 +1732,12 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp.StatusText = "OK"
 		if cmd.Filter != "" {
 			// Return mock data for pagination
-			resp.Tickets = []commands.Ticket{
+			resp.Ticket = []commands.Ticket{
 				{ID: "ticket-1", Name: "Test Ticket 1"},
 				{ID: "ticket-2", Name: "Test Ticket 2"},
 				{ID: "ticket-3", Name: "Test Ticket 3"},
 			}
-			resp.TicketCount = &commands.TicketCount{Filtered: 3}
+			resp.TicketCount = commands.TicketCount{Filtered: 3}
 		}
 	}
 

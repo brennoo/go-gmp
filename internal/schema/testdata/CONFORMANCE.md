@@ -29,23 +29,23 @@ them, so response-side optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             62
-with actionable findings:     60
-actionable findings:          557  (request 250, response 307)
-suppressed findings:          664
-confirmed by fidelity corpus: 69
+fully conformant:             63
+with actionable findings:     59
+actionable findings:          541  (request 248, response 293)
+suppressed findings:          641
+confirmed by fidelity corpus: 68
 in the schema, not in Go:     0
 in Go, not in the schema:     0
 
 ### Findings by category
 
                  actionable suppressed
-  MISSING               202          0
-  EXTRA                 209          2
+  MISSING               196          0
+  EXTRA                 205          2
   CARDINALITY            39          0
-  KIND                   15          0
-  OMITEMPTY               4        662
-  TYPE                   88          0
+  KIND                   12          0
+  OMITEMPTY               4        639
+  TYPE                   85          0
   SCHEMA-DEFECT         107          0
 
 ### Schema defects by class
@@ -88,14 +88,14 @@ taken against upstream main (155 commands). Two reasons, both expected:
   modify_agents                18   EXTRA=18
   create_target                17   EXTRA=17
   create_task                  17   MISSING=1  EXTRA=15  CARDINALITY=1
-  get_tickets                  16   MISSING=6  EXTRA=4  KIND=3  TYPE=3
   modify_config                14   EXTRA=6  CARDINALITY=3  OMITEMPTY=2  TYPE=3
   modify_task                  13   MISSING=1  EXTRA=12
   get_aggregates               12   MISSING=5  EXTRA=5  CARDINALITY=2
   get_port_lists               12   MISSING=3  EXTRA=1  CARDINALITY=1  KIND=3  TYPE=4
   get_assets                   11   EXTRA=6  CARDINALITY=1  TYPE=4
   get_agents                    9   MISSING=7  TYPE=2
-  ... and 40 more with fewer
+  get_scanners                  9   EXTRA=6  TYPE=3
+  ... and 39 more with fewer
 
 ### Confirmed by both oracles
 
@@ -175,7 +175,6 @@ attributes, and one of its own captured request fixtures uses three of them.
   get_tasks                /get_tasks_response/task/last_report/report/result_count
   get_tasks                /get_tasks_response/task/report_count/*
   get_tasks                /get_tasks_response/task/schedule_periods
-  get_tickets              /get_tickets_response/filters/keywords
   help                     /help_response/schema
 
 ## Per command
@@ -2823,86 +2822,7 @@ MISSING=12  EXTRA=14  CARDINALITY=7  OMITEMPTY=7  TYPE=8  SCHEMA-DEFECT=4
 
 ### get_tickets  (command_get_tickets.xml)
 
-MISSING=6  EXTRA=4  KIND=3  OMITEMPTY=23  TYPE=3
-
-  MISSING       request  /get_tickets/@filt_id
-                optional attr filt_id is not modelled
-  MISSING       request  /get_tickets/@trash
-                optional attr trash is not modelled
-  MISSING       response /get_tickets_response/filters/keywords
-                required elem keywords is not modelled  [fidelity]
-  MISSING       response /get_tickets_response/sort/#text
-                schema also declares character data (text) here; Go *commands.TicketSort has no `,chardata` field
-  MISSING       response /get_tickets_response/sort/field/*
-                schema declares 1 children; Go models this as scalar string
-  MISSING       response /get_tickets_response/ticket/user_tags/tag/comment
-                required elem comment is not modelled
-  EXTRA         response /get_tickets_response/filters/comment
-                Go field Comment string has no counterpart in the schema
-  EXTRA         response /get_tickets_response/sort/order
-                Go field Order string has no counterpart in the schema
-  EXTRA         response /get_tickets_response/ticket/nvt/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         response /get_tickets_response/truncated
-                Go field Truncated string has no counterpart in the schema
-  KIND          response /get_tickets_response/ticket/user_tags/count
-                schema declares elem, Go models it as attr (Count int)
-  KIND          response /get_tickets_response/ticket_count/filtered
-                schema declares elem, Go models it as attr (Filtered int)
-  KIND          response /get_tickets_response/ticket_count/page
-                schema declares elem, Go models it as attr (Page int)
-  OMITEMPTY     response /get_tickets_response/filters
-                schema says required, Filters is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tickets_response/filters/@id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tickets_response/filters/term
-                schema says required, Term is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tickets_response/sort
-                schema says required, Sort is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tickets_response/sort/field
-                schema says required, Field is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tickets_response/ticket/assigned_to
-                schema says required, AssignedTo is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tickets_response/ticket/host
-                schema says required, Host is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tickets_response/ticket/location
-                schema says required, Location is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tickets_response/ticket/nvt
-                schema says required, NVT is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tickets_response/ticket/open_note
-                schema says required, OpenNote is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tickets_response/ticket/open_time
-                schema says required, OpenTime is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tickets_response/ticket/orphan
-                schema says required, Orphan is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tickets_response/ticket/owner
-                schema says required, Owner is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tickets_response/ticket/permissions
-                schema says required, Permissions is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tickets_response/ticket/severity
-                schema says required, Severity is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tickets_response/ticket/solution_type
-                schema says required, SolutionType is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tickets_response/ticket/user_tags/tag/@id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tickets_response/ticket/user_tags/tag/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tickets_response/ticket/user_tags/tag/value
-                schema says required, Value is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tickets_response/ticket_count
-                schema says required, TicketCount is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tickets_response/tickets
-                schema says required, TicketsInfo is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tickets_response/tickets/@max
-                schema says required, Max is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tickets_response/tickets/@start
-                schema says required, Start is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  TYPE          response /get_tickets_response/ticket/in_use
-                schema type boolean is text ("" is true), Go InUse is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_tickets_response/ticket/orphan
-                schema type boolean is text ("" is true), Go Orphan is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_tickets_response/ticket/writable
-                schema type boolean is text ("" is true), Go Writable is bool: '7' fails to decode and '1' re-emits as 'true'
+conformant
 
 ### get_tls_certificates  (command_get_tls_certificates.xml)
 

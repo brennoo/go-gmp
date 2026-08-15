@@ -2600,23 +2600,23 @@ func TestPermissionSortValueIsWhitespaceOnly(t *testing.T) {
 	}
 }
 
+// TestValidateTicketBeforeMatchesKnownConformance is the ticket family's
+// counterpart to TestValidatePermissionBeforeMatchesKnownConformance. ticket
+// is adopted, so commands/{create_ticket,get_tickets,modify_ticket}.go are
+// already the generator's output — this is a drift detector on the
+// committed files.
+//
+// For the record, the pre-adoption hand-written numbers this used to pin,
+// all of which generation closed (see TestValidateTicketGeneratedMatchesOrImproves
+// for the per-finding explanation): get_tickets carried actionable
+// MISSING 6, EXTRA 4, KIND 3, TYPE 3, suppressed OMITEMPTY 23.
 func TestValidateTicketBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_ticket")
 
 	want := map[string]counts{
 		"create_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_tickets": {
-			actionable: map[string]int{
-				schema.CatMissing: 6,
-				schema.CatExtra:   4,
-				schema.CatKind:    3,
-				schema.CatType:    3,
-			},
-			suppressed: map[string]int{
-				schema.CatOmitEmpty: 23,
-			},
-		},
+		"get_tickets":   {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]

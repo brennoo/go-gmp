@@ -942,10 +942,10 @@ func (r *captureRun) annotationTicket(st *captureState) {
 	}
 	id := r.created("create_ticket", "annotations: create_ticket against the imported result",
 		&commands.CreateTicket{
-			Comment:  captureComment,
-			Result:   commands.TicketResult{ID: st.resultID},
-			Assigned: commands.TicketAssignedTo{User: &commands.TicketUser{ID: st.userID}},
-			OpenNote: "go-gmp fixture ticket.",
+			Comment:    captureComment,
+			Result:     commands.TicketResult{ID: st.resultID},
+			AssignedTo: commands.TicketAssignedTo{User: commands.TicketUser{ID: st.userID}},
+			OpenNote:   "go-gmp fixture ticket.",
 		},
 		func(id string) {
 			r.send("delete_ticket", "teardown: delete_ticket ultimate",
@@ -955,8 +955,9 @@ func (r *captureRun) annotationTicket(st *captureState) {
 		return
 	}
 	r.getByID("get_tickets", "TicketID", id, "annotations: get_tickets for the ticket just created")
+	modifiedComment := captureComment + " (modified)"
 	r.send("modify_ticket", "annotations: modify_ticket comment",
-		&commands.ModifyTicket{TicketID: id, Comment: captureComment + " (modified)"})
+		&commands.ModifyTicket{TicketID: id, Comment: &modifiedComment})
 }
 
 // --- 6. Deliberate failures --------------------------------------------------
