@@ -1,0 +1,21 @@
+internal/schema/parse.go
+  s_8850aaf89b3b78::t_fc1ed0a30da45b 463-465
+internal/schema/testdata/CONFORMANCE.md
+  s_8850aaf89b3b78::t_66f4087ee35b6d 34,44,82,1629
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "244b82d642a82380e6365845f7185187946b200f",
+  "prompts": {},
+  "sessions": {
+    "s_8850aaf89b3b78": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_8850aaf89b3b78",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
