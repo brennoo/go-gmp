@@ -55,6 +55,11 @@
     {
       "name": "asset",
       "commands": ["create_asset", "get_assets", "modify_asset"]
+    },
+    {
+      "name": "report_format",
+      "commands": ["create_report_format", "get_report_formats", "modify_report_format"],
+      "review_only": true
     }
   ]
 }

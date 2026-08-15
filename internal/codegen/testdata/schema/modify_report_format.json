@@ -1,0 +1,127 @@
+{
+  "Name": "modify_report_format",
+  "File": "command_modify_report_format.xml",
+  "Request": {
+    "Name": "modify_report_format",
+    "Kind": 0,
+    "Card": 0,
+    "InChoice": false,
+    "Type": "",
+    "Alts": null,
+    "Children": [
+      {
+        "Name": "report_format_id",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "uuid",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "active",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": true,
+        "Type": "boolean",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "name",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": true,
+        "Type": "name",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "summary",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": true,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "param",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": true,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "name",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "name",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "value",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "base64",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      }
+    ],
+    "Chardata": false
+  },
+  "Response": {
+    "Name": "modify_report_format_response",
+    "Kind": 0,
+    "Card": 0,
+    "InChoice": false,
+    "Type": "",
+    "Alts": null,
+    "Children": [
+      {
+        "Name": "status",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "status",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "status_text",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      }
+    ],
+    "Chardata": false
+  },
+  "Defects": null,
+  "Provenance": {
+    "Method": "file",
+    "Source": "gvmd/src/schema_formats/XML/GMP.xml.in",
+    "SourceRevision": "",
+    "SourceSHA256": "eb18d64e27d614a27f2499a09443bce65e885b5e256b5629c11b231c17ba11e7",
+    "ParsedSHA256": "9771bce88ff7d65d7b1c2f59083af12897a237e1ec25f8f7aa284b3968ed8c0f",
+    "DeclaredVersion": "@GMP_VERSION@",
+    "ExtractedAt": "2026-08-15T21:36:44.850353Z"
+  }
+}

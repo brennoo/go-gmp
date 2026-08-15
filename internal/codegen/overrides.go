@@ -162,6 +162,15 @@ var FieldOverrides = map[string][]FieldOverride{
 			"but internal/gmptest/testdata/upstream/get_tls_certificates/001_response.xml sends real " +
 			"base64 certificate bytes as this element's text (see IncludeCertificateData)",
 	}},
+	"get_report_formats:/report_format": {{
+		Name: "comment", GoType: "string",
+		Reason: "T-9 report_format review: schema's report_format pattern never declares <comment>, but " +
+			"gvmd emits one on every report format — x5 in each of " +
+			"internal/gmptest/testdata/live/get_report_formats/{001,002}_response.xml and x1 upstream, " +
+			"all recorded as DROPPED in the matching _fidelity.txt. Every captured occurrence is empty, " +
+			"so it is the element's presence that is evidenced, not its content; hence no omitempty, " +
+			"which would re-marshal to the absence gvmd never sends",
+	}},
 }
 
 var PointerOverrides = map[string]PointerOverride{
@@ -417,5 +426,8 @@ var DefectAllowlist = map[DefectKey]DefectAllowlistEntry{
 	},
 	{Command: "create_port_list", Class: "unsupported-r", Path: "/create_port_list"}: {
 		Reason: "T-15; docs/review-2026-08.md `port_list`",
+	},
+	{Command: "create_report_format", Class: "unsupported-r", Path: "/create_report_format"}: {
+		Reason: "T-15; docs/review-2026-08.md `report_format`",
 	},
 }

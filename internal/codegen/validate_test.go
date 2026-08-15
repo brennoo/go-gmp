@@ -3206,6 +3206,135 @@ func TestValidateAssetGeneratedMatchesOrImproves(t *testing.T) {
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
 
+// TestValidateReportFormatBeforeMatchesKnownConformance pins the hand-written
+// commands/ state this family is adopted against, cross-checked against
+// internal/schema/testdata/CONFORMANCE.md. report_format is still review-only,
+// so this is the pre-swap gate rather than a drift detector.
+func TestValidateReportFormatBeforeMatchesKnownConformance(t *testing.T) {
+	before, _ := validateOrSkip(t, "create_report_format")
+
+	want := map[string]counts{
+		"create_report_format": {
+			actionable: map[string]int{schema.CatDefect: 1},
+			suppressed: map[string]int{},
+		},
+		"modify_report_format": {
+			actionable: map[string]int{},
+			suppressed: map[string]int{schema.CatOmitEmpty: 1},
+		},
+		"get_report_formats": {
+			actionable: map[string]int{
+				schema.CatMissing: 18, schema.CatExtra: 2, schema.CatCardinality: 1,
+				schema.CatKind: 2, schema.CatType: 6,
+			},
+			suppressed: map[string]int{schema.CatOmitEmpty: 14},
+		},
+	}
+	for _, res := range before {
+		w, ok := want[res.Command]
+		if !ok {
+			t.Errorf("%s: unexpected command in Validate's before results", res.Command)
+			continue
+		}
+		assertCounts(t, "before", res.Command, w, countFindings(res.Findings))
+	}
+}
+
+// TestValidateReportFormatGeneratedMatchesOrImproves is the report_format
+// family's pre-swap gate. Generation closes every actionable finding on
+// get_report_formats and modify_report_format; create_report_format keeps its
+// allowlisted unsupported-r SCHEMA-DEFECT, which no generated shape can
+// resolve. See docs/review-2026-08.md's report_format section.
+//
+// get_report_formats' one remaining EXTRA comes back Suppressed, the same
+// disposition tls_certificate's /tls_certificate/valid gets and for the same
+// reason: a FieldOverride at "get_report_formats:/report_format" keeps a
+// Comment field the schema's pattern never declares, because gvmd emits
+// <comment> on every report format in all three committed fixtures. The
+// finding still fires — the schema really does not declare it — but carries
+// the evidence in its Reason instead of counting against commands/. See
+// TestReportFormatCommentRoundTrips.
+func TestValidateReportFormatGeneratedMatchesOrImproves(t *testing.T) {
+	before, after := validateOrSkip(t, "create_report_format")
+
+	wantAfter := map[string]counts{
+		"create_report_format": {
+			actionable: map[string]int{schema.CatDefect: 1},
+			suppressed: map[string]int{},
+		},
+		"modify_report_format": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_report_formats": {
+			actionable: map[string]int{},
+			suppressed: map[string]int{schema.CatExtra: 1},
+		},
+	}
+	assertMatchesOrImproves(t, before, after, wantAfter)
+}
+
+// reportFormatCommentProbe mirrors the generated ReportFormat's comment
+// handling in testdata/golden/get_report_formats.go — keep the two in sync.
+type reportFormatCommentProbe struct {
+	XMLName      xml.Name                   `xml:"get_report_formats_response"`
+	ReportFormat []reportFormatCommentEntry `xml:"report_format"`
+}
+
+type reportFormatCommentEntry struct {
+	XMLName xml.Name `xml:"report_format"`
+	Name    string   `xml:"name"`
+	Comment string   `xml:"comment"`
+}
+
+// TestReportFormatCommentRoundTrips is the fixture-backed half of the
+// FieldOverride's evidence: the override's Reason cites three captures, and
+// this decodes all three to prove the claim still holds and that the
+// generated shape retains what they carry.
+//
+// Presence is the whole point. Every captured <comment> is empty, so the
+// assertion that matters is that the element survives a decode/marshal
+// round trip rather than vanishing — which is what would happen under
+// omitempty, and what happens today when the field is absent entirely.
+func TestReportFormatCommentRoundTrips(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	fixtures := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	for _, tc := range []struct {
+		path  string
+		count int
+	}{
+		{filepath.Join(fixtures, "live", "get_report_formats", "001_response.xml"), 5},
+		{filepath.Join(fixtures, "live", "get_report_formats", "002_response.xml"), 5},
+		{filepath.Join(fixtures, "upstream", "get_report_formats", "002_response.xml"), 1},
+	} {
+		data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture paths under this package's own tree
+		if err != nil {
+			t.Fatalf("reading %s: %v", tc.path, err)
+		}
+		if got := strings.Count(string(data), "<comment"); got != tc.count {
+			t.Fatalf("%s: %d <comment> elements on the wire, want %d — the FieldOverride's cited evidence has changed",
+				tc.path, got, tc.count)
+		}
+
+		var got reportFormatCommentProbe
+		if err := xml.Unmarshal(data, &got); err != nil {
+			t.Fatalf("decoding %s: %v", tc.path, err)
+		}
+		if len(got.ReportFormat) != tc.count {
+			t.Fatalf("%s: decoded %d report_format entries, want %d", tc.path, len(got.ReportFormat), tc.count)
+		}
+
+		out, err := xml.Marshal(got.ReportFormat[0])
+		if err != nil {
+			t.Fatalf("%s: marshaling a report_format back out: %v", tc.path, err)
+		}
+		if !strings.Contains(string(out), "<comment>") {
+			t.Errorf("%s: round-tripped report_format dropped <comment>: %s", tc.path, out)
+		}
+	}
+}
+
 // portListCountProbe mirrors PortListCount in testdata/golden/get_port_lists.go.
 type portListCountProbe struct {
 	XMLName       xml.Name `xml:"get_port_lists_response"`

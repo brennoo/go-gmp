@@ -1,0 +1,925 @@
+{
+  "Name": "get_report_formats",
+  "File": "command_get_report_formats.xml",
+  "Request": {
+    "Name": "get_report_formats",
+    "Kind": 0,
+    "Card": 0,
+    "InChoice": false,
+    "Type": "",
+    "Alts": null,
+    "Children": [
+      {
+        "Name": "report_format_id",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "uuid",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "filter",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "filt_id",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "uuid",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "trash",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "boolean",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "alerts",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "boolean",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "params",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "boolean",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "report_configs",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "boolean",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "details",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "boolean",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      }
+    ],
+    "Chardata": false
+  },
+  "Response": {
+    "Name": "get_report_formats_response",
+    "Kind": 0,
+    "Card": 0,
+    "InChoice": false,
+    "Type": "",
+    "Alts": null,
+    "Children": [
+      {
+        "Name": "status",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "status",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "status_text",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "filters",
+        "Kind": 0,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "id",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "uuid",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "term",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "keywords",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "keyword",
+                "Kind": 0,
+                "Card": 2,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "column",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "relation",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "",
+                    "Alts": [
+                      "=",
+                      ":",
+                      "~",
+                      "\u003e",
+                      "\u003c"
+                    ],
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "value",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  }
+                ],
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          },
+          {
+            "Name": "name",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      },
+      {
+        "Name": "sort",
+        "Kind": 0,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "field",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "order",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "",
+                "Alts": [
+                  "ascending",
+                  "descending"
+                ],
+                "Children": null,
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          }
+        ],
+        "Chardata": true
+      },
+      {
+        "Name": "report_formats",
+        "Kind": 0,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "start",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "integer",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "max",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "integer",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      },
+      {
+        "Name": "report_format_count",
+        "Kind": 0,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "filtered",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "integer",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "page",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "integer",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      },
+      {
+        "Name": "report_format",
+        "Kind": 0,
+        "Card": 2,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "id",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "uuid",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "owner",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "name",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "name",
+                "Alts": null,
+                "Children": null,
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          },
+          {
+            "Name": "name",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "name",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "creation_time",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "iso_time",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "modification_time",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "iso_time",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "writable",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "boolean",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "in_use",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "boolean",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "permissions",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "permission",
+                "Kind": 0,
+                "Card": 2,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "name",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "name",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  }
+                ],
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          },
+          {
+            "Name": "extension",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "content_type",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "summary",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "description",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "trust",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": [
+              "yes",
+              "no",
+              "unknown"
+            ],
+            "Children": [
+              {
+                "Name": "name",
+                "Kind": 1,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "text",
+                "Alts": null,
+                "Children": null,
+                "Chardata": false
+              },
+              {
+                "Name": "time",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "iso_time",
+                "Alts": null,
+                "Children": null,
+                "Chardata": false
+              }
+            ],
+            "Chardata": true
+          },
+          {
+            "Name": "active",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "boolean",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "predefined",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "boolean",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "configurable",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "boolean",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "report_type",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": [
+              "scan",
+              "audit",
+              "all"
+            ],
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "user_tags",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "count",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "integer",
+                "Alts": null,
+                "Children": null,
+                "Chardata": false
+              },
+              {
+                "Name": "tag",
+                "Kind": 0,
+                "Card": 2,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "id",
+                    "Kind": 1,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "uuid",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "name",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "value",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "comment",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  }
+                ],
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          },
+          {
+            "Name": "alerts",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "alert",
+                "Kind": 0,
+                "Card": 2,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "id",
+                    "Kind": 1,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "uuid",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "name",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "name",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  }
+                ],
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          },
+          {
+            "Name": "invisible_alerts",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "integer",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "report_configs",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "report_config",
+                "Kind": 0,
+                "Card": 2,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "id",
+                    "Kind": 1,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "uuid",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "name",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "name",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  }
+                ],
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          },
+          {
+            "Name": "invisible_report_configs",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "integer",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "signature",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "file",
+            "Kind": 0,
+            "Card": 2,
+            "InChoice": false,
+            "Type": "base64",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "name",
+                "Kind": 1,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "text",
+                "Alts": null,
+                "Children": null,
+                "Chardata": false
+              }
+            ],
+            "Chardata": true
+          },
+          {
+            "Name": "deprecated",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "boolean",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "param",
+            "Kind": 0,
+            "Card": 2,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "name",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "name",
+                "Alts": null,
+                "Children": null,
+                "Chardata": false
+              },
+              {
+                "Name": "type",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "",
+                "Alts": [
+                  "boolean",
+                  "integer",
+                  "multi_selection",
+                  "selection",
+                  "string",
+                  "text",
+                  "report_format_list"
+                ],
+                "Children": [
+                  {
+                    "Name": "min",
+                    "Kind": 0,
+                    "Card": 1,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "max",
+                    "Kind": 0,
+                    "Card": 1,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "options",
+                    "Kind": 0,
+                    "Card": 1,
+                    "InChoice": false,
+                    "Type": "",
+                    "Alts": null,
+                    "Children": [
+                      {
+                        "Name": "option",
+                        "Kind": 0,
+                        "Card": 2,
+                        "InChoice": false,
+                        "Type": "text",
+                        "Alts": null,
+                        "Children": null,
+                        "Chardata": false
+                      }
+                    ],
+                    "Chardata": false
+                  }
+                ],
+                "Chardata": true
+              },
+              {
+                "Name": "value",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "report_format",
+                    "Kind": 0,
+                    "Card": 2,
+                    "InChoice": false,
+                    "Type": "",
+                    "Alts": null,
+                    "Children": [
+                      {
+                        "Name": "id",
+                        "Kind": 1,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "uuid",
+                        "Alts": null,
+                        "Children": null,
+                        "Chardata": false
+                      },
+                      {
+                        "Name": "name",
+                        "Kind": 0,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "text",
+                        "Alts": null,
+                        "Children": null,
+                        "Chardata": false
+                      }
+                    ],
+                    "Chardata": false
+                  }
+                ],
+                "Chardata": false
+              },
+              {
+                "Name": "default",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "text",
+                "Alts": null,
+                "Children": null,
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      }
+    ],
+    "Chardata": false
+  },
+  "Defects": null,
+  "Provenance": {
+    "Method": "file",
+    "Source": "gvmd/src/schema_formats/XML/GMP.xml.in",
+    "SourceRevision": "",
+    "SourceSHA256": "eb18d64e27d614a27f2499a09443bce65e885b5e256b5629c11b231c17ba11e7",
+    "ParsedSHA256": "9771bce88ff7d65d7b1c2f59083af12897a237e1ec25f8f7aa284b3968ed8c0f",
+    "DeclaredVersion": "@GMP_VERSION@",
+    "ExtractedAt": "2026-08-15T21:45:27.514976Z"
+  }
+}

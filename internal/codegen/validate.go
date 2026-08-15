@@ -96,11 +96,12 @@ type CommandRoots struct {
 //
 // "Before" means different things per family, deliberately. For an adopted
 // family (note, override, role, group, tag, schedule, alert, filter,
-// tls_certificate, permission, ticket, credential, port_list) these types
-// are already the generator's output, so the comparison is a drift detector
-// on the committed files. For a review-only family (asset) these are still
-// the hand-written originals, so the comparison is the pre-swap gate every
-// one of the adopted families went through before adoption.
+// tls_certificate, permission, ticket, credential, port_list, asset) these
+// types are already the generator's output, so the comparison is a drift
+// detector on the committed files. For a review-only family (report_format)
+// these are still the hand-written originals, so the comparison is the
+// pre-swap gate every one of the adopted families went through before
+// adoption.
 //
 // The map is written out by hand rather than derived from the manifest because
 // reflection needs the concrete types: adding a family here is the one place
@@ -275,6 +276,18 @@ func BeforeGoRoots() map[string]CommandRoots {
 		"get_assets": {
 			Request:  schema.ModelOf(&commands.GetAssets{}),
 			Response: schema.ModelOf(&commands.GetAssetsResponse{}),
+		},
+		"create_report_format": {
+			Request:  schema.ModelOf(&commands.CreateReportFormat{}),
+			Response: schema.ModelOf(&commands.CreateReportFormatResponse{}),
+		},
+		"modify_report_format": {
+			Request:  schema.ModelOf(&commands.ModifyReportFormat{}),
+			Response: schema.ModelOf(&commands.ModifyReportFormatResponse{}),
+		},
+		"get_report_formats": {
+			Request:  schema.ModelOf(&commands.GetReportFormats{}),
+			Response: schema.ModelOf(&commands.GetReportFormatsResponse{}),
 		},
 	}
 }
