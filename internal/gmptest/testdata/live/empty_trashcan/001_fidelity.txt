@@ -1,7 +1,7 @@
 # fidelity: empty_trashcan / live / 001
 # provenance: teardown: empty_trashcan after every delete
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

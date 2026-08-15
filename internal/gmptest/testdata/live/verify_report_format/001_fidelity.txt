@@ -1,7 +1,7 @@
 # fidelity: verify_report_format / live / 001
 # provenance: verify_report_format against a feed report format
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

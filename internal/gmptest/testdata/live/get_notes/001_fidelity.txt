@@ -1,7 +1,7 @@
 # fidelity: get_notes / live / 001
 # provenance: read-only: get_notes bare
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_notes_response/note_count/#text                                     x1

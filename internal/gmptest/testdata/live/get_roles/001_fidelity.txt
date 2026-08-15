@@ -1,7 +1,7 @@
 # fidelity: get_roles / live / 001
 # provenance: read-only: get_roles bare
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_roles_response/role_count/#text                                     x1

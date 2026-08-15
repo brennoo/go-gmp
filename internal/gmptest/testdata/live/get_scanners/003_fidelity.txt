@@ -1,7 +1,7 @@
 # fidelity: get_scanners / live / 003
 # provenance: lifecycle: get_scanners for the scanner just created, ca_pub redacted
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_scanners_response/scanner/credential/type                           x1  (+1 descendant paths)

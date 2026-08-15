@@ -1,7 +1,7 @@
 # fidelity: delete_credential / upstream / 001
 # provenance: command_delete_credential.xml, command "delete_credential", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

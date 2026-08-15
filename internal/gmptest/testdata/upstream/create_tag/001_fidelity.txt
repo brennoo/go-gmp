@@ -1,7 +1,7 @@
 # fidelity: create_tag / upstream / 001
 # provenance: command_create_tag.xml, command "create_tag", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

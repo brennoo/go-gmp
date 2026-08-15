@@ -1,7 +1,7 @@
 # fidelity: get_tasks / upstream / 002
 # provenance: command_get_tasks.xml, command "get_tasks", example 2
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_tasks_response/sort/field/#text                                     x1

@@ -1,7 +1,7 @@
 # fidelity: authenticate / live / 001
 # provenance: pre-auth: authenticate with the harness credentials, password redacted
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

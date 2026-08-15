@@ -1,7 +1,7 @@
 # fidelity: modify_role / live / 001
 # provenance: lifecycle: modify_role comment
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

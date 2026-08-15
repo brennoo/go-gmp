@@ -1,7 +1,7 @@
 # fidelity: modify_tag / live / 001
 # provenance: lifecycle: modify_tag value
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

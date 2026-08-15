@@ -1,7 +1,7 @@
 # fidelity: modify_asset / upstream / 001
 # provenance: command_modify_asset.xml, command "modify_asset", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

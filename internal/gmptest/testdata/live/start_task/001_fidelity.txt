@@ -1,7 +1,7 @@
 # fidelity: start_task / live / 001
 # provenance: expected failure: start_task on a container task, which has no target
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

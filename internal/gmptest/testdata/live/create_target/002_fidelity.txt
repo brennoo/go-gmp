@@ -1,7 +1,7 @@
 # fidelity: create_target / live / 002
 # provenance: failure: create_target with neither hosts nor asset_hosts
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

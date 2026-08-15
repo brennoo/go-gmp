@@ -1,7 +1,7 @@
 # fidelity: delete_ticket / upstream / 001
 # provenance: command_delete_ticket.xml, command "delete_ticket", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

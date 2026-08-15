@@ -1,7 +1,7 @@
 # fidelity: get_preferences / upstream / 002
 # provenance: command_get_preferences.xml, command "get_preferences", example 2
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_preferences_response/truncated                                      x1  (+1 descendant paths)

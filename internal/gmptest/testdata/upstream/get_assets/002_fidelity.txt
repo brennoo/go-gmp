@@ -1,4 +1,42 @@
 # fidelity: get_assets / upstream / 002
 # provenance: command_get_assets.xml, command "get_assets", example 2
-decode: error
-error: strconv.ParseBool: parsing "4": invalid syntax
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_assets_response/asset/esxi_credential                               x1  (+2 descendant paths)
+  /get_assets_response/asset/hosts                                         x1  (+1 descendant paths)
+  /get_assets_response/asset/max_hosts                                     x1  (+1 descendant paths)
+  /get_assets_response/asset/smb_credential                                x1  (+2 descendant paths)
+  /get_assets_response/asset/ssh_credential                                x1  (+3 descendant paths)
+  /get_assets_response/asset/tasks                                         x1  (+6 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_assets_response/asset/in_use/#text                                  "4" -> "1"
+
+ADDED
+  /get_assets_response/asset/owner                                         x1
+  /get_assets_response/asset/owner/name                                    x1
+  /get_assets_response/asset/permissions                                   x1
+  /get_assets_response/asset/type                                          x1
+  /get_assets_response/asset_count                                         x1
+  /get_assets_response/asset_count/filtered                                x1
+  /get_assets_response/asset_count/filtered/#text                          x1
+  /get_assets_response/asset_count/page                                    x1
+  /get_assets_response/asset_count/page/#text                              x1
+  /get_assets_response/assets                                              x1
+  /get_assets_response/assets/@max                                         x1
+  /get_assets_response/assets/@start                                       x1
+  /get_assets_response/filters                                             x1
+  /get_assets_response/filters/@id                                         x1
+  /get_assets_response/filters/keywords                                    x1
+  /get_assets_response/filters/term                                        x1
+  /get_assets_response/sort                                                x1
+  /get_assets_response/sort/field                                          x1
+  /get_assets_response/sort/field/order                                    x1
+
+DUPLICATED
+  (none)

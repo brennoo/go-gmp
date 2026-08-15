@@ -1,7 +1,7 @@
 # fidelity: get_tickets / upstream / 001
 # provenance: command_get_tickets.xml, command "get_tickets", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_tickets_response/sort/field/#text                                   x1

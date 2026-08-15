@@ -1,7 +1,7 @@
 # fidelity: get_tasks / live / 005
 # provenance: failure: get_tasks for a well-formed but nonexistent UUID
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

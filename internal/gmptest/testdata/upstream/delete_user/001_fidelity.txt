@@ -1,7 +1,7 @@
 # fidelity: delete_user / upstream / 001
 # provenance: command_delete_user.xml, command "delete_user", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

@@ -1,7 +1,7 @@
 # fidelity: delete_target / upstream / 001
 # provenance: command_delete_target.xml, command "delete_target", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

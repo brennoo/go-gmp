@@ -1,7 +1,7 @@
 # fidelity: create_user / live / 001
 # provenance: lifecycle: create_user, password redacted
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

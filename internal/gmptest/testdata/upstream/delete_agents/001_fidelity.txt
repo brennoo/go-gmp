@@ -1,7 +1,7 @@
 # fidelity: delete_agents / upstream / 001
 # provenance: command_delete_agents.xml, command "delete_agents", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

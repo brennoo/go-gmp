@@ -1,7 +1,7 @@
 # fidelity: get_feeds / live / 001
 # provenance: read-only: get_feeds bare
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

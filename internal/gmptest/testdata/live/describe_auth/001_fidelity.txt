@@ -1,7 +1,7 @@
 # fidelity: describe_auth / live / 001
 # provenance: read-only: describe_auth, auth_conf_setting values redacted
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

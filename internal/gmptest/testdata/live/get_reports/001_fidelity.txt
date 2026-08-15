@@ -1,7 +1,7 @@
 # fidelity: get_reports / live / 001
 # provenance: read-only: get_reports bare
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_reports_response/filters                                            x1  (+11 descendant paths)

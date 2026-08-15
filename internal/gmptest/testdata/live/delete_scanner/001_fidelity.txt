@@ -1,7 +1,7 @@
 # fidelity: delete_scanner / live / 001
 # provenance: teardown: delete_scanner ultimate
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

@@ -8,7 +8,7 @@ type CreateTarget struct {
 	Name                 string            `xml:"name,omitempty"`
 	Comment              string            `xml:"comment,omitempty"`
 	Copy                 string            `xml:"copy,omitempty"`
-	AssetHosts           *AssetHosts       `xml:"asset_hosts,omitempty"`
+	AssetHosts           *TargetAssetHosts `xml:"asset_hosts,omitempty"`
 	Hosts                string            `xml:"hosts,omitempty"`
 	ExcludeHosts         string            `xml:"exclude_hosts,omitempty"`
 	SSHCredential        *TargetCredential `xml:"ssh_credential,omitempty"`
@@ -41,7 +41,7 @@ func (r *CreateTargetResponse) GetStatus() (string, string) {
 	return r.Status, r.StatusText
 }
 
-// AssetHosts is the <asset_hosts> element for create_target.
-type AssetHosts struct {
+// TargetAssetHosts is the <asset_hosts> element for create_target.
+type TargetAssetHosts struct {
 	Filter string `xml:"filter,attr,omitempty"`
 }

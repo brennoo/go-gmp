@@ -1,7 +1,7 @@
 # fidelity: empty_trashcan / upstream / 001
 # provenance: command_empty_trashcan.xml, command "empty_trashcan", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

@@ -1,7 +1,7 @@
 # fidelity: modify_auth / upstream / 001
 # provenance: command_modify_auth.xml, command "modify_auth", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

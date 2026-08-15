@@ -1,7 +1,7 @@
 # fidelity: verify_scanner / live / 001
 # provenance: expected failure: verify_scanner against a scanner with nothing behind it
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

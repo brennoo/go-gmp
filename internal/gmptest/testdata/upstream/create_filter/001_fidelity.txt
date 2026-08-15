@@ -1,7 +1,7 @@
 # fidelity: create_filter / upstream / 001
 # provenance: command_create_filter.xml, command "create_filter", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

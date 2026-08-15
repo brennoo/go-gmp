@@ -1,7 +1,7 @@
 # fidelity: get_scanners / upstream / 001
 # provenance: command_get_scanners.xml, command "get_scanners", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_scanners_response/scanner/tasks/truncated                           x1  (+1 descendant paths)

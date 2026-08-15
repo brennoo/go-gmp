@@ -1,7 +1,7 @@
 # fidelity: get_tls_certificates / live / 001
 # provenance: read-only: get_tls_certificates bare
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_tls_certificates_response/sort/field/#text                          x1

@@ -1,7 +1,7 @@
 # fidelity: get_permissions / live / 003
 # provenance: lifecycle: get_permissions for the permission just created
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_permissions_response/permission/resource/@id                        x1

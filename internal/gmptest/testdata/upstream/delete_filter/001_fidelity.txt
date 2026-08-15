@@ -1,7 +1,7 @@
 # fidelity: delete_filter / upstream / 001
 # provenance: command_delete_filter.xml, command "delete_filter", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

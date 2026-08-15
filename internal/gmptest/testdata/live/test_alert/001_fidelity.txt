@@ -1,7 +1,7 @@
 # fidelity: test_alert / live / 001
 # provenance: expected failure: test_alert on the Syslog alert
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

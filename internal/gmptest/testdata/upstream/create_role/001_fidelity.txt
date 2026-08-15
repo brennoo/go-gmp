@@ -1,7 +1,7 @@
 # fidelity: create_role / upstream / 001
 # provenance: command_create_role.xml, command "create_role", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

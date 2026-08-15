@@ -1,7 +1,7 @@
 # fidelity: delete_group / upstream / 001
 # provenance: command_delete_group.xml, command "delete_group", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

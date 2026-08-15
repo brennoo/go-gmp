@@ -1,7 +1,7 @@
 # fidelity: stop_task / live / 001
 # provenance: expected failure: stop_task on a task that is not running
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

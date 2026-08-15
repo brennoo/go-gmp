@@ -1,7 +1,7 @@
 # fidelity: get_system_reports / live / 001
 # provenance: read-only: get_system_reports bare
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_system_reports_response/system_report/report/@end_time              x1

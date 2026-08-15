@@ -1,7 +1,7 @@
 # fidelity: get_roles / upstream / 001
 # provenance: command_get_roles.xml, command "get_roles", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_roles_response/filters/keywords/truncated                           x1  (+1 descendant paths)

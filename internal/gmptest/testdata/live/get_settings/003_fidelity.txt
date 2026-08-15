@@ -1,7 +1,7 @@
 # fidelity: get_settings / live / 003
 # provenance: lifecycle: get_settings for the Rows Per Page setting
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_settings_response/filters/term                                      x1

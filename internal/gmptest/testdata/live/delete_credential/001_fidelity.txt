@@ -1,7 +1,7 @@
 # fidelity: delete_credential / live / 001
 # provenance: teardown: delete_credential ultimate
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

@@ -9,11 +9,11 @@ import (
 )
 
 // AssetIterator is the iterator over assets.
-type AssetIterator = Iterator[*commands.Asset]
+type AssetIterator = Iterator[*commands.GetAssetsAsset]
 
 // NewAssetIterator constructs an AssetIterator configured for GetAssets.
 func NewAssetIterator(client Client, ctx context.Context, opts PaginationOptions, filters ...string) *AssetIterator {
-	return newIterator[*commands.Asset, *commands.GetAssets, *commands.GetAssetsResponse](
+	return newIterator[*commands.GetAssetsAsset, *commands.GetAssets, *commands.GetAssetsResponse](
 		client,
 		ctx,
 		opts,
@@ -22,18 +22,13 @@ func NewAssetIterator(client Client, ctx context.Context, opts PaginationOptions
 		func(client Client, ctx context.Context, cmd *commands.GetAssets) (*commands.GetAssetsResponse, error) {
 			return client.GetAssetsRaw(ctx, cmd)
 		},
-		func(resp *commands.GetAssetsResponse) []*commands.Asset {
-			items := make([]*commands.Asset, len(resp.Assets))
-			for i := range resp.Assets {
-				items[i] = &resp.Assets[i]
+		func(resp *commands.GetAssetsResponse) []*commands.GetAssetsAsset {
+			items := make([]*commands.GetAssetsAsset, len(resp.Asset))
+			for i := range resp.Asset {
+				items[i] = &resp.Asset[i]
 			}
 			return items
 		},
-		func(resp *commands.GetAssetsResponse) int {
-			if resp.AssetCount != nil {
-				return resp.AssetCount.Filtered
-			}
-			return 0
-		},
+		func(resp *commands.GetAssetsResponse) int { return resp.AssetCount.Filtered },
 	)
 }

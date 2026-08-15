@@ -1,7 +1,7 @@
 # fidelity: help / upstream / 002
 # provenance: command_help.xml, command "help", example 2
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /help_response/schema                                                    x1  (+28 descendant paths)

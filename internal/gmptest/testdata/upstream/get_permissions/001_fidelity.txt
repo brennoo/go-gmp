@@ -1,7 +1,7 @@
 # fidelity: get_permissions / upstream / 001
 # provenance: command_get_permissions.xml, command "get_permissions", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_permissions_response/filters/keywords/truncated                     x1  (+1 descendant paths)

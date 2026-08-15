@@ -1,7 +1,7 @@
 # fidelity: delete_schedule / upstream / 001
 # provenance: command_delete_schedule.xml, command "delete_schedule", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

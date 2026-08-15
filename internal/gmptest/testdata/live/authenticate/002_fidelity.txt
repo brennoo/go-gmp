@@ -1,7 +1,7 @@
 # fidelity: authenticate / live / 002
 # provenance: pre-auth: authenticate with a deliberately wrong password
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

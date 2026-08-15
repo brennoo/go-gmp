@@ -331,7 +331,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 			resp.StatusText = "OK"
 			if cmd.Filter != "" {
 				// Return mock data for pagination
-				resp.Assets = []commands.Asset{
+				resp.Asset = []commands.GetAssetsAsset{
 					{
 						ID:               "asset-1",
 						Name:             "Test Asset 1",
@@ -349,13 +349,13 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 						Type:             "host",
 					},
 				}
-				resp.AssetCount = &commands.AssetCount{
+				resp.AssetCount = commands.AssetCount{
 					Filtered: 2,
 					Page:     1,
 				}
 			} else {
 				// Return original data for specific asset ID
-				resp.Assets = []commands.Asset{
+				resp.Asset = []commands.GetAssetsAsset{
 					{
 						ID:               "b493b7a8-7489-11df-a3ec-002264764cea",
 						Name:             "Localhost",
@@ -1718,11 +1718,11 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp.StatusText = "OK"
 		if cmd.Filter != "" {
 			// Return mock data for pagination
-			resp.Assets = []commands.Asset{
+			resp.Asset = []commands.GetAssetsAsset{
 				{ID: "asset-1", Name: "Test Asset 1"},
 				{ID: "asset-2", Name: "Test Asset 2"},
 			}
-			resp.AssetCount = &commands.AssetCount{Filtered: 2}
+			resp.AssetCount = commands.AssetCount{Filtered: 2}
 		}
 	}
 

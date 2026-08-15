@@ -1,7 +1,7 @@
 # fidelity: get_groups / upstream / 001
 # provenance: command_get_groups.xml, command "get_groups", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_groups_response/filters/keywords/truncated                          x1  (+1 descendant paths)

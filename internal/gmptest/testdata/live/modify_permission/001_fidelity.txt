@@ -1,7 +1,7 @@
 # fidelity: modify_permission / live / 001
 # provenance: lifecycle: modify_permission comment
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

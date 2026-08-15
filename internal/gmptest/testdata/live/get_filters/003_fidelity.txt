@@ -1,7 +1,7 @@
 # fidelity: get_filters / live / 003
 # provenance: lifecycle: get_filters for the filter just created
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_filters_response/filter_count/#text                                 x1

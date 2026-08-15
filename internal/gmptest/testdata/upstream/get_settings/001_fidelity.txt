@@ -1,7 +1,7 @@
 # fidelity: get_settings / upstream / 001
 # provenance: command_get_settings.xml, command "get_settings", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

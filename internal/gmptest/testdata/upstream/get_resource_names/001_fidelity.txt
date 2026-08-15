@@ -1,7 +1,7 @@
 # fidelity: get_resource_names / upstream / 001
 # provenance: command_get_resource_names.xml, command "get_resource_names", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

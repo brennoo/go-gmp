@@ -1,7 +1,7 @@
 # fidelity: get_tls_certificates / live / 004
 # provenance: lifecycle: get_tls_certificates with include_certificate_data, certificate redacted
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_tls_certificates_response/sort/field/#text                          x1

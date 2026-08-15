@@ -1,7 +1,7 @@
 # fidelity: get_alerts / live / 003
 # provenance: lifecycle: get_alerts for the alert just created
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_alerts_response/alert_count/#text                                   x1

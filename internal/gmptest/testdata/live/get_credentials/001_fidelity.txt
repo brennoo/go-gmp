@@ -1,7 +1,7 @@
 # fidelity: get_credentials / live / 001
 # provenance: read-only: get_credentials bare
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_credentials_response/credential_count/#text                         x1

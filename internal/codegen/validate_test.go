@@ -3163,27 +3163,19 @@ func TestValidatePortListGeneratedMatchesOrImproves(t *testing.T) {
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
 
-// TestValidateAssetBeforeMatchesKnownConformance pins down what Validate's
-// "before" side reports for the asset family while it is still review-only.
-// See docs/review-2026-08.md's `asset added in review-only mode` section for
-// the per-finding explanation.
+// TestValidateAssetBeforeMatchesKnownConformance is the asset family's
+// counterpart to TestValidatePortListBeforeMatchesKnownConformance. asset is
+// adopted, so this is a drift detector on the committed commands/ files.
+// Pre-adoption findings are recorded in docs/review-2026-08.md.
 func TestValidateAssetBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_asset")
 
 	want := map[string]counts{
-		"create_asset": {
-			actionable: map[string]int{},
-			suppressed: map[string]int{schema.CatOmitEmpty: 1},
-		},
+		"create_asset": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_asset": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_assets": {
-			actionable: map[string]int{
-				schema.CatExtra:       6,
-				schema.CatCardinality: 1,
-				schema.CatType:        4,
-				schema.CatDefect:      1,
-			},
-			suppressed: map[string]int{schema.CatOmitEmpty: 9},
+			actionable: map[string]int{schema.CatDefect: 1},
+			suppressed: map[string]int{},
 		},
 	}
 	for _, res := range before {
@@ -3197,9 +3189,9 @@ func TestValidateAssetBeforeMatchesKnownConformance(t *testing.T) {
 }
 
 // TestValidateAssetGeneratedMatchesOrImproves is the asset family's
-// post-swap gate, run at the same rigour every prior family's was before
-// adoption. See docs/review-2026-08.md's `asset added in review-only mode`
-// section for what generation closes and what SCHEMA-DEFECT survives.
+// post-swap gate, run at the same rigour every prior family's was. See
+// docs/review-2026-08.md's asset section for the per-finding explanation of
+// what generation closed while asset was still review_only.
 func TestValidateAssetGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_asset")
 

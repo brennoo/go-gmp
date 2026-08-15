@@ -1,7 +1,7 @@
 # fidelity: modify_filter / upstream / 001
 # provenance: command_modify_filter.xml, command "modify_filter", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

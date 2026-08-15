@@ -1,7 +1,7 @@
 # fidelity: delete_schedule / live / 001
 # provenance: teardown: delete_schedule ultimate
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

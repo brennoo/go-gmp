@@ -1,7 +1,7 @@
 # fidelity: modify_filter / live / 001
 # provenance: lifecycle: modify_filter term
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

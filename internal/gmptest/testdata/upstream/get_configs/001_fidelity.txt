@@ -1,7 +1,7 @@
 # fidelity: get_configs / upstream / 001
 # provenance: command_get_configs.xml, command "get_configs", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_configs_response/truncated                                          x1  (+1 descendant paths)

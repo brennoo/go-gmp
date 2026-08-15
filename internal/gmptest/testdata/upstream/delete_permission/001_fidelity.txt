@@ -1,7 +1,7 @@
 # fidelity: delete_permission / upstream / 001
 # provenance: command_delete_permission.xml, command "delete_permission", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

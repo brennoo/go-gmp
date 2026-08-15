@@ -1,7 +1,7 @@
 # fidelity: modify_alert / upstream / 001
 # provenance: command_modify_alert.xml, command "modify_alert", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

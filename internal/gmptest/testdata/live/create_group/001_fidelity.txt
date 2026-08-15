@@ -1,7 +1,7 @@
 # fidelity: create_group / live / 001
 # provenance: lifecycle: create_group
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

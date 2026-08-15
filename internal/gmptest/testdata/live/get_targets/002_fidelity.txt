@@ -1,7 +1,7 @@
 # fidelity: get_targets / live / 002
 # provenance: read-only: get_targets with filter="rows=2 first=1"
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_targets_response/filters/@id                                        x1

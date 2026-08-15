@@ -1,7 +1,7 @@
 # fidelity: create_config / live / 001
 # provenance: lifecycle: create_config copying an existing config
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

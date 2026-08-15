@@ -1,7 +1,7 @@
 # fidelity: get_nvt_families / upstream / 001
 # provenance: command_get_nvt_families.xml, command "get_nvt_families", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_nvt_families_response/families/truncated                            x1  (+1 descendant paths)

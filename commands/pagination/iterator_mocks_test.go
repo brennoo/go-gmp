@@ -119,7 +119,7 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 		if cmd.Filter != "" {
 			// Check if page size is 0
 			if cmd.Filter == "first=1 rows=0" {
-				resp.Assets = []commands.Asset{}
+				resp.Asset = []commands.GetAssetsAsset{}
 			} else {
 				// Parse pagination parameters
 				first := 1
@@ -129,7 +129,7 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 				}
 
 				// Return appropriate slice based on pagination
-				allAssets := []commands.Asset{
+				allAssets := []commands.GetAssetsAsset{
 					{ID: "asset-1", Name: "Test Asset 1"},
 					{ID: "asset-2", Name: "Test Asset 2"},
 				}
@@ -137,15 +137,15 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 				start := first - 1
 				end := start + rows
 				if start >= len(allAssets) {
-					resp.Assets = []commands.Asset{}
+					resp.Asset = []commands.GetAssetsAsset{}
 				} else {
 					if end > len(allAssets) {
 						end = len(allAssets)
 					}
-					resp.Assets = allAssets[start:end]
+					resp.Asset = allAssets[start:end]
 				}
 			}
-			resp.AssetCount = &commands.AssetCount{Filtered: 2}
+			resp.AssetCount = commands.AssetCount{Filtered: 2}
 		}
 	}
 

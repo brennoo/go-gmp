@@ -1,7 +1,7 @@
 # fidelity: modify_note / live / 001
 # provenance: annotations: modify_note text
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

@@ -1,7 +1,7 @@
 # fidelity: restore / live / 001
 # provenance: lifecycle: restore the filter out of the trashcan
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

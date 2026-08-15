@@ -1,7 +1,7 @@
 # fidelity: get_vulns / live / 001
 # provenance: read-only: get_vulns bare
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_vulns_response/sort/field/#text                                     x1

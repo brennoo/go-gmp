@@ -1,7 +1,7 @@
 # fidelity: get_overrides / live / 001
 # provenance: read-only: get_overrides bare
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_overrides_response/override_count/#text                             x1

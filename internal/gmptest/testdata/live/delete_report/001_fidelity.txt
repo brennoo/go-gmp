@@ -1,7 +1,7 @@
 # fidelity: delete_report / live / 001
 # provenance: teardown: delete_report
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

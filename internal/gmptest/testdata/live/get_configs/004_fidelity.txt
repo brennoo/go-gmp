@@ -1,7 +1,7 @@
 # fidelity: get_configs / live / 004
 # provenance: lifecycle: get_configs for the copied config
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_configs_response/config_count/filtered                              x1  (+1 descendant paths)

@@ -1,7 +1,7 @@
 # fidelity: get_aggregates / upstream / 001
 # provenance: command_get_aggregates.xml, command "get_aggregates", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_aggregates_response/aggregate/column_info/truncated                 x1  (+1 descendant paths)

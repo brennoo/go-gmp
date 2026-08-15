@@ -1,7 +1,7 @@
 # fidelity: get_scanners / live / 002
 # provenance: read-only: get_scanners with filter="rows=2 first=1"
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_scanners_response/scanner/credential/type                           x2

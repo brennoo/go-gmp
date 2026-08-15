@@ -1,7 +1,7 @@
 # fidelity: get_aggregates / live / 002
 # provenance: read-only: get_aggregates with filter="rows=2 first=1"
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_aggregates_response/aggregate/column_info/aggregate_column/column   x2

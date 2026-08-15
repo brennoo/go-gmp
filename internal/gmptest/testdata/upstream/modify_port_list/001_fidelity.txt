@@ -1,7 +1,7 @@
 # fidelity: modify_port_list / upstream / 001
 # provenance: command_modify_port_list.xml, command "modify_port_list", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

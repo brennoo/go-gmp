@@ -1,7 +1,7 @@
 # fidelity: get_tags / live / 001
 # provenance: read-only: get_tags bare
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_tags_response/sort/field/#text                                      x1

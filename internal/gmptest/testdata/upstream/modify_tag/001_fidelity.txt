@@ -1,7 +1,7 @@
 # fidelity: modify_tag / upstream / 001
 # provenance: command_modify_tag.xml, command "modify_tag", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

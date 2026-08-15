@@ -1,7 +1,7 @@
 # fidelity: create_ticket / upstream / 001
 # provenance: command_create_ticket.xml, command "create_ticket", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

@@ -1,7 +1,7 @@
 # fidelity: get_info / live / 002
 # provenance: failure: get_info with no type attribute, which GMP requires
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

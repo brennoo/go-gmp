@@ -29,10 +29,10 @@ them, so response-side optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             65
-with actionable findings:     57
-actionable findings:          523  (request 248, response 275)
-suppressed findings:          599
+fully conformant:             66
+with actionable findings:     56
+actionable findings:          512  (request 248, response 264)
+suppressed findings:          589
 confirmed by fidelity corpus: 67
 in the schema, not in Go:     0
 in Go, not in the schema:     0
@@ -41,11 +41,11 @@ in Go, not in the schema:     0
 
                  actionable suppressed
   MISSING               191          0
-  EXTRA                 203          2
-  CARDINALITY            38          0
+  EXTRA                 197          2
+  CARDINALITY            37          0
   KIND                    9          0
-  OMITEMPTY               4        597
-  TYPE                   78          0
+  OMITEMPTY               4        587
+  TYPE                   74          0
   SCHEMA-DEFECT         107          0
 
 ### Schema defects by class
@@ -91,11 +91,11 @@ taken against upstream main (155 commands). Two reasons, both expected:
   modify_config                14   EXTRA=6  CARDINALITY=3  OMITEMPTY=2  TYPE=3
   modify_task                  13   MISSING=1  EXTRA=12
   get_aggregates               12   MISSING=5  EXTRA=5  CARDINALITY=2
-  get_assets                   11   EXTRA=6  CARDINALITY=1  TYPE=4
   get_agents                    9   MISSING=7  TYPE=2
   get_scanners                  9   EXTRA=6  TYPE=3
   get_users                     9   MISSING=1  EXTRA=2  CARDINALITY=2  KIND=2  TYPE=2
-  ... and 37 more with fewer
+  get_configs                   7   MISSING=3  EXTRA=2  TYPE=2
+  ... and 36 more with fewer
 
 ### Confirmed by both oracles
 
@@ -193,10 +193,7 @@ conformant
 
 ### create_asset  (command_create_asset.xml)
 
-OMITEMPTY=1
-
-  OMITEMPTY     request  /create_asset/report/filter
-                schema says required, Filter is tagged omitempty  [suppressed: request-side over-constraint]
+conformant
 
 ### create_config  (command_create_config.xml)
 
@@ -1269,48 +1266,8 @@ SCHEMA-DEFECT=2
 
 ### get_assets  (command_get_assets.xml)
 
-EXTRA=6  CARDINALITY=1  OMITEMPTY=9  TYPE=4  SCHEMA-DEFECT=1
+SCHEMA-DEFECT=1
 
-  EXTRA         response /get_assets_response/asset/esxi_credential
-                Go field ESXICredential *commands.AssetCredential has no counterpart in the schema
-  EXTRA         response /get_assets_response/asset/hosts
-                Go field Hosts string has no counterpart in the schema
-  EXTRA         response /get_assets_response/asset/max_hosts
-                Go field MaxHosts int has no counterpart in the schema
-  EXTRA         response /get_assets_response/asset/smb_credential
-                Go field SMBCredential *commands.AssetCredential has no counterpart in the schema
-  EXTRA         response /get_assets_response/asset/ssh_credential
-                Go field SSHCredential *commands.AssetCredential has no counterpart in the schema
-  EXTRA         response /get_assets_response/asset/tasks
-                Go field Tasks *commands.AssetTasks has no counterpart in the schema
-  CARDINALITY   response /get_assets_response/asset/identifiers/identifier
-                schema says required, Go has a slice []commands.AssetIdentifier (Identifier)
-  OMITEMPTY     response /get_assets_response/asset/host/routes/route/host/@distance
-                schema says optional, Distance string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_assets_response/asset/host/routes/route/host/@id
-                schema says optional, ID string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_assets_response/asset/host/routes/route/host/@same_source
-                schema says optional, SameSource string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_assets_response/asset/in_use
-                schema says required, InUse is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_assets_response/asset/writable
-                schema says required, Writable is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_assets_response/asset_count
-                schema says required, AssetCount is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_assets_response/assets
-                schema says required, AssetsInfo is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_assets_response/filters
-                schema says required, Filters is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_assets_response/sort
-                schema says required, Sort is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  TYPE          response /get_assets_response/asset/host/routes/route/host/@distance
-                schema type integer, Go Distance is string (want int)
-  TYPE          response /get_assets_response/asset/host/severity/value
-                schema type severity, Go Value is string (want float64)
-  TYPE          response /get_assets_response/asset/in_use
-                schema type boolean is text ("" is true), Go InUse is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_assets_response/asset/writable
-                schema type boolean is text ("" is true), Go Writable is bool: '7' fails to decode and '1' re-emits as 'true'
   SCHEMA-DEFECT response /get_assets_response/asset/host/routes/route/host/@distance
                 undefined-type: number is undefined; aliased to integer
 

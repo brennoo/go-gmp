@@ -1,7 +1,7 @@
 # fidelity: get_agents / upstream / 001
 # provenance: command_get_agents.xml, command "get_agents", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_agents_response/agent/heartbeat_interval                            x1  (+1 descendant paths)

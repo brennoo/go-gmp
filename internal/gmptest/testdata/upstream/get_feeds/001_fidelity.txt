@@ -1,7 +1,7 @@
 # fidelity: get_feeds / upstream / 001
 # provenance: command_get_feeds.xml, command "get_feeds", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

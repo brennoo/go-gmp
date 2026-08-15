@@ -1,7 +1,7 @@
 # fidelity: get_info / upstream / 002
 # provenance: command_get_info.xml, command "get_info", example 2
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_info_response/info/@max                                             x1

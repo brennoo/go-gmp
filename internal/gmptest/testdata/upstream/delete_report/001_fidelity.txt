@@ -1,7 +1,7 @@
 # fidelity: delete_report / upstream / 001
 # provenance: command_delete_report.xml, command "delete_report", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

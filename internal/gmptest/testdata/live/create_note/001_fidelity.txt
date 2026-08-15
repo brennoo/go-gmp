@@ -1,7 +1,7 @@
 # fidelity: create_note / live / 001
 # provenance: annotations: create_note on the imported result's NVT
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

@@ -1,7 +1,7 @@
 # fidelity: get_report_formats / upstream / 001
 # provenance: command_get_report_formats.xml, command "get_report_formats", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_report_formats_response/report_format/description/truncated         x1  (+1 descendant paths)

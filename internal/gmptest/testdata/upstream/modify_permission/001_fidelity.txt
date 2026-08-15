@@ -1,7 +1,7 @@
 # fidelity: modify_permission / upstream / 001
 # provenance: command_modify_permission.xml, command "modify_permission", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

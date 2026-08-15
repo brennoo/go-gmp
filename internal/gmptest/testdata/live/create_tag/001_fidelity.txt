@@ -1,7 +1,7 @@
 # fidelity: create_tag / live / 001
 # provenance: lifecycle: create_tag on the created target
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

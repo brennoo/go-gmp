@@ -1,7 +1,7 @@
 # fidelity: move_task / upstream / 001
 # provenance: command_move_task.xml, command "move_task", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

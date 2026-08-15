@@ -1,7 +1,7 @@
 # fidelity: get_vulns / upstream / 001
 # provenance: command_get_vulns.xml, command "get_vulns", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_vulns_response/sort/field/#text                                     x1

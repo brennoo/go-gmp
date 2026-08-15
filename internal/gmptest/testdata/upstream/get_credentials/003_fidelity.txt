@@ -1,7 +1,7 @@
 # fidelity: get_credentials / upstream / 003
 # provenance: command_get_credentials.xml, command "get_credentials", example 3
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

@@ -197,7 +197,11 @@ func (f Fidelity) Report(header string) string {
 		fmt.Fprintf(&b, "decode: error\nerror: %s\n", f.DecodeErr)
 		return b.String()
 	}
-	fmt.Fprintf(&b, "decode: ok\nnamespaces-seen: %s\n", strings.Join(f.Namespaces, " "))
+	b.WriteString("decode: ok\nnamespaces-seen:")
+	if len(f.Namespaces) > 0 {
+		b.WriteString(" " + strings.Join(f.Namespaces, " "))
+	}
+	b.WriteString("\n")
 	if f.Advisory() {
 		b.WriteString("ADVISORY: this document uses namespaces, which encoding/xml does not\n" +
 			"round-trip faithfully. Treat every count below as unreliable.\n")

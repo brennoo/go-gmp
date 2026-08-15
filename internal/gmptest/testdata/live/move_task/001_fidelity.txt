@@ -1,7 +1,7 @@
 # fidelity: move_task / live / 001
 # provenance: expected failure: move_task to a nonexistent slave
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

@@ -1,7 +1,7 @@
 # fidelity: run_wizard / upstream / 001
 # provenance: command_run_wizard.xml, command "run_wizard", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

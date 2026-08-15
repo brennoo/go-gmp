@@ -1,7 +1,7 @@
 # fidelity: modify_setting / upstream / 001
 # provenance: command_modify_setting.xml, command "modify_setting", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

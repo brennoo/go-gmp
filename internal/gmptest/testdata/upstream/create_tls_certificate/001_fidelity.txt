@@ -1,7 +1,7 @@
 # fidelity: create_tls_certificate / upstream / 001
 # provenance: command_create_tls_certificate.xml, command "create_tls_certificate", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

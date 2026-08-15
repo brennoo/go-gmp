@@ -1,7 +1,7 @@
 # fidelity: delete_override / upstream / 001
 # provenance: command_delete_override.xml, command "delete_override", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

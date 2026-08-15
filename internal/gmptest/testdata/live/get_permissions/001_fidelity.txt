@@ -1,7 +1,7 @@
 # fidelity: get_permissions / live / 001
 # provenance: read-only: get_permissions bare
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_permissions_response/permission/resource/@id                        x10

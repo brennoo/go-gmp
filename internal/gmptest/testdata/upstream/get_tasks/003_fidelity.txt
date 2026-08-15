@@ -1,7 +1,7 @@
 # fidelity: get_tasks / upstream / 003
 # provenance: command_get_tasks.xml, command "get_tasks", example 3
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_tasks_response/filters/keywords/truncated                           x1  (+1 descendant paths)

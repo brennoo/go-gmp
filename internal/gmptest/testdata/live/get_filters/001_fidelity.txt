@@ -1,7 +1,7 @@
 # fidelity: get_filters / live / 001
 # provenance: read-only: get_filters bare
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_filters_response/filter_count/#text                                 x1

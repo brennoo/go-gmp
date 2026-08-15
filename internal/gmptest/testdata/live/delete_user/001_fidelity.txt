@@ -1,7 +1,7 @@
 # fidelity: delete_user / live / 001
 # provenance: teardown: delete_user
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

@@ -1,7 +1,7 @@
 # fidelity: create_config / upstream / 001
 # provenance: command_create_config.xml, command "create_config", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

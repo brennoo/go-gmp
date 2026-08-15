@@ -1,7 +1,7 @@
 # fidelity: get_results / upstream / 001
 # provenance: command_get_results.xml, command "get_results", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_results_response/filters/keywords/truncated                         x1  (+1 descendant paths)

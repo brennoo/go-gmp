@@ -1,7 +1,7 @@
 # fidelity: get_alerts / live / 001
 # provenance: read-only: get_alerts bare
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_alerts_response/alert_count/#text                                   x1

@@ -1,7 +1,7 @@
 # fidelity: verify_scanner / upstream / 001
 # provenance: command_verify_scanner.xml, command "verify_scanner", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

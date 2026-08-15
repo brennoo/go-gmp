@@ -1,7 +1,7 @@
 # fidelity: get_port_lists / live / 002
 # provenance: read-only: get_port_lists with filter="rows=2 first=1"
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_port_lists_response/port_list_count/#text                           x1

@@ -1,7 +1,7 @@
 # fidelity: modify_scanner / live / 001
 # provenance: lifecycle: modify_scanner comment
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

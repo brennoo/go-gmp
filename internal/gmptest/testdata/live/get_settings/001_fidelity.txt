@@ -1,7 +1,7 @@
 # fidelity: get_settings / live / 001
 # provenance: read-only: get_settings bare
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_settings_response/filters/term                                      x1

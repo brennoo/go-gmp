@@ -1,7 +1,7 @@
 # fidelity: modify_tls_certificate / live / 001
 # provenance: lifecycle: modify_tls_certificate comment
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

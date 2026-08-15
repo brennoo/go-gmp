@@ -1,7 +1,7 @@
 # fidelity: modify_task / upstream / 001
 # provenance: command_modify_task.xml, command "modify_task", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

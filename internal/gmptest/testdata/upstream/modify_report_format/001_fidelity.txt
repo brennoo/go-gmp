@@ -1,7 +1,7 @@
 # fidelity: modify_report_format / upstream / 001
 # provenance: command_modify_report_format.xml, command "modify_report_format", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

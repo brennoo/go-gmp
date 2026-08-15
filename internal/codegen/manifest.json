@@ -54,8 +54,7 @@
     },
     {
       "name": "asset",
-      "commands": ["create_asset", "get_assets", "modify_asset"],
-      "review_only": true
+      "commands": ["create_asset", "get_assets", "modify_asset"]
     }
   ]
 }

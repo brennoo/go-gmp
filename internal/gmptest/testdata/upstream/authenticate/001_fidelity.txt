@@ -1,7 +1,7 @@
 # fidelity: authenticate / upstream / 001
 # provenance: command_authenticate.xml, command "authenticate", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

@@ -1,7 +1,7 @@
 # fidelity: modify_credential / upstream / 001
 # provenance: command_modify_credential.xml, command "modify_credential", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

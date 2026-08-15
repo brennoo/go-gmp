@@ -1,7 +1,7 @@
 # fidelity: get_report_configs / upstream / 001
 # provenance: command_get_report_configs.xml, command "get_report_configs", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_report_configs_response/report_config/param/type/max                x1  (+1 descendant paths)

@@ -1,7 +1,7 @@
 # fidelity: get_tls_certificates / upstream / 001
 # provenance: command_get_tls_certificates.xml, command "get_tls_certificates", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_tls_certificates_response/sort/field/#text                          x1

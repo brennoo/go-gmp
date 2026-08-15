@@ -1,7 +1,7 @@
 # fidelity: delete_note / live / 001
 # provenance: teardown: delete_note ultimate
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

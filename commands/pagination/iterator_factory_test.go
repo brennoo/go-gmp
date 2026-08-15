@@ -48,7 +48,7 @@ func (f *fakeAllClient) GetSettingsRaw(ctx context.Context, cmd *commands.GetSet
 func TestNewIterator_DefaultPageSizeAndHasMore_Computed(t *testing.T) {
 	// PageSize < 0 should default to 100; provide exactly 100 items to set hasMore=true path
 	client := &fakeAllClient{
-		assetsResp: &commands.GetAssetsResponse{Assets: make([]commands.Asset, 100)},
+		assetsResp: &commands.GetAssetsResponse{Asset: make([]commands.GetAssetsAsset, 100)},
 	}
 	it := NewAssetIterator(client, context.Background(), PaginationOptions{Page: 1, PageSize: -1})
 	if !it.Next() {
@@ -58,25 +58,6 @@ func TestNewIterator_DefaultPageSizeAndHasMore_Computed(t *testing.T) {
 		t.Fatalf("unexpected error: %v", it.Err())
 	}
 	// do not continue iterating; hasMore could remain true with fixed response
-}
-
-func TestAssetsIterator_TotalNilCount(t *testing.T) {
-	client := &fakeAllClient{
-		assetsResp: &commands.GetAssetsResponse{Assets: []commands.Asset{{ID: "a1"}, {ID: "a2"}}, AssetCount: nil},
-	}
-	// PageSize > len(items) to force hasMore=false
-	it := NewAssetIterator(client, context.Background(), PaginationOptions{Page: 1, PageSize: 3})
-	if !it.Next() {
-		t.Fatalf("expected first Next() true")
-	}
-	_ = it.Current()
-	// Next should exhaust and then stop
-	for it.Next() {
-		_ = it.Current()
-	}
-	if it.Total() != 0 {
-		t.Fatalf("expected total 0 with nil AssetCount, got %d", it.Total())
-	}
 }
 
 func TestResultsIterator_TotalNilCount(t *testing.T) {

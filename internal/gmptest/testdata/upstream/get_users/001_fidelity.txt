@@ -1,7 +1,7 @@
 # fidelity: get_users / upstream / 001
 # provenance: command_get_users.xml, command "get_users", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

@@ -1,7 +1,7 @@
 # fidelity: modify_note / upstream / 001
 # provenance: command_modify_note.xml, command "modify_note", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

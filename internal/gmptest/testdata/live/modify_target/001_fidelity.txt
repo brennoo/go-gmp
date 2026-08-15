@@ -1,7 +1,7 @@
 # fidelity: modify_target / live / 001
 # provenance: lifecycle: modify_target comment
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

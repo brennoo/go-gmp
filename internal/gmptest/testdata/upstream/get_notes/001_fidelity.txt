@@ -1,7 +1,7 @@
 # fidelity: get_notes / upstream / 001
 # provenance: command_get_notes.xml, command "get_notes", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_notes_response/truncated                                            x1  (+1 descendant paths)

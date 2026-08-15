@@ -1,7 +1,7 @@
 # fidelity: delete_alert / upstream / 001
 # provenance: command_delete_alert.xml, command "delete_alert", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

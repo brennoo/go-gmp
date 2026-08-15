@@ -1,7 +1,7 @@
 # fidelity: get_tags / upstream / 001
 # provenance: command_get_tags.xml, command "get_tags", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_tags_response/tag/comment                                           x1

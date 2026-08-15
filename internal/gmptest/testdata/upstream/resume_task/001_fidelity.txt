@@ -1,7 +1,7 @@
 # fidelity: resume_task / upstream / 001
 # provenance: command_resume_task.xml, command "resume_task", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

@@ -1,7 +1,7 @@
 # fidelity: get_reports / upstream / 002
 # provenance: command_get_reports.xml, command "get_reports", example 2
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_reports_response/report/report/closed_cves/count                    x1  (+1 descendant paths)

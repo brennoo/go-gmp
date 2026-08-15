@@ -1,7 +1,7 @@
 # fidelity: delete_config / live / 001
 # provenance: teardown: delete_config ultimate
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

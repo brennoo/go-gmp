@@ -1,7 +1,7 @@
 # fidelity: modify_schedule / upstream / 001
 # provenance: command_modify_schedule.xml, command "modify_schedule", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

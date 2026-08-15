@@ -1,7 +1,7 @@
 # fidelity: create_tls_certificate / live / 001
 # provenance: lifecycle: create_tls_certificate from the generated certificate, redacted
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   (none)

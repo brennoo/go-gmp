@@ -1,7 +1,7 @@
 # fidelity: get_nvts / upstream / 001
 # provenance: command_get_nvts.xml, command "get_nvts", example 1
 decode: ok
-namespaces-seen: 
+namespaces-seen:
 
 DROPPED
   /get_nvts_response/nvt/cvss_base                                         x1
