@@ -1,0 +1,19 @@
+internal/codegen/overrides.go
+  s_47b1395de3da0b::t_04a152e290bbcc 274-342,404,407,410,413
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "b6b217148b2948a23488b40b31f6dd6bc1986ed3",
+  "prompts": {},
+  "sessions": {
+    "s_47b1395de3da0b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_47b1395de3da0b",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
