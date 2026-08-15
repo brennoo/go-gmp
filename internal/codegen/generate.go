@@ -29,17 +29,18 @@ const sharedFileSuffix = "_shared.go"
 // of (cmds, ov, pf): no clock, no filesystem, no map iteration order leaks
 // into it, and nothing here reads vendor/XML. That is what lets the golden
 // test in generate_test.go run in CI with only the committed JSON snapshot.
-func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, fo map[string][]FieldOverride, cw map[string]CommandWarning) (map[string]string, error) {
+func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, fo map[string][]FieldOverride, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry) (map[string]string, error) {
 	if len(cmds) == 0 {
 		return nil, fmt.Errorf("codegen: no commands to generate")
 	}
 	g := &gen{
-		ov: ov, pf: pf, fo: fo, cw: cw,
+		ov: ov, pf: pf, fo: fo, cw: cw, da: da,
 		byHash:      map[string]*structType{},
 		taken:       map[string]bool{},
 		needsErrors: map[*strings.Builder]bool{},
 		foConsumed:  map[string]bool{},
 		cwConsumed:  map[string]bool{},
+		daConsumed:  map[DefectKey]bool{},
 	}
 
 	// Sorting decouples the output from the caller's slice order, so a
@@ -54,6 +55,12 @@ func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]Point
 		if g.cmds[i].Request == nil || g.cmds[i].Response == nil {
 			return nil, fmt.Errorf("codegen: %s: snapshot is missing a request or response shape", g.cmds[i].Name)
 		}
+	}
+	if err := g.validateDefectAllowlist(); err != nil {
+		return nil, err
+	}
+	if err := g.checkDefects(); err != nil {
+		return nil, err
 	}
 
 	g.family = familyPrefix(g.cmds)
@@ -75,7 +82,105 @@ func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]Point
 	if err := g.checkCommandWarningsConsumed(); err != nil {
 		return nil, err
 	}
+	if err := g.checkDefectAllowlistConsumed(); err != nil {
+		return nil, err
+	}
 	return out, nil
+}
+
+// validDefectClasses are schema.parse.go's eight Defect* constants, checked
+// by name so a typo'd Class in DefectAllowlist fails as malformed metadata
+// rather than surfacing indirectly as a stale entry.
+var validDefectClasses = map[string]bool{
+	schema.DefectTypeForT:      true,
+	schema.DefectDanglingRef:   true,
+	schema.DefectDuplicateEle:  true,
+	schema.DefectEmptyPattern:  true,
+	schema.DefectNoPattern:     true,
+	schema.DefectUndefinedType: true,
+	schema.DefectUnsupportedR:  true,
+	schema.DefectRecursion:     true,
+}
+
+// validateDefectAllowlist checks the shape of every DefectAllowlist entry in
+// g.da, independent of which command is in scope for this call: a missing
+// Reason is a defect in the table itself, the same reasoning
+// validateFieldOverrides/validateCommandWarnings apply to their own tables.
+func (g *gen) validateDefectAllowlist() error {
+	keys := make([]DefectKey, 0, len(g.da))
+	for k := range g.da {
+		keys = append(keys, k)
+	}
+	sort.Slice(keys, func(i, j int) bool {
+		if keys[i].Command != keys[j].Command {
+			return keys[i].Command < keys[j].Command
+		}
+		if keys[i].Class != keys[j].Class {
+			return keys[i].Class < keys[j].Class
+		}
+		return keys[i].Path < keys[j].Path
+	})
+	for _, k := range keys {
+		switch {
+		case k.Command == "":
+			return fmt.Errorf("codegen: DefectAllowlist[%+v]: Command is empty", k)
+		case k.Path == "":
+			return fmt.Errorf("codegen: DefectAllowlist[%+v]: Path is empty", k)
+		case !validDefectClasses[k.Class]:
+			return fmt.Errorf("codegen: DefectAllowlist[%+v]: Class is not a known schema.Defect* class", k)
+		case g.da[k].Reason == "":
+			return fmt.Errorf("codegen: DefectAllowlist[%+v]: Reason is empty", k)
+		}
+	}
+	return nil
+}
+
+// checkDefects fails the build on any schema.Defect (schema.Command.Defects)
+// carried by a command in this call that DefectAllowlist does not admit —
+// T-15's fail-closed gate: an empty-pattern, no-pattern, recursion-cut or
+// dangling-e node used to generate a silently truncated struct instead of
+// refusing to generate at all. It also records which allowlist keys matched,
+// so checkDefectAllowlistConsumed can flag one that no longer does.
+func (g *gen) checkDefects() error {
+	var bad []string
+	for i := range g.cmds {
+		c := &g.cmds[i]
+		for _, d := range c.Defects {
+			key := DefectKey{Command: c.Name, Class: d.Class, Path: d.Path}
+			if _, ok := g.da[key]; !ok {
+				bad = append(bad, fmt.Sprintf("%s: %s at %s (%s)", c.Name, d.Class, d.Path, d.Detail))
+				continue
+			}
+			g.daConsumed[key] = true
+		}
+	}
+	if len(bad) == 0 {
+		return nil
+	}
+	sort.Strings(bad)
+	return fmt.Errorf("codegen: schema defect(s) not in DefectAllowlist, refusing to generate: %s", strings.Join(bad, "; "))
+}
+
+// checkDefectAllowlistConsumed fails the build on a stale or mistyped
+// DefectAllowlist entry, mirroring checkFieldOverridesConsumed's scoping:
+// only a command that was actually part of this call can make "the defect it
+// names never appeared" mean anything.
+func (g *gen) checkDefectAllowlistConsumed() error {
+	present := make(map[string]bool, len(g.cmds))
+	for i := range g.cmds {
+		present[g.cmds[i].Name] = true
+	}
+	var stale []string
+	for key := range g.da {
+		if present[key.Command] && !g.daConsumed[key] {
+			stale = append(stale, fmt.Sprintf("%s:%s:%s", key.Command, key.Class, key.Path))
+		}
+	}
+	if len(stale) == 0 {
+		return nil
+	}
+	sort.Strings(stale)
+	return fmt.Errorf("codegen: DefectAllowlist entry(ies) never matched a generated defect: %s", strings.Join(stale, ", "))
 }
 
 // validateCommandWarnings checks the shape of every CommandWarnings entry in
@@ -236,7 +341,7 @@ func (g *gen) checkFieldOverridesConsumed() error {
 // cmds may contain commands in any order and must cover every command the
 // manifest names; a command not claimed by any family is an error, since it
 // would otherwise be silently dropped.
-func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, fo map[string][]FieldOverride, cw map[string]CommandWarning) (map[string]string, error) {
+func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, fo map[string][]FieldOverride, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry) (map[string]string, error) {
 	byName := make(map[string]schema.Command, len(cmds))
 	for _, c := range cmds {
 		byName[c.Name] = c
@@ -253,7 +358,7 @@ func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf m
 			}
 			fam = append(fam, c)
 		}
-		files, err := Generate(fam, ov, pf, fo, cw)
+		files, err := Generate(fam, ov, pf, fo, cw, da)
 		if err != nil {
 			return nil, fmt.Errorf("codegen: family %q: %w", f.Name, err)
 		}
@@ -315,6 +420,7 @@ type gen struct {
 	pf     map[string]PointerOverride
 	fo     map[string][]FieldOverride
 	cw     map[string]CommandWarning
+	da     map[DefectKey]DefectAllowlistEntry
 	family string
 
 	byHash map[string]*structType
@@ -335,6 +441,10 @@ type gen struct {
 	// generated command during this run, so checkCommandWarningsConsumed can
 	// flag a stale one.
 	cwConsumed map[string]bool
+
+	// daConsumed records which DefectAllowlist keys matched a schema.Defect
+	// during this run, so checkDefectAllowlistConsumed can flag a stale one.
+	daConsumed map[DefectKey]bool
 }
 
 // fieldOverrideKey builds a FieldOverrides key from a structType's use: the

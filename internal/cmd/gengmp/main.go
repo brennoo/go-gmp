@@ -103,7 +103,7 @@ func check(manifest codegen.Manifest, o options) error {
 		return fmt.Errorf("-out %s is not a directory", o.out)
 	}
 
-	report, err := codegen.CheckOutput(manifest, o.schema, o.out, codegen.TypeOverrides, codegen.PointerOverrides, codegen.FieldOverrides, codegen.CommandWarnings)
+	report, err := codegen.CheckOutput(manifest, o.schema, o.out, codegen.TypeOverrides, codegen.PointerOverrides, codegen.FieldOverrides, codegen.CommandWarnings, codegen.DefectAllowlist)
 	if err != nil {
 		return err
 	}
@@ -137,7 +137,7 @@ func write(manifest codegen.Manifest, o options) error {
 		return fmt.Errorf("loading snapshots from %s: %w", o.schema, err)
 	}
 
-	files, err := codegen.GenerateAll(manifest, cmds, codegen.TypeOverrides, codegen.PointerOverrides, codegen.FieldOverrides, codegen.CommandWarnings)
+	files, err := codegen.GenerateAll(manifest, cmds, codegen.TypeOverrides, codegen.PointerOverrides, codegen.FieldOverrides, codegen.CommandWarnings, codegen.DefectAllowlist)
 	if err != nil {
 		return fmt.Errorf("generate: %w", err)
 	}
