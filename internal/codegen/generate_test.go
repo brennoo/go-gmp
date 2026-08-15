@@ -580,6 +580,268 @@ func main() {
 }
 `
 
+// ticketScratchModule copies the generated ticket family into a throwaway
+// module under dir/genproto, the same technique
+// TestTLSCertificateGeneratedRoundTrips uses, and returns the go binary path.
+// internal/gmptest/cases_ticket.go still targets the hand-written commands
+// package (ticket is review-only), so this is the only way to exercise the
+// real generated types before adoption.
+func ticketScratchModule(t *testing.T, dir string) string {
+	t.Helper()
+	goBin, err := exec.LookPath("go")
+	if err != nil {
+		t.Skipf("Skipping: no go toolchain on PATH (%v)", err)
+	}
+	got := generateOrFail(t)
+	for _, name := range []string{CommandFile("create_ticket"), CommandFile("modify_ticket"), CommandFile("get_tickets")} {
+		if _, ok := got[name]; !ok {
+			t.Fatalf("%s was not generated, so this test would not compile it", name)
+		}
+	}
+
+	root, err := filepath.Abs("../..")
+	if err != nil {
+		t.Fatalf("Failed to resolve the module root: %v", err)
+	}
+	pkgDir := filepath.Join(dir, "genproto")
+	if err := os.MkdirAll(pkgDir, 0o750); err != nil {
+		t.Fatalf("Failed to create the scratch package: %v", err)
+	}
+	goVersion, err := goDirective(filepath.Join(root, "go.mod"))
+	if err != nil {
+		t.Fatalf("Failed to read the module's go directive: %v", err)
+	}
+	gomod := "module gogmpcodegencheck\n\ngo " + goVersion + "\n\n" +
+		"require github.com/brennoo/go-gmp v0.0.0\n\n" +
+		"replace github.com/brennoo/go-gmp => " + root + "\n"
+	mustWriteFile(t, filepath.Join(dir, "go.mod"), gomod)
+	mustWriteFile(t, filepath.Join(pkgDir, "support.go"),
+		strings.Replace(supportShim(), "package "+targetPackage+"\n", "package genproto\n", 1))
+	for name, src := range got {
+		rewritten := strings.Replace(src, "\npackage "+targetPackage+"\n", "\npackage genproto\n", 1)
+		if rewritten == src {
+			t.Fatalf("%s: expected a %q package clause to rewrite", name, targetPackage)
+		}
+		mustWriteFile(t, filepath.Join(pkgDir, name), rewritten)
+	}
+	return goBin
+}
+
+// TestTicketGeneratedRequestRoundTrips is T-9 ticket review finding 2:
+// internal/gmptest/cases_ticket.go still uses the hand-written Assigned
+// *TicketUser field, so it cannot exercise the generated AssignedTo shape or
+// the PointerOverrides added for modify_ticket's note fields. This proves
+// the real generated CreateTicket/ModifyTicket/GetTickets request types
+// against that experiment's conclusions directly.
+func TestTicketGeneratedRequestRoundTrips(t *testing.T) {
+	dir := t.TempDir()
+	goBin := ticketScratchModule(t, dir)
+	mustWriteFile(t, filepath.Join(dir, "main.go"), ticketRequestRoundTripProgram)
+
+	cmd := exec.CommandContext(context.Background(), goBin, "run", ".")
+	cmd.Dir = dir
+	cmd.Env = append(os.Environ(), "GOWORK=off", "GOFLAGS=")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("Round-trip program failed: %v\n%s", err, out)
+	}
+
+	want := "" +
+		"create-ticket-assigned-to: <create_ticket><result id=\"result-1\"></result><assigned_to><user id=\"user-1\"></user></assigned_to><open_note>opened</open_note></create_ticket>\n" +
+		"modify-ticket-omitted: <modify_ticket ticket_id=\"ticket-1\"></modify_ticket>\n" +
+		"modify-ticket-assigned-to-set: <modify_ticket ticket_id=\"ticket-1\"><assigned_to><user id=\"user-2\"></user></assigned_to></modify_ticket>\n" +
+		"modify-ticket-comment-explicit-empty: <modify_ticket ticket_id=\"ticket-1\"><comment></comment></modify_ticket>\n" +
+		"modify-ticket-comment-set: <modify_ticket ticket_id=\"ticket-1\"><comment>a comment</comment></modify_ticket>\n" +
+		"modify-ticket-status-set: <modify_ticket ticket_id=\"ticket-1\"><status>Open</status></modify_ticket>\n" +
+		"get-tickets-trash-unset: <get_tickets></get_tickets>\n" +
+		"get-tickets-trash-false: <get_tickets trash=\"0\"></get_tickets>\n" +
+		"get-tickets-trash-true: <get_tickets trash=\"1\"></get_tickets>\n" +
+		"get-tickets-filt-id: <get_tickets filt_id=\"filter-1\"></get_tickets>\n"
+	if got := string(out); got != want {
+		t.Fatalf("Round-trip program printed:\n%s\nwant:\n%s", got, want)
+	}
+}
+
+// ticketRequestRoundTripProgram is a `go run` main for
+// TestTicketGeneratedRequestRoundTrips. modify-ticket-omitted proves the
+// omitted-vs-pointer distinction PointerOverrides relies on: nil drops the
+// field entirely, a pointer to "" sends explicit-empty, matching the live
+// gvmd experiment in docs/review-2026-08.md.
+const ticketRequestRoundTripProgram = `package main
+
+import (
+	"encoding/xml"
+	"fmt"
+	"os"
+
+	"gogmpcodegencheck/genproto"
+)
+
+func printXML(label string, v any) {
+	b, err := xml.Marshal(v)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, label, err)
+		os.Exit(1)
+	}
+	fmt.Printf("%s: %s\n", label, b)
+}
+
+func strp(s string) *string { return &s }
+func boolp(b genproto.GMPBool) *genproto.GMPBool { return &b }
+
+func main() {
+	printXML("create-ticket-assigned-to", &genproto.CreateTicket{
+		Result:     genproto.TicketResult{ID: "result-1"},
+		AssignedTo: genproto.TicketAssignedTo{User: genproto.TicketUser{ID: "user-1"}},
+		OpenNote:   "opened",
+	})
+
+	printXML("modify-ticket-omitted", &genproto.ModifyTicket{TicketID: "ticket-1"})
+	printXML("modify-ticket-assigned-to-set", &genproto.ModifyTicket{
+		TicketID:   "ticket-1",
+		AssignedTo: &genproto.TicketAssignedTo{User: genproto.TicketUser{ID: "user-2"}},
+	})
+	printXML("modify-ticket-comment-explicit-empty", &genproto.ModifyTicket{TicketID: "ticket-1", Comment: strp("")})
+	printXML("modify-ticket-comment-set", &genproto.ModifyTicket{TicketID: "ticket-1", Comment: strp("a comment")})
+	printXML("modify-ticket-status-set", &genproto.ModifyTicket{TicketID: "ticket-1", Status: "Open"})
+
+	printXML("get-tickets-trash-unset", &genproto.GetTickets{})
+	printXML("get-tickets-trash-false", &genproto.GetTickets{Trash: boolp(false)})
+	printXML("get-tickets-trash-true", &genproto.GetTickets{Trash: boolp(true)})
+	printXML("get-tickets-filt-id", &genproto.GetTickets{FiltID: "filter-1"})
+}
+`
+
+// TestTicketGeneratedResponseRoundTrips is T-9 ticket review finding 3: the
+// upstream and live get_tickets fixtures on file confirm every documented
+// generation change except two paths neither fixture exercises
+// (user_tags/nvt), so this adds a synthetic document for those alongside the
+// real fixtures.
+func TestTicketGeneratedResponseRoundTrips(t *testing.T) {
+	dir := t.TempDir()
+	goBin := ticketScratchModule(t, dir)
+
+	upstreamFixture, err := filepath.Abs("../gmptest/testdata/upstream/get_tickets/001_response.xml")
+	if err != nil {
+		t.Fatalf("Failed to resolve the upstream fixture path: %v", err)
+	}
+	if _, err := os.Stat(upstreamFixture); err != nil {
+		t.Fatalf("Upstream fixture not found: %v", err)
+	}
+	liveFixture, err := filepath.Abs("../gmptest/testdata/live/get_tickets/001_response.xml")
+	if err != nil {
+		t.Fatalf("Failed to resolve the live fixture path: %v", err)
+	}
+	if _, err := os.Stat(liveFixture); err != nil {
+		t.Fatalf("Live fixture not found: %v", err)
+	}
+	syntheticFixture := filepath.Join(dir, "synthetic.xml")
+	mustWriteFile(t, syntheticFixture, ticketSyntheticResponse)
+
+	mustWriteFile(t, filepath.Join(dir, "main.go"), ticketResponseRoundTripProgram)
+
+	cmd := exec.CommandContext(context.Background(), goBin, "run", ".", upstreamFixture, liveFixture, syntheticFixture)
+	cmd.Dir = dir
+	cmd.Env = append(os.Environ(), "GOWORK=off", "GOFLAGS=")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("Round-trip program failed: %v\n%s", err, out)
+	}
+
+	want := "" +
+		"upstream-decode: tickets=1 filtered=2 page=2\n" +
+		"  ticket id=\"93cd2f71-48c3-4cf2-b542-5b256f59cae0\" assigned_to.user.id=\"33e92d3e-a379-4c46-a4cf-88c8201ab710\" writable=true in_use=false orphan=false nvt.oid=\"\"\n" +
+		"upstream-roundtrip: tickets=1 filtered=2 page=2\n" +
+		"  ticket id=\"93cd2f71-48c3-4cf2-b542-5b256f59cae0\" assigned_to.user.id=\"33e92d3e-a379-4c46-a4cf-88c8201ab710\" writable=true in_use=false orphan=false nvt.oid=\"\"\n" +
+		"live-decode: tickets=0 filtered=0 page=0\n" +
+		"live-roundtrip: tickets=0 filtered=0 page=0\n" +
+		"synthetic-decode: tickets=1 filtered=1 page=1\n" +
+		"  ticket id=\"ticket-syn-1\" assigned_to.user.id=\"user-syn-1\" writable=false in_use=false orphan=true nvt.oid=\"1.3.6.1.4.1.25623.1.0.12345\" user_tags.count=2 tag.comment=\"a tag comment\"\n" +
+		"synthetic-roundtrip: tickets=1 filtered=1 page=1\n" +
+		"  ticket id=\"ticket-syn-1\" assigned_to.user.id=\"user-syn-1\" writable=false in_use=false orphan=true nvt.oid=\"1.3.6.1.4.1.25623.1.0.12345\" user_tags.count=2 tag.comment=\"a tag comment\"\n"
+	if got := string(out); got != want {
+		t.Fatalf("Round-trip program printed:\n%s\nwant:\n%s", got, want)
+	}
+}
+
+// ticketSyntheticResponse covers the two paths neither committed get_tickets
+// fixture exercises: nvt and user_tags.
+const ticketSyntheticResponse = `<get_tickets_response status="200" status_text="OK">
+  <ticket id="ticket-syn-1">
+    <nvt oid="1.3.6.1.4.1.25623.1.0.12345"/>
+    <assigned_to><user id="user-syn-1"/></assigned_to>
+    <orphan>1</orphan>
+    <user_tags>
+      <count>2</count>
+      <tag id="tag-1"><name>tag-name</name><value>tag-value</value><comment>a tag comment</comment></tag>
+    </user_tags>
+  </ticket>
+  <tickets start="1" max="10"/>
+  <ticket_count>1<filtered>1</filtered><page>1</page></ticket_count>
+</get_tickets_response>
+`
+
+// ticketResponseRoundTripProgram is a `go run` main for
+// TestTicketGeneratedResponseRoundTrips. argv[1] is the upstream fixture,
+// argv[2] the live one, argv[3] the synthetic one.
+const ticketResponseRoundTripProgram = `package main
+
+import (
+	"encoding/xml"
+	"fmt"
+	"os"
+
+	"gogmpcodegencheck/genproto"
+)
+
+func report(label string, r *genproto.GetTicketsResponse) {
+	fmt.Printf("%s: tickets=%d filtered=%d page=%d\n", label, len(r.Ticket), r.TicketCount.Filtered, r.TicketCount.Page)
+	for _, t := range r.Ticket {
+		fmt.Printf("  ticket id=%q assigned_to.user.id=%q writable=%t in_use=%t orphan=%t nvt.oid=%q",
+			t.ID, t.AssignedTo.User.ID, bool(t.Writable), bool(t.InUse), bool(t.Orphan), t.NVT.OID)
+		if t.UserTags != nil {
+			fmt.Printf(" user_tags.count=%d", t.UserTags.Count)
+			for _, tag := range t.UserTags.Tag {
+				fmt.Printf(" tag.comment=%q", tag.Comment)
+			}
+		}
+		fmt.Println()
+	}
+}
+
+func decodeAndRoundTrip(path, decodeLabel, roundtripLabel string) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	var decoded genproto.GetTicketsResponse
+	if err := xml.Unmarshal(data, &decoded); err != nil {
+		fmt.Fprintln(os.Stderr, "decode:", err)
+		os.Exit(1)
+	}
+	report(decodeLabel, &decoded)
+
+	reencoded, err := xml.Marshal(&decoded)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "encode:", err)
+		os.Exit(1)
+	}
+	var roundtripped genproto.GetTicketsResponse
+	if err := xml.Unmarshal(reencoded, &roundtripped); err != nil {
+		fmt.Fprintln(os.Stderr, "re-decode:", err)
+		os.Exit(1)
+	}
+	report(roundtripLabel, &roundtripped)
+}
+
+func main() {
+	decodeAndRoundTrip(os.Args[1], "upstream-decode", "upstream-roundtrip")
+	decodeAndRoundTrip(os.Args[2], "live-decode", "live-roundtrip")
+	decodeAndRoundTrip(os.Args[3], "synthetic-decode", "synthetic-roundtrip")
+}
+`
+
 // mustWriteFile is writeFile (scratch.go) with the *testing.T ceremony a test
 // wants but a reusable helper shouldn't carry.
 func mustWriteFile(t *testing.T, path, content string) {

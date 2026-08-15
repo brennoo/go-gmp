@@ -228,6 +228,18 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.GetPermissions{}),
 			Response: schema.ModelOf(&commands.GetPermissionsResponse{}),
 		},
+		"create_ticket": {
+			Request:  schema.ModelOf(&commands.CreateTicket{}),
+			Response: schema.ModelOf(&commands.CreateTicketResponse{}),
+		},
+		"modify_ticket": {
+			Request:  schema.ModelOf(&commands.ModifyTicket{}),
+			Response: schema.ModelOf(&commands.ModifyTicketResponse{}),
+		},
+		"get_tickets": {
+			Request:  schema.ModelOf(&commands.GetTickets{}),
+			Response: schema.ModelOf(&commands.GetTicketsResponse{}),
+		},
 	}
 }
 

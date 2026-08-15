@@ -2600,6 +2600,250 @@ func TestPermissionSortValueIsWhitespaceOnly(t *testing.T) {
 	}
 }
 
+func TestValidateTicketBeforeMatchesKnownConformance(t *testing.T) {
+	before, _ := validateOrSkip(t, "create_ticket")
+
+	want := map[string]counts{
+		"create_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_tickets": {
+			actionable: map[string]int{
+				schema.CatMissing: 6,
+				schema.CatExtra:   4,
+				schema.CatKind:    3,
+				schema.CatType:    3,
+			},
+			suppressed: map[string]int{
+				schema.CatOmitEmpty: 23,
+			},
+		},
+	}
+	for _, res := range before {
+		w, ok := want[res.Command]
+		if !ok {
+			t.Errorf("%s: unexpected command in Validate's before results", res.Command)
+			continue
+		}
+		assertCounts(t, "before", res.Command, w, countFindings(res.Findings))
+	}
+}
+
+// TestValidateTicketGeneratedMatchesOrImproves is the ticket family's
+// post-swap gate. See docs/review-2026-08.md's ticket section for what each
+// closed finding was and why.
+func TestValidateTicketGeneratedMatchesOrImproves(t *testing.T) {
+	before, after := validateOrSkip(t, "create_ticket")
+
+	wantAfter := map[string]counts{
+		"create_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_tickets":   {actionable: map[string]int{}, suppressed: map[string]int{}},
+	}
+	assertMatchesOrImproves(t, before, after, wantAfter)
+}
+
+// ticketCountProbe mirrors TicketCount in testdata/golden/get_tickets.go.
+type ticketCountProbe struct {
+	XMLName     xml.Name `xml:"get_tickets_response"`
+	TicketCount struct {
+		Filtered int `xml:"filtered"`
+		Page     int `xml:"page"`
+	} `xml:"ticket_count"`
+}
+
+// ticketCountEvidence is ticketCountProbe plus a ",chardata" field to prove
+// the bare total the generated shape can't retain.
+type ticketCountEvidence struct {
+	XMLName     xml.Name `xml:"get_tickets_response"`
+	TicketCount struct {
+		Value    string `xml:",chardata"`
+		Filtered int    `xml:"filtered"`
+		Page     int    `xml:"page"`
+	} `xml:"ticket_count"`
+}
+
+// TestTicketCountBareTotalIsAnAcceptedLoss mirrors
+// TestPermissionCountBareTotalIsAnAcceptedLoss: fixtures send a bare total
+// ahead of <filtered>/<page>, but ticket_count's schema pattern declares no
+// text token, so generation can't recover it. See docs/review-2026-08.md.
+func TestTicketCountBareTotalIsAnAcceptedLoss(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	cases := []struct {
+		provenance string
+		path       string
+		wantTotal  string
+		wantFilter int
+		wantPage   int
+	}{
+		{"live_001", filepath.Join(gmptestDir, "live", "get_tickets", "001_response.xml"), "0", 0, 0},
+		{"live_002", filepath.Join(gmptestDir, "live", "get_tickets", "002_response.xml"), "0", 0, 0},
+		{"upstream_001", filepath.Join(gmptestDir, "upstream", "get_tickets", "001_response.xml"), "2", 2, 2},
+	}
+	for _, tc := range cases {
+		t.Run(tc.provenance, func(t *testing.T) {
+			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", tc.path, err)
+			}
+
+			var evidence ticketCountEvidence
+			if err := xml.Unmarshal(data, &evidence); err != nil {
+				t.Fatalf("decoding %s into ticketCountEvidence: %v", tc.path, err)
+			}
+			if got := strings.TrimSpace(evidence.TicketCount.Value); got != tc.wantTotal {
+				t.Fatalf("%s: ticket_count bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
+					tc.path, got, tc.wantTotal)
+			}
+			if evidence.TicketCount.Filtered != tc.wantFilter || evidence.TicketCount.Page != tc.wantPage {
+				t.Fatalf("%s: ticketCountEvidence children = %+v, want Filtered=%d Page=%d",
+					tc.path, evidence.TicketCount, tc.wantFilter, tc.wantPage)
+			}
+
+			var got ticketCountProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into ticketCountProbe: %v", tc.path, err)
+			}
+			if got.TicketCount.Filtered != tc.wantFilter || got.TicketCount.Page != tc.wantPage {
+				t.Errorf("ticketCountProbe = %+v, want Filtered=%d Page=%d (the generated shape changed unexpectedly)",
+					got.TicketCount, tc.wantFilter, tc.wantPage)
+			}
+			// ticketCountProbe has no field that could have captured
+			// evidence.TicketCount.Value — that silent drop, now proven
+			// against the actual fixture bytes rather than assumed, is the
+			// accepted loss this test exists to pin.
+		})
+	}
+}
+
+// ticketSortFieldProbe mirrors TicketSort/TicketField in
+// testdata/golden/get_tickets.go.
+type ticketSortFieldProbe struct {
+	XMLName xml.Name `xml:"get_tickets_response"`
+	Sort    struct {
+		Value string `xml:",chardata"`
+		Field struct {
+			Order string `xml:"order"`
+		} `xml:"field"`
+	} `xml:"sort"`
+}
+
+// ticketSortFieldEvidence is ticketSortFieldProbe plus a ",chardata" field
+// on Field to prove the bare sort field name the generated shape can't
+// retain.
+type ticketSortFieldEvidence struct {
+	XMLName xml.Name `xml:"get_tickets_response"`
+	Sort    struct {
+		Field struct {
+			Value string `xml:",chardata"`
+			Order string `xml:"order"`
+		} `xml:"field"`
+	} `xml:"sort"`
+}
+
+// TestTicketSortFieldNameIsAnAcceptedLoss mirrors
+// TestPermissionSortFieldNameIsAnAcceptedLoss: fixtures send the sort
+// field's name as bare text inside <field>, but <field>'s schema pattern
+// declares only <order>, so generation can't recover it. This is distinct
+// from TicketSort.Value (see TestTicketSortValueIsWhitespaceOnly), which
+// closes the schema-level sort/#text finding but never holds this name. See
+// docs/review-2026-08.md.
+func TestTicketSortFieldNameIsAnAcceptedLoss(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	cases := []struct {
+		provenance string
+		path       string
+		wantName   string
+		wantOrder  string
+	}{
+		{"live_001", filepath.Join(gmptestDir, "live", "get_tickets", "001_response.xml"), "name", "ascending"},
+		{"live_002", filepath.Join(gmptestDir, "live", "get_tickets", "002_response.xml"), "name", "ascending"},
+		{"upstream_001", filepath.Join(gmptestDir, "upstream", "get_tickets", "001_response.xml"), "name", "ascending"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.provenance, func(t *testing.T) {
+			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", tc.path, err)
+			}
+
+			var evidence ticketSortFieldEvidence
+			if err := xml.Unmarshal(data, &evidence); err != nil {
+				t.Fatalf("decoding %s into ticketSortFieldEvidence: %v", tc.path, err)
+			}
+			if got := strings.TrimSpace(evidence.Sort.Field.Value); got != tc.wantName {
+				t.Fatalf("%s: sort/field bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
+					tc.path, got, tc.wantName)
+			}
+			if evidence.Sort.Field.Order != tc.wantOrder {
+				t.Fatalf("%s: ticketSortFieldEvidence order = %q, want %q",
+					tc.path, evidence.Sort.Field.Order, tc.wantOrder)
+			}
+
+			var got ticketSortFieldProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into ticketSortFieldProbe: %v", tc.path, err)
+			}
+			if got.Sort.Field.Order != tc.wantOrder {
+				t.Errorf("ticketSortFieldProbe order = %q, want %q (the generated shape changed unexpectedly)",
+					got.Sort.Field.Order, tc.wantOrder)
+			}
+			// ticketSortFieldProbe.Sort.Field has no field that could have
+			// captured evidence.Sort.Field.Value — that silent drop, now
+			// proven against the actual fixture bytes rather than assumed,
+			// is the accepted loss this test exists to pin.
+			if got := strings.TrimSpace(got.Sort.Value); got != "" {
+				t.Errorf("ticketSortFieldProbe.Sort.Value = %q, want empty — TicketSort.Value was expected to hold only indentation whitespace, not %q",
+					got, got)
+			}
+		})
+	}
+}
+
+// TestTicketSortValueIsWhitespaceOnly proves TicketSort.Value (the field
+// that closes the schema-level sort/#text finding) only ever holds
+// formatting whitespace, not the sort field name pinned by
+// TestTicketSortFieldNameIsAnAcceptedLoss.
+func TestTicketSortValueIsWhitespaceOnly(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	paths := []string{
+		filepath.Join(gmptestDir, "live", "get_tickets", "001_response.xml"),
+		filepath.Join(gmptestDir, "live", "get_tickets", "002_response.xml"),
+		filepath.Join(gmptestDir, "upstream", "get_tickets", "001_response.xml"),
+	}
+	for _, path := range paths {
+		t.Run(filepath.Base(filepath.Dir(path))+"/"+filepath.Base(path), func(t *testing.T) {
+			data, err := os.ReadFile(path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", path, err)
+			}
+
+			var got ticketSortFieldProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into ticketSortFieldProbe: %v", path, err)
+			}
+			if v := strings.TrimSpace(got.Sort.Value); v != "" {
+				t.Fatalf("%s: TicketSort.Value = %q after trimming, want empty — fixture no longer demonstrates that this field captures only formatting whitespace, not the sort field name",
+					path, v)
+			}
+		})
+	}
+}
+
 // assertMatchesOrImproves is the shared body of the two match-or-improve gates:
 // the exact expected "after" counts, plus the two general rules that hold for
 // any family — no category may grow, and the schema's own defects may not move.

@@ -218,6 +218,26 @@ var PointerOverrides = map[string]PointerOverride{
 	"modify_tag.comment": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
 	},
+	// modify_ticket: live gvmd 26.36.1 experiment run against review-only
+	// ticket's deferred question. comment, open_note, fixed_note and
+	// closed_note behave like modify_alert's fields (omit leaves the stored
+	// value unchanged, explicit-empty clears it to ""). status does not: an
+	// explicit-empty <status></status> is rejected outright with
+	// "400 Error in status" rather than accepted as a clear, so there is no
+	// legal empty wire state for a pointer to express and it keeps the
+	// mechanical string default (see the modify_ticket CommandWarning below).
+	"modify_ticket.comment": {
+		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
+	},
+	"modify_ticket.open_note": {
+		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <open_note> are distinct requests",
+	},
+	"modify_ticket.fixed_note": {
+		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <fixed_note> are distinct requests",
+	},
+	"modify_ticket.closed_note": {
+		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <closed_note> are distinct requests",
+	},
 }
 
 // CommandWarning attaches a public-facing behavioral-hazard note to a
@@ -253,5 +273,12 @@ var CommandWarnings = map[string]CommandWarning{
 			"Comment is being changed.",
 		Reason: "T-9: live gvmd test against the running instance confirmed the omitted-subject " +
 			"rejection; see docs/review-2026-08.md's `permission adopted` section",
+	},
+	"modify_ticket": {
+		Text: "Status rejects an explicit-empty <status></status> outright (\"400 Error in " +
+			"status\") rather than accepting it as a clear; omitting Status leaves the stored " +
+			"value unchanged.",
+		Reason: "T-9: live gvmd 26.36.1 test against the running instance confirmed the " +
+			"explicit-empty-status rejection; see docs/review-2026-08.md's `ticket` review-only section",
 	},
 }

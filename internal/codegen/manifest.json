@@ -39,6 +39,11 @@
     {
       "name": "permission",
       "commands": ["create_permission", "get_permissions", "modify_permission"]
+    },
+    {
+      "name": "ticket",
+      "commands": ["create_ticket", "get_tickets", "modify_ticket"],
+      "review_only": true
     }
   ]
 }
