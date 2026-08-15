@@ -1,0 +1,71 @@
+client/client_report_test.go
+  s_236233c16aeaae::t_e2b3112cc60573 154-155,381
+client/client_test.go
+  s_236233c16aeaae::t_61934ee0f0821b 554
+commands/create_report_format.go
+  s_236233c16aeaae::t_3c6efd8f410cff 1-2,7,14
+commands/get_report_formats.go
+  s_236233c16aeaae::t_5012cd5920be26 1-2,5,7,11-17,20,22-29,37-80,82-126,128-149,152-169,172,175-180,183-188,191-193,196-198,201-204
+commands/get_reports.go
+  s_236233c16aeaae::t_440d751a1b3fe0 80,115-116,118
+commands/modify_report_format.go
+  s_236233c16aeaae::t_44452bf4b16526 1-2,7,9-14,17,28-33
+docs/review-2026-08.md
+  s_236233c16aeaae::t_0b7a6aad6249eb 1331-1351,1362,2122
+internal/codegen/manifest.json
+  s_236233c16aeaae::t_5511f0b1a030e2 61
+internal/codegen/manifest_test.go
+  s_236233c16aeaae::t_e6b9d12f220788 28-29,40-57,76,80-81,102-111,121-125,137-138
+internal/codegen/validate.go
+  s_236233c16aeaae::t_ed8148fffe7d4b 99-103
+internal/codegen/validate_test.go
+  s_236233c16aeaae::t_cb7f051d498684 3209-3212,3221,3223-3224,3238-3242
+internal/gmptest/cases_report_format.go
+  s_236233c16aeaae::t_b0375e45df5ca3 1-58
+internal/gmptest/testdata/FIDELITY-SUMMARY.txt
+  s_236233c16aeaae::t_980f76ecbccf61 15,197-200
+internal/gmptest/testdata/live/get_report_formats/001_fidelity.txt
+  s_236233c16aeaae::t_b0dab01908397e 8,17
+internal/gmptest/testdata/live/get_report_formats/002_fidelity.txt
+  s_236233c16aeaae::t_0e8d532c0a98a8 8,17
+internal/gmptest/testdata/requests/create_report_format/copy.xml
+  s_236233c16aeaae::t_2439053026e56b 1
+internal/gmptest/testdata/requests/create_report_format/name.xml
+  s_236233c16aeaae::t_e05628cc63a9f0 1
+internal/gmptest/testdata/requests/get_report_formats/all_details_false.xml
+  s_236233c16aeaae::t_d9e0c48b4118d0 1
+internal/gmptest/testdata/requests/get_report_formats/all_details_true.xml
+  s_236233c16aeaae::t_e2e4ed626cd71c 1
+internal/gmptest/testdata/requests/get_report_formats/by_id.xml
+  s_236233c16aeaae::t_7c8e0d84027f9b 1
+internal/gmptest/testdata/requests/get_report_formats/filt_id.xml
+  s_236233c16aeaae::t_532d23c09bc04c 1
+internal/gmptest/testdata/requests/get_report_formats/unset.xml
+  s_236233c16aeaae::t_a624c9d9e8b2ea 1
+internal/gmptest/testdata/requests/modify_report_format/param_omitted.xml
+  s_236233c16aeaae::t_a626fb76b52404 1
+internal/gmptest/testdata/requests/modify_report_format/param_set.xml
+  s_236233c16aeaae::t_ef880ad7b912d0 1
+internal/gmptest/testdata/upstream/get_report_formats/001_fidelity.txt
+  s_236233c16aeaae::t_060540a90e9966 14,17-41
+internal/gmptest/testdata/upstream/get_report_formats/002_fidelity.txt
+  s_236233c16aeaae::t_e2a79d4bc3c475 9,16,19-22,25-47
+internal/schema/testdata/CONFORMANCE.md
+  s_236233c16aeaae::t_2c38731bc2b268 32-36,43-48,97-98,342,1626,1629,1762,2862
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "528b2bc1b80ed6f0d4a18e2b0ee99f22be018849",
+  "prompts": {},
+  "sessions": {
+    "s_236233c16aeaae": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_236233c16aeaae",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
