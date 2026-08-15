@@ -1,0 +1,45 @@
+docs/review-2026-08.md
+  s_47ae46a170a663::t_915a345140a849 1104-1177,1963
+internal/codegen/generate.go
+  s_47ae46a170a663::t_159ef4bf73bef0 106-108,110,113,759-765
+internal/codegen/generate_test.go
+  s_47ae46a170a663::t_80b6b2fe1eacec 1487-1825
+internal/codegen/manifest.json
+  s_47ae46a170a663::t_0eac273d975f2e 54-58
+internal/codegen/manifest_test.go
+  s_47ae46a170a663::t_16e6a55a8d5b39 41-56,62-69,86-87,91-102,124-126,138-139
+internal/codegen/overrides.go
+  s_47ae46a170a663::t_adb143d1fec48f 260-262,268-273,325-339
+internal/codegen/testdata/golden/create_asset.go
+  s_47ae46a170a663::t_4049fdbfa4c9a8 1-43
+internal/codegen/testdata/golden/get_assets.go
+  s_47ae46a170a663::t_4c8f2307ff6800 1-241
+internal/codegen/testdata/golden/modify_asset.go
+  s_47ae46a170a663::t_f1f2983a81c928 1-26
+internal/codegen/testdata/schema/create_asset.json
+  s_47ae46a170a663::t_351f49066dfa90 1-140
+internal/codegen/testdata/schema/get_assets.json
+  s_47ae46a170a663::t_99cc9aacfb0006 1-1013
+internal/codegen/testdata/schema/modify_asset.json
+  s_47ae46a170a663::t_f5fb7cd3661ee8 1-67
+internal/codegen/validate.go
+  s_47ae46a170a663::t_2ce7b224f40328 99-101,267-278
+internal/codegen/validate_test.go
+  s_47ae46a170a663::t_58afcebd524912 3166-3216
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "e94cd02f3b4b587ae8eb97b1ed6b76f06281c15d",
+  "prompts": {},
+  "sessions": {
+    "s_47ae46a170a663": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_47ae46a170a663",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
