@@ -1,0 +1,77 @@
+client/client_credential_test.go
+  s_935774967aef2d::t_410f66645ac8bd 19-21,37-39,103-104,106-107,119-120
+client/client_test.go
+  s_935774967aef2d::t_d695a5db2c9d28 731,740,750,756,765
+commands/create_credential.go
+  s_935774967aef2d::t_795176863ec413 1-2,7,9-24,27
+commands/credential_shared.go
+  s_935774967aef2d::t_6eb7d1090fb202 1-21
+commands/get_credentials.go
+  s_935774967aef2d::t_d2793785382578 1-2,5,7,20,27,29,37-80,85,90-91,95-98,105-106,110,115,117,120,125-130,132-133,136-137,144-146,149,151-158,161,163,166,168-170,173,175,178,180-182,185,188
+commands/modify_credential.go
+  s_935774967aef2d::t_3c598e4a803221 1-2,7-9,11-25,28
+docs/review-2026-08.md
+  s_935774967aef2d::t_1198d00162938f 984-1004,1040,1800
+examples/create_credential/main.go
+  s_935774967aef2d::t_0a436612c6ba73 46-48
+internal/codegen/manifest.json
+  s_935774967aef2d::t_c5633fdbb1f764 49
+internal/codegen/manifest_test.go
+  s_935774967aef2d::t_03c0b6058c8adf 28-29,38-51,69-75,80-81,97-103,115-119,131-132
+internal/codegen/validate_test.go
+  s_935774967aef2d::t_2e05058814eea5 2849-2859,2864-2865,2867-2868,2882,2884-2886
+internal/gmptest/capture_sequence_test.go
+  s_935774967aef2d::t_496c45840ad951 381,398
+internal/gmptest/cases_credential.go
+  s_935774967aef2d::t_3b37192d1bc716 32-52,75-78,83,89,95,98-129
+internal/gmptest/redact_test.go
+  s_935774967aef2d::t_ef5c12e94cfb75 364,369,380-381
+internal/gmptest/testdata/FIDELITY-SUMMARY.txt
+  s_935774967aef2d::t_aac0e14ec5fae4 13,15,144-150
+internal/gmptest/testdata/live/get_credentials/001_fidelity.txt
+  s_935774967aef2d::t_30afb2bad59831 17
+internal/gmptest/testdata/live/get_credentials/002_fidelity.txt
+  s_935774967aef2d::t_9f697836caf48b 17
+internal/gmptest/testdata/live/get_credentials/003_fidelity.txt
+  s_935774967aef2d::t_ac543c55892632 14,17
+internal/gmptest/testdata/live/get_credentials/004_fidelity.txt
+  s_935774967aef2d::t_719d3f0a1ccfe6 14
+internal/gmptest/testdata/requests/create_credential/kdc_kdcs_key_privacy.xml
+  s_935774967aef2d::t_623c5bbfeeefd8 1
+internal/gmptest/testdata/requests/create_credential/privacy_zero_valued.xml
+  s_935774967aef2d::t_a4a3bd34419240 1
+internal/gmptest/testdata/requests/get_credentials/filt_id.xml
+  s_935774967aef2d::t_5285f0a0e47bba 1
+internal/gmptest/testdata/requests/modify_credential/all_unset.xml
+  s_935774967aef2d::t_93b3800c22e7b9 1
+internal/gmptest/testdata/requests/modify_credential/comment_empty.xml
+  s_935774967aef2d::t_d7c37273feef26 1
+internal/gmptest/testdata/requests/modify_credential/comment_set.xml
+  s_935774967aef2d::t_1349d9715e6405 1
+internal/gmptest/testdata/requests/modify_credential/kdc_kdcs_key_privacy.xml
+  s_935774967aef2d::t_33a52e0364f60d 1
+internal/gmptest/testdata/upstream/get_credentials/001_fidelity.txt
+  s_935774967aef2d::t_0aceb2575bdfe2 7
+internal/gmptest/testdata/upstream/get_credentials/002_fidelity.txt
+  s_935774967aef2d::t_0603d837132058 13,18
+internal/gmptest/testdata/upstream/get_credentials/003_fidelity.txt
+  s_935774967aef2d::t_2534ef9eab2f66 13,18
+internal/schema/testdata/CONFORMANCE.md
+  s_935774967aef2d::t_2d62988a89469e 32-35,43-44,47-48,98,215,1347,3046
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "4ae2ad78e7b0ed179a64b1ef7473eea1261d2b2f",
+  "prompts": {},
+  "sessions": {
+    "s_935774967aef2d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_935774967aef2d",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
