@@ -4,7 +4,8 @@
   "source": "lifecycle: get_tls_certificates with include_certificate_data, certificate redacted",
   "byte_faithful": false,
   "captured_at": "2026-08-11T19:40:14Z",
-  "gvmd_version": "22.7",
+  "gmp_version": "22.7",
+  "gmp_version_source": "captured",
   "redactions": [
     "/get_tls_certificates_response/tls_certificate/certificate/#text"
   ]

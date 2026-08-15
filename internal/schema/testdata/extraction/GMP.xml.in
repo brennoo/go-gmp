@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+An original, minimal stand-in for gvmd's GMP.xml.in, written for this
+repository so extractionProvenance has an input on a clean checkout where the
+AGPL-licensed vendor/XML tree is absent. It is not derived from upstream: the
+one command below is invented, and the nested <version> exists only to prove
+provenance reads <protocol>'s own child and not that one.
+-->
+<protocol>
+  <version>0.0-testdata</version>
+  <name>Test Protocol</name>
+  <command>
+    <name>get_fixture</name>
+    <pattern/>
+    <response>
+      <pattern>
+        <e>version</e>
+      </pattern>
+      <ele>
+        <name>version</name>
+        <pattern>text</pattern>
+      </ele>
+    </response>
+  </command>
+</protocol>

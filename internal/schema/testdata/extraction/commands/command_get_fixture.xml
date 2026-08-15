@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<protocol>
+  <command>
+    <name>get_fixture</name>
+    <pattern/>
+    <response>
+      <pattern>
+        <e>version</e>
+      </pattern>
+      <ele>
+        <name>version</name>
+        <pattern>text</pattern>
+      </ele>
+    </response>
+  </command>
+</protocol>

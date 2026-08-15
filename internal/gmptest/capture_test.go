@@ -89,9 +89,9 @@ type captureRun struct {
 	conn gmp.Connection
 	red  *Redactor
 
-	runID       string
-	gvmdVersion string
-	reconnects  int
+	runID      string
+	gmpVersion string
+	reconnects int
 
 	seq     map[string]int
 	written map[string]bool
@@ -170,8 +170,8 @@ func newCaptureRun(t *testing.T) *captureRun {
 		touched: map[string]bool{},
 		notices: map[string]int{},
 	}
-	r.gvmdVersion = r.detectVersion()
-	t.Logf("capture run id %s against gvmd %s", r.runID, r.gvmdVersion)
+	r.gmpVersion = r.detectVersion()
+	t.Logf("capture run id %s against GMP protocol version %s", r.runID, r.gmpVersion)
 	return r
 }
 
@@ -199,6 +199,8 @@ func (r *captureRun) resourceName(kind string) string {
 	return "go-gmp-fixture-" + r.runID + "-" + kind
 }
 
+// detectVersion returns the GMP protocol version get_version reports, not a
+// gvmd application/build version — GMP does not expose one.
 func (r *captureRun) detectVersion() string {
 	ctx, cancel := context.WithTimeout(r.ctx, *captureCommandTimeout)
 	defer cancel()
@@ -541,10 +543,11 @@ func (r *captureRun) persist(command, desc, id string, req, resp []byte, applied
 		// is still evidence, but it is no longer the bytes gvmd sent, and the
 		// distinction has to survive into the sidecar or a later byte-exactness
 		// assertion would be asserting against a placeholder.
-		ByteFaithful: len(applied) == 0,
-		CapturedAt:   time.Now().UTC().Format(time.RFC3339),
-		GvmdVersion:  r.gvmdVersion,
-		Redactions:   applied,
+		ByteFaithful:     len(applied) == 0,
+		CapturedAt:       time.Now().UTC().Format(time.RFC3339),
+		GmpVersion:       r.gmpVersion,
+		GmpVersionSource: GmpVersionCaptured,
+		Redactions:       applied,
 	}
 
 	if err := os.WriteFile(f.RequestPath(), req, 0o600); err != nil {
@@ -598,7 +601,7 @@ func (r *captureRun) reportSummary() {
 	}
 
 	var b strings.Builder
-	fmt.Fprintf(&b, "\ncapture summary (run %s, gvmd %s)\n", r.runID, r.gvmdVersion)
+	fmt.Fprintf(&b, "\ncapture summary (run %s, GMP protocol version %s)\n", r.runID, r.gmpVersion)
 	fmt.Fprintf(&b, "captured=%d failed=%d skipped=%d probes=%d exchanges=%d reconnects=%d\n\n",
 		counts[outcomeCaptured], counts[outcomeFailed], counts[outcomeSkipped],
 		counts[outcomeProbe], len(r.results), r.reconnects)

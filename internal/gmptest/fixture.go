@@ -26,6 +26,25 @@ const (
 // TestdataDir is where the corpus lives, relative to this package.
 const TestdataDir = "testdata"
 
+// GmpVersionSource says how a fixture's GmpVersion was determined.
+type GmpVersionSource string
+
+const (
+	// GmpVersionCaptured means this run's own get_version call recorded it —
+	// every fixture in the corpus, including the pre-T-16a ones, which
+	// recorded the same value under the misnamed gvmd_version key.
+	GmpVersionCaptured GmpVersionSource = "captured"
+	// GmpVersionInferred means it was backfilled rather than recorded by the
+	// capturing run. Nothing produces it; it exists so a future backfill has
+	// to say so instead of passing itself off as captured.
+	GmpVersionInferred GmpVersionSource = "inferred-from-corpus"
+)
+
+var validGmpVersionSources = map[GmpVersionSource]bool{
+	GmpVersionCaptured: true,
+	GmpVersionInferred: true,
+}
+
 // Meta is the sidecar recorded next to every fixture. Provenance is deliberately
 // stored twice — here and in the directory layout — so that neither a moved
 // file nor a lost sidecar can silently misattribute AGPL-derived content.
@@ -39,10 +58,17 @@ type Meta struct {
 	// ByteFaithful reports whether the bytes are exactly what crossed the wire.
 	// False for upstream fixtures, whose formatting is the schema author's and
 	// whose content is edited by marker stripping.
-	ByteFaithful bool     `json:"byte_faithful"`
-	CapturedAt   string   `json:"captured_at,omitempty"`
-	GvmdVersion  string   `json:"gvmd_version,omitempty"`
-	Redactions   []string `json:"redactions,omitempty"`
+	ByteFaithful bool   `json:"byte_faithful"`
+	CapturedAt   string `json:"captured_at,omitempty"`
+	// GmpVersion is the GMP protocol version get_version reported, not a gvmd
+	// build version — GMP exposes no such thing. See docs/review-2026-08.md, T-16a.
+	GmpVersion string `json:"gmp_version,omitempty"`
+	// GmpVersionSource is required whenever GmpVersion is set; see GmpVersionSource's doc.
+	GmpVersionSource GmpVersionSource `json:"gmp_version_source,omitempty"`
+	// ImageDigest is the resolved gvmd image digest. No capture path writes it
+	// yet and no live fixture carries one; both land with T-16c.
+	ImageDigest string   `json:"image_digest,omitempty"`
+	Redactions  []string `json:"redactions,omitempty"`
 }
 
 // Fixture is one request/response pair on disk.
@@ -144,7 +170,8 @@ func (f *Fixture) loadMeta() error {
 		return fmt.Errorf("%s/%s: meta says command %q but it is filed under %q",
 			f.Command, f.ID, f.Meta.Command, f.Command)
 	}
-	if f.Provenance == Upstream {
+	switch f.Provenance {
+	case Upstream:
 		for name, val := range map[string]string{
 			"source": f.Meta.Source, "source_upstream_revision": f.Meta.SourceRev,
 			"source_license": f.Meta.License,
@@ -153,6 +180,17 @@ func (f *Fixture) loadMeta() error {
 				return fmt.Errorf("%s/%s: upstream fixture is missing %s, so its provenance is unverifiable",
 					f.Command, f.ID, name)
 			}
+		}
+		if f.Meta.GmpVersion != "" || f.Meta.GmpVersionSource != "" || f.Meta.ImageDigest != "" {
+			return fmt.Errorf("%s/%s: upstream fixture must not claim runtime provenance", f.Command, f.ID)
+		}
+	case Live:
+		if strings.TrimSpace(f.Meta.GmpVersion) == "" {
+			return fmt.Errorf("%s/%s: live fixture is missing gmp_version", f.Command, f.ID)
+		}
+		if !validGmpVersionSources[f.Meta.GmpVersionSource] {
+			return fmt.Errorf("%s/%s: live fixture has unknown gmp_version_source %q",
+				f.Command, f.ID, f.Meta.GmpVersionSource)
 		}
 	}
 	return nil

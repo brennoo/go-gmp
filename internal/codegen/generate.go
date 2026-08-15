@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"go/format"
 	"go/parser"
+	"regexp"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/brennoo/go-gmp/internal/schema"
 )
@@ -56,6 +58,9 @@ func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]Point
 			return nil, fmt.Errorf("codegen: %s: snapshot is missing a request or response shape", g.cmds[i].Name)
 		}
 	}
+	if err := g.checkProvenance(); err != nil {
+		return nil, err
+	}
 	if err := g.validateDefectAllowlist(); err != nil {
 		return nil, err
 	}
@@ -86,6 +91,56 @@ func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]Point
 		return nil, err
 	}
 	return out, nil
+}
+
+// sha256Pattern matches hex.EncodeToString's SHA-256 output: 64 lowercase
+// hex digits.
+var sha256Pattern = regexp.MustCompile(`^[0-9a-f]{64}$`)
+
+var validExtractionMethods = map[schema.ExtractionMethod]bool{
+	schema.ExtractionFile:   true,
+	schema.ExtractionServed: true,
+}
+
+// checkProvenance fails the build when any command's schema provenance is
+// absent or malformed, or when commands in this call disagree on provenance —
+// T-16a's fail-closed gate. It does not check ExtractedAt against the current
+// time: Generate's output must stay a pure function of its inputs.
+func (g *gen) checkProvenance() error {
+	for i := range g.cmds {
+		c := &g.cmds[i]
+		p := c.Provenance
+		switch {
+		case p.Method == "":
+			return fmt.Errorf("codegen: %s: schema provenance is missing Method; re-run Stage A's -update", c.Name)
+		case !validExtractionMethods[p.Method]:
+			return fmt.Errorf("codegen: %s: schema provenance has unknown Method %q", c.Name, p.Method)
+		case strings.TrimSpace(p.Source) == "":
+			return fmt.Errorf("codegen: %s: schema provenance is missing Source; re-run Stage A's -update", c.Name)
+		case p.SourceSHA256 == "":
+			return fmt.Errorf("codegen: %s: schema provenance is missing SourceSHA256; re-run Stage A's -update", c.Name)
+		case !sha256Pattern.MatchString(p.SourceSHA256):
+			return fmt.Errorf("codegen: %s: schema provenance SourceSHA256 %q is not 64 lowercase hex characters", c.Name, p.SourceSHA256)
+		case p.ParsedSHA256 == "":
+			return fmt.Errorf("codegen: %s: schema provenance is missing ParsedSHA256; re-run Stage A's -update", c.Name)
+		case !sha256Pattern.MatchString(p.ParsedSHA256):
+			return fmt.Errorf("codegen: %s: schema provenance ParsedSHA256 %q is not 64 lowercase hex characters", c.Name, p.ParsedSHA256)
+		case strings.TrimSpace(p.DeclaredVersion) == "":
+			return fmt.Errorf("codegen: %s: schema provenance is missing DeclaredVersion; re-run Stage A's -update", c.Name)
+		case p.ExtractedAt.IsZero():
+			return fmt.Errorf("codegen: %s: schema provenance is missing ExtractedAt; re-run Stage A's -update", c.Name)
+		case p.ExtractedAt.Location() != time.UTC:
+			return fmt.Errorf("codegen: %s: schema provenance ExtractedAt %v is not UTC", c.Name, p.ExtractedAt)
+		}
+	}
+	first := g.cmds[0].Provenance
+	for i := 1; i < len(g.cmds); i++ {
+		if g.cmds[i].Provenance != first {
+			return fmt.Errorf("codegen: mixed schema provenance: %s and %s were not extracted together (%+v vs %+v)",
+				g.cmds[0].Name, g.cmds[i].Name, first, g.cmds[i].Provenance)
+		}
+	}
+	return nil
 }
 
 // validDefectClasses are schema.parse.go's eight Defect* constants, checked

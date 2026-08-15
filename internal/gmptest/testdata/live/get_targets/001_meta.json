@@ -4,5 +4,6 @@
   "source": "read-only: get_targets bare",
   "byte_faithful": true,
   "captured_at": "2026-08-08T13:53:03Z",
-  "gvmd_version": "22.7"
+  "gmp_version": "22.7",
+  "gmp_version_source": "captured"
 }

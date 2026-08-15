@@ -1898,8 +1898,8 @@ func twinFieldOverrideCommands() (cmdA, cmdB schema.Command) {
 			},
 		}
 	}
-	cmdA = schema.Command{Name: "cmd_a", Request: &schema.Node{Name: "cmd_a"}, Response: shape("cmd_a_response")}
-	cmdB = schema.Command{Name: "cmd_b", Request: &schema.Node{Name: "cmd_b"}, Response: shape("cmd_b_response")}
+	cmdA = schema.Command{Name: "cmd_a", Request: &schema.Node{Name: "cmd_a"}, Response: shape("cmd_a_response"), Provenance: testProvenance()}
+	cmdB = schema.Command{Name: "cmd_b", Request: &schema.Node{Name: "cmd_b"}, Response: shape("cmd_b_response"), Provenance: testProvenance()}
 	return cmdA, cmdB
 }
 

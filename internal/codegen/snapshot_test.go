@@ -1,6 +1,7 @@
 package codegen
 
 import (
+	"encoding/json"
 	"flag"
 	"os"
 	"path/filepath"
@@ -43,23 +44,47 @@ func TestSnapshot(t *testing.T) {
 		assertNoProse(t, name, got)
 
 		path := SnapshotPath(snapshotDir, name)
+		want, readErr := os.ReadFile(path) //nolint:gosec // a fixed testdata path
+
+		// Provenance.ExtractedAt is stamped fresh on every extraction, so it
+		// never matches a prior commit even when nothing else about the schema
+		// changed. Re-marshaling with the committed timestamp keeps clock drift
+		// out of the comparison, and out of -update's diff when nothing else
+		// moved — otherwise every -update rewrites all 42 files and buries the
+		// one real change T-17 needs to be readable.
+		masked := got
+		if readErr == nil {
+			var wantCmd schema.Command
+			if err := json.Unmarshal(want, &wantCmd); err != nil {
+				t.Fatalf("%s: failed to parse the committed snapshot: %v", name, err)
+			}
+			pinned := cmd
+			pinned.Provenance.ExtractedAt = wantCmd.Provenance.ExtractedAt
+			if masked, err = MarshalSnapshot(pinned); err != nil {
+				t.Fatalf("%s: failed to marshal: %v", name, err)
+			}
+		}
+
 		if *update {
+			out := got
+			if readErr == nil && string(masked) == string(want) {
+				out = want
+			}
 			if err := os.MkdirAll(filepath.Dir(path), 0o750); err != nil {
 				t.Fatalf("Failed to create %s: %v", snapshotDir, err)
 			}
-			if err := os.WriteFile(path, got, 0o600); err != nil {
+			if err := os.WriteFile(path, out, 0o600); err != nil {
 				t.Fatalf("Failed to write %s: %v", path, err)
 			}
 			continue
 		}
 
-		want, err := os.ReadFile(path) //nolint:gosec // a fixed testdata path
-		if err != nil {
-			t.Fatalf("No committed snapshot for %s (%v).\nRun with -update to create it.", name, err)
+		if readErr != nil {
+			t.Fatalf("No committed snapshot for %s (%v).\nRun with -update to create it.", name, readErr)
 		}
-		if string(got) != string(want) {
+		if string(masked) != string(want) {
 			t.Errorf("%s snapshot changed. Re-run with -update and review the diff.\n"+
-				"committed %d bytes, now %d bytes", name, len(want), len(got))
+				"committed %d bytes, now %d bytes", name, len(want), len(masked))
 		}
 	}
 }
@@ -106,7 +131,9 @@ func TestSnapshotsLoad(t *testing.T) {
 
 func loadSchemaOrSkip(t *testing.T) []schema.Command {
 	t.Helper()
-	cmds, err := schema.Load(schemaDir)
+	// The vendored tree is a manual copy with no git identity of its own, so
+	// there is no revision to supply here today; see schema.Load's doc comment.
+	cmds, err := schema.Load(schemaDir, "")
 	if err != nil {
 		t.Fatalf("Failed to load the schema: %v", err)
 	}

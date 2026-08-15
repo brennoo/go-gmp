@@ -4,7 +4,8 @@
   "source": "lifecycle: get_scanners for the scanner just created, ca_pub redacted",
   "byte_faithful": false,
   "captured_at": "2026-08-08T13:53:03Z",
-  "gvmd_version": "22.7",
+  "gmp_version": "22.7",
+  "gmp_version_source": "captured",
   "redactions": [
     "/get_scanners_response/scanner/ca_pub/#text"
   ]

@@ -14,6 +14,8 @@
 package schema
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/xml"
 	"fmt"
 	"os"
@@ -21,6 +23,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"time"
 )
 
 // Card is how many times an item may appear. The DSL has exactly three
@@ -98,11 +101,51 @@ func (n *Node) Path(parent string) string {
 // Command is one command_*.xml file: the request shape, the response shape,
 // and whatever was wrong with the file on the way through.
 type Command struct {
-	Name     string
-	File     string
-	Request  *Node
-	Response *Node
-	Defects  []Defect
+	Name       string
+	File       string
+	Request    *Node
+	Response   *Node
+	Defects    []Defect
+	Provenance Provenance
+}
+
+// ExtractionMethod is how a schema document reached the parser.
+type ExtractionMethod string
+
+const (
+	// ExtractionFile reads a vendored file from disk — Load's only method
+	// today.
+	ExtractionFile ExtractionMethod = "file"
+	// ExtractionServed reads a document served by a live gvmd (T-16b); no
+	// code path produces this yet.
+	ExtractionServed ExtractionMethod = "served"
+)
+
+// Provenance records the single extraction that produced a batch of Commands.
+// This is schema provenance, not runtime provenance — see docs/review-2026-08.md, T-16a.
+type Provenance struct {
+	Method ExtractionMethod
+	// Source identifies the upstream document independently of the local
+	// vendor path.
+	Source string
+	// SourceRevision is the upstream tag or commit, when known; supplied
+	// explicitly to Load, never inferred. See docs/review-2026-08.md, T-16a.
+	SourceRevision string
+	// SourceSHA256 is the hex SHA-256 of the source document's bytes as read.
+	// It identifies the document the parsed files were split from; it does not
+	// attest them, since nothing binds split.py's output back to it. That is
+	// ParsedSHA256's job.
+	SourceSHA256 string
+	// ParsedSHA256 is the hex SHA-256 over the command_*.xml files Load
+	// actually read, so an edited or stale split fails drift detection instead
+	// of riding along under an unchanged SourceSHA256.
+	ParsedSHA256 string
+	// DeclaredVersion is the document's own <version> value, verbatim. Under
+	// file-based extraction this is GMP.xml.in's literal, unsubstituted
+	// "@GMP_VERSION@" CMake template token, not a real version number —
+	// recording it honestly is the point.
+	DeclaredVersion string
+	ExtractedAt     time.Time
 }
 
 // Defect is a place where the schema does not say what it means. These are
@@ -217,8 +260,14 @@ type rawAttrib struct {
 
 // --- parsing ----------------------------------------------------------------
 
-// Load parses every command_*.xml in dir, sorted by command name.
-func Load(dir string) ([]Command, error) {
+// Load parses every command_*.xml in dir, sorted by command name, and stamps
+// each with the provenance of the one extraction that produced them. Stamping
+// also reads dir's sibling GMP.xml.in, so a directory of command files without
+// that document is an error rather than a provenance-less success.
+//
+// sourceRevision is the upstream gvmd tag or commit, when the caller knows
+// it; pass "" otherwise. Load never infers it. See docs/review-2026-08.md, T-16a.
+func Load(dir, sourceRevision string) ([]Command, error) {
 	paths, err := filepath.Glob(filepath.Join(dir, "command_*.xml"))
 	if err != nil {
 		return nil, err
@@ -233,8 +282,80 @@ func Load(dir string) ([]Command, error) {
 		}
 		cmds = append(cmds, got...)
 	}
+	if len(cmds) == 0 {
+		return cmds, nil
+	}
+
+	prov, err := extractionProvenance(dir, paths, sourceRevision)
+	if err != nil {
+		return nil, err
+	}
+	for i := range cmds {
+		cmds[i].Provenance = prov
+	}
+
 	sort.Slice(cmds, func(i, j int) bool { return cmds[i].Name < cmds[j].Name })
 	return cmds, nil
+}
+
+// rawProtocolVersion reads only <protocol>'s own <version> child, ignoring
+// the many unrelated <version> elements nested inside individual commands'
+// example responses further down the document.
+type rawProtocolVersion struct {
+	Version string `xml:"version"`
+}
+
+// upstreamSource is GMP.xml.in's stable identity in gvmd's own repository
+// layout, recorded as Source instead of the local vendor path.
+const upstreamSource = "gvmd/src/schema_formats/XML/GMP.xml.in"
+
+// extractionProvenance reads the single upstream document every command_*.xml
+// in dir was split from, so provenance identifies the shared source rather
+// than each split's own fragment — split.py's fixed convention is that dir is
+// always a "commands" subdirectory sitting next to GMP.xml.in, and the split
+// files themselves carry no version marker of their own.
+func extractionProvenance(dir string, paths []string, sourceRevision string) (Provenance, error) {
+	docPath := filepath.Join(filepath.Dir(dir), "GMP.xml.in")
+	data, err := os.ReadFile(docPath) //nolint:gosec // a fixed, caller-controlled vendor path
+	if err != nil {
+		return Provenance{}, fmt.Errorf("reading source document for provenance: %w", err)
+	}
+
+	var root rawProtocolVersion
+	if err := xml.Unmarshal(data, &root); err != nil {
+		return Provenance{}, fmt.Errorf("%s: %w", docPath, err)
+	}
+
+	parsed, err := parsedDigest(paths)
+	if err != nil {
+		return Provenance{}, err
+	}
+
+	sum := sha256.Sum256(data)
+	return Provenance{
+		Method:          ExtractionFile,
+		Source:          upstreamSource,
+		SourceRevision:  sourceRevision,
+		DeclaredVersion: trim(root.Version),
+		SourceSHA256:    hex.EncodeToString(sum[:]),
+		ParsedSHA256:    parsed,
+		ExtractedAt:     time.Now().UTC(),
+	}, nil
+}
+
+// parsedDigest hashes each parsed file's base name and bytes, so a renamed
+// file changes the digest just as an edited one does. paths is already sorted.
+func parsedDigest(paths []string) (string, error) {
+	h := sha256.New()
+	for _, p := range paths {
+		data, err := os.ReadFile(p) //nolint:gosec // one of Load's own globbed paths
+		if err != nil {
+			return "", fmt.Errorf("hashing parsed schema files: %w", err)
+		}
+		_, _ = fmt.Fprintf(h, "%s\x00%d\x00", filepath.Base(p), len(data))
+		h.Write(data)
+	}
+	return hex.EncodeToString(h.Sum(nil)), nil
 }
 
 // LoadFile parses one schema file. A file normally holds one <command>, but

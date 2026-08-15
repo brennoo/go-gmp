@@ -1,8 +1,9 @@
 {
   "command": "create_port_range",
   "provenance": "live",
-  "source": "lifecycle: create_port_range with \u003cport_list id=\"…\"/\u003e instead of the struct's text form",
+  "source": "lifecycle: create_port_range with <port_list id=\"\u2026\"/> instead of the struct's text form",
   "byte_faithful": true,
   "captured_at": "2026-08-08T13:53:03Z",
-  "gvmd_version": "22.7"
+  "gmp_version": "22.7",
+  "gmp_version_source": "captured"
 }

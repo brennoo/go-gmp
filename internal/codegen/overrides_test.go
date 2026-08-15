@@ -3,9 +3,24 @@ package codegen
 import (
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/brennoo/go-gmp/internal/schema"
 )
+
+// testProvenance is a valid, complete schema.Provenance for tests that build
+// synthetic commands: checkProvenance rejects anything less, and tests here
+// are not exercising T-16a itself unless they say so explicitly.
+func testProvenance() schema.Provenance {
+	return schema.Provenance{
+		Method:          schema.ExtractionFile,
+		Source:          "testdata/GMP.xml.in",
+		SourceSHA256:    "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+		ParsedSHA256:    "fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210",
+		DeclaredVersion: "@GMP_VERSION@",
+		ExtractedAt:     time.Unix(0, 0).UTC(),
+	}
+}
 
 // minimalCommand returns a single-command schema.Command tree just complete
 // enough for Generate to run its validation pass: validateFieldOverrides
@@ -13,9 +28,134 @@ import (
 // needing the bad entry's key to match anything this tree declares.
 func minimalCommand() schema.Command {
 	return schema.Command{
-		Name:     "test_cmd",
-		Request:  &schema.Node{Name: "test_cmd"},
-		Response: &schema.Node{Name: "test_cmd_response"},
+		Name:       "test_cmd",
+		Request:    &schema.Node{Name: "test_cmd"},
+		Response:   &schema.Node{Name: "test_cmd_response"},
+		Provenance: testProvenance(),
+	}
+}
+
+// TestCheckProvenanceRejectsMissingFields is a table of every provenance
+// field checkProvenance requires, proving each one's absence fails generation
+// closed rather than silently generating from an unidentified schema source.
+func TestCheckProvenanceRejectsMissingFields(t *testing.T) {
+	tests := []struct {
+		name    string
+		mutate  func(p *schema.Provenance)
+		wantSub string
+	}{
+		{"missing Method", func(p *schema.Provenance) { p.Method = "" }, "missing Method"},
+		{"missing Source", func(p *schema.Provenance) { p.Source = "" }, "missing Source"},
+		{"missing SourceSHA256", func(p *schema.Provenance) { p.SourceSHA256 = "" }, "missing SourceSHA256"},
+		{"missing ParsedSHA256", func(p *schema.Provenance) { p.ParsedSHA256 = "" }, "missing ParsedSHA256"},
+		{"missing DeclaredVersion", func(p *schema.Provenance) { p.DeclaredVersion = "" }, "missing DeclaredVersion"},
+		{"missing ExtractedAt", func(p *schema.Provenance) { p.ExtractedAt = time.Time{} }, "missing ExtractedAt"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cmd := minimalCommand()
+			tt.mutate(&cmd.Provenance)
+			_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, FieldOverrides, CommandWarnings, nil)
+			if err == nil {
+				t.Fatalf("Generate succeeded with %s; want an error", tt.name)
+			}
+			if !strings.Contains(err.Error(), tt.wantSub) {
+				t.Fatalf("Generate error = %q, want it to contain %q", err.Error(), tt.wantSub)
+			}
+		})
+	}
+}
+
+// TestCheckProvenanceRejectsMalformedFields is a table of provenance values
+// that are present but wrong, proving checkProvenance validates content and
+// not merely non-emptiness.
+func TestCheckProvenanceRejectsMalformedFields(t *testing.T) {
+	tests := []struct {
+		name    string
+		mutate  func(p *schema.Provenance)
+		wantSub string
+	}{
+		{"unknown Method", func(p *schema.Provenance) { p.Method = "downloaded" }, "unknown Method"},
+		{"whitespace-only Source", func(p *schema.Provenance) { p.Source = "   " }, "missing Source"},
+		{"whitespace-only DeclaredVersion", func(p *schema.Provenance) { p.DeclaredVersion = "\t\n" }, "missing DeclaredVersion"},
+		{"short SHA-256", func(p *schema.Provenance) { p.SourceSHA256 = "abcd" }, "not 64 lowercase hex"},
+		{"malformed ParsedSHA256", func(p *schema.Provenance) { p.ParsedSHA256 = "abcd" }, "ParsedSHA256 \"abcd\" is not 64 lowercase hex"},
+		{
+			"uppercase SHA-256",
+			func(p *schema.Provenance) { p.SourceSHA256 = strings.ToUpper(p.SourceSHA256) },
+			"not 64 lowercase hex",
+		},
+		{
+			"non-hex SHA-256",
+			func(p *schema.Provenance) { p.SourceSHA256 = strings.Repeat("g", 64) },
+			"not 64 lowercase hex",
+		},
+		{
+			"non-UTC ExtractedAt",
+			func(p *schema.Provenance) { p.ExtractedAt = p.ExtractedAt.In(time.FixedZone("CET", 3600)) },
+			"is not UTC",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cmd := minimalCommand()
+			tt.mutate(&cmd.Provenance)
+			_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, FieldOverrides, CommandWarnings, nil)
+			if err == nil {
+				t.Fatalf("Generate succeeded with %s; want an error", tt.name)
+			}
+			if !strings.Contains(err.Error(), tt.wantSub) {
+				t.Fatalf("Generate error = %q, want it to contain %q", err.Error(), tt.wantSub)
+			}
+		})
+	}
+}
+
+// TestCheckProvenanceRejectsMixedBatch proves that commands disagreeing on
+// schema provenance within one Generate call fail closed: they were not
+// extracted together, so nothing can vouch for them describing one upstream
+// schema.
+func TestCheckProvenanceRejectsMixedBatch(t *testing.T) {
+	cmdA := minimalCommand()
+	cmdA.Name = "cmd_a"
+	cmdA.Request = &schema.Node{Name: "cmd_a"}
+	cmdA.Response = &schema.Node{Name: "cmd_a_response"}
+
+	cmdB := minimalCommand()
+	cmdB.Name = "cmd_b"
+	cmdB.Request = &schema.Node{Name: "cmd_b"}
+	cmdB.Response = &schema.Node{Name: "cmd_b_response"}
+	cmdB.Provenance.SourceSHA256 = strings.Repeat("f", 64)
+
+	_, err := Generate([]schema.Command{cmdA, cmdB}, TypeOverrides, PointerOverrides, FieldOverrides, CommandWarnings, nil)
+	if err == nil {
+		t.Fatal("Generate succeeded with mixed schema provenance; want an error")
+	}
+	if !strings.Contains(err.Error(), "mixed schema provenance") {
+		t.Fatalf("Generate error = %q, want it to mention mixed schema provenance", err)
+	}
+	if !strings.Contains(err.Error(), "cmd_a") || !strings.Contains(err.Error(), "cmd_b") {
+		t.Fatalf("Generate error = %q, want it to name both disagreeing commands", err)
+	}
+}
+
+// TestCheckProvenanceAcceptsConsistentBatch proves the mirror case: identical,
+// complete provenance across every command in the batch passes.
+func TestCheckProvenanceAcceptsConsistentBatch(t *testing.T) {
+	cmdA := minimalCommand()
+	cmdA.Name = "cmd_a"
+	cmdA.Request = &schema.Node{Name: "cmd_a"}
+	cmdA.Response = &schema.Node{Name: "cmd_a_response"}
+
+	cmdB := minimalCommand()
+	cmdB.Name = "cmd_b"
+	cmdB.Request = &schema.Node{Name: "cmd_b"}
+	cmdB.Response = &schema.Node{Name: "cmd_b_response"}
+
+	if _, err := Generate([]schema.Command{cmdA, cmdB}, TypeOverrides, PointerOverrides, FieldOverrides, CommandWarnings, nil); err != nil {
+		t.Fatalf("Generate failed on a consistent provenance batch: %v", err)
 	}
 }
 
@@ -302,5 +442,31 @@ func TestValidateDefectAllowlistAcceptsCommittedTable(t *testing.T) {
 	g := &gen{da: DefectAllowlist}
 	if err := g.validateDefectAllowlist(); err != nil {
 		t.Fatalf("The committed DefectAllowlist table failed validation: %v", err)
+	}
+}
+
+// TestDefectAllowlistHasNoOrphans checks the whole corpus at once, which
+// checkDefectAllowlistConsumed structurally cannot: it runs per family, so an
+// entry naming a command in no family is never anyone's stale entry. That
+// gap matters here more than for the other tables — an orphan is a standing
+// pre-approval for a defect nothing is generating through any more.
+func TestDefectAllowlistHasNoOrphans(t *testing.T) {
+	cmds, err := LoadSnapshots(snapshotDir, manifestOrFail(t).AllCommands())
+	if err != nil {
+		t.Fatalf("Failed to load the committed snapshots: %v", err)
+	}
+
+	corpus := map[DefectKey]bool{}
+	for _, c := range cmds {
+		for _, d := range c.Defects {
+			corpus[DefectKey{Command: c.Name, Class: d.Class, Path: d.Path}] = true
+		}
+	}
+
+	for key := range DefectAllowlist {
+		if !corpus[key] {
+			t.Errorf("DefectAllowlist entry %s/%s at %s matches no defect in the committed snapshots; "+
+				"remove it or re-extract", key.Command, key.Class, key.Path)
+		}
 	}
 }

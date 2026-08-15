@@ -109,7 +109,7 @@ func rootNameOf(r GoRoot) string {
 // loadSchemaOrSkip correct rather than lucky: vendor/ is gitignored, so on a
 // clean checkout this is the path every run takes.
 func TestLoadWithoutSchemaIsNotAnError(t *testing.T) {
-	cmds, err := Load(filepath.Join(t.TempDir(), "absent"))
+	cmds, err := Load(filepath.Join(t.TempDir(), "absent"), "")
 	if err != nil {
 		t.Fatalf("A missing schema directory must not be an error, got %v", err)
 	}
@@ -156,7 +156,9 @@ func buildReport(t *testing.T) Report {
 
 func loadSchemaOrSkip(t *testing.T) []Command {
 	t.Helper()
-	cmds, err := Load(schemaDir)
+	// The vendored tree is a manual copy with no git identity of its own, so
+	// there is no revision to supply here today; see Load's doc comment.
+	cmds, err := Load(schemaDir, "")
 	if err != nil {
 		t.Fatalf("Failed to load the schema: %v", err)
 	}
