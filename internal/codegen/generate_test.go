@@ -1487,6 +1487,345 @@ func main() {
 }
 `
 
+// assetScratchModule mirrors portListScratchModule for the asset family,
+// which is still review-only: the goldens it compiles come from
+// testdata/golden, not commands/.
+func assetScratchModule(t *testing.T, dir string) string {
+	t.Helper()
+	goBin, err := exec.LookPath("go")
+	if err != nil {
+		t.Skipf("Skipping: no go toolchain on PATH (%v)", err)
+	}
+	got := generateOrFail(t)
+	for _, name := range []string{CommandFile("create_asset"), CommandFile("modify_asset"), CommandFile("get_assets")} {
+		if _, ok := got[name]; !ok {
+			t.Fatalf("%s was not generated, so this test would not compile it", name)
+		}
+	}
+
+	root, err := filepath.Abs("../..")
+	if err != nil {
+		t.Fatalf("Failed to resolve the module root: %v", err)
+	}
+	pkgDir := filepath.Join(dir, "genproto")
+	if err := os.MkdirAll(pkgDir, 0o750); err != nil {
+		t.Fatalf("Failed to create the scratch package: %v", err)
+	}
+	goVersion, err := goDirective(filepath.Join(root, "go.mod"))
+	if err != nil {
+		t.Fatalf("Failed to read the module's go directive: %v", err)
+	}
+	gomod := "module gogmpcodegencheck\n\ngo " + goVersion + "\n\n" +
+		"require github.com/brennoo/go-gmp v0.0.0\n\n" +
+		"replace github.com/brennoo/go-gmp => " + root + "\n"
+	mustWriteFile(t, filepath.Join(dir, "go.mod"), gomod)
+	mustWriteFile(t, filepath.Join(pkgDir, "support.go"),
+		strings.Replace(supportShim(), "package "+targetPackage+"\n", "package genproto\n", 1))
+	for name, src := range got {
+		rewritten := strings.Replace(src, "\npackage "+targetPackage+"\n", "\npackage genproto\n", 1)
+		if rewritten == src {
+			t.Fatalf("%s: expected a %q package clause to rewrite", name, targetPackage)
+		}
+		mustWriteFile(t, filepath.Join(pkgDir, name), rewritten)
+	}
+	return goBin
+}
+
+// TestAssetGeneratedRequestRoundTrips proves the generated request shape for
+// create_asset (both the asset and report choice branches), get_assets
+// (IgnorePagination/Details unset/false/true, plus AssetID and FiltID
+// together — the schema declares them as independent optional attributes),
+// and modify_asset (comment set and comment omitted, the two wire shapes the
+// modify_asset CommandWarning documents).
+func TestAssetGeneratedRequestRoundTrips(t *testing.T) {
+	dir := t.TempDir()
+	goBin := assetScratchModule(t, dir)
+	mustWriteFile(t, filepath.Join(dir, "main.go"), assetRequestRoundTripProgram)
+
+	cmd := exec.CommandContext(context.Background(), goBin, "run", ".")
+	cmd.Dir = dir
+	cmd.Env = append(os.Environ(), "GOWORK=off", "GOFLAGS=")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("Round-trip program failed: %v\n%s", err, out)
+	}
+
+	want := "" +
+		"create-asset-host: <create_asset><asset><name>203.0.113.42</name><type>host</type><comment>a comment</comment></asset></create_asset>\n" +
+		"create-asset-report: <create_asset><report id=\"report-1\"><filter><term>apply_overrides=0</term></filter></report></create_asset>\n" +
+		"get-assets-unset: <get_assets filter=\"name=foo\" type=\"host\"></get_assets>\n" +
+		"get-assets-false: <get_assets ignore_pagination=\"0\" details=\"0\"></get_assets>\n" +
+		"get-assets-true: <get_assets ignore_pagination=\"1\" details=\"1\"></get_assets>\n" +
+		"get-assets-id-and-filtid: <get_assets asset_id=\"asset-1\" filt_id=\"filter-1\"></get_assets>\n" +
+		"modify-asset-comment-set: <modify_asset asset_id=\"asset-1\"><comment>updated comment</comment></modify_asset>\n" +
+		"modify-asset-comment-omitted: <modify_asset asset_id=\"asset-1\"></modify_asset>\n"
+	if got := string(out); got != want {
+		t.Fatalf("Round-trip program printed:\n%s\nwant:\n%s", got, want)
+	}
+}
+
+// assetRequestRoundTripProgram is a `go run` main for
+// TestAssetGeneratedRequestRoundTrips.
+const assetRequestRoundTripProgram = `package main
+
+import (
+	"encoding/xml"
+	"fmt"
+	"os"
+
+	"gogmpcodegencheck/genproto"
+)
+
+func printXML(label string, v any) {
+	b, err := xml.Marshal(v)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, label, err)
+		os.Exit(1)
+	}
+	fmt.Printf("%s: %s\n", label, b)
+}
+
+func boolp(b genproto.GMPBool) *genproto.GMPBool { return &b }
+
+func main() {
+	printXML("create-asset-host", &genproto.CreateAsset{
+		Asset: &genproto.Asset{Name: "203.0.113.42", Type: "host", Comment: "a comment"},
+	})
+	printXML("create-asset-report", &genproto.CreateAsset{
+		Report: &genproto.AssetReport{ID: "report-1", Filter: genproto.AssetFilter{Term: "apply_overrides=0"}},
+	})
+	printXML("get-assets-unset", &genproto.GetAssets{
+		Type: "host", Filter: "name=foo",
+	})
+	printXML("get-assets-false", &genproto.GetAssets{
+		IgnorePagination: boolp(false), Details: boolp(false),
+	})
+	printXML("get-assets-true", &genproto.GetAssets{
+		IgnorePagination: boolp(true), Details: boolp(true),
+	})
+	printXML("get-assets-id-and-filtid", &genproto.GetAssets{
+		AssetID: "asset-1", FiltID: "filter-1",
+	})
+	printXML("modify-asset-comment-set", &genproto.ModifyAsset{
+		AssetID: "asset-1", Comment: "updated comment",
+	})
+	printXML("modify-asset-comment-omitted", &genproto.ModifyAsset{
+		AssetID: "asset-1",
+	})
+}
+`
+
+// TestAssetGeneratedResponseRoundTrips decodes the committed live fixtures
+// plus a synthetic one; see docs/review-2026-08.md's `asset added in
+// review-only mode` section for what each fixture covers.
+func TestAssetGeneratedResponseRoundTrips(t *testing.T) {
+	dir := t.TempDir()
+	goBin := assetScratchModule(t, dir)
+
+	liveFixture1, err := filepath.Abs("../gmptest/testdata/live/get_assets/001_response.xml")
+	if err != nil {
+		t.Fatalf("Failed to resolve the live fixture path: %v", err)
+	}
+	if _, err := os.Stat(liveFixture1); err != nil {
+		t.Fatalf("Live fixture not found: %v", err)
+	}
+	liveFixture2, err := filepath.Abs("../gmptest/testdata/live/get_assets/002_response.xml")
+	if err != nil {
+		t.Fatalf("Failed to resolve the live fixture path: %v", err)
+	}
+	if _, err := os.Stat(liveFixture2); err != nil {
+		t.Fatalf("Live fixture not found: %v", err)
+	}
+	syntheticFixture := filepath.Join(dir, "synthetic.xml")
+	mustWriteFile(t, syntheticFixture, assetSyntheticResponse)
+
+	mustWriteFile(t, filepath.Join(dir, "main.go"), assetResponseRoundTripProgram)
+
+	cmd := exec.CommandContext(context.Background(), goBin, "run", ".", liveFixture1, liveFixture2, syntheticFixture)
+	cmd.Dir = dir
+	cmd.Env = append(os.Environ(), "GOWORK=off", "GOFLAGS=")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("Round-trip program failed: %v\n%s", err, out)
+	}
+
+	want := "" +
+		"live1-decode: assets=0 filtered=0 page=0\n" +
+		"live1-roundtrip: assets=0 filtered=0 page=0\n" +
+		"live2-decode: assets=0 filtered=0 page=0\n" +
+		"live2-roundtrip: assets=0 filtered=0 page=0\n" +
+		"synthetic-decode: assets=1 filtered=1 page=1\n" +
+		"  asset id=\"asset-syn-1\" name=\"203.0.113.42\" writable=true in_use=false type=\"host\"" +
+		" identifier_name=\"ip\" identifier_source_name=true" +
+		" host_severity=5 routes=[203.0.113.1(distance=1)] detail=[MAC:00:11:22:33:44:55]" +
+		" os_hosts=[asset-syn-2(sev=5.0)]\n" +
+		"synthetic-roundtrip: assets=1 filtered=1 page=1\n" +
+		"  asset id=\"asset-syn-1\" name=\"203.0.113.42\" writable=true in_use=false type=\"host\"" +
+		" identifier_name=\"ip\" identifier_source_name=true" +
+		" host_severity=5 routes=[203.0.113.1(distance=1)] detail=[MAC:00:11:22:33:44:55]" +
+		" os_hosts=[asset-syn-2(sev=5.0)]\n"
+	if got := string(out); got != want {
+		t.Fatalf("Round-trip program printed:\n%s\nwant:\n%s", got, want)
+	}
+}
+
+// assetSyntheticResponse pins schema-derived fields absent from the
+// asset-less live fixtures, including the accepted source/name loss.
+const assetSyntheticResponse = `<get_assets_response status="200" status_text="OK">
+  <asset id="asset-syn-1">
+    <owner><name>admin</name></owner>
+    <name>203.0.113.42</name>
+    <comment></comment>
+    <creation_time>2026-01-01T00:00:00Z</creation_time>
+    <modification_time>2026-01-01T00:00:00Z</modification_time>
+    <writable>1</writable>
+    <in_use>0</in_use>
+    <permissions><permission><name>Everything</name></permission></permissions>
+    <type>host</type>
+    <user_tags>
+      <count>1</count>
+      <tag id="tag-1"><name>env</name><value>prod</value><comment></comment></tag>
+    </user_tags>
+    <identifiers>
+      <identifier id="ident-1">
+        <name>ip</name>
+        <value>203.0.113.42</value>
+        <creation_time>2026-01-01T00:00:00Z</creation_time>
+        <modification_time>2026-01-01T00:00:00Z</modification_time>
+        <source id="source-1"><type>User</type><data></data><deleted>0</deleted><name>admin</name></source>
+      </identifier>
+    </identifiers>
+    <host>
+      <severity><value>5</value></severity>
+      <routes>
+        <route>
+          <host id="host-1" distance="1" same_source="1"><ip>203.0.113.1</ip></host>
+        </route>
+      </routes>
+      <detail>
+        <name>MAC</name>
+        <value>00:11:22:33:44:55</value>
+        <source><id>source-2</id><type>Report</type></source>
+      </detail>
+    </host>
+    <os>
+      <title>Linux Kernel</title>
+      <installs>1</installs>
+      <all_installs>1</all_installs>
+      <latest_severity><value>5.0</value></latest_severity>
+      <highest_severity><value>5.0</value></highest_severity>
+      <average_severity><value>5.0</value></average_severity>
+      <hosts>
+        <asset id="asset-syn-2"><name>203.0.113.43</name><severity><value>5.0</value></severity></asset>
+      </hosts>
+    </os>
+  </asset>
+  <filters id=""><term>first=1 rows=10 sort=name</term><keywords/></filters>
+  <sort><field>name<order>ascending</order></field></sort>
+  <assets start="1" max="1000"/>
+  <asset_count>1<filtered>1</filtered><page>1</page></asset_count>
+</get_assets_response>
+`
+
+// assetResponseRoundTripProgram is a `go run` main for
+// TestAssetGeneratedResponseRoundTrips. argv[1] and argv[2] are the two
+// committed live (asset-less) fixtures, argv[3] the synthetic populated one.
+const assetResponseRoundTripProgram = `package main
+
+import (
+	"encoding/xml"
+	"fmt"
+	"os"
+
+	"gogmpcodegencheck/genproto"
+)
+
+func report(label string, r *genproto.GetAssetsResponse) {
+	fmt.Printf("%s: assets=%d filtered=%d page=%d\n",
+		label, len(r.Asset), r.AssetCount.Filtered, r.AssetCount.Page)
+	for _, a := range r.Asset {
+		fmt.Printf("  asset id=%q name=%q writable=%t in_use=%t type=%q",
+			a.ID, a.Name, bool(a.Writable), bool(a.InUse), a.Type)
+		if a.Identifiers != nil {
+			fmt.Printf(" identifier_name=%q identifier_source_name=%t",
+				a.Identifiers.Identifier.Name, bool(a.Identifiers.Identifier.Source.Name))
+		}
+		if a.Host != nil {
+			fmt.Printf(" host_severity=%v", a.Host.Severity.Value)
+			if a.Host.Routes != nil {
+				fmt.Printf(" routes=[")
+				for i, rt := range a.Host.Routes.Route {
+					for j, h := range rt.Host {
+						if i+j > 0 {
+							fmt.Printf(" ")
+						}
+						distance := 0
+						if h.Distance != nil {
+							distance = *h.Distance
+						}
+						fmt.Printf("%s(distance=%d)", h.IP, distance)
+					}
+				}
+				fmt.Printf("]")
+			}
+			if len(a.Host.Detail) > 0 {
+				fmt.Printf(" detail=[")
+				for i, d := range a.Host.Detail {
+					if i > 0 {
+						fmt.Printf(" ")
+					}
+					fmt.Printf("%s:%s", d.Name, d.Value)
+				}
+				fmt.Printf("]")
+			}
+		}
+		if a.OS != nil {
+			fmt.Printf(" os_hosts=[")
+			for i, h := range a.OS.Hosts.Asset {
+				if i > 0 {
+					fmt.Printf(" ")
+				}
+				fmt.Printf("%s(sev=%s)", h.ID, h.Severity.Value)
+			}
+			fmt.Printf("]")
+		}
+		fmt.Println()
+	}
+}
+
+func decodeAndRoundTrip(path, decodeLabel, roundtripLabel string) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	var decoded genproto.GetAssetsResponse
+	if err := xml.Unmarshal(data, &decoded); err != nil {
+		fmt.Fprintln(os.Stderr, "decode:", err)
+		os.Exit(1)
+	}
+	report(decodeLabel, &decoded)
+
+	reencoded, err := xml.Marshal(&decoded)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "encode:", err)
+		os.Exit(1)
+	}
+	var roundtripped genproto.GetAssetsResponse
+	if err := xml.Unmarshal(reencoded, &roundtripped); err != nil {
+		fmt.Fprintln(os.Stderr, "re-decode:", err)
+		os.Exit(1)
+	}
+	report(roundtripLabel, &roundtripped)
+}
+
+func main() {
+	decodeAndRoundTrip(os.Args[1], "live1-decode", "live1-roundtrip")
+	decodeAndRoundTrip(os.Args[2], "live2-decode", "live2-roundtrip")
+	decodeAndRoundTrip(os.Args[3], "synthetic-decode", "synthetic-roundtrip")
+}
+`
+
 // mustWriteFile is writeFile (scratch.go) with the *testing.T ceremony a test
 // wants but a reusable helper shouldn't carry.
 func mustWriteFile(t *testing.T, path, content string) {

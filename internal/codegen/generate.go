@@ -103,11 +103,14 @@ func (g *gen) validateCommandWarnings() error {
 // checkCommandWarningsConsumed fails the build on a stale or mistyped
 // CommandWarnings entry, mirroring checkFieldOverridesConsumed's scoping:
 // only a command that was actually part of this call can make "never
-// emitted" mean anything.
+// emitted" mean anything. A "<command>_response" key is the response-side
+// counterpart emitResponse attaches (see emitResponse), so it is present
+// alongside the request-side "<command>" key.
 func (g *gen) checkCommandWarningsConsumed() error {
-	present := make(map[string]bool, len(g.cmds))
+	present := make(map[string]bool, len(g.cmds)*2)
 	for i := range g.cmds {
 		present[g.cmds[i].Name] = true
+		present[g.cmds[i].Name+"_response"] = true
 	}
 	var stale []string
 	for command := range g.cw {
@@ -753,6 +756,13 @@ func (g *gen) emitResponse(b *strings.Builder, c *schema.Command) error {
 		root = c.Name + "_response"
 	}
 	fmt.Fprintf(b, "// %s is a %s command response. See the GMP protocol docs for details.\n", name, c.Name)
+	if w, ok := g.cw[c.Name+"_response"]; ok {
+		g.cwConsumed[c.Name+"_response"] = true
+		b.WriteString("//\n")
+		for _, line := range strings.Split(w.Text, "\n") {
+			fmt.Fprintf(b, "// %s\n", line)
+		}
+	}
 	fmt.Fprintf(b, "type %s struct {\n", name)
 	used := map[string]bool{"XMLName": true, "Status": true, "StatusText": true}
 	fmt.Fprintf(b, "XMLName xml.Name `xml:%q`\n", root)

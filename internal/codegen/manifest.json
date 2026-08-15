@@ -51,6 +51,11 @@
     {
       "name": "port_list",
       "commands": ["create_port_list", "get_port_lists", "modify_port_list"]
+    },
+    {
+      "name": "asset",
+      "commands": ["create_asset", "get_assets", "modify_asset"],
+      "review_only": true
     }
   ]
 }

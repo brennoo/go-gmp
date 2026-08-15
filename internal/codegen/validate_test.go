@@ -3163,6 +3163,57 @@ func TestValidatePortListGeneratedMatchesOrImproves(t *testing.T) {
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
 
+// TestValidateAssetBeforeMatchesKnownConformance pins down what Validate's
+// "before" side reports for the asset family while it is still review-only.
+// See docs/review-2026-08.md's `asset added in review-only mode` section for
+// the per-finding explanation.
+func TestValidateAssetBeforeMatchesKnownConformance(t *testing.T) {
+	before, _ := validateOrSkip(t, "create_asset")
+
+	want := map[string]counts{
+		"create_asset": {
+			actionable: map[string]int{},
+			suppressed: map[string]int{schema.CatOmitEmpty: 1},
+		},
+		"modify_asset": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_assets": {
+			actionable: map[string]int{
+				schema.CatExtra:       6,
+				schema.CatCardinality: 1,
+				schema.CatType:        4,
+				schema.CatDefect:      1,
+			},
+			suppressed: map[string]int{schema.CatOmitEmpty: 9},
+		},
+	}
+	for _, res := range before {
+		w, ok := want[res.Command]
+		if !ok {
+			t.Errorf("%s: unexpected command in Validate's before results", res.Command)
+			continue
+		}
+		assertCounts(t, "before", res.Command, w, countFindings(res.Findings))
+	}
+}
+
+// TestValidateAssetGeneratedMatchesOrImproves is the asset family's
+// post-swap gate, run at the same rigour every prior family's was before
+// adoption. See docs/review-2026-08.md's `asset added in review-only mode`
+// section for what generation closes and what SCHEMA-DEFECT survives.
+func TestValidateAssetGeneratedMatchesOrImproves(t *testing.T) {
+	before, after := validateOrSkip(t, "create_asset")
+
+	wantAfter := map[string]counts{
+		"create_asset": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_asset": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_assets": {
+			actionable: map[string]int{schema.CatDefect: 1},
+			suppressed: map[string]int{},
+		},
+	}
+	assertMatchesOrImproves(t, before, after, wantAfter)
+}
+
 // portListCountProbe mirrors PortListCount in testdata/golden/get_port_lists.go.
 type portListCountProbe struct {
 	XMLName       xml.Name `xml:"get_port_lists_response"`

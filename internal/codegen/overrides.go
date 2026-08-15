@@ -257,16 +257,20 @@ var PointerOverrides = map[string]PointerOverride{
 
 // CommandWarning attaches a public-facing behavioral-hazard note to a
 // generated command's doc comment: wire behavior a caller could not infer
-// from the struct's field types alone, and that emitRequest would otherwise
-// leave undocumented anywhere but this table and an internal review doc.
+// from the struct's field types alone, and that emitRequest/emitResponse
+// would otherwise leave undocumented anywhere but this table and an internal
+// review doc.
 type CommandWarning struct {
 	Text   string // one or more sentences, emitted verbatim as doc-comment lines
 	Reason string // cites the live/upstream evidence
 }
 
-// CommandWarnings is keyed by command name. Unlike PointerOverrides and
-// FieldOverrides, a warning changes no generated field or type — it exists
-// only to surface a hazard the wire shape alone does not reveal.
+// CommandWarnings is keyed by command name for a request-side hazard, or by
+// "<command>_response" for a response-side one (attached by emitResponse to
+// the *Response struct's doc comment — see get_assets_response below for a
+// field-typing hazard that only affects decoding). Unlike PointerOverrides
+// and FieldOverrides, a warning changes no generated field or type — it
+// exists only to surface a hazard the wire shape alone does not reveal.
 var CommandWarnings = map[string]CommandWarning{
 	"modify_role": {
 		Text: "Name, Comment and Users are cleared whenever any of them is omitted from a " +
@@ -317,5 +321,20 @@ var CommandWarnings = map[string]CommandWarning{
 			"Name/Comment are cleared rather than left unchanged (both together, and Name alone " +
 			"while only Comment was resent); see docs/review-2026-08.md's `port_list added in " +
 			"review-only mode` section",
+	},
+	"modify_asset": {
+		Text: "Comment is cleared whenever it is omitted from a request, not left unchanged: " +
+			"there is no way to leave a stored comment untouched other than resending it.",
+		Reason: "T-9: live gvmd 26.36.1 test against the running instance confirmed an omitted " +
+			"Comment is cleared rather than left unchanged; see docs/review-2026-08.md's `asset " +
+			"added in review-only mode` section",
+	},
+	"get_assets_response": {
+		Text: "Asset.Identifiers.Identifier.Source.Name follows the schema's boolean type, but " +
+			"current gvmd sends a real username (for example \"admin\") in that element. GMPBool " +
+			"decodes any non-\"0\" text as true, so the username is silently discarded rather than " +
+			"preserved.",
+		Reason: "T-9: live gvmd 26.36.1 test against the running instance returned a username in " +
+			"this element; see docs/review-2026-08.md's `asset added in review-only mode` section",
 	},
 }

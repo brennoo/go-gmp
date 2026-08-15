@@ -96,9 +96,9 @@ type CommandRoots struct {
 //
 // "Before" means different things per family, deliberately. For an adopted
 // family (note, override, role, group, tag, schedule, alert, filter,
-// tls_certificate, permission, ticket, credential) these types are already
-// the generator's output, so the comparison is a drift detector on the
-// committed files. For a review-only family (port_list) these are still
+// tls_certificate, permission, ticket, credential, port_list) these types
+// are already the generator's output, so the comparison is a drift detector
+// on the committed files. For a review-only family (asset) these are still
 // the hand-written originals, so the comparison is the pre-swap gate every
 // one of the adopted families went through before adoption.
 //
@@ -263,6 +263,18 @@ func BeforeGoRoots() map[string]CommandRoots {
 		"get_port_lists": {
 			Request:  schema.ModelOf(&commands.GetPortLists{}),
 			Response: schema.ModelOf(&commands.GetPortListsResponse{}),
+		},
+		"create_asset": {
+			Request:  schema.ModelOf(&commands.CreateAsset{}),
+			Response: schema.ModelOf(&commands.CreateAssetResponse{}),
+		},
+		"modify_asset": {
+			Request:  schema.ModelOf(&commands.ModifyAsset{}),
+			Response: schema.ModelOf(&commands.ModifyAssetResponse{}),
+		},
+		"get_assets": {
+			Request:  schema.ModelOf(&commands.GetAssets{}),
+			Response: schema.ModelOf(&commands.GetAssetsResponse{}),
 		},
 	}
 }
