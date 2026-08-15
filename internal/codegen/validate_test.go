@@ -3113,11 +3113,10 @@ func TestCredentialSortValueIsWhitespaceOnly(t *testing.T) {
 }
 
 // TestValidatePortListBeforeMatchesKnownConformance is the port_list family's
-// counterpart to TestValidateTicketBeforeMatchesKnownConformance. port_list is
-// review-only, so these types are still the hand-written originals in
-// commands/{create_port_list,get_port_lists,modify_port_list}.go — this pins
-// the pre-swap numbers against internal/schema/testdata/CONFORMANCE.md's own
-// sections for those three commands.
+// counterpart to TestValidateCredentialBeforeMatchesKnownConformance.
+// port_list is adopted, so this is a drift detector on the committed
+// commands/ files. Pre-adoption findings are recorded in
+// docs/review-2026-08.md.
 func TestValidatePortListBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_port_list")
 
@@ -3128,17 +3127,8 @@ func TestValidatePortListBeforeMatchesKnownConformance(t *testing.T) {
 		},
 		"modify_port_list": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_port_lists": {
-			actionable: map[string]int{
-				schema.CatMissing:     3,
-				schema.CatExtra:       1,
-				schema.CatCardinality: 1,
-				schema.CatKind:        3,
-				schema.CatType:        4,
-				schema.CatDefect:      1,
-			},
-			suppressed: map[string]int{
-				schema.CatOmitEmpty: 36,
-			},
+			actionable: map[string]int{schema.CatDefect: 1},
+			suppressed: map[string]int{},
 		},
 	}
 	for _, res := range before {
@@ -3152,9 +3142,10 @@ func TestValidatePortListBeforeMatchesKnownConformance(t *testing.T) {
 }
 
 // TestValidatePortListGeneratedMatchesOrImproves is the port_list family's
-// pre-adoption look at what generation would close. See
+// post-swap gate, run at the same rigour every prior family's was. See
 // docs/review-2026-08.md's port_list section for the per-finding
-// explanation.
+// explanation of what generation closed while port_list was still
+// review_only.
 func TestValidatePortListGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_port_list")
 

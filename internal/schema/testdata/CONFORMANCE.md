@@ -29,23 +29,23 @@ them, so response-side optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             64
-with actionable findings:     58
-actionable findings:          535  (request 248, response 287)
-suppressed findings:          635
-confirmed by fidelity corpus: 68
+fully conformant:             65
+with actionable findings:     57
+actionable findings:          523  (request 248, response 275)
+suppressed findings:          599
+confirmed by fidelity corpus: 67
 in the schema, not in Go:     0
 in Go, not in the schema:     0
 
 ### Findings by category
 
                  actionable suppressed
-  MISSING               194          0
-  EXTRA                 204          2
-  CARDINALITY            39          0
-  KIND                   12          0
-  OMITEMPTY               4        633
-  TYPE                   82          0
+  MISSING               191          0
+  EXTRA                 203          2
+  CARDINALITY            38          0
+  KIND                    9          0
+  OMITEMPTY               4        597
+  TYPE                   78          0
   SCHEMA-DEFECT         107          0
 
 ### Schema defects by class
@@ -91,11 +91,11 @@ taken against upstream main (155 commands). Two reasons, both expected:
   modify_config                14   EXTRA=6  CARDINALITY=3  OMITEMPTY=2  TYPE=3
   modify_task                  13   MISSING=1  EXTRA=12
   get_aggregates               12   MISSING=5  EXTRA=5  CARDINALITY=2
-  get_port_lists               12   MISSING=3  EXTRA=1  CARDINALITY=1  KIND=3  TYPE=4
   get_assets                   11   EXTRA=6  CARDINALITY=1  TYPE=4
   get_agents                    9   MISSING=7  TYPE=2
   get_scanners                  9   EXTRA=6  TYPE=3
-  ... and 38 more with fewer
+  get_users                     9   MISSING=1  EXTRA=2  CARDINALITY=2  KIND=2  TYPE=2
+  ... and 37 more with fewer
 
 ### Confirmed by both oracles
 
@@ -116,7 +116,6 @@ attributes, and one of its own captured request fixtures uses three of them.
   get_configs              /get_configs_response/config_count/filtered
   get_info                 /get_info_response/info/cve/severity
   get_nvts                 /get_nvts_response/nvt/refs/*
-  get_port_lists           /get_port_lists_response/filters/keywords/*
   get_report_configs       /get_report_configs_response/filters/keywords/*
   get_report_formats       /get_report_formats_response/filters/keywords/*
   get_report_formats       /get_report_formats_response/report_format/owner
@@ -1586,104 +1585,8 @@ SCHEMA-DEFECT=2
 
 ### get_port_lists  (command_get_port_lists.xml)
 
-MISSING=3  EXTRA=1  CARDINALITY=1  KIND=3  OMITEMPTY=36  TYPE=4  SCHEMA-DEFECT=1
+SCHEMA-DEFECT=1
 
-  MISSING       response /get_port_lists_response/filters/keywords/*
-                schema declares 1 children; Go models this as scalar string  [fidelity]
-  MISSING       response /get_port_lists_response/sort/#text
-                schema also declares character data (text) here; Go *commands.PortListSort has no `,chardata` field
-  MISSING       response /get_port_lists_response/sort/field/*
-                schema declares 1 children; Go models this as scalar string
-  EXTRA         response /get_port_lists_response/sort/order
-                Go field Order string has no counterpart in the schema
-  CARDINALITY   response /get_port_lists_response/port_list/deprecated
-                schema says optional; Deprecated bool cannot express absence (zero is a legal value)
-  KIND          response /get_port_lists_response/port_list/user_tags/count
-                schema declares elem, Go models it as attr (Count int)
-  KIND          response /get_port_lists_response/port_list_count/filtered
-                schema declares elem, Go models it as attr (Filtered int)
-  KIND          response /get_port_lists_response/port_list_count/page
-                schema declares elem, Go models it as attr (Page int)
-  OMITEMPTY     response /get_port_lists_response/filters
-                schema says required, Filters is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/filters/@id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/filters/keywords
-                schema says required, Keywords is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/filters/term
-                schema says required, Term is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/comment
-                schema says required, Comment is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/creation_time
-                schema says required, CreationTime is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/in_use
-                schema says required, InUse is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/modification_time
-                schema says required, ModificationTime is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/owner
-                schema says required, Owner is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/owner/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/permissions
-                schema says required, Permissions is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/permissions/permission/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/port_count
-                schema says required, PortCount is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/port_count/all
-                schema says required, All is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/port_count/tcp
-                schema says required, TCP is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/port_count/udp
-                schema says required, UDP is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/port_ranges/port_range/@id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/port_ranges/port_range/comment
-                schema says required, Comment is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/port_ranges/port_range/end
-                schema says required, End is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/port_ranges/port_range/start
-                schema says required, Start is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/port_ranges/port_range/type
-                schema says required, Type is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/predefined
-                schema says required, Predefined is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/targets/target/@id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/targets/target/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/user_tags/tag/@id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/user_tags/tag/comment
-                schema says required, Comment is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/user_tags/tag/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/user_tags/tag/value
-                schema says required, Value is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list/writable
-                schema says required, Writable is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_list_count
-                schema says required, Count is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_lists
-                schema says required, Pagination is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_lists/@max
-                schema says required, Max is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/port_lists/@start
-                schema says required, Start is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/sort
-                schema says required, Sort is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_port_lists_response/sort/field
-                schema says required, Field is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  TYPE          response /get_port_lists_response/port_list/deprecated
-                schema type boolean is text ("" is true), Go Deprecated is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_port_lists_response/port_list/in_use
-                schema type boolean is text ("" is true), Go InUse is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_port_lists_response/port_list/predefined
-                schema type boolean is text ("" is true), Go Predefined is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_port_lists_response/port_list/writable
-                schema type boolean is text ("" is true), Go Writable is bool: '7' fails to decode and '1' re-emits as 'true'
   SCHEMA-DEFECT response /get_port_lists_response/port_list/targets/target/permissions
                 empty-pattern: pattern declares no content
 

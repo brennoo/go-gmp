@@ -109,19 +109,6 @@ func TestTargetsIterator_TotalNilCount(t *testing.T) {
 	}
 }
 
-func TestPortListsIterator_TotalNilCount(t *testing.T) {
-	client := &fakeAllClient{
-		portlistsResp: &commands.GetPortListsResponse{PortLists: []commands.PortList{{ID: "p1"}}, Count: nil},
-	}
-	it := NewPortListIterator(client, context.Background(), PaginationOptions{Page: 1, PageSize: 2})
-	if !it.Next() {
-		t.Fatalf("expected first Next() true")
-	}
-	if it.Total() != 0 {
-		t.Fatalf("expected total 0 with nil PortList Count, got %d", it.Total())
-	}
-}
-
 func TestSettingsIterator_Layouts_TotalNil(t *testing.T) {
 	// SettingsList variant
 	client1 := &fakeAllClient{

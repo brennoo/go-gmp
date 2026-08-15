@@ -147,7 +147,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 			resp.StatusText = "OK"
 			if cmd.Filter != "" {
 				// Return mock data for pagination
-				resp.PortLists = []commands.PortList{
+				resp.PortList = []commands.PortList{
 					{
 						ID:   "portlist-1",
 						Name: "Test Port List 1",
@@ -157,7 +157,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 						Name: "Test Port List 2",
 					},
 				}
-				resp.Count = &commands.PortListCount{
+				resp.PortListCount = commands.PortListCount{
 					Filtered: 2,
 					Page:     1,
 				}
@@ -1747,12 +1747,12 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp.StatusText = "OK"
 		if cmd.Filter != "" {
 			// Return mock data for pagination
-			resp.PortLists = []commands.PortList{
+			resp.PortList = []commands.PortList{
 				{ID: "portlist-1", Name: "Test PortList 1"},
 				{ID: "portlist-2", Name: "Test PortList 2"},
 				{ID: "portlist-3", Name: "Test PortList 3"},
 			}
-			resp.Count = &commands.PortListCount{Filtered: 3}
+			resp.PortListCount = commands.PortListCount{Filtered: 3}
 		}
 	}
 

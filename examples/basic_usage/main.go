@@ -134,12 +134,12 @@ func (g *GMPClient) GetPortList(ctx context.Context, name string) (string, error
 		return "", fmt.Errorf("get port lists failed with status %s: %s", resp.Status, resp.StatusText)
 	}
 
-	if len(resp.PortLists) == 0 {
+	if len(resp.PortList) == 0 {
 		return "", fmt.Errorf("port list '%s' not found", name)
 	}
 
-	log.Printf("Found port list: %s (ID: %s)", resp.PortLists[0].Name, resp.PortLists[0].ID)
-	return resp.PortLists[0].ID, nil
+	log.Printf("Found port list: %s (ID: %s)", resp.PortList[0].Name, resp.PortList[0].ID)
+	return resp.PortList[0].ID, nil
 }
 
 // GetTarget retrieves a target by name.
