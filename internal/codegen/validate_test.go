@@ -3112,6 +3112,268 @@ func TestCredentialSortValueIsWhitespaceOnly(t *testing.T) {
 	}
 }
 
+// TestValidatePortListBeforeMatchesKnownConformance is the port_list family's
+// counterpart to TestValidateTicketBeforeMatchesKnownConformance. port_list is
+// review-only, so these types are still the hand-written originals in
+// commands/{create_port_list,get_port_lists,modify_port_list}.go — this pins
+// the pre-swap numbers against internal/schema/testdata/CONFORMANCE.md's own
+// sections for those three commands.
+func TestValidatePortListBeforeMatchesKnownConformance(t *testing.T) {
+	before, _ := validateOrSkip(t, "create_port_list")
+
+	want := map[string]counts{
+		"create_port_list": {
+			actionable: map[string]int{schema.CatDefect: 1},
+			suppressed: map[string]int{},
+		},
+		"modify_port_list": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_port_lists": {
+			actionable: map[string]int{
+				schema.CatMissing:     3,
+				schema.CatExtra:       1,
+				schema.CatCardinality: 1,
+				schema.CatKind:        3,
+				schema.CatType:        4,
+				schema.CatDefect:      1,
+			},
+			suppressed: map[string]int{
+				schema.CatOmitEmpty: 36,
+			},
+		},
+	}
+	for _, res := range before {
+		w, ok := want[res.Command]
+		if !ok {
+			t.Errorf("%s: unexpected command in Validate's before results", res.Command)
+			continue
+		}
+		assertCounts(t, "before", res.Command, w, countFindings(res.Findings))
+	}
+}
+
+// TestValidatePortListGeneratedMatchesOrImproves is the port_list family's
+// pre-adoption look at what generation would close. See
+// docs/review-2026-08.md's port_list section for the per-finding
+// explanation.
+func TestValidatePortListGeneratedMatchesOrImproves(t *testing.T) {
+	before, after := validateOrSkip(t, "create_port_list")
+
+	wantAfter := map[string]counts{
+		"create_port_list": {
+			actionable: map[string]int{schema.CatDefect: 1},
+			suppressed: map[string]int{},
+		},
+		"modify_port_list": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_port_lists": {
+			actionable: map[string]int{schema.CatDefect: 1},
+			suppressed: map[string]int{},
+		},
+	}
+	assertMatchesOrImproves(t, before, after, wantAfter)
+}
+
+// portListCountProbe mirrors PortListCount in testdata/golden/get_port_lists.go.
+type portListCountProbe struct {
+	XMLName       xml.Name `xml:"get_port_lists_response"`
+	PortListCount struct {
+		Filtered int `xml:"filtered"`
+		Page     int `xml:"page"`
+	} `xml:"port_list_count"`
+}
+
+// portListCountEvidence is portListCountProbe plus a ",chardata" field to
+// prove the bare total the generated shape can't retain.
+type portListCountEvidence struct {
+	XMLName       xml.Name `xml:"get_port_lists_response"`
+	PortListCount struct {
+		Value    string `xml:",chardata"`
+		Filtered int    `xml:"filtered"`
+		Page     int    `xml:"page"`
+	} `xml:"port_list_count"`
+}
+
+// TestPortListCountBareTotalIsAnAcceptedLoss mirrors
+// TestTicketCountBareTotalIsAnAcceptedLoss: live fixtures send a bare total
+// ahead of <filtered>/<page>, but port_list_count's schema pattern declares
+// no text token, so generation can't recover it. See docs/review-2026-08.md.
+func TestPortListCountBareTotalIsAnAcceptedLoss(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	cases := []struct {
+		provenance string
+		path       string
+		wantTotal  string
+		wantFilter int
+		wantPage   int
+	}{
+		{"live_001", filepath.Join(gmptestDir, "live", "get_port_lists", "001_response.xml"), "3", 3, 3},
+		{"live_002", filepath.Join(gmptestDir, "live", "get_port_lists", "002_response.xml"), "3", 3, 2},
+		{"live_003", filepath.Join(gmptestDir, "live", "get_port_lists", "003_response.xml"), "4", 1, 1},
+	}
+	for _, tc := range cases {
+		t.Run(tc.provenance, func(t *testing.T) {
+			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", tc.path, err)
+			}
+
+			var evidence portListCountEvidence
+			if err := xml.Unmarshal(data, &evidence); err != nil {
+				t.Fatalf("decoding %s into portListCountEvidence: %v", tc.path, err)
+			}
+			if got := strings.TrimSpace(evidence.PortListCount.Value); got != tc.wantTotal {
+				t.Fatalf("%s: port_list_count bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
+					tc.path, got, tc.wantTotal)
+			}
+			if evidence.PortListCount.Filtered != tc.wantFilter || evidence.PortListCount.Page != tc.wantPage {
+				t.Fatalf("%s: portListCountEvidence children = %+v, want Filtered=%d Page=%d",
+					tc.path, evidence.PortListCount, tc.wantFilter, tc.wantPage)
+			}
+
+			var got portListCountProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into portListCountProbe: %v", tc.path, err)
+			}
+			if got.PortListCount.Filtered != tc.wantFilter || got.PortListCount.Page != tc.wantPage {
+				t.Errorf("portListCountProbe = %+v, want Filtered=%d Page=%d (the generated shape changed unexpectedly)",
+					got.PortListCount, tc.wantFilter, tc.wantPage)
+			}
+			// portListCountProbe has no field that could have captured
+			// evidence.PortListCount.Value — that silent drop, now proven
+			// against the actual fixture bytes rather than assumed, is the
+			// accepted loss this test exists to pin.
+		})
+	}
+}
+
+// portListSortFieldProbe mirrors PortListSort/PortListField in
+// testdata/golden/get_port_lists.go.
+type portListSortFieldProbe struct {
+	XMLName xml.Name `xml:"get_port_lists_response"`
+	Sort    struct {
+		Value string `xml:",chardata"`
+		Field struct {
+			Order string `xml:"order"`
+		} `xml:"field"`
+	} `xml:"sort"`
+}
+
+// portListSortFieldEvidence is portListSortFieldProbe plus a ",chardata"
+// field on Field to prove the bare sort field name the generated shape
+// can't retain.
+type portListSortFieldEvidence struct {
+	XMLName xml.Name `xml:"get_port_lists_response"`
+	Sort    struct {
+		Field struct {
+			Value string `xml:",chardata"`
+			Order string `xml:"order"`
+		} `xml:"field"`
+	} `xml:"sort"`
+}
+
+// TestPortListSortFieldNameIsAnAcceptedLoss mirrors
+// TestTicketSortFieldNameIsAnAcceptedLoss: fixtures send the sort field's
+// name as bare text inside <field>, but <field>'s schema pattern declares
+// only <order>, so generation can't recover it. This is distinct from
+// PortListSort.Value (see TestPortListSortValueIsWhitespaceOnly), which
+// closes the schema-level sort/#text finding but never holds this name. See
+// docs/review-2026-08.md.
+func TestPortListSortFieldNameIsAnAcceptedLoss(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	cases := []struct {
+		provenance string
+		path       string
+		wantName   string
+		wantOrder  string
+	}{
+		{"live_001", filepath.Join(gmptestDir, "live", "get_port_lists", "001_response.xml"), "name", "ascending"},
+		{"live_002", filepath.Join(gmptestDir, "live", "get_port_lists", "002_response.xml"), "name", "ascending"},
+		{"live_003", filepath.Join(gmptestDir, "live", "get_port_lists", "003_response.xml"), "name", "ascending"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.provenance, func(t *testing.T) {
+			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", tc.path, err)
+			}
+
+			var evidence portListSortFieldEvidence
+			if err := xml.Unmarshal(data, &evidence); err != nil {
+				t.Fatalf("decoding %s into portListSortFieldEvidence: %v", tc.path, err)
+			}
+			if got := strings.TrimSpace(evidence.Sort.Field.Value); got != tc.wantName {
+				t.Fatalf("%s: sort/field bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
+					tc.path, got, tc.wantName)
+			}
+			if evidence.Sort.Field.Order != tc.wantOrder {
+				t.Fatalf("%s: portListSortFieldEvidence order = %q, want %q",
+					tc.path, evidence.Sort.Field.Order, tc.wantOrder)
+			}
+
+			var got portListSortFieldProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into portListSortFieldProbe: %v", tc.path, err)
+			}
+			if got.Sort.Field.Order != tc.wantOrder {
+				t.Errorf("portListSortFieldProbe order = %q, want %q (the generated shape changed unexpectedly)",
+					got.Sort.Field.Order, tc.wantOrder)
+			}
+			// portListSortFieldProbe.Sort.Field has no field that could have
+			// captured evidence.Sort.Field.Value — that silent drop, now
+			// proven against the actual fixture bytes rather than assumed,
+			// is the accepted loss this test exists to pin.
+			if got := strings.TrimSpace(got.Sort.Value); got != "" {
+				t.Errorf("portListSortFieldProbe.Sort.Value = %q, want empty — PortListSort.Value was expected to hold only indentation whitespace, not %q",
+					got, got)
+			}
+		})
+	}
+}
+
+// TestPortListSortValueIsWhitespaceOnly proves PortListSort.Value (the field
+// that closes the schema-level sort/#text finding) only ever holds
+// formatting whitespace, not the sort field name pinned by
+// TestPortListSortFieldNameIsAnAcceptedLoss.
+func TestPortListSortValueIsWhitespaceOnly(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	paths := []string{
+		filepath.Join(gmptestDir, "live", "get_port_lists", "001_response.xml"),
+		filepath.Join(gmptestDir, "live", "get_port_lists", "002_response.xml"),
+		filepath.Join(gmptestDir, "live", "get_port_lists", "003_response.xml"),
+	}
+	for _, path := range paths {
+		t.Run(filepath.Base(filepath.Dir(path))+"/"+filepath.Base(path), func(t *testing.T) {
+			data, err := os.ReadFile(path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", path, err)
+			}
+
+			var got portListSortFieldProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into portListSortFieldProbe: %v", path, err)
+			}
+			if v := strings.TrimSpace(got.Sort.Value); v != "" {
+				t.Fatalf("%s: PortListSort.Value = %q after trimming, want empty — fixture no longer demonstrates that this field captures only formatting whitespace, not the sort field name",
+					path, v)
+			}
+		})
+	}
+}
+
 // assertMatchesOrImproves is the shared body of the two match-or-improve gates:
 // the exact expected "after" counts, plus the two general rules that hold for
 // any family — no category may grow, and the schema's own defects may not move.

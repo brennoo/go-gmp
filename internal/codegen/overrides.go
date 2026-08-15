@@ -309,4 +309,13 @@ var CommandWarnings = map[string]CommandWarning{
 			"community and password from every get_credentials response shape; see " +
 			"docs/review-2026-08.md's `credential added in review-only mode` section",
 	},
+	"modify_port_list": {
+		Text: "Name and Comment are cleared whenever either is omitted from a request, not left " +
+			"unchanged: modifying one alone still blanks the other, so both must be resent " +
+			"together to preserve them.",
+		Reason: "T-9: live gvmd 26.36.1 test against the running instance confirmed omitted " +
+			"Name/Comment are cleared rather than left unchanged (both together, and Name alone " +
+			"while only Comment was resent); see docs/review-2026-08.md's `port_list added in " +
+			"review-only mode` section",
+	},
 }

@@ -1180,6 +1180,313 @@ func main() {
 }
 `
 
+// portListScratchModule copies the generated port_list family into a
+// throwaway module under dir/genproto, the same technique
+// credentialScratchModule uses. internal/gmptest's cases compile against
+// the hand-written commands package, so this is the only way to exercise
+// the real generated types before adoption.
+func portListScratchModule(t *testing.T, dir string) string {
+	t.Helper()
+	goBin, err := exec.LookPath("go")
+	if err != nil {
+		t.Skipf("Skipping: no go toolchain on PATH (%v)", err)
+	}
+	got := generateOrFail(t)
+	for _, name := range []string{CommandFile("create_port_list"), CommandFile("modify_port_list"), CommandFile("get_port_lists")} {
+		if _, ok := got[name]; !ok {
+			t.Fatalf("%s was not generated, so this test would not compile it", name)
+		}
+	}
+
+	root, err := filepath.Abs("../..")
+	if err != nil {
+		t.Fatalf("Failed to resolve the module root: %v", err)
+	}
+	pkgDir := filepath.Join(dir, "genproto")
+	if err := os.MkdirAll(pkgDir, 0o750); err != nil {
+		t.Fatalf("Failed to create the scratch package: %v", err)
+	}
+	goVersion, err := goDirective(filepath.Join(root, "go.mod"))
+	if err != nil {
+		t.Fatalf("Failed to read the module's go directive: %v", err)
+	}
+	gomod := "module gogmpcodegencheck\n\ngo " + goVersion + "\n\n" +
+		"require github.com/brennoo/go-gmp v0.0.0\n\n" +
+		"replace github.com/brennoo/go-gmp => " + root + "\n"
+	mustWriteFile(t, filepath.Join(dir, "go.mod"), gomod)
+	mustWriteFile(t, filepath.Join(pkgDir, "support.go"),
+		strings.Replace(supportShim(), "package "+targetPackage+"\n", "package genproto\n", 1))
+	for name, src := range got {
+		rewritten := strings.Replace(src, "\npackage "+targetPackage+"\n", "\npackage genproto\n", 1)
+		if rewritten == src {
+			t.Fatalf("%s: expected a %q package clause to rewrite", name, targetPackage)
+		}
+		mustWriteFile(t, filepath.Join(pkgDir, name), rewritten)
+	}
+	return goBin
+}
+
+// TestPortListGeneratedRequestRoundTrips pins the GMP lexical "0"/"1" wire
+// shape for GetPortLists.Details/Targets/Trash, plus the two ModifyPortList
+// wire shapes the modify_port_list CommandWarning documents: Name and
+// Comment set together, and either one omitted while the other is resent.
+func TestPortListGeneratedRequestRoundTrips(t *testing.T) {
+	dir := t.TempDir()
+	goBin := portListScratchModule(t, dir)
+	mustWriteFile(t, filepath.Join(dir, "main.go"), portListRequestRoundTripProgram)
+
+	cmd := exec.CommandContext(context.Background(), goBin, "run", ".")
+	cmd.Dir = dir
+	cmd.Env = append(os.Environ(), "GOWORK=off", "GOFLAGS=")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("Round-trip program failed: %v\n%s", err, out)
+	}
+
+	want := "" +
+		"create-port-list: <create_port_list><name>list-1</name><port_range>T:1-100</port_range><comment>a comment</comment><copy>copy-src-id</copy></create_port_list>\n" +
+		"modify-port-list-both-set: <modify_port_list port_list_id=\"pl-1\"><name>renamed</name><comment>updated comment</comment></modify_port_list>\n" +
+		"modify-port-list-name-omitted: <modify_port_list port_list_id=\"pl-1\"><comment>updated comment</comment></modify_port_list>\n" +
+		"modify-port-list-comment-omitted: <modify_port_list port_list_id=\"pl-1\"><name>renamed</name></modify_port_list>\n" +
+		"get-port-lists-unset: <get_port_lists port_list_id=\"pl-1\" filter=\"name=foo\" filt_id=\"filt-1\"></get_port_lists>\n" +
+		"get-port-lists-false: <get_port_lists details=\"0\" targets=\"0\" trash=\"0\"></get_port_lists>\n" +
+		"get-port-lists-true: <get_port_lists details=\"1\" targets=\"1\" trash=\"1\"></get_port_lists>\n"
+	if got := string(out); got != want {
+		t.Fatalf("Round-trip program printed:\n%s\nwant:\n%s", got, want)
+	}
+}
+
+// portListRequestRoundTripProgram is a `go run` main for
+// TestPortListGeneratedRequestRoundTrips.
+const portListRequestRoundTripProgram = `package main
+
+import (
+	"encoding/xml"
+	"fmt"
+	"os"
+
+	"gogmpcodegencheck/genproto"
+)
+
+func printXML(label string, v any) {
+	b, err := xml.Marshal(v)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, label, err)
+		os.Exit(1)
+	}
+	fmt.Printf("%s: %s\n", label, b)
+}
+
+func boolp(b genproto.GMPBool) *genproto.GMPBool { return &b }
+
+func main() {
+	printXML("create-port-list", &genproto.CreatePortList{
+		Name: "list-1", PortRange: "T:1-100", Comment: "a comment", Copy: "copy-src-id",
+	})
+	printXML("modify-port-list-both-set", &genproto.ModifyPortList{
+		PortListID: "pl-1", Name: "renamed", Comment: "updated comment",
+	})
+	printXML("modify-port-list-name-omitted", &genproto.ModifyPortList{
+		PortListID: "pl-1", Comment: "updated comment",
+	})
+	printXML("modify-port-list-comment-omitted", &genproto.ModifyPortList{
+		PortListID: "pl-1", Name: "renamed",
+	})
+	printXML("get-port-lists-unset", &genproto.GetPortLists{
+		PortListID: "pl-1", Filter: "name=foo", FiltID: "filt-1",
+	})
+	printXML("get-port-lists-false", &genproto.GetPortLists{
+		Details: boolp(false), Targets: boolp(false), Trash: boolp(false),
+	})
+	printXML("get-port-lists-true", &genproto.GetPortLists{
+		Details: boolp(true), Targets: boolp(true), Trash: boolp(true),
+	})
+}
+`
+
+// TestPortListGeneratedResponseRoundTrips adds a synthetic document to cover
+// deprecated/user_tags, which no committed fixture exercises. The schema
+// declares chardata on sort, not sort/field, so Value captures formatting
+// whitespace rather than the observed field name (see
+// TestPortListSortFieldNameIsAnAcceptedLoss).
+func TestPortListGeneratedResponseRoundTrips(t *testing.T) {
+	dir := t.TempDir()
+	goBin := portListScratchModule(t, dir)
+
+	upstreamFixture, err := filepath.Abs("../gmptest/testdata/upstream/get_port_lists/001_response.xml")
+	if err != nil {
+		t.Fatalf("Failed to resolve the upstream fixture path: %v", err)
+	}
+	if _, err := os.Stat(upstreamFixture); err != nil {
+		t.Fatalf("Upstream fixture not found: %v", err)
+	}
+	liveFixture, err := filepath.Abs("../gmptest/testdata/live/get_port_lists/001_response.xml")
+	if err != nil {
+		t.Fatalf("Failed to resolve the live fixture path: %v", err)
+	}
+	if _, err := os.Stat(liveFixture); err != nil {
+		t.Fatalf("Live fixture not found: %v", err)
+	}
+	syntheticFixture := filepath.Join(dir, "synthetic.xml")
+	mustWriteFile(t, syntheticFixture, portListSyntheticResponse)
+
+	mustWriteFile(t, filepath.Join(dir, "main.go"), portListResponseRoundTripProgram)
+
+	cmd := exec.CommandContext(context.Background(), goBin, "run", ".", upstreamFixture, liveFixture, syntheticFixture)
+	cmd.Dir = dir
+	cmd.Env = append(os.Environ(), "GOWORK=off", "GOFLAGS=")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("Round-trip program failed: %v\n%s", err, out)
+	}
+
+	want := "" +
+		"upstream-decode: port_lists=1 filtered=0 page=0 sort_value=\"\" sort_field_order=\"\"\n" +
+		"  port_list id=\"b993b6f5-f9fb-4e6e-9c94-dd46c00e058d\" name=\"All TCP\" writable=false in_use=true predefined=false deprecated=false port_ranges=[TCP:1-65535] targets=[1f28d970-17ef-4c69-ba8a-13827059f2b9]\n" +
+		"upstream-roundtrip: port_lists=1 filtered=0 page=0 sort_value=\"\" sort_field_order=\"\"\n" +
+		"  port_list id=\"b993b6f5-f9fb-4e6e-9c94-dd46c00e058d\" name=\"All TCP\" writable=false in_use=true predefined=false deprecated=false port_ranges=[TCP:1-65535] targets=[1f28d970-17ef-4c69-ba8a-13827059f2b9]\n" +
+		"live-decode: port_lists=3 filtered=3 page=3 sort_value=\"\" sort_field_order=\"ascending\" keywords=[first=1 rows=10 sort=name]\n" +
+		"  port_list id=\"33d0cd82-57c6-11e1-8ed1-406186ea4fc5\" name=\"All IANA assigned TCP\" writable=true in_use=false predefined=true deprecated=false\n" +
+		"  port_list id=\"4a4717fe-57d2-11e1-9a26-406186ea4fc5\" name=\"All IANA assigned TCP and UDP\" writable=true in_use=false predefined=true deprecated=false\n" +
+		"  port_list id=\"730ef368-57e2-11e1-a90f-406186ea4fc5\" name=\"All TCP and Nmap top 100 UDP\" writable=true in_use=false predefined=true deprecated=false\n" +
+		"live-roundtrip: port_lists=3 filtered=3 page=3 sort_value=\"\" sort_field_order=\"ascending\" keywords=[first=1 rows=10 sort=name]\n" +
+		"  port_list id=\"33d0cd82-57c6-11e1-8ed1-406186ea4fc5\" name=\"All IANA assigned TCP\" writable=true in_use=false predefined=true deprecated=false\n" +
+		"  port_list id=\"4a4717fe-57d2-11e1-9a26-406186ea4fc5\" name=\"All IANA assigned TCP and UDP\" writable=true in_use=false predefined=true deprecated=false\n" +
+		"  port_list id=\"730ef368-57e2-11e1-a90f-406186ea4fc5\" name=\"All TCP and Nmap top 100 UDP\" writable=true in_use=false predefined=true deprecated=false\n" +
+		"synthetic-decode: port_lists=1 filtered=1 page=1 sort_value=\"\" sort_field_order=\"ascending\"\n" +
+		"  port_list id=\"port-list-syn-1\" name=\"synthetic-port-list\" writable=true in_use=false predefined=false deprecated=true user_tags=[env:prod]\n" +
+		"synthetic-roundtrip: port_lists=1 filtered=1 page=1 sort_value=\"\" sort_field_order=\"ascending\"\n" +
+		"  port_list id=\"port-list-syn-1\" name=\"synthetic-port-list\" writable=true in_use=false predefined=false deprecated=true user_tags=[env:prod]\n"
+	if got := string(out); got != want {
+		t.Fatalf("Round-trip program printed:\n%s\nwant:\n%s", got, want)
+	}
+}
+
+// portListSyntheticResponse covers the paths no committed get_port_lists
+// fixture exercises: deprecated and a populated user_tags block.
+const portListSyntheticResponse = `<get_port_lists_response status="200" status_text="OK">
+  <port_list id="port-list-syn-1">
+    <owner><name>admin</name></owner>
+    <name>synthetic-port-list</name>
+    <comment>covers deprecated and user_tags</comment>
+    <creation_time>2026-01-01T00:00:00Z</creation_time>
+    <modification_time>2026-01-01T00:00:00Z</modification_time>
+    <writable>1</writable>
+    <in_use>0</in_use>
+    <permissions><permission><name>Everything</name></permission></permissions>
+    <port_count><all>1</all><tcp>1</tcp><udp>0</udp></port_count>
+    <predefined>0</predefined>
+    <user_tags>
+      <count>1</count>
+      <tag id="tag-1"><name>env</name><value>prod</value><comment></comment></tag>
+    </user_tags>
+    <deprecated>1</deprecated>
+  </port_list>
+  <filters id=""><term>first=1 rows=10 sort=name</term><keywords/></filters>
+  <sort><field>name<order>ascending</order></field></sort>
+  <port_lists start="1" max="1000"/>
+  <port_list_count>1<filtered>1</filtered><page>1</page></port_list_count>
+</get_port_lists_response>
+`
+
+// portListResponseRoundTripProgram is a `go run` main for
+// TestPortListGeneratedResponseRoundTrips. argv[1] is the upstream
+// port_ranges/targets fixture, argv[2] the live repeated-port_list fixture,
+// argv[3] the synthetic deprecated/user_tags fixture.
+const portListResponseRoundTripProgram = `package main
+
+import (
+	"encoding/xml"
+	"fmt"
+	"os"
+
+	"gogmpcodegencheck/genproto"
+)
+
+func report(label string, r *genproto.GetPortListsResponse) {
+	fmt.Printf("%s: port_lists=%d filtered=%d page=%d sort_value=%q sort_field_order=%q",
+		label, len(r.PortList), r.PortListCount.Filtered, r.PortListCount.Page, r.Sort.Value, r.Sort.Field.Order)
+	if len(r.Filters.Keywords.Keyword) > 0 {
+		fmt.Printf(" keywords=[")
+		for i, kw := range r.Filters.Keywords.Keyword {
+			if i > 0 {
+				fmt.Printf(" ")
+			}
+			fmt.Printf("%s%s%s", kw.Column, kw.Relation, kw.Value)
+		}
+		fmt.Printf("]")
+	}
+	fmt.Println()
+	for _, p := range r.PortList {
+		fmt.Printf("  port_list id=%q name=%q writable=%t in_use=%t predefined=%t deprecated=%t",
+			p.ID, p.Name, bool(p.Writable), bool(p.InUse), bool(p.Predefined), p.Deprecated != nil && bool(*p.Deprecated))
+		if p.PortRanges != nil && len(p.PortRanges.PortRange) > 0 {
+			fmt.Printf(" port_ranges=[")
+			for i, pr := range p.PortRanges.PortRange {
+				if i > 0 {
+					fmt.Printf(" ")
+				}
+				fmt.Printf("%s:%d-%d", pr.Type, pr.Start, pr.End)
+			}
+			fmt.Printf("]")
+		}
+		if p.Targets != nil && len(p.Targets.Target) > 0 {
+			fmt.Printf(" targets=[")
+			for i, tgt := range p.Targets.Target {
+				if i > 0 {
+					fmt.Printf(" ")
+				}
+				fmt.Printf("%s", tgt.ID)
+			}
+			fmt.Printf("]")
+		}
+		if p.UserTags != nil && len(p.UserTags.Tag) > 0 {
+			fmt.Printf(" user_tags=[")
+			for i, tag := range p.UserTags.Tag {
+				if i > 0 {
+					fmt.Printf(" ")
+				}
+				fmt.Printf("%s:%s", tag.Name, tag.Value)
+			}
+			fmt.Printf("]")
+		}
+		fmt.Println()
+	}
+}
+
+func decodeAndRoundTrip(path, decodeLabel, roundtripLabel string) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	var decoded genproto.GetPortListsResponse
+	if err := xml.Unmarshal(data, &decoded); err != nil {
+		fmt.Fprintln(os.Stderr, "decode:", err)
+		os.Exit(1)
+	}
+	report(decodeLabel, &decoded)
+
+	reencoded, err := xml.Marshal(&decoded)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "encode:", err)
+		os.Exit(1)
+	}
+	var roundtripped genproto.GetPortListsResponse
+	if err := xml.Unmarshal(reencoded, &roundtripped); err != nil {
+		fmt.Fprintln(os.Stderr, "re-decode:", err)
+		os.Exit(1)
+	}
+	report(roundtripLabel, &roundtripped)
+}
+
+func main() {
+	decodeAndRoundTrip(os.Args[1], "upstream-decode", "upstream-roundtrip")
+	decodeAndRoundTrip(os.Args[2], "live-decode", "live-roundtrip")
+	decodeAndRoundTrip(os.Args[3], "synthetic-decode", "synthetic-roundtrip")
+}
+`
+
 // mustWriteFile is writeFile (scratch.go) with the *testing.T ceremony a test
 // wants but a reusable helper shouldn't carry.
 func mustWriteFile(t *testing.T, path, content string) {
