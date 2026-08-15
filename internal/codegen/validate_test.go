@@ -3532,6 +3532,121 @@ func TestPortListSortValueIsWhitespaceOnly(t *testing.T) {
 	}
 }
 
+// TestValidateReportConfigBeforeMatchesKnownConformance is report_config's
+// counterpart to TestValidateReportFormatBeforeMatchesKnownConformance.
+// report_config is still review_only, so this pins down the hand-written
+// commands/ package's current conformance, cross-checked against
+// internal/schema/testdata/CONFORMANCE.md's create_report_config,
+// get_report_configs and modify_report_config sections.
+func TestValidateReportConfigBeforeMatchesKnownConformance(t *testing.T) {
+	before, _ := validateOrSkip(t, "create_report_config")
+
+	want := map[string]counts{
+		"create_report_config": {
+			actionable: map[string]int{schema.CatMissing: 1, schema.CatExtra: 4},
+			suppressed: map[string]int{},
+		},
+		"modify_report_config": {
+			actionable: map[string]int{schema.CatMissing: 1, schema.CatExtra: 3},
+			suppressed: map[string]int{},
+		},
+		"get_report_configs": {
+			actionable: map[string]int{
+				schema.CatMissing: 12, schema.CatExtra: 2, schema.CatKind: 2,
+				schema.CatType: 2, schema.CatDefect: 1,
+			},
+			suppressed: map[string]int{schema.CatOmitEmpty: 15},
+		},
+	}
+	for _, res := range before {
+		w, ok := want[res.Command]
+		if !ok {
+			t.Errorf("%s: unexpected command in Validate's before results", res.Command)
+			continue
+		}
+		assertCounts(t, "before", res.Command, w, countFindings(res.Findings))
+	}
+}
+
+// TestValidateReportConfigGeneratedMatchesOrImproves is the report_config
+// family's post-swap gate, run at the same rigour every prior family's was.
+// Generation closes every actionable and suppressed finding on all three
+// commands except get_report_configs' allowlisted empty-pattern
+// SCHEMA-DEFECT, which no generated shape can resolve — the schema itself
+// declares report_config/report_format/permissions with no content.
+//
+// That clean result hides one real hazard schema.Comparer cannot see:
+// get_report_configs' schema declares param/value/@using_default, and the
+// generated shape matches that pattern exactly, so it reports zero findings
+// for it. But the schema's own placement disagrees with reality — see the
+// get_report_configs_response CommandWarning and
+// TestReportConfigUsingDefaultOnParamAgreesWithFixture below. A clean
+// schema-conformance count is not proof of wire accuracy here.
+func TestValidateReportConfigGeneratedMatchesOrImproves(t *testing.T) {
+	before, after := validateOrSkip(t, "create_report_config")
+
+	wantAfter := map[string]counts{
+		"create_report_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_report_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_report_configs": {
+			actionable: map[string]int{schema.CatDefect: 1},
+			suppressed: map[string]int{},
+		},
+	}
+	assertMatchesOrImproves(t, before, after, wantAfter)
+}
+
+// reportConfigUsingDefaultProbe decodes <param using_default="..."> exactly
+// as command_get_report_configs.xml's own <example> and
+// internal/gmptest/testdata/upstream/get_report_configs/001_response.xml
+// send it — on <param>, not nested under <value> the way the schema's
+// <pattern> (and hence testdata/golden/get_report_configs.go's
+// ReportConfigParamValue) declares it.
+type reportConfigUsingDefaultProbe struct {
+	XMLName xml.Name `xml:"get_report_configs_response"`
+	Report  struct {
+		Param []struct {
+			UsingDefault bool `xml:"using_default,attr"`
+		} `xml:"param"`
+	} `xml:"report_config"`
+}
+
+// TestReportConfigUsingDefaultOnParamAgreesWithFixture is the fixture-backed
+// half of the get_report_configs_response CommandWarning's evidence: it
+// proves the upstream fixture still places using_default on <param>, so a
+// future schema or fixture update that moved it under <value> (matching the
+// generated shape) would be caught here rather than leaving a stale warning
+// on generated code that no longer needs it.
+func TestReportConfigUsingDefaultOnParamAgreesWithFixture(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	path := filepath.Join(dir, "..", "gmptest", "testdata", "upstream", "get_report_configs", "001_response.xml")
+
+	data, err := os.ReadFile(path) //nolint:gosec // fixed test-fixture path under this package's own tree
+	if err != nil {
+		t.Fatalf("reading %s: %v", path, err)
+	}
+	if got := strings.Count(string(data), "using_default="); got != 2 {
+		t.Fatalf("%s: %d using_default attributes on the wire, want 2 — the CommandWarning's cited evidence has changed", path, got)
+	}
+
+	var got reportConfigUsingDefaultProbe
+	if err := xml.Unmarshal(data, &got); err != nil {
+		t.Fatalf("decoding %s: %v", path, err)
+	}
+	if len(got.Report.Param) != 2 {
+		t.Fatalf("%s: decoded %d param entries, want 2", path, len(got.Report.Param))
+	}
+	if got.Report.Param[0].UsingDefault {
+		t.Errorf("%s: param[0]'s using_default decoded true reading it off <param>, want false", path)
+	}
+	if !got.Report.Param[1].UsingDefault {
+		t.Errorf("%s: param[1]'s using_default did not decode to true reading it off <param> — the fixture no longer demonstrates the schema/wire mismatch", path)
+	}
+}
+
 // assertMatchesOrImproves is the shared body of the two match-or-improve gates:
 // the exact expected "after" counts, plus the two general rules that hold for
 // any family — no category may grow, and the schema's own defects may not move.

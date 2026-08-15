@@ -69,6 +69,7 @@ func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]Point
 	}
 
 	g.family = familyPrefix(g.cmds)
+	g.familyNoun = familyNoun(g.cmds)
 	g.collect()
 	if err := g.validateFieldOverrides(); err != nil {
 		return nil, err
@@ -487,6 +488,9 @@ type gen struct {
 	cw     map[string]CommandWarning
 	da     map[DefectKey]DefectAllowlistEntry
 	family string
+	// familyNoun is family's pre-goName snake_case form, used only by fileFor
+	// for the shared-file basename (see familyNoun's doc comment).
+	familyNoun string
 
 	byHash map[string]*structType
 	types  []*structType   // first-occurrence order
@@ -594,6 +598,15 @@ func writeHash(b *strings.Builder, n *schema.Node) {
 // <verb>_<noun>. If the commands disagree there is no family, and every nested
 // type falls back to being named after its own command.
 func familyPrefix(cmds []schema.Command) string {
+	return goName(familyNoun(cmds))
+}
+
+// familyNoun is familyPrefix's input before goName Go-cases it: the schema's
+// own snake_case spelling (e.g. "report_config"). fileFor needs this form,
+// not the Go-cased one — lowercasing a multi-word Go name back down
+// (strings.ToLower(g.family)) loses the word boundary goName introduced,
+// turning "ReportConfig" into "reportconfig" instead of "report_config".
+func familyNoun(cmds []schema.Command) string {
 	noun := ""
 	for _, c := range cmds {
 		parts := strings.SplitN(c.Name, "_", 2)
@@ -607,7 +620,7 @@ func familyPrefix(cmds []schema.Command) string {
 			return ""
 		}
 	}
-	return goName(noun)
+	return noun
 }
 
 // name assigns every collected shape a unique Go type name, in
@@ -686,11 +699,11 @@ func (g *gen) fileFor(st *structType) string {
 	first := st.uses[0].command
 	for _, u := range st.uses[1:] {
 		if u.command != first {
-			base := g.family
+			base := g.familyNoun
 			if base == "" {
 				base = "commands"
 			}
-			return strings.ToLower(base) + sharedFileSuffix
+			return base + sharedFileSuffix
 		}
 	}
 	return first + ".go"

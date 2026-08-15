@@ -289,6 +289,18 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.GetReportFormats{}),
 			Response: schema.ModelOf(&commands.GetReportFormatsResponse{}),
 		},
+		"create_report_config": {
+			Request:  schema.ModelOf(&commands.CreateReportConfig{}),
+			Response: schema.ModelOf(&commands.CreateReportConfigResponse{}),
+		},
+		"modify_report_config": {
+			Request:  schema.ModelOf(&commands.ModifyReportConfig{}),
+			Response: schema.ModelOf(&commands.ModifyReportConfigResponse{}),
+		},
+		"get_report_configs": {
+			Request:  schema.ModelOf(&commands.GetReportConfigs{}),
+			Response: schema.ModelOf(&commands.GetReportConfigsResponse{}),
+		},
 	}
 }
 

@@ -347,6 +347,16 @@ var CommandWarnings = map[string]CommandWarning{
 		Reason: "T-9: live gvmd 26.36.1 test against the running instance returned a username in " +
 			"this element; see docs/review-2026-08.md's `asset added in review-only mode` section",
 	},
+	"get_report_configs_response": {
+		Text: "Param.Value.UsingDefault follows the schema's own pattern, which declares " +
+			"using_default as an attribute of <value>. Every documented and captured example " +
+			"instead sends it as an attribute of the enclosing <param>, so decoding a real " +
+			"response leaves UsingDefault permanently false.",
+		Reason: "T-9 report_config review: command_get_report_configs.xml's own <example> and " +
+			"internal/gmptest/testdata/upstream/get_report_configs/001_fidelity.txt's " +
+			"`param/@using_default` TRUNCATED entry both place the attribute on <param>, not " +
+			"<value>; see docs/review-2026-08.md's `report_config` review-only section",
+	},
 }
 
 // DefectKey identifies one schema.Defect (internal/schema/parse.go's
@@ -429,5 +439,8 @@ var DefectAllowlist = map[DefectKey]DefectAllowlistEntry{
 	},
 	{Command: "create_report_format", Class: "unsupported-r", Path: "/create_report_format"}: {
 		Reason: "T-15; docs/review-2026-08.md `report_format`",
+	},
+	{Command: "get_report_configs", Class: "empty-pattern", Path: "/get_report_configs_response/report_config/report_format/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `report_config`",
 	},
 }
