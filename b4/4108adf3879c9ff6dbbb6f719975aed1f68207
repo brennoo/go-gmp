@@ -1,0 +1,75 @@
+client/client_test.go
+  s_b7e5567edc69e4::t_92b7b1e1366fe7 150,160,1750,1755
+commands/create_port_list.go
+  s_b7e5567edc69e4::t_35b0595f494a8b 1-2,7,11,16
+commands/get_port_lists.go
+  s_b7e5567edc69e4::t_d1f77431fcc32b 1-2,5,7,13-15,18,20-27,35-78,80-97,99,102,107,109,112-116,119-122,125-130,133,138,140-144,147,152,154-155
+commands/modify_port_list.go
+  s_b7e5567edc69e4::t_b387a9e14b9461 1-2,7-9,17
+commands/pagination/iterator_mocks_test.go
+  s_b7e5567edc69e4::t_712385780de731 251,278,283,286
+commands/pagination/portlists.go
+  s_b7e5567edc69e4::t_ff47ce87440a1b 26-28,32
+docs/review-2026-08.md
+  s_b7e5567edc69e4::t_071d9b4e66f564 1085-1105,1130,1890
+examples/basic_usage/main.go
+  s_b7e5567edc69e4::t_caf7db7754f434 137,141-142
+internal/codegen/manifest.json
+  s_b7e5567edc69e4::t_a4a505f9c320ed 53
+internal/codegen/manifest_test.go
+  s_b7e5567edc69e4::t_ae96b72fa8c84d 28-29,39-53,72,74-77,82-83,101-110,119-123,135-136
+internal/codegen/validate_test.go
+  s_b7e5567edc69e4::t_51ada6668ecbf8 3116-3119,3130-3131,3145,3147-3148
+internal/gmptest/cases_port_list.go
+  s_b7e5567edc69e4::t_ac1634be9b3ded 1-67
+internal/gmptest/testdata/FIDELITY-SUMMARY.txt
+  s_b7e5567edc69e4::t_25a30ae4c417b7 13,15,186-189
+internal/gmptest/testdata/live/get_port_lists/001_fidelity.txt
+  s_b7e5567edc69e4::t_743f8575a850eb 8,11
+internal/gmptest/testdata/live/get_port_lists/002_fidelity.txt
+  s_b7e5567edc69e4::t_72723c7e57d3f6 8,11
+internal/gmptest/testdata/live/get_port_lists/003_fidelity.txt
+  s_b7e5567edc69e4::t_11281a8da11c44 8,14
+internal/gmptest/testdata/requests/create_port_list/basic.xml
+  s_b7e5567edc69e4::t_9f81a66a6298e8 1
+internal/gmptest/testdata/requests/create_port_list/comment_and_copy.xml
+  s_b7e5567edc69e4::t_2191bad9c558ad 1
+internal/gmptest/testdata/requests/get_port_lists/all_details_false.xml
+  s_b7e5567edc69e4::t_0d3844ba4b903a 1
+internal/gmptest/testdata/requests/get_port_lists/all_details_true.xml
+  s_b7e5567edc69e4::t_dd4790b0038ff2 1
+internal/gmptest/testdata/requests/get_port_lists/by_id.xml
+  s_b7e5567edc69e4::t_0301ed161c7966 1
+internal/gmptest/testdata/requests/get_port_lists/filt_id.xml
+  s_b7e5567edc69e4::t_73ea83035a8fa3 1
+internal/gmptest/testdata/requests/get_port_lists/unset.xml
+  s_b7e5567edc69e4::t_f22a716063ca8e 1
+internal/gmptest/testdata/requests/modify_port_list/all_unset.xml
+  s_b7e5567edc69e4::t_a82f2c43343d26 1
+internal/gmptest/testdata/requests/modify_port_list/comment_only.xml
+  s_b7e5567edc69e4::t_bc4c0d376d93bf 1
+internal/gmptest/testdata/requests/modify_port_list/name_and_comment.xml
+  s_b7e5567edc69e4::t_e54a85cfccde94 1
+internal/gmptest/testdata/requests/modify_port_list/name_only.xml
+  s_b7e5567edc69e4::t_19cef981f7c2b0 1
+internal/gmptest/testdata/upstream/get_port_lists/001_fidelity.txt
+  s_b7e5567edc69e4::t_4c3694cffd0268 7,13,16-37
+internal/schema/testdata/CONFORMANCE.md
+  s_b7e5567edc69e4::t_294e06b3172ec0 32-36,43-48,97-98,1588
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "b44108adf3879c9ff6dbbb6f719975aed1f68207",
+  "prompts": {},
+  "sessions": {
+    "s_b7e5567edc69e4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_b7e5567edc69e4",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
