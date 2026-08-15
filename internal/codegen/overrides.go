@@ -271,85 +271,6 @@ type CommandWarning struct {
 // field-typing hazard that only affects decoding). Unlike PointerOverrides
 // and FieldOverrides, a warning changes no generated field or type — it
 // exists only to surface a hazard the wire shape alone does not reveal.
-// DefectKey identifies one schema.Defect (internal/schema/parse.go's
-// Command.Defects) precisely enough to decide whether to generate through it:
-// the command whose snapshot carries it, the defect's class
-// (schema.DefectEmptyPattern and friends), and its path.
-type DefectKey struct {
-	Command string
-	Class   string
-	Path    string
-}
-
-// DefectAllowlistEntry records why a schema defect is generated through
-// rather than refused. Unlike Override/FieldOverride/PointerOverride, an
-// entry does not alter the parser-derived node or the generated output; it
-// only permits generation despite the recorded defect, so a human decision is
-// on record instead of the generator silently letting it through.
-type DefectAllowlistEntry struct {
-	Reason string
-}
-
-// DefectAllowlist is Generate's fail-closed gate on schema.Command.Defects
-// (checkDefects, generate.go): a defect whose {Command, Class, Path} is not a
-// key here fails generation, and a stale entry fails it too
-// (checkDefectAllowlistConsumed). Every entry is one of the 17 records the 14
-// families adopted before this gate existed already carried; see
-// docs/review-2026-08.md's T-15 entry for the full evidence log — per T-20,
-// a Reason here states the conclusion and cites the section, one line.
-var DefectAllowlist = map[DefectKey]DefectAllowlistEntry{
-	{Command: "create_group", Class: "empty-pattern", Path: "/create_group/specials/full"}: {
-		Reason: "T-15; docs/review-2026-08.md `group adopted`",
-	},
-	{Command: "get_tags", Class: "empty-pattern", Path: "/get_tags_response/tag/resources/resource/permissions"}: {
-		Reason: "T-15; docs/review-2026-08.md `tag`",
-	},
-	{Command: "get_schedules", Class: "empty-pattern", Path: "/get_schedules_response/schedule/tasks/task/permissions"}: {
-		Reason: "T-15; docs/review-2026-08.md `schedule`",
-	},
-	{Command: "get_alerts", Class: "empty-pattern", Path: "/get_alerts_response/alert/filter/permissions"}: {
-		Reason: "T-15; docs/review-2026-08.md `alert`",
-	},
-	{Command: "get_alerts", Class: "empty-pattern", Path: "/get_alerts_response/alert/tasks/task/permissions"}: {
-		Reason: "T-15; docs/review-2026-08.md `alert`",
-	},
-	{Command: "get_filters", Class: "empty-pattern", Path: "/get_filters_response/filter/alerts/alert/permissions"}: {
-		Reason: "T-15; docs/review-2026-08.md `filter`",
-	},
-	{Command: "get_permissions", Class: "empty-pattern", Path: "/get_permissions_response/permission/resource/permissions"}: {
-		Reason: "T-15; docs/review-2026-08.md `permission`",
-	},
-	{Command: "get_permissions", Class: "empty-pattern", Path: "/get_permissions_response/permission/subject/permissions"}: {
-		Reason: "T-15; docs/review-2026-08.md `permission`",
-	},
-	{Command: "get_credentials", Class: "empty-pattern", Path: "/get_credentials_response/credential/scanners/scanner/permissions"}: {
-		Reason: "T-15; docs/review-2026-08.md `credential`",
-	},
-	{Command: "get_credentials", Class: "empty-pattern", Path: "/get_credentials_response/credential/targets/target/permissions"}: {
-		Reason: "T-15; docs/review-2026-08.md `credential`",
-	},
-	{Command: "get_port_lists", Class: "empty-pattern", Path: "/get_port_lists_response/port_list/targets/target/permissions"}: {
-		Reason: "T-15; docs/review-2026-08.md `port_list`",
-	},
-	{Command: "get_notes", Class: "duplicate-ele", Path: "/get_notes_response/note/active"}: {
-		Reason: "T-15; docs/review-2026-08.md `role adopted`",
-	},
-	{Command: "get_notes", Class: "duplicate-ele", Path: "/get_notes_response/note/result/delta/overrides/override/active"}: {
-		Reason: "T-15; docs/review-2026-08.md `role adopted`",
-	},
-	{Command: "get_overrides", Class: "duplicate-ele", Path: "/get_overrides_response/override/active"}: {
-		Reason: "T-15; docs/review-2026-08.md `role adopted`",
-	},
-	{Command: "get_overrides", Class: "duplicate-ele", Path: "/get_overrides_response/override/result/delta/notes/note/active"}: {
-		Reason: "T-15; docs/review-2026-08.md `role adopted`",
-	},
-	{Command: "get_assets", Class: "undefined-type", Path: "/get_assets_response/asset/host/routes/route/host/@distance"}: {
-		Reason: "T-15; docs/review-2026-08.md `asset`",
-	},
-	{Command: "create_port_list", Class: "unsupported-r", Path: "/create_port_list"}: {
-		Reason: "T-15; docs/review-2026-08.md `port_list`",
-	},
-}
 
 var CommandWarnings = map[string]CommandWarning{
 	"modify_role": {
@@ -416,5 +337,85 @@ var CommandWarnings = map[string]CommandWarning{
 			"preserved.",
 		Reason: "T-9: live gvmd 26.36.1 test against the running instance returned a username in " +
 			"this element; see docs/review-2026-08.md's `asset added in review-only mode` section",
+	},
+}
+
+// DefectKey identifies one schema.Defect (internal/schema/parse.go's
+// Command.Defects) precisely enough to decide whether to generate through it:
+// the command whose snapshot carries it, the defect's class
+// (schema.DefectEmptyPattern and friends), and its path.
+type DefectKey struct {
+	Command string
+	Class   string
+	Path    string
+}
+
+// DefectAllowlistEntry records why a schema defect is generated through
+// rather than refused. Unlike Override/FieldOverride/PointerOverride, an
+// entry does not alter the parser-derived node or the generated output; it
+// only permits generation despite the recorded defect, so a human decision is
+// on record instead of the generator silently letting it through.
+type DefectAllowlistEntry struct {
+	Reason string
+}
+
+// DefectAllowlist is Generate's fail-closed gate on schema.Command.Defects
+// (checkDefects, generate.go): a defect whose {Command, Class, Path} is not a
+// key here fails generation, and a stale entry fails it too
+// (checkDefectAllowlistConsumed). Every entry is one of the 17 records the 14
+// families adopted before this gate existed already carried; see
+// docs/review-2026-08.md's T-15 entry for the full evidence log — per T-20,
+// a Reason here states the conclusion and cites the section, one line.
+var DefectAllowlist = map[DefectKey]DefectAllowlistEntry{
+	{Command: "create_group", Class: "empty-pattern", Path: "/create_group/specials/full"}: {
+		Reason: "T-15; docs/review-2026-08.md `group adopted`",
+	},
+	{Command: "get_tags", Class: "empty-pattern", Path: "/get_tags_response/tag/resources/resource/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `tag`",
+	},
+	{Command: "get_schedules", Class: "empty-pattern", Path: "/get_schedules_response/schedule/tasks/task/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `schedule`",
+	},
+	{Command: "get_alerts", Class: "empty-pattern", Path: "/get_alerts_response/alert/filter/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `alert`",
+	},
+	{Command: "get_alerts", Class: "empty-pattern", Path: "/get_alerts_response/alert/tasks/task/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `alert`",
+	},
+	{Command: "get_filters", Class: "empty-pattern", Path: "/get_filters_response/filter/alerts/alert/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `filter`",
+	},
+	{Command: "get_permissions", Class: "empty-pattern", Path: "/get_permissions_response/permission/resource/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `permission`",
+	},
+	{Command: "get_permissions", Class: "empty-pattern", Path: "/get_permissions_response/permission/subject/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `permission`",
+	},
+	{Command: "get_credentials", Class: "empty-pattern", Path: "/get_credentials_response/credential/scanners/scanner/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `credential`",
+	},
+	{Command: "get_credentials", Class: "empty-pattern", Path: "/get_credentials_response/credential/targets/target/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `credential`",
+	},
+	{Command: "get_port_lists", Class: "empty-pattern", Path: "/get_port_lists_response/port_list/targets/target/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `port_list`",
+	},
+	{Command: "get_notes", Class: "duplicate-ele", Path: "/get_notes_response/note/active"}: {
+		Reason: "T-15; upstream `<ele>` redefined in one scope, docs/review-2026-08.md T-15 defect table",
+	},
+	{Command: "get_notes", Class: "duplicate-ele", Path: "/get_notes_response/note/result/delta/overrides/override/active"}: {
+		Reason: "T-15; upstream `<ele>` redefined in one scope, docs/review-2026-08.md T-15 defect table",
+	},
+	{Command: "get_overrides", Class: "duplicate-ele", Path: "/get_overrides_response/override/active"}: {
+		Reason: "T-15; upstream `<ele>` redefined in one scope, docs/review-2026-08.md T-15 defect table",
+	},
+	{Command: "get_overrides", Class: "duplicate-ele", Path: "/get_overrides_response/override/result/delta/notes/note/active"}: {
+		Reason: "T-15; upstream `<ele>` redefined in one scope, docs/review-2026-08.md T-15 defect table",
+	},
+	{Command: "get_assets", Class: "undefined-type", Path: "/get_assets_response/asset/host/routes/route/host/@distance"}: {
+		Reason: "T-15; docs/review-2026-08.md `asset`",
+	},
+	{Command: "create_port_list", Class: "unsupported-r", Path: "/create_port_list"}: {
+		Reason: "T-15; docs/review-2026-08.md `port_list`",
 	},
 }
