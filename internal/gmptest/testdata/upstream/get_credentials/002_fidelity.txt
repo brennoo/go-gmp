@@ -10,12 +10,12 @@ TRUNCATED
   (none)
 
 CHANGED
-  /get_credentials_response/credential/in_use/#text                        "1" -> "true"
-  /get_credentials_response/credential/writable/#text                      "1" -> "true"
+  (none)
 
 ADDED
   /get_credentials_response/credential/allow_insecure                      x1
   /get_credentials_response/credential/allow_insecure/#text                x1
+  /get_credentials_response/credential/formats                             x1
   /get_credentials_response/credential/owner                               x1
   /get_credentials_response/credential/owner/name                          x1
   /get_credentials_response/credential/permissions                         x1
@@ -30,7 +30,6 @@ ADDED
   /get_credentials_response/filters                                        x1
   /get_credentials_response/filters/@id                                    x1
   /get_credentials_response/filters/keywords                               x1
-  /get_credentials_response/filters/name                                   x1
   /get_credentials_response/filters/term                                   x1
   /get_credentials_response/sort                                           x1
   /get_credentials_response/sort/field                                     x1

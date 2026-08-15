@@ -29,10 +29,10 @@ them, so response-side optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             63
-with actionable findings:     59
-actionable findings:          541  (request 248, response 293)
-suppressed findings:          641
+fully conformant:             64
+with actionable findings:     58
+actionable findings:          535  (request 248, response 287)
+suppressed findings:          635
 confirmed by fidelity corpus: 68
 in the schema, not in Go:     0
 in Go, not in the schema:     0
@@ -40,12 +40,12 @@ in Go, not in the schema:     0
 ### Findings by category
 
                  actionable suppressed
-  MISSING               196          0
-  EXTRA                 205          2
+  MISSING               194          0
+  EXTRA                 204          2
   CARDINALITY            39          0
   KIND                   12          0
-  OMITEMPTY               4        639
-  TYPE                   85          0
+  OMITEMPTY               4        633
+  TYPE                   82          0
   SCHEMA-DEFECT         107          0
 
 ### Schema defects by class
@@ -95,7 +95,7 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_assets                   11   EXTRA=6  CARDINALITY=1  TYPE=4
   get_agents                    9   MISSING=7  TYPE=2
   get_scanners                  9   EXTRA=6  TYPE=3
-  ... and 39 more with fewer
+  ... and 38 more with fewer
 
 ### Confirmed by both oracles
 
@@ -212,12 +212,7 @@ EXTRA=1  OMITEMPTY=1  SCHEMA-DEFECT=1
 
 ### create_credential  (command_create_credential.xml)
 
-OMITEMPTY=2
-
-  OMITEMPTY     request  /create_credential/privacy/algorithm
-                schema says required, Algorithm is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /create_credential/privacy/password
-                schema says required, Password is tagged omitempty  [suppressed: request-side over-constraint]
+conformant
 
 ### create_filter  (command_create_filter.xml)
 
@@ -1349,24 +1344,8 @@ MISSING=3  EXTRA=2  OMITEMPTY=3  TYPE=2  SCHEMA-DEFECT=1
 
 ### get_credentials  (command_get_credentials.xml)
 
-MISSING=2  EXTRA=1  OMITEMPTY=2  TYPE=3  SCHEMA-DEFECT=2
+SCHEMA-DEFECT=2
 
-  MISSING       response /get_credentials_response/credential/certificate_info/*
-                schema declares 8 children; Go models this as scalar *commands.CredentialCertificateInfo
-  MISSING       response /get_credentials_response/credential/privacy/*
-                schema declares 1 children; Go models this as scalar *commands.CredentialPrivacy
-  EXTRA         response /get_credentials_response/truncated
-                Go field Truncated string has no counterpart in the schema
-  OMITEMPTY     response /get_credentials_response/credential/formats
-                schema says required, Formats is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_credentials_response/filters/name
-                schema says optional, Name string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  TYPE          response /get_credentials_response/credential/allow_insecure
-                schema type boolean is text ("" is true), Go AllowInsecure is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_credentials_response/credential/in_use
-                schema type boolean is text ("" is true), Go InUse is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_credentials_response/credential/writable
-                schema type boolean is text ("" is true), Go Writable is bool: '7' fails to decode and '1' re-emits as 'true'
   SCHEMA-DEFECT response /get_credentials_response/credential/scanners/scanner/permissions
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_credentials_response/credential/targets/target/permissions
@@ -3064,12 +3043,7 @@ EXTRA=6  CARDINALITY=3  OMITEMPTY=6  TYPE=3
 
 ### modify_credential  (command_modify_credential.xml)
 
-OMITEMPTY=2
-
-  OMITEMPTY     request  /modify_credential/privacy/algorithm
-                schema says required, Algorithm is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /modify_credential/privacy/password
-                schema says required, Password is tagged omitempty  [suppressed: request-side over-constraint]
+conformant
 
 ### modify_filter  (command_modify_filter.xml)
 

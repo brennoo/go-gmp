@@ -728,7 +728,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		case "":
 			(*response.(*commands.GetCredentialsResponse)).Status = "200"
 			(*response.(*commands.GetCredentialsResponse)).StatusText = "OK"
-			(*response.(*commands.GetCredentialsResponse)).Credentials = []commands.Credential{
+			(*response.(*commands.GetCredentialsResponse)).Credential = []commands.Credential{
 				{
 					ID:       "cred-uuid-1",
 					Name:     "sally",
@@ -737,7 +737,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 					InUse:    false,
 					Type:     "usk",
 					FullType: "username + SSH key",
-					Formats:  &commands.CredentialFormats{Formats: []string{"key", "rpm", "deb"}},
+					Formats:  commands.CredentialFormats{Format: []string{"key", "rpm", "deb"}},
 				},
 				{
 					ID:       "cred-uuid-2",
@@ -747,13 +747,13 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 					InUse:    true,
 					Type:     "up",
 					FullType: "username + password",
-					Formats:  &commands.CredentialFormats{Formats: []string{"exe"}},
+					Formats:  commands.CredentialFormats{Format: []string{"exe"}},
 				},
 			}
 		case "cred-uuid-1":
 			(*response.(*commands.GetCredentialsResponse)).Status = "200"
 			(*response.(*commands.GetCredentialsResponse)).StatusText = "OK"
-			(*response.(*commands.GetCredentialsResponse)).Credentials = []commands.Credential{
+			(*response.(*commands.GetCredentialsResponse)).Credential = []commands.Credential{
 				{
 					ID:       "cred-uuid-1",
 					Name:     "sally",
@@ -762,7 +762,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 					InUse:    false,
 					Type:     "usk",
 					FullType: "username + SSH key",
-					Formats:  &commands.CredentialFormats{Formats: []string{"key", "rpm", "deb"}},
+					Formats:  commands.CredentialFormats{Format: []string{"key", "rpm", "deb"}},
 				},
 			}
 		default:

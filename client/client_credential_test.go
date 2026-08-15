@@ -16,9 +16,9 @@ func TestCreateCredential(t *testing.T) {
 	// Success case
 	cmd := &commands.CreateCredential{
 		Name:    "Test Credential",
-		KDCs:    &commands.CreateCredentialKDCs{KDC: []string{"kdc1.example.com", "kdc2.example.com"}},
-		Key:     &commands.CreateCredentialKey{Phrase: "passphrase", Private: "private-key", Public: "public-key"},
-		Privacy: &commands.CreateCredentialPrivacy{Algorithm: "AES", Password: "snmp-password"},
+		Kdcs:    &commands.CredentialKdcs{Kdc: []string{"kdc1.example.com", "kdc2.example.com"}},
+		Key:     &commands.CredentialKey{Phrase: "passphrase", Private: "private-key", Public: "public-key"},
+		Privacy: &commands.CredentialPrivacy{Algorithm: "AES", Password: "snmp-password"},
 	}
 	resp, err := cli.CreateCredential(context.Background(), cmd)
 	if err != nil {
@@ -34,9 +34,9 @@ func TestCreateCredential(t *testing.T) {
 	// Failure case
 	cmdFail := &commands.CreateCredential{
 		Name:    "",
-		KDCs:    &commands.CreateCredentialKDCs{KDC: []string{}},
-		Key:     &commands.CreateCredentialKey{},
-		Privacy: &commands.CreateCredentialPrivacy{},
+		Kdcs:    &commands.CredentialKdcs{Kdc: []string{}},
+		Key:     &commands.CredentialKey{},
+		Privacy: &commands.CredentialPrivacy{},
 	}
 	respFail, err := cli.CreateCredential(context.Background(), cmdFail)
 	if err != nil {
@@ -100,11 +100,11 @@ func TestGetCredentials(t *testing.T) {
 	if resp.Status != "200" {
 		t.Errorf("Expected status 200, got %s", resp.Status)
 	}
-	if len(resp.Credentials) != 2 {
-		t.Errorf("Expected 2 credentials, got %d", len(resp.Credentials))
+	if len(resp.Credential) != 2 {
+		t.Errorf("Expected 2 credentials, got %d", len(resp.Credential))
 	}
-	if resp.Credentials[0].ID != "cred-uuid-1" || resp.Credentials[1].ID != "cred-uuid-2" {
-		t.Errorf("Unexpected credential IDs: %+v", resp.Credentials)
+	if resp.Credential[0].ID != "cred-uuid-1" || resp.Credential[1].ID != "cred-uuid-2" {
+		t.Errorf("Unexpected credential IDs: %+v", resp.Credential)
 	}
 
 	// Fetch single credential
@@ -116,8 +116,8 @@ func TestGetCredentials(t *testing.T) {
 	if respSingle.Status != "200" {
 		t.Errorf("Expected status 200, got %s", respSingle.Status)
 	}
-	if len(respSingle.Credentials) != 1 || respSingle.Credentials[0].ID != "cred-uuid-1" {
-		t.Errorf("Unexpected credential: %+v", respSingle.Credentials)
+	if len(respSingle.Credential) != 1 || respSingle.Credential[0].ID != "cred-uuid-1" {
+		t.Errorf("Unexpected credential: %+v", respSingle.Credential)
 	}
 
 	// Failure case

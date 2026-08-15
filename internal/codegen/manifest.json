@@ -46,8 +46,7 @@
     },
     {
       "name": "credential",
-      "commands": ["create_credential", "get_credentials", "modify_credential"],
-      "review_only": true
+      "commands": ["create_credential", "get_credentials", "modify_credential"]
     }
   ]
 }

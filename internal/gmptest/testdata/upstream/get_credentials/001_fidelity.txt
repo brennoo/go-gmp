@@ -4,7 +4,7 @@ decode: ok
 namespaces-seen: 
 
 DROPPED
-  (none)
+  /get_credentials_response/truncated                                      x1  (+1 descendant paths)
 
 TRUNCATED
   (none)
@@ -29,7 +29,6 @@ ADDED
   /get_credentials_response/filters                                        x1
   /get_credentials_response/filters/@id                                    x1
   /get_credentials_response/filters/keywords                               x1
-  /get_credentials_response/filters/name                                   x1
   /get_credentials_response/filters/term                                   x1
   /get_credentials_response/sort                                           x1
   /get_credentials_response/sort/field                                     x1

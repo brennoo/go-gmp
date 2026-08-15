@@ -2846,32 +2846,26 @@ func TestTicketSortValueIsWhitespaceOnly(t *testing.T) {
 
 // TestValidateCredentialBeforeMatchesKnownConformance is the credential
 // family's counterpart to TestValidatePermissionBeforeMatchesKnownConformance.
-// credential is review-only, so these types are still the hand-written
-// originals in commands/{create_credential,get_credentials,
-// modify_credential}.go — this pins the pre-swap numbers against
-// internal/schema/testdata/CONFORMANCE.md's own sections for those three
-// commands, the same gate every adopted family passed through before
-// adoption.
+// credential is adopted, so commands/{create_credential,get_credentials,
+// modify_credential}.go are already the generator's output — this is a drift
+// detector on the committed files, the same role every other adopted
+// family's post-adoption "before" test plays.
+//
+// For the record, the pre-adoption hand-written numbers this used to pin, all
+// of which generation closed except the 2 SCHEMA-DEFECT findings (see
+// TestValidateCredentialGeneratedMatchesOrImproves for the per-finding
+// explanation): create_credential and modify_credential each carried
+// suppressed OMITEMPTY 2; get_credentials carried actionable MISSING 2,
+// EXTRA 1, TYPE 3, DEFECT 2, suppressed OMITEMPTY 2.
 func TestValidateCredentialBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_credential")
 
 	want := map[string]counts{
-		"create_credential": {
-			actionable: map[string]int{},
-			suppressed: map[string]int{schema.CatOmitEmpty: 2},
-		},
-		"modify_credential": {
-			actionable: map[string]int{},
-			suppressed: map[string]int{schema.CatOmitEmpty: 2},
-		},
+		"create_credential": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_credential": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_credentials": {
-			actionable: map[string]int{
-				schema.CatMissing: 2,
-				schema.CatExtra:   1,
-				schema.CatType:    3,
-				schema.CatDefect:  2,
-			},
-			suppressed: map[string]int{schema.CatOmitEmpty: 2},
+			actionable: map[string]int{schema.CatDefect: 2},
+			suppressed: map[string]int{},
 		},
 	}
 	for _, res := range before {
@@ -2885,13 +2879,11 @@ func TestValidateCredentialBeforeMatchesKnownConformance(t *testing.T) {
 }
 
 // TestValidateCredentialGeneratedMatchesOrImproves is the credential family's
-// pre-adoption look at what generation would close, run at the same rigour
-// every prior family's was — with no expectation yet that anyone runs
-// hack/generate.sh against it, since credential stays review-only until a
-// later adoption commit.
+// post-swap gate, run at the same rigour every prior family's was.
 //
-// What this run found: generation drops the request-side privacy/algorithm
-// and privacy/password omitempty tags (the family-local CredentialPrivacy in
+// What this run found while credential was still review_only: generation
+// drops the request-side privacy/algorithm and privacy/password omitempty
+// tags (the family-local CredentialPrivacy in
 // testdata/golden/credential_shared.go matches the schema's "required"),
 // closing the suppressed OMITEMPTY finding on both create_credential and
 // modify_credential. On get_credentials, CertificateInfo and Privacy gain

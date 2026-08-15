@@ -43,9 +43,9 @@ func main() {
 		Login:         "username",
 		Password:      "password",
 		Type:          "ssh",
-		KDCs:          &commands.CreateCredentialKDCs{KDC: []string{"kdc1.example.com", "kdc2.example.com"}},
-		Key:           &commands.CreateCredentialKey{Phrase: "passphrase", Private: "private-key", Public: "public-key"},
-		Privacy:       &commands.CreateCredentialPrivacy{Algorithm: "AES", Password: "snmp-password"},
+		Kdcs:          &commands.CredentialKdcs{Kdc: []string{"kdc1.example.com", "kdc2.example.com"}},
+		Key:           &commands.CredentialKey{Phrase: "passphrase", Private: "private-key", Public: "public-key"},
+		Privacy:       &commands.CredentialPrivacy{Algorithm: "AES", Password: "snmp-password"},
 		AllowInsecure: commands.Bool(false),
 	}
 

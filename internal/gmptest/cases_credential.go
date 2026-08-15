@@ -29,6 +29,27 @@ func init() {
 		AllowInsecure: commands.Bool(false),
 	})
 
+	// create_credential.Kdc/.Kdcs/.Key/.Privacy: the shared CredentialKdcs/
+	// CredentialKey/CredentialPrivacy types, and Privacy's required
+	// (non-omitempty) Algorithm/Password fields.
+	RegisterRequestCase("create_credential", "kdc_kdcs_key_privacy", &commands.CreateCredential{
+		Name: "cred-1",
+		Type: "krb5",
+		Kdc:  "kdc0.example.com",
+		Kdcs: &commands.CredentialKdcs{Kdc: []string{"kdc1.example.com", "kdc2.example.com"}},
+		Key:  &commands.CredentialKey{Phrase: "phrase1", Private: "priv1", Public: "pub1"},
+		Privacy: &commands.CredentialPrivacy{
+			Algorithm: "aes",
+			Password:  "privpass", // nolint:gosec // G101: synthetic fixture value, not a real secret
+		},
+	})
+
+	RegisterRequestCase("create_credential", "privacy_zero_valued", &commands.CreateCredential{
+		Name:    "cred-2",
+		Type:    "snmp",
+		Privacy: &commands.CredentialPrivacy{},
+	})
+
 	// GetCredentials.Details/Scanners/Trash/Targets are *bool: unset, true,
 	// and an explicit false all round-trip distinctly.
 	RegisterRequestCase("get_credentials", "all_details", &commands.GetCredentials{
@@ -51,23 +72,59 @@ func init() {
 		Targets:  commands.Bool(false),
 	})
 
+	RegisterRequestCase("get_credentials", "filt_id", &commands.GetCredentials{
+		FiltID: "3f1e9a3a-9f3a-4b3e-9c3a-1a2b3c4d5e6f",
+	})
+
 	// ModifyCredential.AllowInsecure is *bool: unset, true, and an explicit
 	// false all round-trip distinctly.
 	RegisterRequestCase("modify_credential", "allow_insecure_true", &commands.ModifyCredential{ // nolint:gosec // G101 fires on the UUID; it is a resource id, not a secret
 		CredentialID:  "9b16f6c2-4c9d-4e6a-8f6a-1a2b3c4d5e6f",
-		Comment:       "Now permitted to use an insecure algorithm",
+		Comment:       ptr("Now permitted to use an insecure algorithm"),
 		AllowInsecure: commands.Bool(true),
 	})
 
 	RegisterRequestCase("modify_credential", "allow_insecure_unset", &commands.ModifyCredential{ // nolint:gosec // synthetic fixture values: a resource id and a deliberately fake password
 		CredentialID: "9b16f6c2-4c9d-4e6a-8f6a-1a2b3c4d5e6f",
-		Comment:      "Rotate the password",
+		Comment:      ptr("Rotate the password"),
 		Password:     "n3w-s3cr3t",
 	})
 
 	RegisterRequestCase("modify_credential", "allow_insecure_false", &commands.ModifyCredential{ // nolint:gosec // G101 fires on the UUID; it is a resource id, not a secret
 		CredentialID:  "9b16f6c2-4c9d-4e6a-8f6a-1a2b3c4d5e6f",
-		Comment:       "No longer permitted to use an insecure algorithm",
+		Comment:       ptr("No longer permitted to use an insecure algorithm"),
 		AllowInsecure: commands.Bool(false),
+	})
+
+	// ModifyCredential.Comment is *string (internal/codegen/overrides.go's
+	// PointerOverrides): gvmd distinguishes an omitted comment (existing
+	// value unchanged) from an explicit empty one (clears it). These cases
+	// pin the omitted/explicit-empty/set wire shapes side by side, matching
+	// modify_ticket's convention.
+	RegisterRequestCase("modify_credential", "all_unset", &commands.ModifyCredential{ // nolint:gosec // G101 fires on the UUID; it is a resource id, not a secret
+		CredentialID: "9b16f6c2-4c9d-4e6a-8f6a-1a2b3c4d5e6f",
+	})
+
+	RegisterRequestCase("modify_credential", "comment_empty", &commands.ModifyCredential{ // nolint:gosec // G101 fires on the UUID; it is a resource id, not a secret
+		CredentialID: "9b16f6c2-4c9d-4e6a-8f6a-1a2b3c4d5e6f",
+		Comment:      ptr(""),
+	})
+
+	RegisterRequestCase("modify_credential", "comment_set", &commands.ModifyCredential{ // nolint:gosec // G101 fires on the UUID; it is a resource id, not a secret
+		CredentialID: "9b16f6c2-4c9d-4e6a-8f6a-1a2b3c4d5e6f",
+		Comment:      ptr("Rotating credentials ahead of the audit."),
+	})
+
+	// ModifyCredential.Kdc/.Kdcs/.Key/.Privacy: same shared types as
+	// create_credential above.
+	RegisterRequestCase("modify_credential", "kdc_kdcs_key_privacy", &commands.ModifyCredential{ // nolint:gosec // G101 fires on the UUID; it is a resource id, not a secret
+		CredentialID: "cred-1",
+		Kdc:          "kdc0.example.com",
+		Kdcs:         &commands.CredentialKdcs{Kdc: []string{"kdc1.example.com", "kdc2.example.com"}},
+		Key:          &commands.CredentialKey{Phrase: "phrase1", Private: "priv1", Public: "pub1"},
+		Privacy: &commands.CredentialPrivacy{
+			Algorithm: "aes",
+			Password:  "privpass", // nolint:gosec // G101: synthetic fixture value, not a real secret
+		},
 	})
 }

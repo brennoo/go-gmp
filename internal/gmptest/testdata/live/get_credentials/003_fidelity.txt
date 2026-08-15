@@ -11,12 +11,10 @@ TRUNCATED
   (none)
 
 CHANGED
-  /get_credentials_response/credential/allow_insecure/#text                "0" -> "false"
-  /get_credentials_response/credential/in_use/#text                        "0" -> "false"
-  /get_credentials_response/credential/writable/#text                      "1" -> "true"
+  (none)
 
 ADDED
-  /get_credentials_response/filters/name                                   x1
+  (none)
 
 DUPLICATED
   (none)

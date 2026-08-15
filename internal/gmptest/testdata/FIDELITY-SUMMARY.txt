@@ -10,9 +10,9 @@
 # 'added' is elements the round trip invents (non-pointer fields without
 # omitempty, zero time.Time) and is not loss.
 
-fixtures: 321   clean: 186   with-loss: 120   decode-errors: 14   advisory: 1
+fixtures: 321   clean: 187   with-loss: 119   decode-errors: 14   advisory: 1
 commands with loss: 37 of 122
-distinct dropped paths: 238
+distinct dropped paths: 239
 
 ## Per fixture
 
@@ -141,13 +141,13 @@ get_configs                  live      003 ok            dropped=2   truncated=0
 get_configs                  live      004 ok            dropped=2   truncated=0   changed=2   added=8
 get_configs                  upstream  001 ok            dropped=1   truncated=0   changed=2   added=21
 get_configs                  upstream  002 ok            dropped=4   truncated=0   changed=2   added=19
-get_credentials              live      001 ok            dropped=2   truncated=0   changed=0   added=1
-get_credentials              live      002 ok            dropped=2   truncated=0   changed=0   added=1
-get_credentials              live      003 ok            dropped=2   truncated=0   changed=3   added=1
-get_credentials              live      004 ok            dropped=2   truncated=0   changed=3   added=2
-get_credentials              upstream  001 clean         dropped=0   truncated=0   changed=0   added=21
-get_credentials              upstream  002 ok            dropped=0   truncated=0   changed=2   added=21
-get_credentials              upstream  003 ok            dropped=0   truncated=0   changed=2   added=21
+get_credentials              live      001 ok            dropped=2   truncated=0   changed=0   added=0
+get_credentials              live      002 ok            dropped=2   truncated=0   changed=0   added=0
+get_credentials              live      003 ok            dropped=2   truncated=0   changed=0   added=0
+get_credentials              live      004 ok            dropped=2   truncated=0   changed=0   added=1
+get_credentials              upstream  001 ok            dropped=1   truncated=0   changed=0   added=20
+get_credentials              upstream  002 clean         dropped=0   truncated=0   changed=0   added=21
+get_credentials              upstream  003 clean         dropped=0   truncated=0   changed=0   added=21
 get_features                 live      001 ok            dropped=1   truncated=0   changed=0   added=0
 get_features                 upstream  001 ok            dropped=0   truncated=0   changed=1   added=0
 get_feeds                    live      001 ok            dropped=0   truncated=0   changed=3   added=0

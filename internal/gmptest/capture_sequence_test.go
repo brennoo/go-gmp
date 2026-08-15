@@ -378,7 +378,7 @@ func (r *captureRun) lifecycleCredentials(st *captureState) {
 		r.send("modify_credential", "lifecycle: modify_credential, new password redacted",
 			&commands.ModifyCredential{
 				CredentialID: st.credentialID,
-				Comment:      captureComment + " (modified)",
+				Comment:      ptr(captureComment + " (modified)"),
 				Password:     r.generatedSecret("credential password, modified"),
 			})
 	}
@@ -395,7 +395,7 @@ func (r *captureRun) lifecycleCredentials(st *captureState) {
 			Comment:     captureComment,
 			Type:        "cc",
 			Certificate: st.certPEM,
-			Key:         &commands.CreateCredentialKey{Private: st.keyPEM},
+			Key:         &commands.CredentialKey{Private: st.keyPEM},
 		},
 		func(id string) {
 			r.send("delete_credential", "teardown: delete_credential ultimate",
