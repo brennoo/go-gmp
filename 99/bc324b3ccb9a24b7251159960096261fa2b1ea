@@ -1,0 +1,21 @@
+internal/codegen/generate.go
+  s_dd35d0dbdea5a5::t_f294893157963f 106-108,138-139,146-155
+internal/codegen/overrides_test.go
+  s_dd35d0dbdea5a5::t_63d33b7768df37 144-164
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "99bc324b3ccb9a24b7251159960096261fa2b1ea",
+  "prompts": {},
+  "sessions": {
+    "s_dd35d0dbdea5a5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_dd35d0dbdea5a5",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
