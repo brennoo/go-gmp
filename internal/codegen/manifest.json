@@ -43,6 +43,11 @@
     {
       "name": "ticket",
       "commands": ["create_ticket", "get_tickets", "modify_ticket"]
+    },
+    {
+      "name": "credential",
+      "commands": ["create_credential", "get_credentials", "modify_credential"],
+      "review_only": true
     }
   ]
 }

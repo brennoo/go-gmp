@@ -2844,6 +2844,282 @@ func TestTicketSortValueIsWhitespaceOnly(t *testing.T) {
 	}
 }
 
+// TestValidateCredentialBeforeMatchesKnownConformance is the credential
+// family's counterpart to TestValidatePermissionBeforeMatchesKnownConformance.
+// credential is review-only, so these types are still the hand-written
+// originals in commands/{create_credential,get_credentials,
+// modify_credential}.go — this pins the pre-swap numbers against
+// internal/schema/testdata/CONFORMANCE.md's own sections for those three
+// commands, the same gate every adopted family passed through before
+// adoption.
+func TestValidateCredentialBeforeMatchesKnownConformance(t *testing.T) {
+	before, _ := validateOrSkip(t, "create_credential")
+
+	want := map[string]counts{
+		"create_credential": {
+			actionable: map[string]int{},
+			suppressed: map[string]int{schema.CatOmitEmpty: 2},
+		},
+		"modify_credential": {
+			actionable: map[string]int{},
+			suppressed: map[string]int{schema.CatOmitEmpty: 2},
+		},
+		"get_credentials": {
+			actionable: map[string]int{
+				schema.CatMissing: 2,
+				schema.CatExtra:   1,
+				schema.CatType:    3,
+				schema.CatDefect:  2,
+			},
+			suppressed: map[string]int{schema.CatOmitEmpty: 2},
+		},
+	}
+	for _, res := range before {
+		w, ok := want[res.Command]
+		if !ok {
+			t.Errorf("%s: unexpected command in Validate's before results", res.Command)
+			continue
+		}
+		assertCounts(t, "before", res.Command, w, countFindings(res.Findings))
+	}
+}
+
+// TestValidateCredentialGeneratedMatchesOrImproves is the credential family's
+// pre-adoption look at what generation would close, run at the same rigour
+// every prior family's was — with no expectation yet that anyone runs
+// hack/generate.sh against it, since credential stays review-only until a
+// later adoption commit.
+//
+// What this run found: generation drops the request-side privacy/algorithm
+// and privacy/password omitempty tags (the family-local CredentialPrivacy in
+// testdata/golden/credential_shared.go matches the schema's "required"),
+// closing the suppressed OMITEMPTY finding on both create_credential and
+// modify_credential. On get_credentials, CertificateInfo and Privacy gain
+// full generated struct shapes instead of a bare chardata scalar (closing
+// both MISSING findings), the schema-absent Truncated field disappears
+// (closing the EXTRA finding), allow_insecure/writable/in_use become
+// commands.GMPBool (closing all 3 TYPE findings), and Formats/Filters.Name's
+// omitempty tags now track the schema's required/optional split exactly
+// (closing both suppressed OMITEMPTY findings). The 2 SCHEMA-DEFECT findings
+// on scanner/permissions and target/permissions stay untouched — copied from
+// cmd.Defects before any Go-type comparison runs, same as every other
+// family's empty-pattern class.
+func TestValidateCredentialGeneratedMatchesOrImproves(t *testing.T) {
+	before, after := validateOrSkip(t, "create_credential")
+
+	wantAfter := map[string]counts{
+		"create_credential": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_credential": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_credentials": {
+			actionable: map[string]int{schema.CatDefect: 2},
+			suppressed: map[string]int{},
+		},
+	}
+	assertMatchesOrImproves(t, before, after, wantAfter)
+}
+
+// credentialCountProbe mirrors CredentialCount in
+// testdata/golden/get_credentials.go.
+type credentialCountProbe struct {
+	XMLName         xml.Name `xml:"get_credentials_response"`
+	CredentialCount struct {
+		Filtered int `xml:"filtered"`
+		Page     int `xml:"page"`
+	} `xml:"credential_count"`
+}
+
+// credentialCountEvidence is credentialCountProbe plus a ",chardata" field to
+// prove the bare total the generated shape can't retain.
+type credentialCountEvidence struct {
+	XMLName         xml.Name `xml:"get_credentials_response"`
+	CredentialCount struct {
+		Value    string `xml:",chardata"`
+		Filtered int    `xml:"filtered"`
+		Page     int    `xml:"page"`
+	} `xml:"credential_count"`
+}
+
+// TestCredentialCountBareTotalIsAnAcceptedLoss mirrors
+// TestTicketCountBareTotalIsAnAcceptedLoss: fixtures send a bare total ahead
+// of <filtered>/<page>, but credential_count's schema pattern declares no
+// text token, so generation can't recover it.
+func TestCredentialCountBareTotalIsAnAcceptedLoss(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	cases := []struct {
+		provenance string
+		path       string
+		wantTotal  string
+		wantFilter int
+		wantPage   int
+	}{
+		{"live_001", filepath.Join(gmptestDir, "live", "get_credentials", "001_response.xml"), "0", 0, 0},
+		{"live_003", filepath.Join(gmptestDir, "live", "get_credentials", "003_response.xml"), "1", 1, 1},
+		{"live_004", filepath.Join(gmptestDir, "live", "get_credentials", "004_response.xml"), "2", 1, 1},
+	}
+	for _, tc := range cases {
+		t.Run(tc.provenance, func(t *testing.T) {
+			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", tc.path, err)
+			}
+
+			var evidence credentialCountEvidence
+			if err := xml.Unmarshal(data, &evidence); err != nil {
+				t.Fatalf("decoding %s into credentialCountEvidence: %v", tc.path, err)
+			}
+			if got := strings.TrimSpace(evidence.CredentialCount.Value); got != tc.wantTotal {
+				t.Fatalf("%s: credential_count bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
+					tc.path, got, tc.wantTotal)
+			}
+			if evidence.CredentialCount.Filtered != tc.wantFilter || evidence.CredentialCount.Page != tc.wantPage {
+				t.Fatalf("%s: credentialCountEvidence children = %+v, want Filtered=%d Page=%d",
+					tc.path, evidence.CredentialCount, tc.wantFilter, tc.wantPage)
+			}
+
+			var got credentialCountProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into credentialCountProbe: %v", tc.path, err)
+			}
+			if got.CredentialCount.Filtered != tc.wantFilter || got.CredentialCount.Page != tc.wantPage {
+				t.Errorf("credentialCountProbe = %+v, want Filtered=%d Page=%d (the generated shape changed unexpectedly)",
+					got.CredentialCount, tc.wantFilter, tc.wantPage)
+			}
+			// credentialCountProbe has no field that could have captured
+			// evidence.CredentialCount.Value — that silent drop, now proven
+			// against the actual fixture bytes rather than assumed, is the
+			// accepted loss this test exists to pin.
+		})
+	}
+}
+
+// credentialSortFieldProbe mirrors CredentialSort/CredentialField in
+// testdata/golden/get_credentials.go.
+type credentialSortFieldProbe struct {
+	XMLName xml.Name `xml:"get_credentials_response"`
+	Sort    struct {
+		Value string `xml:",chardata"`
+		Field struct {
+			Order string `xml:"order"`
+		} `xml:"field"`
+	} `xml:"sort"`
+}
+
+// credentialSortFieldEvidence is credentialSortFieldProbe plus a ",chardata"
+// field on Field to prove the bare sort field name the generated shape can't
+// retain.
+type credentialSortFieldEvidence struct {
+	XMLName xml.Name `xml:"get_credentials_response"`
+	Sort    struct {
+		Field struct {
+			Value string `xml:",chardata"`
+			Order string `xml:"order"`
+		} `xml:"field"`
+	} `xml:"sort"`
+}
+
+// TestCredentialSortFieldNameIsAnAcceptedLoss mirrors
+// TestTicketSortFieldNameIsAnAcceptedLoss: fixtures send the sort field's
+// name as bare text inside <field>, but <field>'s schema pattern declares
+// only <order>, so generation can't recover it. This is distinct from
+// CredentialSort.Value (see TestCredentialSortValueIsWhitespaceOnly), which
+// closes the schema-level sort/#text finding but never holds this name.
+func TestCredentialSortFieldNameIsAnAcceptedLoss(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	cases := []struct {
+		provenance string
+		path       string
+		wantName   string
+		wantOrder  string
+	}{
+		{"live_001", filepath.Join(gmptestDir, "live", "get_credentials", "001_response.xml"), "name", "ascending"},
+		{"live_002", filepath.Join(gmptestDir, "live", "get_credentials", "002_response.xml"), "name", "ascending"},
+		{"live_003", filepath.Join(gmptestDir, "live", "get_credentials", "003_response.xml"), "name", "ascending"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.provenance, func(t *testing.T) {
+			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", tc.path, err)
+			}
+
+			var evidence credentialSortFieldEvidence
+			if err := xml.Unmarshal(data, &evidence); err != nil {
+				t.Fatalf("decoding %s into credentialSortFieldEvidence: %v", tc.path, err)
+			}
+			if got := strings.TrimSpace(evidence.Sort.Field.Value); got != tc.wantName {
+				t.Fatalf("%s: sort/field bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
+					tc.path, got, tc.wantName)
+			}
+			if evidence.Sort.Field.Order != tc.wantOrder {
+				t.Fatalf("%s: credentialSortFieldEvidence order = %q, want %q",
+					tc.path, evidence.Sort.Field.Order, tc.wantOrder)
+			}
+
+			var got credentialSortFieldProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into credentialSortFieldProbe: %v", tc.path, err)
+			}
+			if got.Sort.Field.Order != tc.wantOrder {
+				t.Errorf("credentialSortFieldProbe order = %q, want %q (the generated shape changed unexpectedly)",
+					got.Sort.Field.Order, tc.wantOrder)
+			}
+			// credentialSortFieldProbe.Sort.Field has no field that could
+			// have captured evidence.Sort.Field.Value — that silent drop,
+			// now proven against the actual fixture bytes rather than
+			// assumed, is the accepted loss this test exists to pin.
+			if got := strings.TrimSpace(got.Sort.Value); got != "" {
+				t.Errorf("credentialSortFieldProbe.Sort.Value = %q, want empty — CredentialSort.Value was expected to hold only indentation whitespace, not %q",
+					got, got)
+			}
+		})
+	}
+}
+
+// TestCredentialSortValueIsWhitespaceOnly proves CredentialSort.Value (the
+// field that closes the schema-level sort/#text finding) only ever holds
+// formatting whitespace, not the sort field name pinned by
+// TestCredentialSortFieldNameIsAnAcceptedLoss.
+func TestCredentialSortValueIsWhitespaceOnly(t *testing.T) {
+	dir, err := packageDir()
+	if err != nil {
+		t.Fatalf("packageDir: %v", err)
+	}
+	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
+
+	paths := []string{
+		filepath.Join(gmptestDir, "live", "get_credentials", "001_response.xml"),
+		filepath.Join(gmptestDir, "live", "get_credentials", "002_response.xml"),
+		filepath.Join(gmptestDir, "live", "get_credentials", "003_response.xml"),
+	}
+	for _, path := range paths {
+		t.Run(filepath.Base(filepath.Dir(path))+"/"+filepath.Base(path), func(t *testing.T) {
+			data, err := os.ReadFile(path) //nolint:gosec // fixed test-fixture path under this package's own tree
+			if err != nil {
+				t.Fatalf("reading %s: %v", path, err)
+			}
+
+			var got credentialSortFieldProbe
+			if err := xml.Unmarshal(data, &got); err != nil {
+				t.Fatalf("decoding %s into credentialSortFieldProbe: %v", path, err)
+			}
+			if v := strings.TrimSpace(got.Sort.Value); v != "" {
+				t.Fatalf("%s: CredentialSort.Value = %q after trimming, want empty — fixture no longer demonstrates that this field captures only formatting whitespace, not the sort field name",
+					path, v)
+			}
+		})
+	}
+}
+
 // assertMatchesOrImproves is the shared body of the two match-or-improve gates:
 // the exact expected "after" counts, plus the two general rules that hold for
 // any family — no category may grow, and the schema's own defects may not move.

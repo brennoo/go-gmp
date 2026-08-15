@@ -238,6 +238,21 @@ var PointerOverrides = map[string]PointerOverride{
 	"modify_ticket.closed_note": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <closed_note> are distinct requests",
 	},
+	// modify_credential: live gvmd 26.36.1 experiment run against review-only
+	// credential's optional string fields (up, cc, snmp and krb5 credentials
+	// created and modified directly against the running instance). comment
+	// behaves like modify_alert's (omit leaves the stored value unchanged,
+	// explicit-empty clears it to ""). name, login and auth_algorithm did
+	// not: explicit-empty left each stored value unchanged, indistinguishable
+	// from omitting the element, so they keep the mechanical string default.
+	// certificate, kdc, community and password are not covered here at all —
+	// see the modify_credential CommandWarning below for why kdc and realm
+	// can't take a pointer either, and docs/review-2026-08.md's `credential
+	// added in review-only mode` section for the full experiment record,
+	// including why certificate, community and password could not be tested.
+	"modify_credential.comment": {
+		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
+	},
 }
 
 // CommandWarning attaches a public-facing behavioral-hazard note to a
@@ -280,5 +295,18 @@ var CommandWarnings = map[string]CommandWarning{
 			"value unchanged.",
 		Reason: "T-9: live gvmd 26.36.1 test against the running instance confirmed the " +
 			"explicit-empty-status rejection; see docs/review-2026-08.md's `ticket` review-only section",
+	},
+	"modify_credential": {
+		Text: "Realm and Kdc each reject an explicit-empty element outright (\"400 Invalid or " +
+			"empty kerberos realm value\" / \"400 Invalid or empty kdc value(s)\") rather than " +
+			"accepting it as a clear; omitting either leaves the stored value unchanged, so " +
+			"neither can take a PointerOverride. Certificate, Community and Password could not be " +
+			"tested: gvmd's get_credentials response never echoes their stored values back (with " +
+			"or without details=1), so no live test can observe whether omission and " +
+			"explicit-empty differ for them.",
+		Reason: "T-9: live gvmd 26.36.1 test against the running instance confirmed the " +
+			"explicit-empty rejections for realm and kdc, and the absence of certificate, " +
+			"community and password from every get_credentials response shape; see " +
+			"docs/review-2026-08.md's `credential added in review-only mode` section",
 	},
 }

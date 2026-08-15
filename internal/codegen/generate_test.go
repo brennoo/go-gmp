@@ -842,6 +842,344 @@ func main() {
 }
 `
 
+// credentialScratchModule copies the generated credential family into a
+// throwaway module under dir/genproto, the same technique
+// ticketScratchModule uses. internal/gmptest/cases_credential.go does not
+// exist yet (credential is review-only), and the existing goldens compile
+// against the hand-written commands package, not the generated one, so this
+// is the only way to exercise the real generated Kdc/Kdcs/Key/Privacy shapes
+// and the modify_credential.comment PointerOverride before adoption.
+func credentialScratchModule(t *testing.T, dir string) string {
+	t.Helper()
+	goBin, err := exec.LookPath("go")
+	if err != nil {
+		t.Skipf("Skipping: no go toolchain on PATH (%v)", err)
+	}
+	got := generateOrFail(t)
+	for _, name := range []string{CommandFile("create_credential"), CommandFile("modify_credential"), CommandFile("get_credentials")} {
+		if _, ok := got[name]; !ok {
+			t.Fatalf("%s was not generated, so this test would not compile it", name)
+		}
+	}
+
+	root, err := filepath.Abs("../..")
+	if err != nil {
+		t.Fatalf("Failed to resolve the module root: %v", err)
+	}
+	pkgDir := filepath.Join(dir, "genproto")
+	if err := os.MkdirAll(pkgDir, 0o750); err != nil {
+		t.Fatalf("Failed to create the scratch package: %v", err)
+	}
+	goVersion, err := goDirective(filepath.Join(root, "go.mod"))
+	if err != nil {
+		t.Fatalf("Failed to read the module's go directive: %v", err)
+	}
+	gomod := "module gogmpcodegencheck\n\ngo " + goVersion + "\n\n" +
+		"require github.com/brennoo/go-gmp v0.0.0\n\n" +
+		"replace github.com/brennoo/go-gmp => " + root + "\n"
+	mustWriteFile(t, filepath.Join(dir, "go.mod"), gomod)
+	mustWriteFile(t, filepath.Join(pkgDir, "support.go"),
+		strings.Replace(supportShim(), "package "+targetPackage+"\n", "package genproto\n", 1))
+	for name, src := range got {
+		rewritten := strings.Replace(src, "\npackage "+targetPackage+"\n", "\npackage genproto\n", 1)
+		if rewritten == src {
+			t.Fatalf("%s: expected a %q package clause to rewrite", name, targetPackage)
+		}
+		mustWriteFile(t, filepath.Join(pkgDir, name), rewritten)
+	}
+	return goBin
+}
+
+// TestCredentialGeneratedRequestRoundTrips is T-9 credential review finding
+// 1: generation renames KDC/KDCs to Kdc/Kdcs, dedups CreateCredentialKDCs and
+// CreateCredentialKey into the shared CredentialKdcs/CredentialKey, and drops
+// CredentialPrivacy.Algorithm/.Password's omitempty (they are required
+// elements, not optional ones, per the schema). None of that is exercised by
+// the hand-written-type goldens, so this proves the real generated request
+// shapes directly, including the modify_credential.comment PointerOverride
+// added from this family's live gvmd experiment.
+func TestCredentialGeneratedRequestRoundTrips(t *testing.T) {
+	dir := t.TempDir()
+	goBin := credentialScratchModule(t, dir)
+	mustWriteFile(t, filepath.Join(dir, "main.go"), credentialRequestRoundTripProgram)
+
+	cmd := exec.CommandContext(context.Background(), goBin, "run", ".")
+	cmd.Dir = dir
+	cmd.Env = append(os.Environ(), "GOWORK=off", "GOFLAGS=")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("Round-trip program failed: %v\n%s", err, out)
+	}
+
+	want := "" +
+		"create-credential-kdc-kdcs-key-privacy: <create_credential><name>cred-1</name><kdc>kdc0.example.com</kdc><kdcs><kdc>kdc1.example.com</kdc><kdc>kdc2.example.com</kdc></kdcs><key><phrase>phrase1</phrase><private>priv1</private><public>pub1</public></key><privacy><algorithm>aes</algorithm><password>privpass</password></privacy><type>krb5</type></create_credential>\n" +
+		"modify-credential-kdc-kdcs-key-privacy: <modify_credential credential_id=\"cred-1\"><kdc>kdc0.example.com</kdc><kdcs><kdc>kdc1.example.com</kdc><kdc>kdc2.example.com</kdc></kdcs><key><phrase>phrase1</phrase><private>priv1</private><public>pub1</public></key><privacy><algorithm>aes</algorithm><password>privpass</password></privacy></modify_credential>\n" +
+		"create-credential-privacy-zero-valued: <create_credential><name>cred-2</name><privacy><algorithm></algorithm><password></password></privacy><type>snmp</type></create_credential>\n" +
+		"create-credential-allow-insecure-unset: <create_credential><name>cred-3</name></create_credential>\n" +
+		"create-credential-allow-insecure-false: <create_credential><name>cred-3</name><allow_insecure>0</allow_insecure></create_credential>\n" +
+		"create-credential-allow-insecure-true: <create_credential><name>cred-3</name><allow_insecure>1</allow_insecure></create_credential>\n" +
+		"modify-credential-comment-omitted: <modify_credential credential_id=\"cred-1\"></modify_credential>\n" +
+		"modify-credential-comment-explicit-empty: <modify_credential credential_id=\"cred-1\"><comment></comment></modify_credential>\n" +
+		"modify-credential-comment-set: <modify_credential credential_id=\"cred-1\"><comment>a comment</comment></modify_credential>\n"
+	if got := string(out); got != want {
+		t.Fatalf("Round-trip program printed:\n%s\nwant:\n%s", got, want)
+	}
+}
+
+// credentialRequestRoundTripProgram is a `go run` main for
+// TestCredentialGeneratedRequestRoundTrips. The zero-valued-privacy case
+// pins that CredentialPrivacy.Algorithm/.Password are required-but-empty:
+// generation dropped their omitempty tags, so a non-nil *CredentialPrivacy
+// with both fields at their zero value still emits both elements rather than
+// omitting them. modify-credential-comment-omitted/-explicit-empty prove the
+// PointerOverride's nil-vs-pointer-to-empty-string distinction, matching the
+// live gvmd experiment recorded in overrides.go and docs/review-2026-08.md.
+const credentialRequestRoundTripProgram = `package main
+
+import (
+	"encoding/xml"
+	"fmt"
+	"os"
+
+	"gogmpcodegencheck/genproto"
+)
+
+func printXML(label string, v any) {
+	b, err := xml.Marshal(v)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, label, err)
+		os.Exit(1)
+	}
+	fmt.Printf("%s: %s\n", label, b)
+}
+
+func strp(s string) *string { return &s }
+func boolp(b genproto.GMPBool) *genproto.GMPBool { return &b }
+
+func main() {
+	printXML("create-credential-kdc-kdcs-key-privacy", &genproto.CreateCredential{
+		Name: "cred-1",
+		Type: "krb5",
+		Kdc:  "kdc0.example.com",
+		Kdcs: &genproto.CredentialKdcs{Kdc: []string{"kdc1.example.com", "kdc2.example.com"}},
+		Key:  &genproto.CredentialKey{Phrase: "phrase1", Private: "priv1", Public: "pub1"},
+		Privacy: &genproto.CredentialPrivacy{Algorithm: "aes", Password: "privpass"},
+	})
+	printXML("modify-credential-kdc-kdcs-key-privacy", &genproto.ModifyCredential{
+		CredentialID: "cred-1",
+		Kdc:          "kdc0.example.com",
+		Kdcs:         &genproto.CredentialKdcs{Kdc: []string{"kdc1.example.com", "kdc2.example.com"}},
+		Key:          &genproto.CredentialKey{Phrase: "phrase1", Private: "priv1", Public: "pub1"},
+		Privacy:      &genproto.CredentialPrivacy{Algorithm: "aes", Password: "privpass"},
+	})
+	printXML("create-credential-privacy-zero-valued", &genproto.CreateCredential{
+		Name: "cred-2", Type: "snmp", Privacy: &genproto.CredentialPrivacy{},
+	})
+	printXML("create-credential-allow-insecure-unset", &genproto.CreateCredential{Name: "cred-3"})
+	printXML("create-credential-allow-insecure-false", &genproto.CreateCredential{Name: "cred-3", AllowInsecure: boolp(false)})
+	printXML("create-credential-allow-insecure-true", &genproto.CreateCredential{Name: "cred-3", AllowInsecure: boolp(true)})
+
+	printXML("modify-credential-comment-omitted", &genproto.ModifyCredential{CredentialID: "cred-1"})
+	printXML("modify-credential-comment-explicit-empty", &genproto.ModifyCredential{CredentialID: "cred-1", Comment: strp("")})
+	printXML("modify-credential-comment-set", &genproto.ModifyCredential{CredentialID: "cred-1", Comment: strp("a comment")})
+}
+`
+
+// TestCredentialGeneratedResponseRoundTrips is T-9 credential review finding
+// 2: the conformance gate validates schema structure but never proves
+// GetCredentialsResponse round-trips real fixtures. Committed fixtures cover
+// repeated Credential, Formats, AllowInsecure/Writable/InUse, target entries
+// and package chardata+format, but none exercises Kdcs, scanner entries or
+// privacy/certificate_info, so this adds a synthetic document pinning every
+// field of CredentialCertificateInfo and GetCredentialsPrivacy.Algorithm
+// alongside the real fixtures.
+func TestCredentialGeneratedResponseRoundTrips(t *testing.T) {
+	dir := t.TempDir()
+	goBin := credentialScratchModule(t, dir)
+
+	upstreamRepeated, err := filepath.Abs("../gmptest/testdata/upstream/get_credentials/001_response.xml")
+	if err != nil {
+		t.Fatalf("Failed to resolve the upstream fixture path: %v", err)
+	}
+	if _, err := os.Stat(upstreamRepeated); err != nil {
+		t.Fatalf("Upstream fixture not found: %v", err)
+	}
+	upstreamPackage, err := filepath.Abs("../gmptest/testdata/upstream/get_credentials/003_response.xml")
+	if err != nil {
+		t.Fatalf("Failed to resolve the upstream fixture path: %v", err)
+	}
+	if _, err := os.Stat(upstreamPackage); err != nil {
+		t.Fatalf("Upstream fixture not found: %v", err)
+	}
+	liveFixture, err := filepath.Abs("../gmptest/testdata/live/get_credentials/004_response.xml")
+	if err != nil {
+		t.Fatalf("Failed to resolve the live fixture path: %v", err)
+	}
+	if _, err := os.Stat(liveFixture); err != nil {
+		t.Fatalf("Live fixture not found: %v", err)
+	}
+	syntheticFixture := filepath.Join(dir, "synthetic.xml")
+	mustWriteFile(t, syntheticFixture, credentialSyntheticResponse)
+
+	mustWriteFile(t, filepath.Join(dir, "main.go"), credentialResponseRoundTripProgram)
+
+	cmd := exec.CommandContext(context.Background(), goBin, "run", ".", upstreamRepeated, upstreamPackage, liveFixture, syntheticFixture)
+	cmd.Dir = dir
+	cmd.Env = append(os.Environ(), "GOWORK=off", "GOFLAGS=")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("Round-trip program failed: %v\n%s", err, out)
+	}
+
+	want := "" +
+		"upstream-repeated-decode: credentials=2 filtered=0 page=0\n" +
+		"  credential id=\"c33864a9-d3fd-44b3-8717-972bfb01dfcf\" type=\"usk\" formats=[key rpm deb] allow_insecure=false writable=true in_use=false\n" +
+		"  credential id=\"8e305b0b-260d-450d-91a8-dadf0b144e15\" type=\"up\" formats=[exe] allow_insecure=false writable=true in_use=true\n" +
+		"upstream-repeated-roundtrip: credentials=2 filtered=0 page=0\n" +
+		"  credential id=\"c33864a9-d3fd-44b3-8717-972bfb01dfcf\" type=\"usk\" formats=[key rpm deb] allow_insecure=false writable=true in_use=false\n" +
+		"  credential id=\"8e305b0b-260d-450d-91a8-dadf0b144e15\" type=\"up\" formats=[exe] allow_insecure=false writable=true in_use=true\n" +
+		"upstream-package-decode: credentials=1 filtered=0 page=0\n" +
+		"  credential id=\"8e305b0b-260d-450d-91a8-dadf0b144e15\" type=\"up\" target.id=\"1f28d970-17ef-4c69-ba8a-13827059f2b9\" package.format=\"deb\" package.len=29 allow_insecure=false writable=true in_use=true\n" +
+		"upstream-package-roundtrip: credentials=1 filtered=0 page=0\n" +
+		"  credential id=\"8e305b0b-260d-450d-91a8-dadf0b144e15\" type=\"up\" target.id=\"1f28d970-17ef-4c69-ba8a-13827059f2b9\" package.format=\"deb\" package.len=29 allow_insecure=false writable=true in_use=true\n" +
+		"live-decode: credentials=1 filtered=1 page=1\n" +
+		"  credential id=\"81c535ac-5b43-427d-ba8a-a865051eb096\" type=\"cc\" formats=[pem] allow_insecure=false writable=true in_use=false\n" +
+		"live-roundtrip: credentials=1 filtered=1 page=1\n" +
+		"  credential id=\"81c535ac-5b43-427d-ba8a-a865051eb096\" type=\"cc\" formats=[pem] allow_insecure=false writable=true in_use=false\n" +
+		"synthetic-decode: credentials=1 filtered=1 page=1\n" +
+		"  credential id=\"cred-syn-1\" type=\"krb5\" formats=[key] kdcs=[kdc1.example.com kdc2.example.com] scanner.id=\"scanner-1\" privacy.algorithm=\"aes\" cert_info.time_status=\"valid\" cert_info.activation_time=\"2020-01-01T00:00:00Z\" cert_info.expiration_time=\"2030-01-01T00:00:00Z\" cert_info.issuer=\"CN=test\" cert_info.md5=\"aa:bb\" cert_info.sha256=\"cc:dd\" cert_info.subject=\"CN=subject\" cert_info.serial=\"01\" allow_insecure=false writable=true in_use=false\n" +
+		"synthetic-roundtrip: credentials=1 filtered=1 page=1\n" +
+		"  credential id=\"cred-syn-1\" type=\"krb5\" formats=[key] kdcs=[kdc1.example.com kdc2.example.com] scanner.id=\"scanner-1\" privacy.algorithm=\"aes\" cert_info.time_status=\"valid\" cert_info.activation_time=\"2020-01-01T00:00:00Z\" cert_info.expiration_time=\"2030-01-01T00:00:00Z\" cert_info.issuer=\"CN=test\" cert_info.md5=\"aa:bb\" cert_info.sha256=\"cc:dd\" cert_info.subject=\"CN=subject\" cert_info.serial=\"01\" allow_insecure=false writable=true in_use=false\n"
+	if got := string(out); got != want {
+		t.Fatalf("Round-trip program printed:\n%s\nwant:\n%s", got, want)
+	}
+}
+
+// credentialSyntheticResponse covers the paths no committed get_credentials
+// fixture exercises: Kdcs, a scanner entry, privacy and a fully-populated
+// certificate_info (every field, including the optional sha256_fingerprint,
+// subject and serial).
+const credentialSyntheticResponse = `<get_credentials_response status="200" status_text="OK">
+  <credential id="cred-syn-1">
+    <owner><name>admin</name></owner>
+    <name>synthetic-krb5</name>
+    <allow_insecure>0</allow_insecure>
+    <login>krbuser</login>
+    <comment></comment>
+    <creation_time>2026-01-01T00:00:00Z</creation_time>
+    <modification_time>2026-01-01T00:00:00Z</modification_time>
+    <writable>1</writable>
+    <in_use>0</in_use>
+    <permissions><permission><name>Everything</name></permission></permissions>
+    <type>krb5</type>
+    <full_type>Kerberos</full_type>
+    <formats><format>key</format></formats>
+    <kdcs><kdc>kdc1.example.com</kdc><kdc>kdc2.example.com</kdc></kdcs>
+    <scanners>
+      <scanner id="scanner-1"><name>a scanner</name></scanner>
+    </scanners>
+    <privacy><algorithm>aes</algorithm></privacy>
+    <certificate_info>
+      <time_status>valid</time_status>
+      <activation_time>2020-01-01T00:00:00Z</activation_time>
+      <expiration_time>2030-01-01T00:00:00Z</expiration_time>
+      <issuer>CN=test</issuer>
+      <md5_fingerprint>aa:bb</md5_fingerprint>
+      <sha256_fingerprint>cc:dd</sha256_fingerprint>
+      <subject>CN=subject</subject>
+      <serial>01</serial>
+    </certificate_info>
+  </credential>
+  <credentials start="1" max="1000"/>
+  <credential_count>1<filtered>1</filtered><page>1</page></credential_count>
+</get_credentials_response>
+`
+
+// credentialResponseRoundTripProgram is a `go run` main for
+// TestCredentialGeneratedResponseRoundTrips. argv[1] is the upstream
+// repeated-credential fixture, argv[2] the upstream package/target fixture,
+// argv[3] the live AllowInsecure/Writable/InUse fixture, argv[4] the
+// synthetic one.
+const credentialResponseRoundTripProgram = `package main
+
+import (
+	"encoding/xml"
+	"fmt"
+	"os"
+
+	"gogmpcodegencheck/genproto"
+)
+
+func report(label string, r *genproto.GetCredentialsResponse) {
+	fmt.Printf("%s: credentials=%d filtered=%d page=%d\n", label, len(r.Credential), r.CredentialCount.Filtered, r.CredentialCount.Page)
+	for _, c := range r.Credential {
+		fmt.Printf("  credential id=%q type=%q", c.ID, c.Type)
+		if len(c.Formats.Format) > 0 {
+			fmt.Printf(" formats=%v", c.Formats.Format)
+		}
+		if c.Targets != nil {
+			for _, tgt := range c.Targets.Target {
+				fmt.Printf(" target.id=%q", tgt.ID)
+			}
+		}
+		if c.Package != nil {
+			fmt.Printf(" package.format=%q package.len=%d", c.Package.Format, len(c.Package.Value))
+		}
+		if c.Kdcs != nil && len(c.Kdcs.Kdc) > 0 {
+			fmt.Printf(" kdcs=%v", c.Kdcs.Kdc)
+		}
+		if c.Scanners != nil {
+			for _, s := range c.Scanners.Scanner {
+				fmt.Printf(" scanner.id=%q", s.ID)
+			}
+		}
+		if c.Privacy != nil {
+			fmt.Printf(" privacy.algorithm=%q", c.Privacy.Algorithm)
+		}
+		if c.CertificateInfo != nil {
+			ci := c.CertificateInfo
+			fmt.Printf(" cert_info.time_status=%q cert_info.activation_time=%q cert_info.expiration_time=%q cert_info.issuer=%q cert_info.md5=%q cert_info.sha256=%q cert_info.subject=%q cert_info.serial=%q",
+				ci.TimeStatus, ci.ActivationTime, ci.ExpirationTime, ci.Issuer, ci.MD5Fingerprint, ci.SHA256Fingerprint, ci.Subject, ci.Serial)
+		}
+		fmt.Printf(" allow_insecure=%t writable=%t in_use=%t", bool(c.AllowInsecure), bool(c.Writable), bool(c.InUse))
+		fmt.Println()
+	}
+}
+
+func decodeAndRoundTrip(path, decodeLabel, roundtripLabel string) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	var decoded genproto.GetCredentialsResponse
+	if err := xml.Unmarshal(data, &decoded); err != nil {
+		fmt.Fprintln(os.Stderr, "decode:", err)
+		os.Exit(1)
+	}
+	report(decodeLabel, &decoded)
+
+	reencoded, err := xml.Marshal(&decoded)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "encode:", err)
+		os.Exit(1)
+	}
+	var roundtripped genproto.GetCredentialsResponse
+	if err := xml.Unmarshal(reencoded, &roundtripped); err != nil {
+		fmt.Fprintln(os.Stderr, "re-decode:", err)
+		os.Exit(1)
+	}
+	report(roundtripLabel, &roundtripped)
+}
+
+func main() {
+	decodeAndRoundTrip(os.Args[1], "upstream-repeated-decode", "upstream-repeated-roundtrip")
+	decodeAndRoundTrip(os.Args[2], "upstream-package-decode", "upstream-package-roundtrip")
+	decodeAndRoundTrip(os.Args[3], "live-decode", "live-roundtrip")
+	decodeAndRoundTrip(os.Args[4], "synthetic-decode", "synthetic-roundtrip")
+}
+`
+
 // mustWriteFile is writeFile (scratch.go) with the *testing.T ceremony a test
 // wants but a reusable helper shouldn't carry.
 func mustWriteFile(t *testing.T, path, content string) {
