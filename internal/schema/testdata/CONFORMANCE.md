@@ -31,7 +31,7 @@ them, so response-side optionality is trusted and request-side is not.
 commands compared:            122
 fully conformant:             66
 with actionable findings:     56
-actionable findings:          512  (request 248, response 264)
+actionable findings:          511  (request 248, response 263)
 suppressed findings:          589
 confirmed by fidelity corpus: 67
 in the schema, not in Go:     0
@@ -41,7 +41,7 @@ in Go, not in the schema:     0
 
                  actionable suppressed
   MISSING               191          0
-  EXTRA                 197          2
+  EXTRA                 196          2
   CARDINALITY            37          0
   KIND                    9          0
   OMITEMPTY               4        587
@@ -79,7 +79,7 @@ taken against upstream main (155 commands). Two reasons, both expected:
   create_report                52   MISSING=38  EXTRA=5  CARDINALITY=5  TYPE=4
   get_tasks                    41   MISSING=12  EXTRA=14  CARDINALITY=7  TYPE=8
   get_targets                  31   MISSING=13  EXTRA=10  KIND=3  TYPE=5
-  get_report_formats           30   MISSING=18  EXTRA=3  CARDINALITY=1  KIND=2  TYPE=6
+  get_report_formats           29   MISSING=18  EXTRA=2  CARDINALITY=1  KIND=2  TYPE=6
   get_info                     22   MISSING=12  EXTRA=7  TYPE=3
   modify_target                19   EXTRA=19
   delete_agents                18   EXTRA=18
@@ -1626,7 +1626,7 @@ MISSING=12  EXTRA=2  KIND=2  OMITEMPTY=15  TYPE=2  SCHEMA-DEFECT=1
 
 ### get_report_formats  (command_get_report_formats.xml)
 
-MISSING=18  EXTRA=3  CARDINALITY=1  KIND=2  OMITEMPTY=14  TYPE=6
+MISSING=18  EXTRA=2  CARDINALITY=1  KIND=2  OMITEMPTY=14  TYPE=6
 
   MISSING       request  /get_report_formats/@alerts
                 optional attr alerts is not modelled
@@ -1666,8 +1666,6 @@ MISSING=18  EXTRA=3  CARDINALITY=1  KIND=2  OMITEMPTY=14  TYPE=6
                 schema declares 1 children; Go models this as scalar string
   EXTRA         response /get_report_formats_response/report_format/comment
                 Go field Comment string has no counterpart in the schema
-  EXTRA         response /get_report_formats_response/report_format/trust/#text
-                Go *commands.ReportFormatTrust has a `,chardata` field; schema declares no character data here
   EXTRA         response /get_report_formats_response/sort/order
                 Go field Order string has no counterpart in the schema
   CARDINALITY   response /get_report_formats_response/report_format/deprecated

@@ -460,7 +460,9 @@ func (e *env) fill(n *Node, pattern *rawPattern, defs []rawEle, path string) {
 	// cases collapse to the same signal once n.Type is known: a type name
 	// alongside real content of its own, as opposed to a bare leaf or a
 	// reference this pattern is about to hand off to expandShared.
-	if n.Type != "" && (len(pattern.Attribs) > 0 || !pattern.empty()) {
+	// <alts> is the third spelling: it constrains text content without naming a
+	// type, so an element whose text is only an alt list still carries text.
+	if (n.Type != "" || len(n.Alts) > 0) && (len(pattern.Attribs) > 0 || !pattern.empty()) {
 		// Guard against the one case where a non-empty Type does not mean
 		// text: <t>/<type> naming a shared top-level <element> rather than a
 		// scalar type. expandShared is about to replace n's content with
