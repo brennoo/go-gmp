@@ -58,8 +58,7 @@
     },
     {
       "name": "report_format",
-      "commands": ["create_report_format", "get_report_formats", "modify_report_format"],
-      "review_only": true
+      "commands": ["create_report_format", "get_report_formats", "modify_report_format"]
     }
   ]
 }

@@ -12,7 +12,7 @@
 
 fixtures: 321   clean: 188   with-loss: 120   decode-errors: 12   advisory: 1
 commands with loss: 37 of 122
-distinct dropped paths: 238
+distinct dropped paths: 231
 
 ## Per fixture
 
@@ -194,10 +194,10 @@ get_preferences              upstream  003 ok            dropped=1   truncated=0
 get_preferences              upstream  004 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0
 get_report_configs           live      001 ok            dropped=6   truncated=0   changed=0   added=0
 get_report_configs           upstream  001 ok            dropped=3   truncated=1   changed=2   added=0
-get_report_formats           live      001 ok            dropped=10  truncated=0   changed=0   added=0
-get_report_formats           live      002 ok            dropped=10  truncated=0   changed=0   added=0
-get_report_formats           upstream  001 ok            dropped=2   truncated=0   changed=3   added=0
-get_report_formats           upstream  002 ok            dropped=4   truncated=0   changed=2   added=2
+get_report_formats           live      001 ok            dropped=2   truncated=0   changed=0   added=1
+get_report_formats           live      002 ok            dropped=2   truncated=0   changed=0   added=1
+get_report_formats           upstream  001 ok            dropped=2   truncated=0   changed=1   added=25
+get_report_formats           upstream  002 ok            dropped=4   truncated=0   changed=0   added=29
 get_reports                  live      001 ok            dropped=4   truncated=0   changed=0   added=0
 get_reports                  live      002 ok            dropped=39  truncated=0   changed=2   added=2
 get_reports                  upstream  001 ok            dropped=1   truncated=0   changed=0   added=4

@@ -4,21 +4,47 @@ decode: ok
 namespaces-seen:
 
 DROPPED
-  /get_report_formats_response/report_format/comment                       x1
   /get_report_formats_response/report_format/description/truncated         x1  (+1 descendant paths)
   /get_report_formats_response/report_format/file/truncated                x2  (+1 descendant paths)
+  /get_report_formats_response/report_format/signature                     x1
   /get_report_formats_response/truncated                                   x1  (+1 descendant paths)
 
 TRUNCATED
   (none)
 
 CHANGED
-  /get_report_formats_response/report_format/in_use/#text                  "0" -> "false"
-  /get_report_formats_response/report_format/writable/#text                "1" -> "true"
+  (none)
 
 ADDED
+  /get_report_formats_response/filters                                     x1
+  /get_report_formats_response/filters/@id                                 x1
+  /get_report_formats_response/filters/keywords                            x1
+  /get_report_formats_response/filters/term                                x1
   /get_report_formats_response/report_format/active                        x1
   /get_report_formats_response/report_format/active/#text                  x1
+  /get_report_formats_response/report_format/configurable                  x1
+  /get_report_formats_response/report_format/configurable/#text            x1
+  /get_report_formats_response/report_format/owner                         x1
+  /get_report_formats_response/report_format/owner/name                    x1
+  /get_report_formats_response/report_format/permissions                   x1
+  /get_report_formats_response/report_format/predefined                    x1
+  /get_report_formats_response/report_format/predefined/#text              x1
+  /get_report_formats_response/report_format/report_type                   x1
+  /get_report_formats_response/report_format/trust                         x1
+  /get_report_formats_response/report_format/trust/@name                   x1
+  /get_report_formats_response/report_format/trust/time                    x1
+  /get_report_formats_response/report_format/trust/time/#text              x1
+  /get_report_formats_response/report_format_count                         x1
+  /get_report_formats_response/report_format_count/filtered                x1
+  /get_report_formats_response/report_format_count/filtered/#text          x1
+  /get_report_formats_response/report_format_count/page                    x1
+  /get_report_formats_response/report_format_count/page/#text              x1
+  /get_report_formats_response/report_formats                              x1
+  /get_report_formats_response/report_formats/@max                         x1
+  /get_report_formats_response/report_formats/@start                       x1
+  /get_report_formats_response/sort                                        x1
+  /get_report_formats_response/sort/field                                  x1
+  /get_report_formats_response/sort/field/order                            x1
 
 DUPLICATED
   (none)

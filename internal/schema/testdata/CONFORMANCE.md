@@ -29,23 +29,23 @@ them, so response-side optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             66
-with actionable findings:     56
-actionable findings:          511  (request 248, response 263)
-suppressed findings:          589
-confirmed by fidelity corpus: 67
+fully conformant:             67
+with actionable findings:     55
+actionable findings:          482  (request 242, response 240)
+suppressed findings:          575
+confirmed by fidelity corpus: 64
 in the schema, not in Go:     0
 in Go, not in the schema:     0
 
 ### Findings by category
 
                  actionable suppressed
-  MISSING               191          0
-  EXTRA                 196          2
-  CARDINALITY            37          0
-  KIND                    9          0
-  OMITEMPTY               4        587
-  TYPE                   74          0
+  MISSING               173          0
+  EXTRA                 194          3
+  CARDINALITY            36          0
+  KIND                    7          0
+  OMITEMPTY               4        572
+  TYPE                   68          0
   SCHEMA-DEFECT         107          0
 
 ### Schema defects by class
@@ -79,7 +79,6 @@ taken against upstream main (155 commands). Two reasons, both expected:
   create_report                52   MISSING=38  EXTRA=5  CARDINALITY=5  TYPE=4
   get_tasks                    41   MISSING=12  EXTRA=14  CARDINALITY=7  TYPE=8
   get_targets                  31   MISSING=13  EXTRA=10  KIND=3  TYPE=5
-  get_report_formats           29   MISSING=18  EXTRA=2  CARDINALITY=1  KIND=2  TYPE=6
   get_info                     22   MISSING=12  EXTRA=7  TYPE=3
   modify_target                19   EXTRA=19
   delete_agents                18   EXTRA=18
@@ -95,7 +94,8 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_scanners                  9   EXTRA=6  TYPE=3
   get_users                     9   MISSING=1  EXTRA=2  CARDINALITY=2  KIND=2  TYPE=2
   get_configs                   7   MISSING=3  EXTRA=2  TYPE=2
-  ... and 36 more with fewer
+  get_results                   6   MISSING=1  EXTRA=4  CARDINALITY=1
+  ... and 35 more with fewer
 
 ### Confirmed by both oracles
 
@@ -117,9 +117,6 @@ attributes, and one of its own captured request fixtures uses three of them.
   get_info                 /get_info_response/info/cve/severity
   get_nvts                 /get_nvts_response/nvt/refs/*
   get_report_configs       /get_report_configs_response/filters/keywords/*
-  get_report_formats       /get_report_formats_response/filters/keywords/*
-  get_report_formats       /get_report_formats_response/report_format/owner
-  get_report_formats       /get_report_formats_response/report_format/permissions
   get_reports              /get_reports_response/filters
   get_reports              /get_reports_response/report/#text
   get_reports              /get_reports_response/report/report/compliance_count/#text
@@ -342,7 +339,7 @@ MISSING=38  EXTRA=5  CARDINALITY=5  OMITEMPTY=144  TYPE=4  SCHEMA-DEFECT=10
   CARDINALITY   request  /create_report/report/report/host/result_count
                 schema says optional; ResultCount int cannot express absence (zero is a legal value)
   CARDINALITY   request  /create_report/report/report/report_format/param
-                schema says required, Go has a slice []commands.ReportFormatParam (Params)
+                schema says required, Go has a slice []commands.ReportContentFormatParam (Params)
   CARDINALITY   request  /create_report/report/report/results/result/original_severity
                 schema says optional; OriginalSeverity float64 cannot express absence (zero is a legal value)
   CARDINALITY   request  /create_report/report/report/sort/field
@@ -1626,94 +1623,10 @@ MISSING=12  EXTRA=2  KIND=2  OMITEMPTY=15  TYPE=2  SCHEMA-DEFECT=1
 
 ### get_report_formats  (command_get_report_formats.xml)
 
-MISSING=18  EXTRA=2  CARDINALITY=1  KIND=2  OMITEMPTY=14  TYPE=6
+EXTRA=1
 
-  MISSING       request  /get_report_formats/@alerts
-                optional attr alerts is not modelled
-  MISSING       request  /get_report_formats/@filt_id
-                optional attr filt_id is not modelled
-  MISSING       request  /get_report_formats/@filter
-                optional attr filter is not modelled
-  MISSING       request  /get_report_formats/@params
-                optional attr params is not modelled
-  MISSING       request  /get_report_formats/@report_configs
-                optional attr report_configs is not modelled
-  MISSING       request  /get_report_formats/@trash
-                optional attr trash is not modelled
-  MISSING       response /get_report_formats_response/filters/keywords/*
-                schema declares 1 children; Go models this as scalar string  [fidelity]
-  MISSING       response /get_report_formats_response/report_format/alerts
-                optional elem alerts is not modelled
-  MISSING       response /get_report_formats_response/report_format/invisible_alerts
-                optional elem invisible_alerts is not modelled
-  MISSING       response /get_report_formats_response/report_format/invisible_report_configs
-                optional elem invisible_report_configs is not modelled
-  MISSING       response /get_report_formats_response/report_format/owner
-                required elem owner is not modelled  [fidelity]
-  MISSING       response /get_report_formats_response/report_format/param
-                repeated elem param is not modelled
-  MISSING       response /get_report_formats_response/report_format/permissions
-                required elem permissions is not modelled  [fidelity]
-  MISSING       response /get_report_formats_response/report_format/report_configs
-                optional elem report_configs is not modelled
-  MISSING       response /get_report_formats_response/report_format/trust/@name
-                required attr name is not modelled
-  MISSING       response /get_report_formats_response/report_format/user_tags
-                optional elem user_tags is not modelled
-  MISSING       response /get_report_formats_response/sort/#text
-                schema also declares character data (text) here; Go *commands.ReportFormatsSort has no `,chardata` field
-  MISSING       response /get_report_formats_response/sort/field/*
-                schema declares 1 children; Go models this as scalar string
   EXTRA         response /get_report_formats_response/report_format/comment
-                Go field Comment string has no counterpart in the schema
-  EXTRA         response /get_report_formats_response/sort/order
-                Go field Order string has no counterpart in the schema
-  CARDINALITY   response /get_report_formats_response/report_format/deprecated
-                schema says optional; Deprecated bool cannot express absence (zero is a legal value)
-  KIND          response /get_report_formats_response/report_format_count/filtered
-                schema declares elem, Go models it as attr (Filtered int)
-  KIND          response /get_report_formats_response/report_format_count/page
-                schema declares elem, Go models it as attr (Page int)
-  OMITEMPTY     response /get_report_formats_response/filters
-                schema says required, Filters is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_formats_response/filters/@id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_formats_response/filters/keywords
-                schema says required, Keywords is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_formats_response/filters/term
-                schema says required, Term is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_formats_response/report_format/configurable
-                schema says required, Configurable is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_formats_response/report_format/predefined
-                schema says required, Predefined is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_formats_response/report_format/report_type
-                schema says required, ReportType is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_formats_response/report_format/trust
-                schema says required, Trust is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_formats_response/report_format_count
-                schema says required, Count is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_formats_response/report_formats
-                schema says required, Pagination is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_formats_response/report_formats/@max
-                schema says required, Max is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_formats_response/report_formats/@start
-                schema says required, Start is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_formats_response/sort
-                schema says required, Sort is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_formats_response/sort/field
-                schema says required, Field is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  TYPE          response /get_report_formats_response/report_format/active
-                schema type boolean is text ("" is true), Go Active is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_report_formats_response/report_format/configurable
-                schema type boolean is text ("" is true), Go Configurable is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_report_formats_response/report_format/deprecated
-                schema type boolean is text ("" is true), Go Deprecated is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_report_formats_response/report_format/in_use
-                schema type boolean is text ("" is true), Go InUse is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_report_formats_response/report_format/predefined
-                schema type boolean is text ("" is true), Go Predefined is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_report_formats_response/report_format/writable
-                schema type boolean is text ("" is true), Go Writable is bool: '7' fails to decode and '1' re-emits as 'true'
+                Go field Comment string has no counterpart in the schema  [suppressed: T-9 report_format review: schema's report_format pattern never declares <comment>, but gvmd emits one on every report format — x5 in each of internal/gmptest/testdata/live/get_report_formats/{001,002}_response.xml and x1 upstream, all recorded as DROPPED in the matching _fidelity.txt. Every captured occurrence is empty, so it is the element's presence that is evidenced, not its content; hence no omitempty, which would re-marshal to the absence gvmd never sends]
 
 ### get_reports  (command_get_reports.xml)
 
@@ -1846,7 +1759,7 @@ MISSING=55  EXTRA=6  CARDINALITY=5  OMITEMPTY=143  TYPE=4  SCHEMA-DEFECT=10
   CARDINALITY   response /get_reports_response/report/report/host/result_count
                 schema says optional; ResultCount int cannot express absence (zero is a legal value)
   CARDINALITY   response /get_reports_response/report/report/report_format/param
-                schema says required, Go has a slice []commands.ReportFormatParam (Params)
+                schema says required, Go has a slice []commands.ReportContentFormatParam (Params)
   CARDINALITY   response /get_reports_response/report/report/results/result/original_severity
                 schema says optional; OriginalSeverity float64 cannot express absence (zero is a legal value)
   CARDINALITY   response /get_reports_response/report/report/sort/field
@@ -2946,10 +2859,7 @@ MISSING=1  EXTRA=3
 
 ### modify_report_format  (command_modify_report_format.xml)
 
-OMITEMPTY=1
-
-  OMITEMPTY     request  /modify_report_format/param/name
-                schema says required, Name is tagged omitempty  [suppressed: request-side over-constraint]
+conformant
 
 ### modify_role  (command_modify_role.xml)
 

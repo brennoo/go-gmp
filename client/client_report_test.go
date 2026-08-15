@@ -151,8 +151,8 @@ func TestGetReportFormats(t *testing.T) {
 	if resp.StatusText != "OK" {
 		t.Fatalf("Expected status text 'OK', got '%s'", resp.StatusText)
 	}
-	if len(resp.ReportFormats) != 1 {
-		t.Fatalf("Expected 1 report format, got %d", len(resp.ReportFormats))
+	if len(resp.ReportFormat) != 1 {
+		t.Fatalf("Expected 1 report format, got %d", len(resp.ReportFormat))
 	}
 
 	// Failure case
@@ -378,7 +378,7 @@ func TestModifyReportFormat(t *testing.T) {
 	// Success case: modify param
 	cmdParam := &commands.ModifyReportFormat{
 		ReportFormatID: "format-uuid",
-		Param: &commands.ReportFormatParam{
+		Param: &commands.ModifyReportFormatParam{
 			Name:  "Background Colour",
 			Value: "red",
 		},

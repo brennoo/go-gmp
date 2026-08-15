@@ -3206,10 +3206,10 @@ func TestValidateAssetGeneratedMatchesOrImproves(t *testing.T) {
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
 
-// TestValidateReportFormatBeforeMatchesKnownConformance pins the hand-written
-// commands/ state this family is adopted against, cross-checked against
-// internal/schema/testdata/CONFORMANCE.md. report_format is still review-only,
-// so this is the pre-swap gate rather than a drift detector.
+// TestValidateReportFormatBeforeMatchesKnownConformance is report_format's
+// counterpart to TestValidateAssetBeforeMatchesKnownConformance. report_format
+// is adopted, so this is a drift detector on the committed commands/ files.
+// Pre-adoption findings are recorded in docs/review-2026-08.md.
 func TestValidateReportFormatBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_report_format")
 
@@ -3218,16 +3218,10 @@ func TestValidateReportFormatBeforeMatchesKnownConformance(t *testing.T) {
 			actionable: map[string]int{schema.CatDefect: 1},
 			suppressed: map[string]int{},
 		},
-		"modify_report_format": {
-			actionable: map[string]int{},
-			suppressed: map[string]int{schema.CatOmitEmpty: 1},
-		},
+		"modify_report_format": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_report_formats": {
-			actionable: map[string]int{
-				schema.CatMissing: 18, schema.CatExtra: 2, schema.CatCardinality: 1,
-				schema.CatKind: 2, schema.CatType: 6,
-			},
-			suppressed: map[string]int{schema.CatOmitEmpty: 14},
+			actionable: map[string]int{},
+			suppressed: map[string]int{schema.CatExtra: 1},
 		},
 	}
 	for _, res := range before {
@@ -3241,10 +3235,11 @@ func TestValidateReportFormatBeforeMatchesKnownConformance(t *testing.T) {
 }
 
 // TestValidateReportFormatGeneratedMatchesOrImproves is the report_format
-// family's pre-swap gate. Generation closes every actionable finding on
-// get_report_formats and modify_report_format; create_report_format keeps its
-// allowlisted unsupported-r SCHEMA-DEFECT, which no generated shape can
-// resolve. See docs/review-2026-08.md's report_format section.
+// family's post-swap gate, run at the same rigour every prior family's was.
+// Generation closed every actionable finding on get_report_formats and
+// modify_report_format; create_report_format keeps its allowlisted
+// unsupported-r SCHEMA-DEFECT, which no generated shape can resolve. See
+// docs/review-2026-08.md's report_format section.
 //
 // get_report_formats' one remaining EXTRA comes back Suppressed, the same
 // disposition tls_certificate's /tls_certificate/valid gets and for the same

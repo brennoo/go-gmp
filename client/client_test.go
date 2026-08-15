@@ -551,7 +551,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		if cmd.ReportFormatID == "format-uuid" {
 			(*response.(*commands.GetReportFormatsResponse)).Status = "200"
 			(*response.(*commands.GetReportFormatsResponse)).StatusText = "OK"
-			(*response.(*commands.GetReportFormatsResponse)).ReportFormats = []commands.ReportFormat{
+			(*response.(*commands.GetReportFormatsResponse)).ReportFormat = []commands.ReportFormat{
 				{
 					ID:               "format-uuid",
 					Name:             "HTML",

@@ -77,7 +77,7 @@ type ReportContent struct {
 	ID              string                 `xml:"id,attr,omitempty"`
 	Type            string                 `xml:"type,attr,omitempty"`
 	GMP             *ReportGMP             `xml:"gmp,omitempty"`
-	ReportFormat    *ReportFormatParams    `xml:"report_format,omitempty"`
+	ReportFormat    *ReportContentFormat   `xml:"report_format,omitempty"`
 	Sort            *ReportSort            `xml:"sort,omitempty"`
 	Filters         *ReportFilters         `xml:"filters,omitempty"`
 	Delta           *ReportDelta           `xml:"delta,omitempty"`
@@ -112,10 +112,10 @@ type ReportGMP struct {
 	Version string `xml:"version,omitempty"`
 }
 
-type ReportFormatParams struct {
-	Params []ReportFormatParam `xml:"param,omitempty"`
+type ReportContentFormat struct {
+	Params []ReportContentFormatParam `xml:"param,omitempty"`
 }
-type ReportFormatParam struct {
+type ReportContentFormatParam struct {
 	Name  string `xml:"name,omitempty"`
 	Value string `xml:"value,omitempty"`
 }
