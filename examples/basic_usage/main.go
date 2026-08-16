@@ -232,7 +232,7 @@ func (g *GMPClient) GetTargetByID(ctx context.Context, targetID string) (*comman
 }
 
 // GetTask retrieves a task by name.
-func (g *GMPClient) GetTask(ctx context.Context, name string) (*commands.GetTasksResponseTask, error) {
+func (g *GMPClient) GetTask(ctx context.Context, name string) (*commands.Task, error) {
 	log.Printf("Getting task: %s", name)
 
 	resp, err := g.client.GetTasks(ctx, fmt.Sprintf(`name="%s"`, name))
@@ -319,13 +319,13 @@ func (g *GMPClient) CreateTask(ctx context.Context, name, configID, targetID, sc
 
 	cmd := &commands.CreateTask{
 		Name: name,
-		Config: &commands.TaskConfig{
+		Config: commands.TaskConfig{
 			ID: configID,
 		},
-		Target: &commands.TaskTarget{
+		Target: commands.TaskTarget{
 			ID: targetID,
 		},
-		Scanner: &commands.TaskScanner{
+		Scanner: commands.TaskScanner{
 			ID: scannerID,
 		},
 	}
@@ -412,8 +412,10 @@ func (g *GMPClient) getTaskProgress(ctx context.Context, taskID string) (int, er
 		return 0, fmt.Errorf("task not found")
 	}
 
-	progress := resp.Task[0].Progress
-	return progress, nil
+	if resp.Task[0].Progress == nil {
+		return -1, nil
+	}
+	return *resp.Task[0].Progress, nil
 }
 
 // PrintResultsWithIterator prints all results using an iterator.

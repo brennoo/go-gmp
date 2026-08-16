@@ -56,9 +56,10 @@ Categories:
   SCHEMA-DEFECT the schema is wrong; nothing is asked of commands/
 
 Findings marked [suppressed] are counted but not charged to commands/. They are
-almost all request-side over-constraint: the schema marks create_task's config,
-target and scanner required even though the agent and OCI variants replace
-them, so response-side optionality is trusted and request-side is not.
+almost all request-side over-constraint: the schema marks create_report's
+report/@id, config_id, format_id, extension and content_type all required,
+though real payloads only ever populate one submission path, so response-side
+optionality is trusted and request-side is not.
 
 `)
 }

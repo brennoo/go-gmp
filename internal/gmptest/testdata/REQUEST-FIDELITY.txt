@@ -8,8 +8,8 @@
 # silently fails to ever emit).
 # Regenerate with: go test ./internal/gmptest -run TestRequestRoundTrip -update
 
-requests-compared: 321   clean: 301   with-loss: 18   decode-errors: 2   advisory: 0   skipped-no-request: 0
-commands with a recorded request: 122 of 122   commands with loss: 15
+requests-compared: 321   clean: 300   with-loss: 19   decode-errors: 2   advisory: 0   skipped-no-request: 0
+commands with a recorded request: 122 of 122   commands with loss: 16
 
 ## Per fixture
 
@@ -61,9 +61,9 @@ create_tag                   upstream  001 ok            dropped=1   truncated=0
 create_target                live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_target                live      002 clean         dropped=0   truncated=0   changed=0   added=0
 create_target                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
-create_task                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
-create_task                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=5
-create_task                  upstream  002 clean         dropped=0   truncated=0   changed=0   added=1
+create_task                  live      001 ok            dropped=1   truncated=0   changed=0   added=4
+create_task                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
+create_task                  upstream  002 clean         dropped=0   truncated=0   changed=0   added=4
 create_ticket                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 create_tls_certificate       live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_tls_certificate       upstream  001 clean         dropped=0   truncated=0   changed=0   added=0

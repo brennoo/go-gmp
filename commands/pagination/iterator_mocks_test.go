@@ -27,7 +27,7 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 		if cmd.Filter != "" {
 			// Check if page size is 0
 			if cmd.Filter == "first=1 rows=0" {
-				resp.Task = []commands.GetTasksResponseTask{}
+				resp.Task = []commands.Task{}
 			} else {
 				// Parse pagination parameters
 				first := 1
@@ -45,7 +45,7 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 				}
 
 				// Return appropriate slice based on pagination
-				allTasks := []commands.GetTasksResponseTask{
+				allTasks := []commands.Task{
 					{ID: "task-1", Name: "Test Task 1"},
 					{ID: "task-2", Name: "Test Task 2"},
 					{ID: "task-3", Name: "Test Task 3"},
@@ -54,7 +54,7 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 				start := first - 1
 				end := start + rows
 				if start >= len(allTasks) {
-					resp.Task = []commands.GetTasksResponseTask{}
+					resp.Task = []commands.Task{}
 				} else {
 					if end > len(allTasks) {
 						end = len(allTasks)
@@ -62,7 +62,7 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 					resp.Task = allTasks[start:end]
 				}
 			}
-			resp.TaskCount = commands.GetTasksResponseTaskCount{Filtered: 3}
+			resp.TaskCount = commands.TaskCount{Filtered: 3}
 		}
 	}
 
@@ -434,7 +434,7 @@ func TestIteratorEdgeCases(t *testing.T) {
 	// Test with large page size
 	iterator := NewTaskIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 100})
 
-	var tasks []*commands.GetTasksResponseTask
+	var tasks []*commands.Task
 	for iterator.Next() {
 		task := iterator.Current()
 		tasks = append(tasks, task)
@@ -453,7 +453,7 @@ func TestIteratorWithFilters(t *testing.T) {
 	// Test with filters
 	iterator := NewTaskIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 2}, "name=Test")
 
-	var tasks []*commands.GetTasksResponseTask
+	var tasks []*commands.Task
 	for iterator.Next() {
 		task := iterator.Current()
 		tasks = append(tasks, task)
@@ -472,7 +472,7 @@ func TestIteratorPagination(t *testing.T) {
 	// Test with small page size to trigger pagination
 	iterator := NewTaskIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 1})
 
-	var tasks []*commands.GetTasksResponseTask
+	var tasks []*commands.Task
 	for iterator.Next() {
 		task := iterator.Current()
 		tasks = append(tasks, task)

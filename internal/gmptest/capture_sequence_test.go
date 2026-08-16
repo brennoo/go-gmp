@@ -780,7 +780,7 @@ func (r *captureRun) lifecycleTask(st *captureState) {
 		&commands.CreateTask{
 			Name:    name,
 			Comment: captureComment,
-			Target:  &commands.TaskTarget{ID: "0"},
+			Target:  commands.TaskTarget{ID: "0"},
 		},
 		[]rawAttempt{
 			{desc: `lifecycle: create_task container form with <target id="0"/>`, xml: rawWithZero},
@@ -795,8 +795,9 @@ func (r *captureRun) lifecycleTask(st *captureState) {
 		return
 	}
 	r.getByID("get_tasks", "TaskID", st.taskID, "lifecycle: get_tasks for the container task")
+	comment := captureComment + " (modified)"
 	r.send("modify_task", "lifecycle: modify_task comment",
-		&commands.ModifyTask{TaskID: st.taskID, Comment: captureComment + " (modified)"})
+		&commands.ModifyTask{TaskID: st.taskID, Comment: &comment})
 }
 
 // lifecycleSetting modifies one cosmetic per-user setting. Rows Per Page is

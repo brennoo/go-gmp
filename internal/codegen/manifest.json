@@ -74,8 +74,7 @@
     },
     {
       "name": "task",
-      "commands": ["create_task", "get_tasks", "modify_task"],
-      "review_only": true
+      "commands": ["create_task", "get_tasks", "modify_task"]
     }
   ]
 }

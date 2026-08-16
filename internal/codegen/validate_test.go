@@ -3970,46 +3970,18 @@ func TestValidateTargetGeneratedMatchesOrImproves(t *testing.T) {
 }
 
 // TestValidateTaskBeforeMatchesKnownConformance is task's counterpart to
-// TestValidateTargetBeforeMatchesKnownConformance. task is review-only, so
-// this pins the pre-swap gate against the still-hand-written
-// commands/{create_task,get_tasks,modify_task}.go. All three commands share
-// one hand-written set of nested types (TaskConfig, TaskTarget, TaskScanner,
-// TaskAlert, TaskSchedule, TaskObservers, TaskPreferences), each shaped for
-// get_tasks' rich response; reused on create_task/modify_task's request side
-// they carry Name/Trash/Type fields the schema never declares there, which is
-// most of both commands' EXTRA counts. modify_task is also missing the
-// schema's <file> element entirely. get_tasks itself is the heaviest: bool
-// where the wire sends a GMP tri-state, SchedulePeriods modeled as a
-// sub-element container instead of the schema's bare integer, ResultCount as
-// int instead of the schema's text, Scanner.Type as string instead of the
-// schema's integer, ReportCount/UserTags/CurrentReport/LastReport's
-// severity-and-compliance breakdowns missing or under-detailed, and an
-// invented Reports field the schema never declares at all — see
-// docs/review-2026-08.md's `task` review-only section for the full
-// field-by-field list. The ten SCHEMA-DEFECT findings are the schema's own
-// get_tasks defects (six duplicate-ref, four empty-pattern), unrelated to the
-// hand-written code and unfixable by generation.
+// TestValidateTargetBeforeMatchesKnownConformance. task is adopted, so this
+// is a drift detector on the committed commands/ files. Pre-adoption
+// findings are recorded in docs/review-2026-08.md.
 func TestValidateTaskBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_task")
 
 	want := map[string]counts{
-		"create_task": {
-			actionable: map[string]int{schema.CatCardinality: 1, schema.CatExtra: 15, schema.CatMissing: 1},
-			suppressed: map[string]int{schema.CatOmitEmpty: 4},
-		},
-		"modify_task": {
-			actionable: map[string]int{schema.CatExtra: 12, schema.CatMissing: 1},
-			suppressed: map[string]int{},
-		},
+		"create_task": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_task": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_tasks": {
-			actionable: map[string]int{
-				schema.CatCardinality: 7,
-				schema.CatExtra:       14,
-				schema.CatMissing:     9,
-				schema.CatDefect:      10,
-				schema.CatType:        8,
-			},
-			suppressed: map[string]int{schema.CatOmitEmpty: 7},
+			actionable: map[string]int{schema.CatDefect: 10},
+			suppressed: map[string]int{},
 		},
 	}
 	for _, res := range before {

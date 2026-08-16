@@ -28,9 +28,10 @@ func TestModifyTask(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
+	comment := "Modified Task Comment"
 	cmd := &commands.ModifyTask{}
 	cmd.TaskID = "e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31"
-	cmd.Comment = "Modified Task Comment"
+	cmd.Comment = &comment
 	_, err := cli.ModifyTask(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyTask: %s", err)

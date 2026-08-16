@@ -9,11 +9,11 @@ import (
 )
 
 // TaskIterator is the iterator over tasks.
-type TaskIterator = Iterator[*commands.GetTasksResponseTask]
+type TaskIterator = Iterator[*commands.Task]
 
 // NewTaskIterator constructs a TaskIterator configured for GetTasks.
 func NewTaskIterator(client Client, ctx context.Context, opts PaginationOptions, filters ...string) *TaskIterator {
-	return newIterator[*commands.GetTasksResponseTask, *commands.GetTasks, *commands.GetTasksResponse](
+	return newIterator[*commands.Task, *commands.GetTasks, *commands.GetTasksResponse](
 		client,
 		ctx,
 		opts,
@@ -22,13 +22,15 @@ func NewTaskIterator(client Client, ctx context.Context, opts PaginationOptions,
 		func(client Client, ctx context.Context, cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
 			return client.GetTasksRaw(ctx, cmd)
 		},
-		func(resp *commands.GetTasksResponse) []*commands.GetTasksResponseTask {
-			items := make([]*commands.GetTasksResponseTask, len(resp.Task))
+		func(resp *commands.GetTasksResponse) []*commands.Task {
+			items := make([]*commands.Task, len(resp.Task))
 			for i := range resp.Task {
 				items[i] = &resp.Task[i]
 			}
 			return items
 		},
-		func(resp *commands.GetTasksResponse) int { return resp.TaskCount.Filtered },
+		func(resp *commands.GetTasksResponse) int {
+			return resp.TaskCount.Filtered
+		},
 	)
 }

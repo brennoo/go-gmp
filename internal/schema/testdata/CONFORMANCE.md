@@ -22,30 +22,31 @@ Categories:
   SCHEMA-DEFECT the schema is wrong; nothing is asked of commands/
 
 Findings marked [suppressed] are counted but not charged to commands/. They are
-almost all request-side over-constraint: the schema marks create_task's config,
-target and scanner required even though the agent and OCI variants replace
-them, so response-side optionality is trusted and request-side is not.
+almost all request-side over-constraint: the schema marks create_report's
+report/@id, config_id, format_id, extension and content_type all required,
+though real payloads only ever populate one submission path, so response-side
+optionality is trusted and request-side is not.
 
 ## Totals
 
 commands compared:            122
-fully conformant:             75
-with actionable findings:     47
-actionable findings:          370  (request 185, response 185)
-suppressed findings:          462
-confirmed by fidelity corpus: 55
+fully conformant:             78
+with actionable findings:     44
+actionable findings:          302  (request 155, response 147)
+suppressed findings:          451
+confirmed by fidelity corpus: 53
 in the schema, not in Go:     0
 in Go, not in the schema:     0
 
 ### Findings by category
 
                  actionable suppressed
-  MISSING               143          0
-  EXTRA                 134          5
-  CARDINALITY            32          0
+  MISSING               132          0
+  EXTRA                  93          5
+  CARDINALITY            24          0
   KIND                    0          0
-  OMITEMPTY               2        457
-  TYPE                   59          0
+  OMITEMPTY               2        446
+  TYPE                   51          0
   SCHEMA-DEFECT         114          0
 
 ### Schema defects by class
@@ -78,14 +79,11 @@ taken against upstream main (155 commands). Two reasons, both expected:
 
   get_reports                  70   MISSING=55  EXTRA=6  CARDINALITY=5  TYPE=4
   create_report                52   MISSING=38  EXTRA=5  CARDINALITY=5  TYPE=4
-  get_tasks                    38   MISSING=9  EXTRA=14  CARDINALITY=7  TYPE=8
   get_info                     22   MISSING=12  EXTRA=7  TYPE=3
   delete_agents                18   EXTRA=18
   get_nvts                     18   MISSING=6  EXTRA=1  CARDINALITY=7  TYPE=4
   modify_agents                18   EXTRA=18
-  create_task                  17   MISSING=1  EXTRA=15  CARDINALITY=1
   modify_config                14   EXTRA=6  CARDINALITY=3  OMITEMPTY=2  TYPE=3
-  modify_task                  13   MISSING=1  EXTRA=12
   get_aggregates               12   MISSING=5  EXTRA=5  CARDINALITY=2
   get_agents                    9   MISSING=7  TYPE=2
   get_scanners                  9   EXTRA=6  TYPE=3
@@ -96,7 +94,10 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_vulns                     4   MISSING=1  EXTRA=3
   get_feeds                     3   TYPE=3
   describe_auth                 2   MISSING=1  CARDINALITY=1
-  ... and 27 more with fewer
+  get_settings                  2   EXTRA=2
+  create_config                 1   EXTRA=1
+  create_port_range             1   MISSING=1
+  ... and 24 more with fewer
 
 ### Confirmed by both oracles
 
@@ -161,8 +162,6 @@ attributes, and one of its own captured request fixtures uses three of them.
   get_reports              /get_reports_response/reports
   get_reports              /get_reports_response/sort
   get_results              /get_results_response/result/nvt/severities/severity
-  get_tasks                /get_tasks_response/task/last_report/report/result_count
-  get_tasks                /get_tasks_response/task/report_count/*
   help                     /help_response/schema
 
 ## Per command
@@ -697,50 +696,7 @@ conformant
 
 ### create_task  (command_create_task.xml)
 
-MISSING=1  EXTRA=15  CARDINALITY=1  OMITEMPTY=4
-
-  MISSING       request  /create_task/observers/#text
-                schema also declares character data (user_list) here; Go *commands.TaskObservers has no `,chardata` field
-  EXTRA         request  /create_task/alert/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /create_task/config/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /create_task/config/trash
-                Go field Trash bool has no counterpart in the schema
-  EXTRA         request  /create_task/config/type
-                Go field Type string has no counterpart in the schema
-  EXTRA         request  /create_task/observers/group/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /create_task/observers/role
-                Go field Roles []commands.ObserverRole has no counterpart in the schema
-  EXTRA         request  /create_task/observers/user_list
-                Go field UserList string has no counterpart in the schema
-  EXTRA         request  /create_task/preferences/preference/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /create_task/scanner/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /create_task/scanner/trash
-                Go field Trash bool has no counterpart in the schema
-  EXTRA         request  /create_task/scanner/type
-                Go field Type string has no counterpart in the schema
-  EXTRA         request  /create_task/schedule/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /create_task/schedule/trash
-                Go field Trash bool has no counterpart in the schema
-  EXTRA         request  /create_task/target/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /create_task/target/trash
-                Go field Trash bool has no counterpart in the schema
-  CARDINALITY   request  /create_task/alert
-                schema says zero-or-more, Go has a single *commands.TaskAlert (Alert)
-  OMITEMPTY     request  /create_task/config
-                schema says required, Config is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /create_task/name
-                schema says required, Name is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /create_task/scanner
-                schema says required, Scanner is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /create_task/target
-                schema says required, Target is tagged omitempty  [suppressed: request-side over-constraint]
+conformant
 
 ### create_ticket  (command_create_ticket.xml)
 
@@ -2148,98 +2104,8 @@ SCHEMA-DEFECT=9
 
 ### get_tasks  (command_get_tasks.xml)
 
-MISSING=9  EXTRA=14  CARDINALITY=7  OMITEMPTY=7  TYPE=8  SCHEMA-DEFECT=10
+SCHEMA-DEFECT=10
 
-  MISSING       response /get_tasks_response/task/alert/trash
-                required elem trash is not modelled
-  MISSING       response /get_tasks_response/task/current_report/report
-                required elem report is not modelled
-  MISSING       response /get_tasks_response/task/last_report/report/compliance_count
-                optional elem compliance_count is not modelled
-  MISSING       response /get_tasks_response/task/last_report/report/result_count
-                optional elem result_count is not modelled  [fidelity]
-  MISSING       response /get_tasks_response/task/observers/#text
-                schema also declares character data (user_list) here; Go *commands.TaskObservers has no `,chardata` field
-  MISSING       response /get_tasks_response/task/report_count/*
-                schema declares 1 children; Go models this as scalar int  [fidelity]
-  MISSING       response /get_tasks_response/task/schedule/icalendar
-                optional elem icalendar is not modelled
-  MISSING       response /get_tasks_response/task/schedule/timezone
-                optional elem timezone is not modelled
-  MISSING       response /get_tasks_response/task/user_tags
-                optional elem user_tags is not modelled
-  EXTRA         response /get_tasks_response/task/config/type
-                Go field Type string has no counterpart in the schema
-  EXTRA         response /get_tasks_response/task/current_report/@id
-                Go field ID string has no counterpart in the schema
-  EXTRA         response /get_tasks_response/task/current_report/scan_end
-                Go field ScanEnd commands.GMPTime has no counterpart in the schema
-  EXTRA         response /get_tasks_response/task/current_report/scan_run_status
-                Go field ScanRunStatus string has no counterpart in the schema
-  EXTRA         response /get_tasks_response/task/current_report/scan_start
-                Go field ScanStart commands.GMPTime has no counterpart in the schema
-  EXTRA         response /get_tasks_response/task/current_report/severity
-                Go field Severity float64 has no counterpart in the schema
-  EXTRA         response /get_tasks_response/task/current_report/timestamp
-                Go field Timestamp commands.GMPTime has no counterpart in the schema
-  EXTRA         response /get_tasks_response/task/last_report/report/scan_run_status
-                Go field ScanRunStatus string has no counterpart in the schema
-  EXTRA         response /get_tasks_response/task/last_report/report/scan_start
-                Go field ScanStart commands.GMPTime has no counterpart in the schema
-  EXTRA         response /get_tasks_response/task/observers/user_list
-                Go field UserList string has no counterpart in the schema
-  EXTRA         response /get_tasks_response/task/reports
-                Go field Reports *commands.TaskReports has no counterpart in the schema
-  EXTRA         response /get_tasks_response/task/scanner/trash
-                Go field Trash bool has no counterpart in the schema
-  EXTRA         response /get_tasks_response/task/schedule_periods/*
-                schema declares a "integer" leaf; Go models 1 children
-  EXTRA         response /get_tasks_response/truncated
-                Go field Truncated string has no counterpart in the schema
-  CARDINALITY   response /get_tasks_response/task/alterable
-                schema says optional; Alterable bool cannot express absence (zero is a legal value)
-  CARDINALITY   response /get_tasks_response/task/in_use
-                schema says optional; InUse bool cannot express absence (zero is a legal value)
-  CARDINALITY   response /get_tasks_response/task/last_report/report/severity
-                schema says optional; Severity float64 cannot express absence (zero is a legal value)
-  CARDINALITY   response /get_tasks_response/task/progress
-                schema says optional; Progress int cannot express absence (zero is a legal value)
-  CARDINALITY   response /get_tasks_response/task/report_count
-                schema says optional; ReportCount int cannot express absence (zero is a legal value)
-  CARDINALITY   response /get_tasks_response/task/result_count
-                schema says optional; ResultCount int cannot express absence (zero is a legal value)
-  CARDINALITY   response /get_tasks_response/task/writable
-                schema says optional; Writable bool cannot express absence (zero is a legal value)
-  OMITEMPTY     response /get_tasks_response/filters/name
-                schema says optional, Name string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_tasks_response/task/config/trash
-                schema says required, Trash is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tasks_response/task/last_report/report/scan_end
-                schema says required, ScanEnd is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tasks_response/task/last_report/report/timestamp
-                schema says required, Timestamp is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tasks_response/task/name
-                schema says optional, Name string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_tasks_response/task/schedule/trash
-                schema says required, Trash is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_tasks_response/task/target/trash
-                schema says required, Trash is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  TYPE          response /get_tasks_response/task/alterable
-                schema type boolean is text ("" is true), Go Alterable is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_tasks_response/task/config/trash
-                schema type boolean is text ("" is true), Go Trash is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_tasks_response/task/in_use
-                schema type boolean is text ("" is true), Go InUse is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_tasks_response/task/result_count
-                schema type text is text, Go ResultCount is int
-  TYPE          response /get_tasks_response/task/scanner/type
-                schema type integer, Go Type is string (want int)
-  TYPE          response /get_tasks_response/task/schedule/trash
-                schema type boolean is text ("" is true), Go Trash is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_tasks_response/task/target/trash
-                schema type boolean is text ("" is true), Go Trash is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_tasks_response/task/writable
-                schema type boolean is text ("" is true), Go Writable is bool: '7' fails to decode and '1' re-emits as 'true'
   SCHEMA-DEFECT response /get_tasks_response/task/alert/permissions
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_tasks_response/task/config/permissions
@@ -2521,34 +2387,7 @@ conformant
 
 ### modify_task  (command_modify_task.xml)
 
-MISSING=1  EXTRA=12
-
-  MISSING       request  /modify_task/file
-                optional elem file is not modelled
-  EXTRA         request  /modify_task/alert/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /modify_task/config/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /modify_task/config/trash
-                Go field Trash bool has no counterpart in the schema
-  EXTRA         request  /modify_task/config/type
-                Go field Type string has no counterpart in the schema
-  EXTRA         request  /modify_task/preferences/preference/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /modify_task/scanner/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /modify_task/scanner/trash
-                Go field Trash bool has no counterpart in the schema
-  EXTRA         request  /modify_task/scanner/type
-                Go field Type string has no counterpart in the schema
-  EXTRA         request  /modify_task/schedule/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /modify_task/schedule/trash
-                Go field Trash bool has no counterpart in the schema
-  EXTRA         request  /modify_task/target/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /modify_task/target/trash
-                Go field Trash bool has no counterpart in the schema
+conformant
 
 ### modify_ticket  (command_modify_ticket.xml)
 

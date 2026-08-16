@@ -70,7 +70,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.ModifyTask); ok {
-		if cmd.Comment == "Modified Task Comment" {
+		if cmd.Comment != nil && *cmd.Comment == "Modified Task Comment" {
 			(*response.(*commands.ModifyTaskResponse)).Status = "200"
 		} else {
 			(*response.(*commands.ModifyTaskResponse)).Status = "400"
@@ -182,7 +182,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 			resp.StatusText = "OK"
 			if cmd.Filter != "" {
 				// Return mock data for pagination
-				resp.Task = []commands.GetTasksResponseTask{
+				resp.Task = []commands.Task{
 					{
 						ID:     "task-1",
 						Name:   "Test Task 1",
@@ -194,7 +194,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 						Status: "Running",
 					},
 				}
-				resp.TaskCount = commands.GetTasksResponseTaskCount{
+				resp.TaskCount = commands.TaskCount{
 					Filtered: 2,
 					Page:     1,
 				}
@@ -1688,12 +1688,12 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp.StatusText = "OK"
 		if cmd.Filter != "" {
 			// Return mock data for pagination
-			resp.Task = []commands.GetTasksResponseTask{
+			resp.Task = []commands.Task{
 				{ID: "task-1", Name: "Test Task 1"},
 				{ID: "task-2", Name: "Test Task 2"},
 				{ID: "task-3", Name: "Test Task 3"},
 			}
-			resp.TaskCount = commands.GetTasksResponseTaskCount{Filtered: 3}
+			resp.TaskCount = commands.TaskCount{Filtered: 3}
 		}
 	}
 

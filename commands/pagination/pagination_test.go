@@ -53,7 +53,7 @@ func newTestTaskIterator(client Client, ctx context.Context) *TaskIterator {
 
 func TestTaskIterator_PaginationSuccess(t *testing.T) {
 	ctx := context.Background()
-	pages := [][]commands.GetTasksResponseTask{
+	pages := [][]commands.Task{
 		{{ID: "1"}, {ID: "2"}},
 		{{ID: "3"}},
 	}
@@ -62,11 +62,11 @@ func TestTaskIterator_PaginationSuccess(t *testing.T) {
 	client := &fakeClient{
 		getTasksFunc: func(cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
 			if callIndex >= len(pages) {
-				return &commands.GetTasksResponse{Task: []commands.GetTasksResponseTask{}, TaskCount: commands.GetTasksResponseTaskCount{Filtered: 3}}, nil
+				return &commands.GetTasksResponse{Task: []commands.Task{}, TaskCount: commands.TaskCount{Filtered: 3}}, nil
 			}
 			resp := &commands.GetTasksResponse{
 				Task:      pages[callIndex],
-				TaskCount: commands.GetTasksResponseTaskCount{Filtered: 3},
+				TaskCount: commands.TaskCount{Filtered: 3},
 			}
 			callIndex++
 			return resp, nil
@@ -100,7 +100,7 @@ func TestTaskIterator_PaginationSuccess(t *testing.T) {
 func TestTaskIterator_EmptyFirstPageStops(t *testing.T) {
 	client := &fakeClient{
 		getTasksFunc: func(cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
-			return &commands.GetTasksResponse{Task: []commands.GetTasksResponseTask{}, TaskCount: commands.GetTasksResponseTaskCount{Filtered: 0}}, nil
+			return &commands.GetTasksResponse{Task: []commands.Task{}, TaskCount: commands.TaskCount{Filtered: 0}}, nil
 		},
 	}
 
@@ -154,7 +154,7 @@ func TestTaskIterator_ContextCanceled(t *testing.T) {
 func TestTaskIterator_CurrentBeforeNext(t *testing.T) {
 	client := &fakeClient{
 		getTasksFunc: func(cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
-			return &commands.GetTasksResponse{Task: []commands.GetTasksResponseTask{{ID: "1"}}, TaskCount: commands.GetTasksResponseTaskCount{Filtered: 1}}, nil
+			return &commands.GetTasksResponse{Task: []commands.Task{{ID: "1"}}, TaskCount: commands.TaskCount{Filtered: 1}}, nil
 		},
 	}
 
@@ -168,7 +168,7 @@ func TestTaskIterator_CurrentBeforeNext(t *testing.T) {
 func TestTaskIterator_CloseStopsIteration(t *testing.T) {
 	client := &fakeClient{
 		getTasksFunc: func(cmd *commands.GetTasks) (*commands.GetTasksResponse, error) {
-			return &commands.GetTasksResponse{Task: []commands.GetTasksResponseTask{{ID: "1"}}, TaskCount: commands.GetTasksResponseTaskCount{Filtered: 1}}, nil
+			return &commands.GetTasksResponse{Task: []commands.Task{{ID: "1"}}, TaskCount: commands.TaskCount{Filtered: 1}}, nil
 		},
 	}
 

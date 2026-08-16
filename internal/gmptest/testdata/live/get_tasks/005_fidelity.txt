@@ -17,7 +17,6 @@ ADDED
   /get_tasks_response/filters                                              x1
   /get_tasks_response/filters/@id                                          x1
   /get_tasks_response/filters/keywords                                     x1
-  /get_tasks_response/filters/name                                         x1
   /get_tasks_response/filters/term                                         x1
   /get_tasks_response/sort                                                 x1
   /get_tasks_response/sort/field                                           x1

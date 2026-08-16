@@ -301,9 +301,10 @@ func checkOmitEmpty(res *Result, cmd Command, side string, s *Node, g *GoNode, p
 			f.Suppressed = true
 			f.Reason = "inside <or>; only one branch is ever present"
 		case side == "request":
-			// Requests are over-constrained: create_task marks config, target
-			// and scanner required although the variants replace them. The
-			// schema is the less trustworthy side here.
+			// Requests are over-constrained: create_report marks report/@id,
+			// config_id, format_id, extension and content_type all required
+			// even though real payloads only ever populate one submission
+			// path. The schema is the less trustworthy side here.
 			f.Suppressed = true
 			f.Reason = "request-side over-constraint"
 		default:
