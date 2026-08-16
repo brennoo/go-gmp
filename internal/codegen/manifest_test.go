@@ -523,6 +523,75 @@ func TestTLSCertificateDNNamingIsStable(t *testing.T) {
 	}
 }
 
+// TestOCIImageNamingIsStable pins the fix for "oci" in generate.go's
+// initialisms table: get_notes's and get_overrides's oci_image elements must
+// spell the Go fields OCIImage/NoteOCIImage/OverrideOCIImage, matching every
+// other full-caps acronym in the generated surface (API, CVE, TLS, ...).
+// Without the table entry goName would instead render them
+// OciImage/NoteOciImage/OverrideOciImage — the casing this test was written
+// to catch (docs/review-2026-08.md, T-16 review).
+//
+// As with the naming-stability tests above, generating note and override
+// alone and generating them alongside every other family in the committed
+// manifest must produce byte-identical output for this reason: initialisms
+// is a package-level table with no per-family state, so nothing about
+// combining families could plausibly move this spelling. This test pins
+// both: the exact identifiers, and that no other family's presence changes
+// them.
+func TestOCIImageNamingIsStable(t *testing.T) {
+	m := manifestOrFail(t)
+	cmds, err := LoadSnapshots(snapshotDir, m.AllCommands())
+	if err != nil {
+		t.Fatalf("Failed to load the committed snapshots: %v", err)
+	}
+	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+	if err != nil {
+		t.Fatalf("GenerateAll(full manifest) failed: %v", err)
+	}
+
+	for _, tt := range []struct {
+		familyName string
+		fileName   string
+		want       []string
+		unwanted   []string
+	}{
+		{"note", "get_notes.go", []string{"OCIImage", "NoteOCIImage"}, []string{"OciImage", "NoteOciImage"}},
+		{"override", "get_overrides.go", []string{"OCIImage", "OverrideOCIImage"}, []string{"OciImage", "OverrideOciImage"}},
+	} {
+		fam, ok := m.FamilyOf("get_" + tt.familyName + "s")
+		if !ok {
+			t.Fatalf("The manifest no longer declares a %s family", tt.familyName)
+		}
+		alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+		if err != nil {
+			t.Fatalf("GenerateAll(%s alone) failed: %v", tt.familyName, err)
+		}
+
+		aloneSrc, ok := alone[tt.fileName]
+		if !ok {
+			t.Fatalf("Generating %s alone did not emit %s", tt.familyName, tt.fileName)
+		}
+		togetherSrc, ok := together[tt.fileName]
+		if !ok {
+			t.Fatalf("Generating the full manifest did not emit %s", tt.fileName)
+		}
+		if aloneSrc != togetherSrc {
+			t.Errorf("%s differs between generating %s alone and generating the full manifest\n%s",
+				tt.fileName, tt.familyName, firstDiff(aloneSrc, togetherSrc))
+		}
+		for _, want := range tt.want {
+			if !strings.Contains(aloneSrc, want) {
+				t.Errorf("%s does not spell the field %s", tt.fileName, want)
+			}
+		}
+		for _, unwanted := range tt.unwanted {
+			if strings.Contains(aloneSrc, unwanted) {
+				t.Errorf("%s spells the field %s instead of the fixed OCI casing", tt.fileName, unwanted)
+			}
+		}
+	}
+}
+
 func findCommand(cmds []schema.Command, name string) (schema.Command, bool) {
 	for _, c := range cmds {
 		if c.Name == name {

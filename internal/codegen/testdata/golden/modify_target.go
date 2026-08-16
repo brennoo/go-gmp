@@ -6,14 +6,13 @@ import "encoding/xml"
 
 // ModifyTarget is a modify_target command request. See the GMP protocol docs for details.
 //
-// Name rejects an explicit-empty <name></name> outright ("400 Name must be at least one character long") rather than accepting it as a clear; omitting Name leaves the stored value unchanged. Hosts and ExcludeHosts must always be sent together: omitting either while the other is present in the same request fails ("400 HOSTS requires an EXCLUDE_HOSTS" / "400 EXCLUDE_HOSTS requires a HOSTS"), even when the omitted field's stored value is not changing, and sending both explicit-empty is rejected too ("400 HOSTS must be at least one character long"). HostsOrdering could not be tested for an omit-vs-explicit-empty distinction: get_targets never echoes it back in its response.
+// Name rejects an explicit-empty <name></name> outright ("400 Name must be at least one character long") rather than accepting it as a clear; omitting Name leaves the stored value unchanged. Hosts and ExcludeHosts must always be sent together: omitting either while the other is present in the same request fails ("400 HOSTS requires an EXCLUDE_HOSTS" / "400 EXCLUDE_HOSTS requires a HOSTS"), even when the omitted field's stored value is not changing, and sending both explicit-empty is rejected too ("400 HOSTS must be at least one character long").
 type ModifyTarget struct {
 	XMLName              xml.Name                      `xml:"modify_target"`
 	TargetID             string                        `xml:"target_id,attr"`
 	Comment              *string                       `xml:"comment,omitempty"`
 	Name                 string                        `xml:"name,omitempty"`
 	Hosts                string                        `xml:"hosts,omitempty"`
-	HostsOrdering        string                        `xml:"hosts_ordering,omitempty"`
 	ExcludeHosts         string                        `xml:"exclude_hosts,omitempty"`
 	SSHCredential        *ModifyTargetSSHCredential    `xml:"ssh_credential,omitempty"`
 	SSHElevateCredential *TargetSSHElevateCredential   `xml:"ssh_elevate_credential,omitempty"`
@@ -25,7 +24,7 @@ type ModifyTarget struct {
 	SMBLSCCredential     *TargetSMBLSCCredential       `xml:"smb_lsc_credential,omitempty"`
 	ESXILSCCredential    *TargetESXILSCCredential      `xml:"esxi_lsc_credential,omitempty"`
 	PortList             *TargetPortList               `xml:"port_list,omitempty"`
-	AliveTests           string                        `xml:"alive_tests,omitempty"`
+	AliveTests           *TargetAliveTests             `xml:"alive_tests,omitempty"`
 	ReverseLookupOnly    *GMPBool                      `xml:"reverse_lookup_only,omitempty"`
 	ReverseLookupUnify   *GMPBool                      `xml:"reverse_lookup_unify,omitempty"`
 	AllowSimultaneousIPs *GMPBool                      `xml:"allow_simultaneous_ips,omitempty"`

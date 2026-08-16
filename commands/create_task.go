@@ -15,7 +15,6 @@ type CreateTask struct {
 	Copy            string           `xml:"copy,omitempty"`
 	Alterable       *GMPBool         `xml:"alterable,omitempty"`
 	UsageType       string           `xml:"usage_type,omitempty"`
-	HostsOrdering   string           `xml:"hosts_ordering,omitempty"`
 	Schedule        *TaskSchedule    `xml:"schedule,omitempty"`
 	SchedulePeriods *int             `xml:"schedule_periods,omitempty"`
 	Observers       *TaskObservers   `xml:"observers,omitempty"`

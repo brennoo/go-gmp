@@ -96,6 +96,7 @@ type Scanner struct {
 	RelayPort        string                 `xml:"relay_port"`
 	Copy             string                 `xml:"copy,omitempty"`
 	UserTags         *ScannerUserTags       `xml:"user_tags,omitempty"`
+	Disabled         *GMPBool               `xml:"disabled,omitempty"`
 	Configs          *ScannerConfigs        `xml:"configs,omitempty"`
 	Tasks            *ScannerTasks          `xml:"tasks,omitempty"`
 	Info             *ScannerInfo           `xml:"info,omitempty"`
@@ -182,6 +183,7 @@ type ScannerTasks struct {
 type ScannerTask struct {
 	ID          string `xml:"id,attr"`
 	Name        string `xml:"name"`
+	UsageType   string `xml:"usage_type"`
 	Permissions string `xml:"permissions,omitempty"`
 }
 

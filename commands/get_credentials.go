@@ -97,6 +97,8 @@ type Credential struct {
 	AuthAlgorithm    string                     `xml:"auth_algorithm,omitempty"`
 	Privacy          *GetCredentialsPrivacy     `xml:"privacy,omitempty"`
 	CertificateInfo  *CredentialCertificateInfo `xml:"certificate_info,omitempty"`
+	PrivateKeyInfo   *CredentialPrivateKeyInfo  `xml:"private_key_info,omitempty"`
+	PublicKeyInfo    *CredentialPublicKeyInfo   `xml:"public_key_info,omitempty"`
 	Scanners         *CredentialScanners        `xml:"scanners,omitempty"`
 	Targets          *CredentialTargets         `xml:"targets,omitempty"`
 	PublicKey        string                     `xml:"public_key,omitempty"`
@@ -156,6 +158,17 @@ type CredentialCertificateInfo struct {
 	SHA256Fingerprint string `xml:"sha256_fingerprint,omitempty"`
 	Subject           string `xml:"subject,omitempty"`
 	Serial            string `xml:"serial,omitempty"`
+}
+
+// CredentialPrivateKeyInfo is the <private_key_info> element of get_credentials. See the GMP protocol docs for details.
+type CredentialPrivateKeyInfo struct {
+	Type       string `xml:"type,omitempty"`
+	SHA256Hash string `xml:"sha256_hash,omitempty"`
+}
+
+// CredentialPublicKeyInfo is the <public_key_info> element of get_credentials. See the GMP protocol docs for details.
+type CredentialPublicKeyInfo struct {
+	Fingerprint string `xml:"fingerprint,omitempty"`
 }
 
 // CredentialScanners is the <scanners> element of get_credentials. See the GMP protocol docs for details.

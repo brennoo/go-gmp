@@ -5,5 +5,6 @@
   "byte_faithful": true,
   "captured_at": "2026-08-08T13:53:03Z",
   "gmp_version": "22.7",
-  "gmp_version_source": "captured"
+  "gmp_version_source": "captured",
+  "image_digest_source": "legacy-unpinned"
 }

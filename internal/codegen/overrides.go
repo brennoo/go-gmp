@@ -516,12 +516,10 @@ var CommandWarnings = map[string]CommandWarning{
 			"omitting either while the other is present in the same request fails (\"400 HOSTS " +
 			"requires an EXCLUDE_HOSTS\" / \"400 EXCLUDE_HOSTS requires a HOSTS\"), even when the " +
 			"omitted field's stored value is not changing, and sending both explicit-empty is " +
-			"rejected too (\"400 HOSTS must be at least one character long\"). HostsOrdering could " +
-			"not be tested for an omit-vs-explicit-empty distinction: get_targets never echoes it " +
-			"back in its response.",
+			"rejected too (\"400 HOSTS must be at least one character long\").",
 		Reason: "T-9: live gvmd 26.36.1 test against the running instance confirmed the name " +
-			"rejection, the hosts/exclude_hosts pairing requirement, and hosts_ordering's absence " +
-			"from every get_targets response; see docs/review-2026-08.md's `target` review-only section",
+			"rejection and the hosts/exclude_hosts pairing requirement; see docs/review-2026-08.md's " +
+			"`target` review-only section",
 	},
 }
 
@@ -547,10 +545,10 @@ type DefectAllowlistEntry struct {
 // DefectAllowlist is Generate's fail-closed gate on schema.Command.Defects
 // (checkDefects, generate.go): a defect whose {Command, Class, Path} is not a
 // key here fails generation, and a stale entry fails it too
-// (checkDefectAllowlistConsumed). Every entry is one of the 17 records the 14
-// families adopted before this gate existed already carried; see
-// docs/review-2026-08.md's T-15 entry for the full evidence log — per T-20,
-// a Reason here states the conclusion and cites the section, one line.
+// (checkDefectAllowlistConsumed). Each entry records a specific, reviewed
+// defect a family's adoption accepted; see docs/review-2026-08.md's T-15
+// entry for the full evidence log — per T-20, a Reason here states the
+// conclusion and cites the section, one line.
 var DefectAllowlist = map[DefectKey]DefectAllowlistEntry{
 	{Command: "create_group", Class: "empty-pattern", Path: "/create_group/specials/full"}: {
 		Reason: "T-15; docs/review-2026-08.md `group adopted`",
@@ -647,15 +645,6 @@ var DefectAllowlist = map[DefectKey]DefectAllowlistEntry{
 	},
 	{Command: "get_targets", Class: "empty-pattern", Path: "/get_targets_response/target/tasks/task/permissions"}: {
 		Reason: "T-15; docs/review-2026-08.md `target`",
-	},
-	{Command: "get_tasks", Class: "duplicate-ref", Path: "/get_tasks_response/task/last_report/report/result_count/hole"}: {
-		Reason: "T-9; docs/review-2026-08.md `task`",
-	},
-	{Command: "get_tasks", Class: "duplicate-ref", Path: "/get_tasks_response/task/last_report/report/result_count/info"}: {
-		Reason: "T-9; docs/review-2026-08.md `task`",
-	},
-	{Command: "get_tasks", Class: "duplicate-ref", Path: "/get_tasks_response/task/last_report/report/result_count/warning"}: {
-		Reason: "T-9; docs/review-2026-08.md `task`",
 	},
 	{Command: "get_tasks", Class: "duplicate-ref", Path: "/get_tasks_response/task/name"}: {
 		Reason: "T-9; docs/review-2026-08.md `task`",

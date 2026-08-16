@@ -8,5 +8,6 @@
   "gmp_version_source": "captured",
   "redactions": [
     "/authenticate/credentials/password/#text"
-  ]
+  ],
+  "image_digest_source": "legacy-unpinned"
 }

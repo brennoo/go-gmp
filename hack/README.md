@@ -156,6 +156,26 @@ This one is fine to run against the long-lived container — it only reads
 files that already exist, so it does not race the restart-on-failure loop
 the way generating certs against a not-yet-started container would.
 
+## Pinned images
+
+Every `image:` in `docker-compose.yml` is pinned to a `repo@sha256:digest`
+reference, with what it was pinned from (a tag, or "untagged" for the
+implicit `:latest`) kept as a trailing comment — including the images with no
+explicit tag, since those are exactly the feed/data containers that
+determine what `get_*` responses actually contain.
+
+To move a pin (picking up a new `:stable` build, for instance), re-run:
+
+```bash
+hack/pin-images.sh
+```
+
+This resolves each image's current digest from the registry (no pull
+required) and rewrites the file in place. Nothing does this automatically or
+on a schedule — review the diff it produces like any other dependency bump
+before committing it, since a moved digest is exactly the kind of change
+that deserves a human look.
+
 ## Stopping
 
 ```bash

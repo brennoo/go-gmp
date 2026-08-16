@@ -1,6 +1,6 @@
 {
   "Name": "get_scanners",
-  "File": "command_get_scanners.xml",
+  "File": "",
   "Request": {
     "Name": "get_scanners",
     "Kind": 0,
@@ -793,6 +793,16 @@
             "Chardata": false
           },
           {
+            "Name": "disabled",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "boolean",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
             "Name": "configs",
             "Kind": 0,
             "Card": 1,
@@ -877,6 +887,19 @@
                     "InChoice": false,
                     "Type": "name",
                     "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "usage_type",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "",
+                    "Alts": [
+                      "scan",
+                      "policy"
+                    ],
                     "Children": null,
                     "Chardata": false
                   },
@@ -1090,12 +1113,12 @@
     }
   ],
   "Provenance": {
-    "Method": "file",
-    "Source": "gvmd/src/schema_formats/XML/GMP.xml.in",
-    "SourceRevision": "",
-    "SourceSHA256": "eb18d64e27d614a27f2499a09443bce65e885b5e256b5629c11b231c17ba11e7",
-    "ParsedSHA256": "9771bce88ff7d65d7b1c2f59083af12897a237e1ec25f8f7aa284b3968ed8c0f",
-    "DeclaredVersion": "@GMP_VERSION@",
-    "ExtractedAt": "2026-08-16T14:55:21.297781Z"
+    "Method": "served",
+    "Source": "gvmd \u003chelp format=\"XML\" type=\"\"/\u003e response",
+    "SourceRevision": "registry.community.greenbone.net/community/gvmd@sha256:cb82c501ca93809405a8d0ed4c21846703466802ce6462536e985625f102b497",
+    "SourceSHA256": "7f5511852d5e904066c431fb34052ce68b17f026f72423ab2a770d564d42774f",
+    "ParsedSHA256": "7f5511852d5e904066c431fb34052ce68b17f026f72423ab2a770d564d42774f",
+    "DeclaredVersion": "22.7",
+    "ExtractedAt": "2026-08-16T18:59:10.495321Z"
   }
 }

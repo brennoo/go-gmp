@@ -3,9 +3,13 @@
 Regenerate with: go test ./internal/schema -run TestConformanceReport -update
 
 What this is: the GMP schema DSL, read directly, diffed against the
-hand-written structs in commands/. The schema revision compared here is the one
-vendored at vendor/XML/commands, which matches commands/ one-for-one, so a
-difference found here is a transcription error and not version drift.
+hand-written structs in commands/. The schema revision compared here is the
+one vendored at vendor/XML/commands. Before T-16b this matched commands/
+one-for-one, so a difference found here was always a transcription error;
+since T-16b, commands/ is generated from a live gvmd server instead, so a
+difference here can also be version drift between the vendored copy and the
+live schema — see docs/review-2026-08.md's T-16b/T-17 notes for the known
+cases.
 
 This is a *schema* oracle. internal/gmptest is a *runtime* oracle: it
 round-trips captured documents and records what they lose. Findings marked
@@ -30,19 +34,19 @@ optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             84
-with actionable findings:     38
-actionable findings:          262  (request 130, response 132)
+fully conformant:             75
+with actionable findings:     47
+actionable findings:          274  (request 134, response 140)
 suppressed findings:          443
-confirmed by fidelity corpus: 52
+confirmed by fidelity corpus: 53
 in the schema, not in Go:     0
 in Go, not in the schema:     0
 
 ### Findings by category
 
                  actionable suppressed
-  MISSING               129          0
-  EXTRA                  72          5
+  MISSING               132          0
+  EXTRA                  81          5
   CARDINALITY            22          0
   KIND                    0          0
   OMITEMPTY               0        438
@@ -89,15 +93,15 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_vulns                     4   MISSING=1  EXTRA=3
   get_feeds                     3   TYPE=3
   describe_auth                 2   MISSING=1  CARDINALITY=1
+  get_credentials               2   EXTRA=2
+  get_scanners                  2   EXTRA=2
   get_settings                  2   EXTRA=2
+  modify_target                 2   MISSING=1  EXTRA=1
   create_port_range             1   MISSING=1
+  create_target                 1   EXTRA=1
+  create_task                   1   MISSING=1
   delete_alert                  1   TYPE=1
-  delete_config                 1   TYPE=1
-  delete_credential             1   TYPE=1
-  delete_filter                 1   TYPE=1
-  delete_group                  1   TYPE=1
-  delete_note                   1   TYPE=1
-  ... and 18 more with fewer
+  ... and 27 more with fewer
 
 ### Confirmed by both oracles
 
@@ -161,6 +165,7 @@ attributes, and one of its own captured request fixtures uses three of them.
   get_reports              /get_reports_response/reports
   get_reports              /get_reports_response/sort
   get_results              /get_results_response/result/nvt/severities/severity
+  get_tasks                /get_tasks_response/task/hosts_ordering
   help                     /help_response/schema
 
 ## Per command
@@ -680,11 +685,17 @@ conformant
 
 ### create_target  (command_create_target.xml)
 
-conformant
+EXTRA=1
+
+  EXTRA         request  /create_target/alive_tests/*
+                schema declares a "alive_test" leaf; Go models 1 children
 
 ### create_task  (command_create_task.xml)
 
-conformant
+MISSING=1
+
+  MISSING       request  /create_task/hosts_ordering
+                optional elem hosts_ordering is not modelled
 
 ### create_ticket  (command_create_ticket.xml)
 
@@ -1134,8 +1145,12 @@ SCHEMA-DEFECT=1
 
 ### get_credentials  (command_get_credentials.xml)
 
-SCHEMA-DEFECT=2
+EXTRA=2  SCHEMA-DEFECT=2
 
+  EXTRA         response /get_credentials_response/credential/private_key_info
+                Go field PrivateKeyInfo *commands.CredentialPrivateKeyInfo has no counterpart in the schema
+  EXTRA         response /get_credentials_response/credential/public_key_info
+                Go field PublicKeyInfo *commands.CredentialPublicKeyInfo has no counterpart in the schema
   SCHEMA-DEFECT response /get_credentials_response/credential/scanners/scanner/permissions
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_credentials_response/credential/targets/target/permissions
@@ -1266,8 +1281,10 @@ OMITEMPTY=3  TYPE=1  SCHEMA-DEFECT=1
 
 ### get_notes  (command_get_notes.xml)
 
-SCHEMA-DEFECT=3
+EXTRA=1  SCHEMA-DEFECT=3
 
+  EXTRA         response /get_notes_response/note/result/oci_image
+                Go field OCIImage *commands.NoteOCIImage has no counterpart in the schema
   SCHEMA-DEFECT response /get_notes_response/note/active
                 duplicate-ele: redefined in the same scope
   SCHEMA-DEFECT response /get_notes_response/note/result/delta/overrides/override/active
@@ -1360,8 +1377,10 @@ MISSING=6  EXTRA=1  CARDINALITY=7  OMITEMPTY=19  TYPE=4
 
 ### get_overrides  (command_get_overrides.xml)
 
-SCHEMA-DEFECT=3
+EXTRA=1  SCHEMA-DEFECT=3
 
+  EXTRA         response /get_overrides_response/override/result/oci_image
+                Go field OCIImage *commands.OverrideOCIImage has no counterpart in the schema
   SCHEMA-DEFECT response /get_overrides_response/override/active
                 duplicate-ele: redefined in the same scope
   SCHEMA-DEFECT response /get_overrides_response/override/result/delta/notes/note/active
@@ -1974,8 +1993,12 @@ conformant
 
 ### get_scanners  (command_get_scanners.xml)
 
-SCHEMA-DEFECT=10
+EXTRA=2  SCHEMA-DEFECT=10
 
+  EXTRA         response /get_scanners_response/scanner/disabled
+                Go field Disabled *commands.GMPBool has no counterpart in the schema
+  EXTRA         response /get_scanners_response/scanner/tasks/task/usage_type
+                Go field UsageType string has no counterpart in the schema
   SCHEMA-DEFECT response /get_scanners_response/scanner/configs/config/permissions
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_scanners_response/scanner/info/daemon/name
@@ -2051,8 +2074,10 @@ SCHEMA-DEFECT=1
 
 ### get_targets  (command_get_targets.xml)
 
-SCHEMA-DEFECT=9
+EXTRA=1  SCHEMA-DEFECT=9
 
+  EXTRA         response /get_targets_response/target/alive_tests/*
+                schema declares a "alive_test" leaf; Go models 1 children
   SCHEMA-DEFECT response /get_targets_response/target/esxi_credential/permissions
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_targets_response/target/krb5_credential/permissions
@@ -2074,8 +2099,10 @@ SCHEMA-DEFECT=9
 
 ### get_tasks  (command_get_tasks.xml)
 
-SCHEMA-DEFECT=10
+MISSING=1  SCHEMA-DEFECT=10
 
+  MISSING       response /get_tasks_response/task/hosts_ordering
+                optional elem hosts_ordering is not modelled  [fidelity]
   SCHEMA-DEFECT response /get_tasks_response/task/alert/permissions
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_tasks_response/task/config/permissions
@@ -2311,7 +2338,12 @@ conformant
 
 ### modify_target  (command_modify_target.xml)
 
-conformant
+MISSING=1  EXTRA=1
+
+  MISSING       request  /modify_target/hosts_ordering
+                optional elem hosts_ordering is not modelled
+  EXTRA         request  /modify_target/alive_tests/*
+                schema declares a "alive_test" leaf; Go models 1 children
 
 ### modify_task  (command_modify_task.xml)
 

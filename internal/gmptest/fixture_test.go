@@ -39,9 +39,72 @@ func TestLoadMetaRejectsRuntimeProvenanceGaps(t *testing.T) {
 			wantErr: "unknown gmp_version_source",
 		},
 		{
-			name: "live valid",
+			name:    "live unknown image_digest_source",
+			prov:    Live,
+			meta:    Meta{Command: "get_version", Provenance: Live, GmpVersion: "22.7", GmpVersionSource: GmpVersionCaptured},
+			wantErr: "unknown image_digest_source",
+		},
+		{
+			name: "live resolved but image_digest empty",
 			prov: Live,
-			meta: Meta{Command: "get_version", Provenance: Live, GmpVersion: "22.7", GmpVersionSource: GmpVersionCaptured},
+			meta: Meta{
+				Command: "get_version", Provenance: Live,
+				GmpVersion: "22.7", GmpVersionSource: GmpVersionCaptured,
+				ImageDigestSource: ImageDigestResolved,
+			},
+			wantErr: "image_digest_source is \"resolved\" but image_digest is invalid",
+		},
+		{
+			name: "live resolved but image_digest is garbage",
+			prov: Live,
+			meta: Meta{
+				Command: "get_version", Provenance: Live,
+				GmpVersion: "22.7", GmpVersionSource: GmpVersionCaptured,
+				ImageDigestSource: ImageDigestResolved,
+				ImageDigest:       "stable",
+			},
+			wantErr: "image_digest_source is \"resolved\" but image_digest is invalid",
+		},
+		{
+			name: "live resolved but image_digest has no repository",
+			prov: Live,
+			meta: Meta{
+				Command: "get_version", Provenance: Live,
+				GmpVersion: "22.7", GmpVersionSource: GmpVersionCaptured,
+				ImageDigestSource: ImageDigestResolved,
+				ImageDigest:       "sha256:deadbeef",
+			},
+			wantErr: "image_digest_source is \"resolved\" but image_digest is invalid",
+		},
+		{
+			name: "live legacy but image_digest set",
+			prov: Live,
+			meta: Meta{
+				Command: "get_version", Provenance: Live,
+				GmpVersion: "22.7", GmpVersionSource: GmpVersionCaptured,
+				ImageDigestSource: ImageDigestLegacy,
+				ImageDigest:       "example.com/gvmd@sha256:" + strings.Repeat("a", 64),
+			},
+			wantErr: "image_digest_source is \"legacy-unpinned\" but image_digest is set",
+		},
+		{
+			name: "live valid resolved",
+			prov: Live,
+			meta: Meta{
+				Command: "get_version", Provenance: Live,
+				GmpVersion: "22.7", GmpVersionSource: GmpVersionCaptured,
+				ImageDigestSource: ImageDigestResolved,
+				ImageDigest:       "example.com/gvmd@sha256:" + strings.Repeat("a", 64),
+			},
+		},
+		{
+			name: "live valid legacy",
+			prov: Live,
+			meta: Meta{
+				Command: "get_version", Provenance: Live,
+				GmpVersion: "22.7", GmpVersionSource: GmpVersionCaptured,
+				ImageDigestSource: ImageDigestLegacy,
+			},
 		},
 		{
 			name: "upstream claims gmp_version",
@@ -50,6 +113,16 @@ func TestLoadMetaRejectsRuntimeProvenanceGaps(t *testing.T) {
 				Command: "get_version", Provenance: Upstream,
 				Source: "x", SourceRev: "y", License: "z",
 				GmpVersion: "22.7",
+			},
+			wantErr: "must not claim runtime provenance",
+		},
+		{
+			name: "upstream claims image_digest_source",
+			prov: Upstream,
+			meta: Meta{
+				Command: "get_version", Provenance: Upstream,
+				Source: "x", SourceRev: "y", License: "z",
+				ImageDigestSource: ImageDigestLegacy,
 			},
 			wantErr: "must not claim runtime provenance",
 		},

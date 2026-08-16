@@ -22,6 +22,7 @@ import (
 	"github.com/brennoo/go-gmp/client"
 	"github.com/brennoo/go-gmp/commands"
 	"github.com/brennoo/go-gmp/connections"
+	"github.com/brennoo/go-gmp/internal/dockerstack"
 )
 
 // This file is the machinery of the live capture; capture_sequence_test.go is
@@ -51,6 +52,14 @@ var (
 	// answered, which is a result, not a reason to burn an hour.
 	captureCommandTimeout = flag.Duration("capture.command-timeout", 2*time.Minute,
 		"per-command timeout for a single capture exchange")
+
+	// captureComposeFile locates the stack backing the gvmd this run talks
+	// to, so its image digest can be read from the running container
+	// (internal/dockerstack) rather than inferred from a tag. The default
+	// matches -gmp.cafile's own default resolution of hack/ relative to this
+	// package's test working directory.
+	captureComposeFile = flag.String("capture.compose-file", "../../hack/docker-compose.yml",
+		"path to the Compose file backing the live gvmd, used to resolve its image digest for Meta.ImageDigest")
 )
 
 // captureOutcome is what happened to one attempted fixture.
@@ -89,9 +98,10 @@ type captureRun struct {
 	conn gmp.Connection
 	red  *Redactor
 
-	runID      string
-	gmpVersion string
-	reconnects int
+	runID       string
+	gmpVersion  string
+	imageDigest string
+	reconnects  int
 
 	seq     map[string]int
 	written map[string]bool
@@ -171,7 +181,9 @@ func newCaptureRun(t *testing.T) *captureRun {
 		notices: map[string]int{},
 	}
 	r.gmpVersion = r.detectVersion()
-	t.Logf("capture run id %s against GMP protocol version %s", r.runID, r.gmpVersion)
+	r.imageDigest = r.resolveImageDigest()
+	t.Logf("capture run id %s against GMP protocol version %s, image %s",
+		r.runID, r.gmpVersion, r.imageDigest)
 	return r
 }
 
@@ -210,6 +222,24 @@ func (r *captureRun) detectVersion() string {
 		return "unknown"
 	}
 	return resp.Version
+}
+
+// resolveImageDigest reads gvmd's running image digest off the Compose stack
+// itself, rather than inferring it from a tag.
+//
+// Unlike detectVersion, a failure here fails the whole run instead of
+// recording "unknown": loadMeta now requires every live fixture to carry
+// Meta.ImageDigest, so a run that cannot resolve it would only produce a
+// corpus that fails to load — better to stop before writing anything.
+func (r *captureRun) resolveImageDigest() string {
+	ctx, cancel := context.WithTimeout(r.ctx, *captureCommandTimeout)
+	defer cancel()
+
+	digest, err := dockerstack.ImageDigest(ctx, *captureComposeFile, "gvmd")
+	if err != nil {
+		r.t.Fatalf("resolving gvmd image digest: %v", err)
+	}
+	return digest
 }
 
 // dial opens a second, unauthenticated connection.
@@ -542,11 +572,13 @@ func (r *captureRun) persist(command, desc, id string, req, resp []byte, applied
 		// is still evidence, but it is no longer the bytes gvmd sent, and the
 		// distinction has to survive into the sidecar or a later byte-exactness
 		// assertion would be asserting against a placeholder.
-		ByteFaithful:     len(applied) == 0,
-		CapturedAt:       time.Now().UTC().Format(time.RFC3339),
-		GmpVersion:       r.gmpVersion,
-		GmpVersionSource: GmpVersionCaptured,
-		Redactions:       applied,
+		ByteFaithful:      len(applied) == 0,
+		CapturedAt:        time.Now().UTC().Format(time.RFC3339),
+		GmpVersion:        r.gmpVersion,
+		GmpVersionSource:  GmpVersionCaptured,
+		ImageDigest:       r.imageDigest,
+		ImageDigestSource: ImageDigestResolved,
+		Redactions:        applied,
 	}
 
 	if err := os.WriteFile(f.RequestPath(), req, 0o600); err != nil {

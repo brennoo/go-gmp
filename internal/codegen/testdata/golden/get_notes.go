@@ -168,6 +168,7 @@ type GetNotesResult struct {
 	Report           *NoteReport     `xml:"report,omitempty"`
 	Task             *NoteResultTask `xml:"task,omitempty"`
 	Path             string          `xml:"path,omitempty"`
+	OCIImage         *NoteOCIImage   `xml:"oci_image,omitempty"`
 	OriginalThreat   string          `xml:"original_threat,omitempty"`
 	OriginalSeverity *float64        `xml:"original_severity,omitempty"`
 	Delta            *NoteDelta      `xml:"delta,omitempty"`
@@ -270,6 +271,15 @@ type NoteReport struct {
 type NoteResultTask struct {
 	ID   string `xml:"id,attr"`
 	Name string `xml:"name"`
+}
+
+// NoteOCIImage is the <oci_image> element of get_notes. See the GMP protocol docs for details.
+type NoteOCIImage struct {
+	Name      string `xml:"name"`
+	Digest    string `xml:"digest"`
+	Registry  string `xml:"registry"`
+	Path      string `xml:"path"`
+	ShortName string `xml:"short_name"`
 }
 
 // NoteDelta is the <delta> element of get_notes. See the GMP protocol docs for details.

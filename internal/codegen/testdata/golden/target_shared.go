@@ -37,6 +37,11 @@ type TargetESXILSCCredential struct {
 	ID string `xml:"id,attr"`
 }
 
+// TargetAliveTests is the <alive_tests> element of create_target, get_targets and modify_target. See the GMP protocol docs for details.
+type TargetAliveTests struct {
+	AliveTest []string `xml:"alive_test,omitempty"`
+}
+
 // TargetPortList is the <port_list> element of create_target and modify_target. See the GMP protocol docs for details.
 type TargetPortList struct {
 	ID string `xml:"id,attr"`

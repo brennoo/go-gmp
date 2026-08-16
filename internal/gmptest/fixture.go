@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/brennoo/go-gmp/internal/imageref"
 )
 
 // Provenance says where a fixture's bytes came from, which governs what may be
@@ -45,6 +47,28 @@ var validGmpVersionSources = map[GmpVersionSource]bool{
 	GmpVersionInferred: true,
 }
 
+// ImageDigestSource says how a live fixture's ImageDigest field was
+// determined, and is required on every live fixture regardless of whether
+// ImageDigest itself is set.
+type ImageDigestSource string
+
+const (
+	// ImageDigestResolved means internal/dockerstack read a real digest off
+	// the running container at capture time; ImageDigest must be set.
+	ImageDigestResolved ImageDigestSource = "resolved"
+	// ImageDigestLegacy marks a fixture captured before T-16c pinned the
+	// integration stack, when no resolved digest existed to record. This is
+	// a permanent classification, not a placeholder to backfill — there is
+	// no way to recover after the fact what image a past capture ran
+	// against. ImageDigest must be empty.
+	ImageDigestLegacy ImageDigestSource = "legacy-unpinned"
+)
+
+var validImageDigestSources = map[ImageDigestSource]bool{
+	ImageDigestResolved: true,
+	ImageDigestLegacy:   true,
+}
+
 // Meta is the sidecar recorded next to every fixture. Provenance is deliberately
 // stored twice — here and in the directory layout — so that neither a moved
 // file nor a lost sidecar can silently misattribute AGPL-derived content.
@@ -65,10 +89,14 @@ type Meta struct {
 	GmpVersion string `json:"gmp_version,omitempty"`
 	// GmpVersionSource is required whenever GmpVersion is set; see GmpVersionSource's doc.
 	GmpVersionSource GmpVersionSource `json:"gmp_version_source,omitempty"`
-	// ImageDigest is the resolved gvmd image digest. No capture path writes it
-	// yet and no live fixture carries one; both land with T-16c.
-	ImageDigest string   `json:"image_digest,omitempty"`
-	Redactions  []string `json:"redactions,omitempty"`
+	// ImageDigest is the resolved gvmd image digest the fixture was captured
+	// against, read from the running container rather than inferred from a
+	// tag; see internal/dockerstack. Set exactly when ImageDigestSource is
+	// ImageDigestResolved.
+	ImageDigest string `json:"image_digest,omitempty"`
+	// ImageDigestSource is required on every live fixture; see its doc.
+	ImageDigestSource ImageDigestSource `json:"image_digest_source,omitempty"`
+	Redactions        []string          `json:"redactions,omitempty"`
 }
 
 // Fixture is one request/response pair on disk.
@@ -172,25 +200,51 @@ func (f *Fixture) loadMeta() error {
 	}
 	switch f.Provenance {
 	case Upstream:
-		for name, val := range map[string]string{
-			"source": f.Meta.Source, "source_upstream_revision": f.Meta.SourceRev,
-			"source_license": f.Meta.License,
-		} {
-			if strings.TrimSpace(val) == "" {
-				return fmt.Errorf("%s/%s: upstream fixture is missing %s, so its provenance is unverifiable",
-					f.Command, f.ID, name)
-			}
-		}
-		if f.Meta.GmpVersion != "" || f.Meta.GmpVersionSource != "" || f.Meta.ImageDigest != "" {
-			return fmt.Errorf("%s/%s: upstream fixture must not claim runtime provenance", f.Command, f.ID)
-		}
+		return f.validateUpstreamMeta()
 	case Live:
-		if strings.TrimSpace(f.Meta.GmpVersion) == "" {
-			return fmt.Errorf("%s/%s: live fixture is missing gmp_version", f.Command, f.ID)
+		return f.validateLiveMeta()
+	}
+	return nil
+}
+
+func (f *Fixture) validateUpstreamMeta() error {
+	for name, val := range map[string]string{
+		"source": f.Meta.Source, "source_upstream_revision": f.Meta.SourceRev,
+		"source_license": f.Meta.License,
+	} {
+		if strings.TrimSpace(val) == "" {
+			return fmt.Errorf("%s/%s: upstream fixture is missing %s, so its provenance is unverifiable",
+				f.Command, f.ID, name)
 		}
-		if !validGmpVersionSources[f.Meta.GmpVersionSource] {
-			return fmt.Errorf("%s/%s: live fixture has unknown gmp_version_source %q",
-				f.Command, f.ID, f.Meta.GmpVersionSource)
+	}
+	if f.Meta.GmpVersion != "" || f.Meta.GmpVersionSource != "" || f.Meta.ImageDigest != "" || f.Meta.ImageDigestSource != "" {
+		return fmt.Errorf("%s/%s: upstream fixture must not claim runtime provenance", f.Command, f.ID)
+	}
+	return nil
+}
+
+func (f *Fixture) validateLiveMeta() error {
+	if strings.TrimSpace(f.Meta.GmpVersion) == "" {
+		return fmt.Errorf("%s/%s: live fixture is missing gmp_version", f.Command, f.ID)
+	}
+	if !validGmpVersionSources[f.Meta.GmpVersionSource] {
+		return fmt.Errorf("%s/%s: live fixture has unknown gmp_version_source %q",
+			f.Command, f.ID, f.Meta.GmpVersionSource)
+	}
+	if !validImageDigestSources[f.Meta.ImageDigestSource] {
+		return fmt.Errorf("%s/%s: live fixture has unknown image_digest_source %q",
+			f.Command, f.ID, f.Meta.ImageDigestSource)
+	}
+	switch f.Meta.ImageDigestSource {
+	case ImageDigestResolved:
+		if err := imageref.ValidateDigest(f.Meta.ImageDigest); err != nil {
+			return fmt.Errorf("%s/%s: image_digest_source is %q but image_digest is invalid: %w",
+				f.Command, f.ID, ImageDigestResolved, err)
+		}
+	case ImageDigestLegacy:
+		if f.Meta.ImageDigest != "" {
+			return fmt.Errorf("%s/%s: image_digest_source is %q but image_digest is set; use %q instead",
+				f.Command, f.ID, ImageDigestLegacy, ImageDigestResolved)
 		}
 	}
 	return nil

@@ -216,7 +216,7 @@ get_roles                    upstream  001 ok            dropped=4   truncated=0
 get_scanners                 live      001 ok            dropped=3   truncated=0   changed=0   added=12
 get_scanners                 live      002 ok            dropped=3   truncated=0   changed=0   added=12
 get_scanners                 live      003 ok            dropped=3   truncated=0   changed=0   added=12
-get_scanners                 upstream  001 ok            dropped=3   truncated=0   changed=0   added=37
+get_scanners                 upstream  001 ok            dropped=3   truncated=0   changed=0   added=38
 get_schedules                live      001 ok            dropped=2   truncated=0   changed=0   added=0
 get_schedules                live      002 ok            dropped=2   truncated=0   changed=0   added=0
 get_schedules                live      003 ok            dropped=2   truncated=0   changed=0   added=0

@@ -8,5 +8,6 @@
   "gmp_version_source": "captured",
   "redactions": [
     "/get_scanners_response/scanner/ca_pub/#text"
-  ]
+  ],
+  "image_digest_source": "legacy-unpinned"
 }

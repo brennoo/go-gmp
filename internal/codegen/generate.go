@@ -1739,6 +1739,7 @@ var initialisms = map[string]string{
 	"lsc":       "LSC",
 	"md5":       "MD5",
 	"nvt":       "NVT",
+	"oci":       "OCI",
 	"oid":       "OID",
 	"os":        "OS",
 	"qod":       "QOD",

@@ -95,7 +95,6 @@ type Task struct {
 	UsageType        string               `xml:"usage_type,omitempty"`
 	Config           *GetTasksConfig      `xml:"config,omitempty"`
 	Target           *GetTasksTarget      `xml:"target,omitempty"`
-	HostsOrdering    string               `xml:"hosts_ordering,omitempty"`
 	Scanner          *GetTasksScanner     `xml:"scanner,omitempty"`
 	Alert            *GetTasksAlert       `xml:"alert,omitempty"`
 	Observers        *GetTasksObservers   `xml:"observers,omitempty"`

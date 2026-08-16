@@ -5,7 +5,7 @@ namespaces-seen:
 
 DROPPED
   /get_targets_response/sort/field/#text                                   x1
-  /get_targets_response/target/alive_tests/alive_test                      x1  (+1 descendant paths)
+  /get_targets_response/target/alive_tests/#text                           x1
   /get_targets_response/target_count/#text                                 x1
 
 TRUNCATED

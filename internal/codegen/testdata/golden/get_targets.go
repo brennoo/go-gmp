@@ -97,7 +97,7 @@ type Target struct {
 	SSHElevateCredential GetTargetsSSHElevateCredential `xml:"ssh_elevate_credential"`
 	PortRange            string                         `xml:"port_range"`
 	PortList             GetTargetsPortList             `xml:"port_list"`
-	AliveTests           string                         `xml:"alive_tests"`
+	AliveTests           TargetAliveTests               `xml:"alive_tests"`
 	ReverseLookupOnly    GMPBool                        `xml:"reverse_lookup_only"`
 	ReverseLookupUnify   GMPBool                        `xml:"reverse_lookup_unify"`
 	AllowSimultaneousIPs GMPBool                        `xml:"allow_simultaneous_ips"`

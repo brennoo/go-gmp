@@ -113,11 +113,10 @@ type Command struct {
 type ExtractionMethod string
 
 const (
-	// ExtractionFile reads a vendored file from disk — Load's only method
-	// today.
+	// ExtractionFile reads a vendored file from disk — Load's method.
 	ExtractionFile ExtractionMethod = "file"
-	// ExtractionServed reads a document served by a live gvmd (T-16b); no
-	// code path produces this yet.
+	// ExtractionServed reads a document served by a live gvmd — LoadServed's
+	// method, since T-16b the primary route for refreshing testdata/schema.
 	ExtractionServed ExtractionMethod = "served"
 )
 

@@ -8,5 +8,6 @@
   "gmp_version_source": "captured",
   "redactions": [
     "/get_tls_certificates_response/tls_certificate/certificate/#text"
-  ]
+  ],
+  "image_digest_source": "legacy-unpinned"
 }

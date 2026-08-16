@@ -37,9 +37,13 @@ func (r Report) writeHeader(b *strings.Builder) {
 Regenerate with: go test ./internal/schema -run TestConformanceReport -update
 
 What this is: the GMP schema DSL, read directly, diffed against the
-hand-written structs in commands/. The schema revision compared here is the one
-vendored at ` + r.SchemaDir + `, which matches commands/ one-for-one, so a
-difference found here is a transcription error and not version drift.
+hand-written structs in commands/. The schema revision compared here is the
+one vendored at ` + r.SchemaDir + `. Before T-16b this matched commands/
+one-for-one, so a difference found here was always a transcription error;
+since T-16b, commands/ is generated from a live gvmd server instead, so a
+difference here can also be version drift between the vendored copy and the
+live schema — see docs/review-2026-08.md's T-16b/T-17 notes for the known
+cases.
 
 This is a *schema* oracle. internal/gmptest is a *runtime* oracle: it
 round-trips captured documents and records what they lose. Findings marked

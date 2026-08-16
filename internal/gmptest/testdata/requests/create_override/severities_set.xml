@@ -1,1 +1,1 @@
-<create_override><text>Downgrading severity based on compensating controls.</text><nvt oid="1.3.6.1.4.1.25623.1.0.100315"></nvt><new_severity>2.5</new_severity><severity>7.5</severity></create_override>
+<create_override><text>Downgrading severity based on compensating controls.</text><nvt oid="1.3.6.1.4.1.25623.1.0.100315"></nvt><severity>7.5</severity><new_severity>2.5</new_severity></create_override>

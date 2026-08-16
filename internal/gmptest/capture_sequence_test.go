@@ -425,7 +425,7 @@ func (r *captureRun) lifecycleTarget(st *captureState) {
 		Name:       r.resourceName("target"),
 		Comment:    captureComment,
 		Hosts:      "127.0.0.1",
-		AliveTests: "Consider Alive",
+		AliveTests: &commands.TargetAliveTests{AliveTest: []string{"Consider Alive"}},
 	}
 	if st.portListID != "" {
 		req.PortList = &commands.TargetPortList{ID: st.portListID}

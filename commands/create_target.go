@@ -20,7 +20,7 @@ type CreateTarget struct {
 	SSHLSCCredential     *TargetSSHLSCCredential     `xml:"ssh_lsc_credential,omitempty"`
 	SMBLSCCredential     *TargetSMBLSCCredential     `xml:"smb_lsc_credential,omitempty"`
 	ESXILSCCredential    *TargetESXILSCCredential    `xml:"esxi_lsc_credential,omitempty"`
-	AliveTests           string                      `xml:"alive_tests,omitempty"`
+	AliveTests           *TargetAliveTests           `xml:"alive_tests,omitempty"`
 	AllowSimultaneousIPs *GMPBool                    `xml:"allow_simultaneous_ips,omitempty"`
 	ReverseLookupOnly    *GMPBool                    `xml:"reverse_lookup_only,omitempty"`
 	ReverseLookupUnify   *GMPBool                    `xml:"reverse_lookup_unify,omitempty"`

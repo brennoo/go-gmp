@@ -8,5 +8,6 @@
   "gmp_version_source": "captured",
   "redactions": [
     "/describe_auth_response/group/auth_conf_setting/value/#text"
-  ]
+  ],
+  "image_digest_source": "legacy-unpinned"
 }

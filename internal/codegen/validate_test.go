@@ -3951,10 +3951,9 @@ func TestValidateTargetBeforeMatchesKnownConformance(t *testing.T) {
 // every schema-vs-hand-written divergence found during review traced
 // directly to Card/Kind values already in the schema snapshot. The one
 // PointerOverride this family does carry (modify_target.comment) and the
-// modify_target CommandWarning (Name/Hosts/ExcludeHosts/HostsOrdering
-// presence hazards) came from live gvmd evidence, not from a
-// generator-vs-schema mismatch, so neither shows up as a suppressed finding
-// here.
+// modify_target CommandWarning (Name/Hosts/ExcludeHosts presence hazards)
+// came from live gvmd evidence, not from a generator-vs-schema mismatch, so
+// neither shows up as a suppressed finding here.
 func TestValidateTargetGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_target")
 
@@ -3980,7 +3979,7 @@ func TestValidateTaskBeforeMatchesKnownConformance(t *testing.T) {
 		"create_task": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_task": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_tasks": {
-			actionable: map[string]int{schema.CatDefect: 10},
+			actionable: map[string]int{schema.CatDefect: 7},
 			suppressed: map[string]int{},
 		},
 	}
@@ -3997,13 +3996,16 @@ func TestValidateTaskBeforeMatchesKnownConformance(t *testing.T) {
 // TestValidateTaskGeneratedMatchesOrImproves is task's pre-adoption gate, run
 // at the same rigour every prior family's was. Generation closes every
 // actionable finding on create_task and modify_task, and every actionable
-// finding on get_tasks except the ten allowlisted SCHEMA-DEFECT findings the
-// schema itself carries (see
+// finding on get_tasks except the seven allowlisted SCHEMA-DEFECT findings
+// the schema itself carries (see
 // internal/codegen/testdata/schema/get_tasks.json's Defects array and the
-// matching DefectAllowlist entries in overrides.go). The two PointerOverrides
-// this family carries (modify_task.comment, modify_task.observers) came from
-// live gvmd evidence, not from a generator-vs-schema mismatch, so neither
-// shows up as a suppressed finding here.
+// matching DefectAllowlist entries in overrides.go — three duplicate-ref
+// defects on result_count/hole|info|warning that this table also once
+// allowlisted are gone as of T-16b's live-schema cutover). The two
+// PointerOverrides this family carries (modify_task.comment,
+// modify_task.observers) came from live gvmd evidence, not from a
+// generator-vs-schema mismatch, so neither shows up as a suppressed finding
+// here.
 func TestValidateTaskGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_task")
 
@@ -4011,7 +4013,7 @@ func TestValidateTaskGeneratedMatchesOrImproves(t *testing.T) {
 		"create_task": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_task": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_tasks": {
-			actionable: map[string]int{schema.CatDefect: 10},
+			actionable: map[string]int{schema.CatDefect: 7},
 			suppressed: map[string]int{},
 		},
 	}

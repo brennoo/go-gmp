@@ -1,10 +1,7 @@
 package codegen
 
 import (
-	"encoding/json"
 	"flag"
-	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 
@@ -19,11 +16,24 @@ import (
 var update = flag.Bool("update", false,
 	"rewrite the committed schema snapshots and generated goldens")
 
-// TestSnapshot is Stage A: the one step a developer re-runs by hand when the
-// schema changes. Under -update it rewrites testdata/schema/*.json from
-// vendor/XML/commands; otherwise it asserts the committed snapshots still
-// match what the parser produces. On a clean checkout vendor/XML is absent and
-// it skips, which is why CI never needs the AGPL input.
+// TestSnapshot is Stage A's file-based path: a pure, opt-in comparison
+// oracle over vendor/XML/commands, an independently versioned mirror that
+// will legitimately drift from whatever gvmd last answered TestSnapshotLive
+// (in internal/codegen/snapshot_live_test.go, the primary and only route to
+// testdata/schema/*.json since T-16b). It never writes: -update belongs to
+// TestSnapshotLive alone, so a file-based run can never overwrite an
+// ExtractionServed snapshot with ExtractionFile provenance.
+//
+// It proves the fallback path itself still works — every manifest command
+// parses, marshals, and carries no AGPL prose — but deliberately does NOT
+// compare against the committed snapshots: asserting the two independently
+// versioned oracles agree is not a regression check, it is a permanent false
+// alarm the moment either side moves. See TestVendorParity, in
+// vendor_parity_test.go, for that comparison — it is an explicit, opt-in
+// drift check (T-17), not part of the default suite.
+//
+// On a clean checkout vendor/XML is absent and this test skips, which is why
+// CI never needs the AGPL input.
 func TestSnapshot(t *testing.T) {
 	cmds := loadSchemaOrSkip(t)
 
@@ -42,50 +52,6 @@ func TestSnapshot(t *testing.T) {
 			t.Fatalf("%s: failed to marshal: %v", name, err)
 		}
 		assertNoProse(t, name, got)
-
-		path := SnapshotPath(snapshotDir, name)
-		want, readErr := os.ReadFile(path) //nolint:gosec // a fixed testdata path
-
-		// Provenance.ExtractedAt is stamped fresh on every extraction, so it
-		// never matches a prior commit even when nothing else about the schema
-		// changed. Re-marshaling with the committed timestamp keeps clock drift
-		// out of the comparison, and out of -update's diff when nothing else
-		// moved — otherwise every -update rewrites all 42 files and buries the
-		// one real change T-17 needs to be readable.
-		masked := got
-		if readErr == nil {
-			var wantCmd schema.Command
-			if err := json.Unmarshal(want, &wantCmd); err != nil {
-				t.Fatalf("%s: failed to parse the committed snapshot: %v", name, err)
-			}
-			pinned := cmd
-			pinned.Provenance.ExtractedAt = wantCmd.Provenance.ExtractedAt
-			if masked, err = MarshalSnapshot(pinned); err != nil {
-				t.Fatalf("%s: failed to marshal: %v", name, err)
-			}
-		}
-
-		if *update {
-			out := got
-			if readErr == nil && string(masked) == string(want) {
-				out = want
-			}
-			if err := os.MkdirAll(filepath.Dir(path), 0o750); err != nil {
-				t.Fatalf("Failed to create %s: %v", snapshotDir, err)
-			}
-			if err := os.WriteFile(path, out, 0o600); err != nil {
-				t.Fatalf("Failed to write %s: %v", path, err)
-			}
-			continue
-		}
-
-		if readErr != nil {
-			t.Fatalf("No committed snapshot for %s (%v).\nRun with -update to create it.", name, readErr)
-		}
-		if string(masked) != string(want) {
-			t.Errorf("%s snapshot changed. Re-run with -update and review the diff.\n"+
-				"committed %d bytes, now %d bytes", name, len(want), len(masked))
-		}
 	}
 }
 

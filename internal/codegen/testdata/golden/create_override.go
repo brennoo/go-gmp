@@ -12,13 +12,13 @@ type CreateOverride struct {
 	Active      *int            `xml:"active,omitempty"`
 	Copy        string          `xml:"copy,omitempty"`
 	Hosts       string          `xml:"hosts,omitempty"`
-	NewSeverity *float64        `xml:"new_severity,omitempty"`
-	NewThreat   string          `xml:"new_threat,omitempty"`
 	Port        string          `xml:"port,omitempty"`
 	Result      *OverrideResult `xml:"result,omitempty"`
 	Severity    *float64        `xml:"severity,omitempty"`
 	Task        *OverrideTask   `xml:"task,omitempty"`
 	Threat      string          `xml:"threat,omitempty"`
+	NewSeverity *float64        `xml:"new_severity,omitempty"`
+	NewThreat   string          `xml:"new_threat,omitempty"`
 }
 
 // CreateOverrideResponse is a create_override command response. See the GMP protocol docs for details.

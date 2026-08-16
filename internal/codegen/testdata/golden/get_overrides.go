@@ -171,6 +171,7 @@ type GetOverridesResult struct {
 	Report           *OverrideReport         `xml:"report,omitempty"`
 	Task             *OverrideResultTask     `xml:"task,omitempty"`
 	Path             string                  `xml:"path,omitempty"`
+	OCIImage         *OverrideOCIImage       `xml:"oci_image,omitempty"`
 	OriginalThreat   string                  `xml:"original_threat,omitempty"`
 	OriginalSeverity *float64                `xml:"original_severity,omitempty"`
 	Delta            *OverrideDelta          `xml:"delta,omitempty"`
@@ -273,6 +274,15 @@ type OverrideReport struct {
 type OverrideResultTask struct {
 	ID   string `xml:"id,attr"`
 	Name string `xml:"name"`
+}
+
+// OverrideOCIImage is the <oci_image> element of get_overrides. See the GMP protocol docs for details.
+type OverrideOCIImage struct {
+	Name      string `xml:"name"`
+	Digest    string `xml:"digest"`
+	Registry  string `xml:"registry"`
+	Path      string `xml:"path"`
+	ShortName string `xml:"short_name"`
 }
 
 // OverrideDelta is the <delta> element of get_overrides. See the GMP protocol docs for details.
