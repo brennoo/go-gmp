@@ -4069,57 +4069,22 @@ func TestValidateScannerGeneratedMatchesOrImproves(t *testing.T) {
 }
 
 // TestValidateConfigBeforeMatchesKnownConformance is config's counterpart to
-// TestValidateScannerBeforeMatchesKnownConformance. config is review-only, so
-// this pins the pre-swap gate against the still-hand-written
-// commands/{create_config,get_configs,modify_config}.go: create_config
-// carries 1 EXTRA (a stray GetConfigsResponse field with no schema
-// counterpart) and 1 suppressed OMITEMPTY (name's request-side
-// over-constraint). get_configs carries 3 MISSING (scanner's chardata,
-// user_tags/tag unmodelled, config_count/filtered unmodelled), 2 EXTRA
-// (families/family/type has no schema counterpart, config_count carries a
-// stray chardata field), 2 TYPE (in_use/writable are schema booleans held in
-// bare bool), and 3 suppressed OMITEMPTY (tasks/user_tags/filters.name, all
-// inert-on-decode). modify_config carries 6 EXTRA (preference's
-// alt/default/hr_name/id/nvt.name/type, all reused from get_configs'
-// response-shaped ConfigPreference with no counterpart in modify_config's
-// own request pattern), 3 CARDINALITY and 3 TYPE (family.all/family.growing/
-// family_selection.growing are the schema's boolean_atoi held in bare bool,
-// unable to express absence), 4 suppressed OMITEMPTY (the familiar
-// request-side over-constraint class), and 2 actionable OMITEMPTY
-// (preference/nvt and preference/value are schema-optional but always
-// emitted — unlike the response-side OMITEMPTY findings elsewhere in this
-// family, an unsuppressed request-side OMITEMPTY is a real encoding defect,
-// not an inert one). Both create_config and
-// get_configs also carry one SCHEMA-DEFECT each (unsupported-r,
-// empty-pattern), the schema's own defects, unrelated to the hand-written
-// code. See docs/review-2026-08.md's `config` review-only section for the
-// full field-by-field list.
+// TestValidateScannerBeforeMatchesKnownConformance. config is adopted, so
+// this is a drift detector on the committed commands/ files. Pre-adoption
+// findings are recorded in docs/review-2026-08.md.
 func TestValidateConfigBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_config")
 
 	want := map[string]counts{
 		"create_config": {
-			actionable: map[string]int{schema.CatExtra: 1, schema.CatDefect: 1},
-			suppressed: map[string]int{schema.CatOmitEmpty: 1},
+			actionable: map[string]int{schema.CatDefect: 1},
+			suppressed: map[string]int{},
 		},
 		"get_configs": {
-			actionable: map[string]int{
-				schema.CatMissing: 3,
-				schema.CatExtra:   2,
-				schema.CatType:    2,
-				schema.CatDefect:  1,
-			},
-			suppressed: map[string]int{schema.CatOmitEmpty: 3},
+			actionable: map[string]int{schema.CatDefect: 1},
+			suppressed: map[string]int{},
 		},
-		"modify_config": {
-			actionable: map[string]int{
-				schema.CatExtra:       6,
-				schema.CatCardinality: 3,
-				schema.CatType:        3,
-				schema.CatOmitEmpty:   2,
-			},
-			suppressed: map[string]int{schema.CatOmitEmpty: 4},
-		},
+		"modify_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]

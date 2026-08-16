@@ -82,8 +82,7 @@
     },
     {
       "name": "config",
-      "commands": ["create_config", "get_configs", "modify_config"],
-      "review_only": true
+      "commands": ["create_config", "get_configs", "modify_config"]
     }
   ]
 }

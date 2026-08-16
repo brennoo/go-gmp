@@ -4,7 +4,7 @@ decode: ok
 namespaces-seen:
 
 DROPPED
-  /get_configs_response/config_count/filtered                              x1  (+1 descendant paths)
+  /get_configs_response/config_count/#text                                 x1
   /get_configs_response/sort/field/#text                                   x1
 
 TRUNCATED
@@ -18,10 +18,7 @@ ADDED
   /get_configs_response/config/known_nvt_count/#text                       x10
   /get_configs_response/config/max_nvt_count                               x10
   /get_configs_response/config/max_nvt_count/#text                         x10
-  /get_configs_response/config/user_tags                                   x10
-  /get_configs_response/config/user_tags/count                             x10
-  /get_configs_response/config/user_tags/count/#text                       x10
-  /get_configs_response/filters/name                                       x1
+  /get_configs_response/config/tasks                                       x10
 
 DUPLICATED
   (none)

@@ -30,23 +30,23 @@ optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             81
-with actionable findings:     41
-actionable findings:          284  (request 145, response 139)
-suppressed findings:          451
-confirmed by fidelity corpus: 53
+fully conformant:             84
+with actionable findings:     38
+actionable findings:          262  (request 130, response 132)
+suppressed findings:          443
+confirmed by fidelity corpus: 52
 in the schema, not in Go:     0
 in Go, not in the schema:     0
 
 ### Findings by category
 
                  actionable suppressed
-  MISSING               132          0
-  EXTRA                  81          5
-  CARDINALITY            25          0
+  MISSING               129          0
+  EXTRA                  72          5
+  CARDINALITY            22          0
   KIND                    0          0
-  OMITEMPTY               2        446
-  TYPE                   44          0
+  OMITEMPTY               0        438
+  TYPE                   39          0
   SCHEMA-DEFECT         128          0
 
 ### Schema defects by class
@@ -83,21 +83,21 @@ taken against upstream main (155 commands). Two reasons, both expected:
   delete_agents                18   EXTRA=18
   get_nvts                     18   MISSING=6  EXTRA=1  CARDINALITY=7  TYPE=4
   modify_agents                18   EXTRA=18
-  modify_config                14   EXTRA=6  CARDINALITY=3  OMITEMPTY=2  TYPE=3
   get_aggregates               12   MISSING=5  EXTRA=5  CARDINALITY=2
   get_agents                    9   MISSING=7  TYPE=2
-  get_configs                   7   MISSING=3  EXTRA=2  TYPE=2
   get_results                   7   MISSING=1  EXTRA=4  CARDINALITY=2
   get_vulns                     4   MISSING=1  EXTRA=3
   get_feeds                     3   TYPE=3
   describe_auth                 2   MISSING=1  CARDINALITY=1
   get_settings                  2   EXTRA=2
-  create_config                 1   EXTRA=1
   create_port_range             1   MISSING=1
   delete_alert                  1   TYPE=1
   delete_config                 1   TYPE=1
   delete_credential             1   TYPE=1
-  ... and 21 more with fewer
+  delete_filter                 1   TYPE=1
+  delete_group                  1   TYPE=1
+  delete_note                   1   TYPE=1
+  ... and 18 more with fewer
 
 ### Confirmed by both oracles
 
@@ -115,7 +115,6 @@ attributes, and one of its own captured request fixtures uses three of them.
   get_agents               /get_agents_response/filters
   get_agents               /get_agents_response/sort
   get_aggregates           /get_aggregates_response/filters
-  get_configs              /get_configs_response/config_count/filtered
   get_info                 /get_info_response/info/cve/severity
   get_nvts                 /get_nvts_response/nvt/refs/*
   get_report_configs       /get_report_configs_response/report_config/param/value/@using_default
@@ -185,12 +184,8 @@ conformant
 
 ### create_config  (command_create_config.xml)
 
-EXTRA=1  OMITEMPTY=1  SCHEMA-DEFECT=1
+SCHEMA-DEFECT=1
 
-  EXTRA         request  /create_config/get_configs_response
-                Go field GetConfigsResponse *commands.GetConfigsResponse has no counterpart in the schema
-  OMITEMPTY     request  /create_config/name
-                schema says required, Name is tagged omitempty  [suppressed: request-side over-constraint]
   SCHEMA-DEFECT request  /create_config
                 unsupported-r: <r> references a response from inside a pattern
 
@@ -1132,28 +1127,8 @@ SCHEMA-DEFECT=1
 
 ### get_configs  (command_get_configs.xml)
 
-MISSING=3  EXTRA=2  OMITEMPTY=3  TYPE=2  SCHEMA-DEFECT=1
+SCHEMA-DEFECT=1
 
-  MISSING       response /get_configs_response/config/scanner/#text
-                schema also declares character data (text) here; Go *commands.ConfigScanner has no `,chardata` field
-  MISSING       response /get_configs_response/config/user_tags/tag
-                repeated elem tag is not modelled
-  MISSING       response /get_configs_response/config_count/filtered
-                required elem filtered is not modelled  [fidelity]
-  EXTRA         response /get_configs_response/config/families/family/type
-                Go field Type int has no counterpart in the schema
-  EXTRA         response /get_configs_response/config_count/#text
-                Go commands.ConfigCount has a `,chardata` field; schema declares no character data here
-  OMITEMPTY     response /get_configs_response/config/tasks
-                schema says required, Tasks is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_configs_response/config/user_tags
-                schema says optional, UserTags commands.ConfigUserTags has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_configs_response/filters/name
-                schema says optional, Name string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  TYPE          response /get_configs_response/config/in_use
-                schema type boolean is text ("" is true), Go InUse is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_configs_response/config/writable
-                schema type boolean is text ("" is true), Go Writable is bool: '7' fails to decode and '1' re-emits as 'true'
   SCHEMA-DEFECT response /get_configs_response/config/tasks/task/permissions
                 empty-pattern: pattern declares no content
 
@@ -2269,44 +2244,7 @@ EXTRA=1
 
 ### modify_config  (command_modify_config.xml)
 
-EXTRA=6  CARDINALITY=3  OMITEMPTY=6  TYPE=3
-
-  EXTRA         request  /modify_config/preference/alt
-                Go field Alt []string has no counterpart in the schema
-  EXTRA         request  /modify_config/preference/default
-                Go field Default string has no counterpart in the schema
-  EXTRA         request  /modify_config/preference/hr_name
-                Go field HRName string has no counterpart in the schema
-  EXTRA         request  /modify_config/preference/id
-                Go field ID string has no counterpart in the schema
-  EXTRA         request  /modify_config/preference/nvt/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /modify_config/preference/type
-                Go field Type string has no counterpart in the schema
-  CARDINALITY   request  /modify_config/family_selection/family/all
-                schema says optional; All bool cannot express absence (zero is a legal value)
-  CARDINALITY   request  /modify_config/family_selection/family/growing
-                schema says optional; Growing bool cannot express absence (zero is a legal value)
-  CARDINALITY   request  /modify_config/family_selection/growing
-                schema says optional; Growing bool cannot express absence (zero is a legal value)
-  OMITEMPTY     request  /modify_config/@config_id
-                schema says required, ConfigID is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /modify_config/family_selection/family/name
-                schema says required, Name is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /modify_config/nvt_selection/family
-                schema says required, Family is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /modify_config/nvt_selection/nvt/@oid
-                schema says required, OID is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /modify_config/preference/nvt
-                schema says optional, NVT commands.ConfigPreferenceNVT has no omitempty and is always emitted
-  OMITEMPTY     request  /modify_config/preference/value
-                schema says optional, Value string has no omitempty and is always emitted
-  TYPE          request  /modify_config/family_selection/family/all
-                schema type boolean_atoi is text (atoi first, so "" is false), Go All is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          request  /modify_config/family_selection/family/growing
-                schema type boolean_atoi is text (atoi first, so "" is false), Go Growing is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          request  /modify_config/family_selection/growing
-                schema type boolean_atoi is text (atoi first, so "" is false), Go Growing is bool: '7' fails to decode and '1' re-emits as 'true'
+conformant
 
 ### modify_credential  (command_modify_credential.xml)
 

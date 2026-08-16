@@ -8,8 +8,8 @@
 # silently fails to ever emit).
 # Regenerate with: go test ./internal/gmptest -run TestRequestRoundTrip -update
 
-requests-compared: 321   clean: 299   with-loss: 20   decode-errors: 2   advisory: 0   skipped-no-request: 0
-commands with a recorded request: 122 of 122   commands with loss: 17
+requests-compared: 321   clean: 300   with-loss: 19   decode-errors: 2   advisory: 0   skipped-no-request: 0
+commands with a recorded request: 122 of 122   commands with loss: 16
 
 ## Per fixture
 
@@ -23,7 +23,7 @@ create_alert                 upstream  002 clean         dropped=0   truncated=0
 create_asset                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 create_config                live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_config                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
-create_config                upstream  002 ok            dropped=1   truncated=0   changed=0   added=42
+create_config                upstream  002 ok            dropped=1   truncated=0   changed=0   added=1
 create_credential            live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_credential            live      002 clean         dropped=0   truncated=0   changed=0   added=0
 create_credential            upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
@@ -272,9 +272,9 @@ modify_alert                 upstream  001 clean         dropped=0   truncated=0
 modify_asset                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_auth                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_config                live      001 clean         dropped=0   truncated=0   changed=0   added=0
-modify_config                upstream  001 clean         dropped=0   truncated=0   changed=0   added=3
-modify_config                upstream  002 clean         dropped=0   truncated=0   changed=0   added=5
-modify_config                upstream  003 ok            dropped=0   truncated=0   changed=3   added=0
+modify_config                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
+modify_config                upstream  002 clean         dropped=0   truncated=0   changed=0   added=0
+modify_config                upstream  003 clean         dropped=0   truncated=0   changed=0   added=0
 modify_config                upstream  004 clean         dropped=0   truncated=0   changed=0   added=0
 modify_credential            live      001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_credential            upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
