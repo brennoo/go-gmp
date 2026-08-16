@@ -269,10 +269,9 @@ type rawAttempt struct {
 // works through hand-written alternatives until one does.
 //
 // This exists for the handful of commands where the Go type is suspected of
-// being unable to express a valid request — create_task's container form, where
-// TaskTarget has a non-omitempty <name>, and create_scanner's <credential>,
-// which has three non-omitempty children. Both the rejection and the working
-// shape are captured, so the pair is the evidence for the struct fix.
+// being unable to express a valid request — create_task's container form,
+// where TaskTarget has a non-omitempty <name>. Both the rejection and the
+// working shape are captured, so the pair is the evidence for the struct fix.
 func (r *captureRun) sendWithFallbacks(command, desc string, req any, fallbacks []rawAttempt) string {
 	resp, ok := r.send(command, desc, req)
 	if ok && statusOK(resp) {

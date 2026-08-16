@@ -8,8 +8,8 @@
 # silently fails to ever emit).
 # Regenerate with: go test ./internal/gmptest -run TestRequestRoundTrip -update
 
-requests-compared: 321   clean: 300   with-loss: 19   decode-errors: 2   advisory: 0   skipped-no-request: 0
-commands with a recorded request: 122 of 122   commands with loss: 16
+requests-compared: 321   clean: 299   with-loss: 20   decode-errors: 2   advisory: 0   skipped-no-request: 0
+commands with a recorded request: 122 of 122   commands with loss: 17
 
 ## Per fixture
 
@@ -52,8 +52,8 @@ create_report_config         upstream  001 clean         dropped=0   truncated=0
 create_report_format         upstream  001 ok            dropped=1   truncated=0   changed=0   added=0
 create_role                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_role                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
-create_scanner               live      001 clean         dropped=0   truncated=0   changed=0   added=0
-create_scanner               upstream  001 clean         dropped=0   truncated=0   changed=0   added=4
+create_scanner               live      001 ok            dropped=3   truncated=0   changed=0   added=0
+create_scanner               upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 create_schedule              live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_schedule              upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 create_tag                   live      001 ok            dropped=3   truncated=0   changed=0   added=0
@@ -297,8 +297,8 @@ modify_report_format         upstream  001 clean         dropped=0   truncated=0
 modify_report_format         upstream  002 clean         dropped=0   truncated=0   changed=0   added=0
 modify_role                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_role                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
-modify_scanner               live      001 clean         dropped=0   truncated=0   changed=0   added=0
-modify_scanner               upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
+modify_scanner               live      001 clean         dropped=0   truncated=0   changed=0   added=3
+modify_scanner               upstream  001 clean         dropped=0   truncated=0   changed=0   added=3
 modify_schedule              live      001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_schedule              upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_setting               live      001 clean         dropped=0   truncated=0   changed=0   added=0

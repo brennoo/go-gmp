@@ -11,7 +11,7 @@ type CreateScanner struct {
 	Host       string            `xml:"host"`
 	Port       string            `xml:"port"`
 	Type       string            `xml:"type"`
-	CaPub      string            `xml:"ca_pub"`
+	CAPub      string            `xml:"ca_pub"`
 	Credential ScannerCredential `xml:"credential"`
 	Comment    string            `xml:"comment,omitempty"`
 	Copy       string            `xml:"copy,omitempty"`

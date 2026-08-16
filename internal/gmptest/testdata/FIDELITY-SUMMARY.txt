@@ -12,7 +12,7 @@
 
 fixtures: 321   clean: 188   with-loss: 122   decode-errors: 10   advisory: 1
 commands with loss: 37 of 122
-distinct dropped paths: 189
+distinct dropped paths: 192
 
 ## Per fixture
 
@@ -213,10 +213,10 @@ get_results                  upstream  001 ok            dropped=5   truncated=0
 get_results                  upstream  002 ok            dropped=4   truncated=0   changed=0   added=57
 get_roles                    live      001 ok            dropped=2   truncated=0   changed=0   added=0
 get_roles                    upstream  001 ok            dropped=4   truncated=0   changed=0   added=3
-get_scanners                 live      001 ok            dropped=2   truncated=0   changed=0   added=37
-get_scanners                 live      002 ok            dropped=2   truncated=0   changed=0   added=37
-get_scanners                 live      003 ok            dropped=2   truncated=0   changed=3   added=37
-get_scanners                 upstream  001 ok            dropped=1   truncated=0   changed=2   added=61
+get_scanners                 live      001 ok            dropped=3   truncated=0   changed=0   added=12
+get_scanners                 live      002 ok            dropped=3   truncated=0   changed=0   added=12
+get_scanners                 live      003 ok            dropped=3   truncated=0   changed=0   added=12
+get_scanners                 upstream  001 ok            dropped=3   truncated=0   changed=0   added=37
 get_schedules                live      001 ok            dropped=2   truncated=0   changed=0   added=0
 get_schedules                live      002 ok            dropped=2   truncated=0   changed=0   added=0
 get_schedules                live      003 ok            dropped=2   truncated=0   changed=0   added=0

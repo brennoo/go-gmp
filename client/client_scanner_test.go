@@ -16,10 +16,10 @@ func TestCreateScanner(t *testing.T) {
 	cmd := &commands.CreateScanner{
 		Name:       "Default Scanner",
 		Host:       "localhost",
-		Port:       9391,
+		Port:       "9391",
 		Type:       "2",
 		CAPub:      "dummy-ca-pub",
-		Credential: &commands.ScannerCredential{ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"},
+		Credential: commands.ScannerCredential{ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"},
 	}
 	resp, err := cli.CreateScanner(context.Background(), cmd)
 	if err != nil {
@@ -60,10 +60,10 @@ func TestCreateScannerFail(t *testing.T) {
 	cmd := &commands.CreateScanner{
 		Name:       "",
 		Host:       "localhost",
-		Port:       9391,
+		Port:       "9391",
 		Type:       "2",
 		CAPub:      "dummy-ca-pub",
-		Credential: &commands.ScannerCredential{ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"},
+		Credential: commands.ScannerCredential{ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"},
 	}
 	resp, err := cli.CreateScanner(context.Background(), cmd)
 	if err != nil {
@@ -80,9 +80,10 @@ func TestModifyScanner(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
+	name := "Updated Scanner"
 	cmd := &commands.ModifyScanner{
 		ScannerID: "scanner-uuid",
-		Name:      "Updated Scanner",
+		Name:      &name,
 	}
 	resp, err := cli.ModifyScanner(context.Background(), cmd)
 	if err != nil {
@@ -104,7 +105,6 @@ func TestModifyScannerFail(t *testing.T) {
 
 	cmd := &commands.ModifyScanner{
 		ScannerID: "",
-		Name:      "",
 	}
 	resp, err := cli.ModifyScanner(context.Background(), cmd)
 	if err != nil {

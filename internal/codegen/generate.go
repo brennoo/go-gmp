@@ -1722,6 +1722,7 @@ func encodeStmt(fieldExpr string, f field) string {
 // generated types drop in beside them without renaming every call site.
 var initialisms = map[string]string{
 	"api":       "API",
+	"ca":        "CA",
 	"cpe":       "CPE",
 	"cve":       "CVE",
 	"cvss":      "CVSS",

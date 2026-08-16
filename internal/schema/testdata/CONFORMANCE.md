@@ -30,10 +30,10 @@ optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             78
-with actionable findings:     44
-actionable findings:          302  (request 155, response 147)
-suppressed findings:          464
+fully conformant:             81
+with actionable findings:     41
+actionable findings:          284  (request 145, response 139)
+suppressed findings:          451
 confirmed by fidelity corpus: 53
 in the schema, not in Go:     0
 in Go, not in the schema:     0
@@ -42,11 +42,11 @@ in Go, not in the schema:     0
 
                  actionable suppressed
   MISSING               132          0
-  EXTRA                  92          5
+  EXTRA                  81          5
   CARDINALITY            25          0
   KIND                    0          0
-  OMITEMPTY               2        459
-  TYPE                   51          0
+  OMITEMPTY               2        446
+  TYPE                   44          0
   SCHEMA-DEFECT         128          0
 
 ### Schema defects by class
@@ -86,18 +86,18 @@ taken against upstream main (155 commands). Two reasons, both expected:
   modify_config                14   EXTRA=6  CARDINALITY=3  OMITEMPTY=2  TYPE=3
   get_aggregates               12   MISSING=5  EXTRA=5  CARDINALITY=2
   get_agents                    9   MISSING=7  TYPE=2
-  get_scanners                  8   EXTRA=5  TYPE=3
   get_configs                   7   MISSING=3  EXTRA=2  TYPE=2
   get_results                   7   MISSING=1  EXTRA=4  CARDINALITY=2
-  create_scanner                5   EXTRA=3  TYPE=2
-  modify_scanner                5   EXTRA=3  TYPE=2
   get_vulns                     4   MISSING=1  EXTRA=3
   get_feeds                     3   TYPE=3
   describe_auth                 2   MISSING=1  CARDINALITY=1
   get_settings                  2   EXTRA=2
   create_config                 1   EXTRA=1
   create_port_range             1   MISSING=1
-  ... and 24 more with fewer
+  delete_alert                  1   TYPE=1
+  delete_config                 1   TYPE=1
+  delete_credential             1   TYPE=1
+  ... and 21 more with fewer
 
 ### Confirmed by both oracles
 
@@ -673,18 +673,7 @@ conformant
 
 ### create_scanner  (command_create_scanner.xml)
 
-EXTRA=3  TYPE=2
-
-  EXTRA         request  /create_scanner/credential/login
-                Go field Login string has no counterpart in the schema
-  EXTRA         request  /create_scanner/credential/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /create_scanner/credential/trash
-                Go field Trash bool has no counterpart in the schema
-  TYPE          request  /create_scanner/port
-                schema type text is text, Go Port is int
-  TYPE          request  /create_scanner/relay_port
-                schema type text is text, Go RelayPort is int
+conformant
 
 ### create_schedule  (command_create_schedule.xml)
 
@@ -2010,44 +1999,8 @@ conformant
 
 ### get_scanners  (command_get_scanners.xml)
 
-EXTRA=5  OMITEMPTY=10  TYPE=3  SCHEMA-DEFECT=10
+SCHEMA-DEFECT=10
 
-  EXTRA         response /get_scanners_response/scanner/credential/login
-                Go field Login string has no counterpart in the schema
-  EXTRA         response /get_scanners_response/scanner/key_pub
-                Go field KeyPub string has no counterpart in the schema
-  EXTRA         response /get_scanners_response/scanner/truncated
-                Go field Truncated string has no counterpart in the schema
-  EXTRA         response /get_scanners_response/sort/field/#text
-                Go commands.ScannerSortField has a `,chardata` field; schema declares no character data here
-  EXTRA         response /get_scanners_response/truncate
-                Go field Truncate string has no counterpart in the schema
-  OMITEMPTY     response /get_scanners_response/filters/name
-                schema says optional, Name string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_scanners_response/scanner/configs
-                schema says optional, Configs commands.ScannerConfigs has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_scanners_response/scanner/copy
-                schema says optional, Copy string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_scanners_response/scanner/info
-                schema says optional, Info commands.ScannerInfo has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_scanners_response/scanner/info/daemon
-                schema says optional, Daemon commands.ScannerInfoDaemon has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_scanners_response/scanner/info/params
-                schema says optional, Params commands.ScannerInfoParams has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_scanners_response/scanner/info/protocol
-                schema says optional, Protocol commands.ScannerInfoProtocol has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_scanners_response/scanner/info/scanner
-                schema says optional, Scanner commands.ScannerInfoScanner has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_scanners_response/scanner/tasks
-                schema says optional, Tasks commands.ScannerTasks has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_scanners_response/scanner/user_tags
-                schema says optional, UserTags commands.ScannerUserTags has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  TYPE          response /get_scanners_response/scanner/credential/trash
-                schema type boolean is text ("" is true), Go Trash is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_scanners_response/scanner/in_use
-                schema type boolean is text ("" is true), Go InUse is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_scanners_response/scanner/writable
-                schema type boolean is text ("" is true), Go Writable is bool: '7' fails to decode and '1' re-emits as 'true'
   SCHEMA-DEFECT response /get_scanners_response/scanner/configs/config/permissions
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_scanners_response/scanner/info/daemon/name
@@ -2404,24 +2357,7 @@ conformant
 
 ### modify_scanner  (command_modify_scanner.xml)
 
-EXTRA=3  OMITEMPTY=3  TYPE=2
-
-  EXTRA         request  /modify_scanner/credential/login
-                Go field Login string has no counterpart in the schema
-  EXTRA         request  /modify_scanner/credential/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /modify_scanner/credential/trash
-                Go field Trash bool has no counterpart in the schema
-  OMITEMPTY     request  /modify_scanner/host
-                schema says required, Host is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /modify_scanner/port
-                schema says required, Port is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /modify_scanner/type
-                schema says required, Type is tagged omitempty  [suppressed: request-side over-constraint]
-  TYPE          request  /modify_scanner/port
-                schema type text is text, Go Port is int
-  TYPE          request  /modify_scanner/relay_port
-                schema type text is text, Go RelayPort is int
+conformant
 
 ### modify_schedule  (command_modify_schedule.xml)
 

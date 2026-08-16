@@ -723,27 +723,16 @@ func (r *captureRun) lifecycleScanner(st *captureState) {
 		return
 	}
 
-	rawScanner := fmt.Sprintf(`<create_scanner><name>%s</name><comment>%s</comment>`+
-		`<host>127.0.0.1</host><port>9391</port><type>2</type><ca_pub>%s</ca_pub>`+
-		`<credential id="%s"/></create_scanner>`,
-		r.resourceName("scanner"), captureComment, xmlEscape(st.certPEM), st.certCredID)
-
-	// ScannerCredential's <name>, <login> and <trash> are not omitempty, so the
-	// typed request cannot express the bare <credential id="…"/> GMP documents.
-	resp := r.sendWithFallbacks("create_scanner", "lifecycle: create_scanner, ca_pub redacted",
+	resp, _ := r.send("create_scanner", "lifecycle: create_scanner, ca_pub redacted",
 		&commands.CreateScanner{
 			Name:       r.resourceName("scanner"),
 			Comment:    captureComment,
 			Host:       "127.0.0.1",
-			Port:       9391,
+			Port:       "9391",
 			Type:       "2",
 			CAPub:      st.certPEM,
-			Credential: &commands.ScannerCredential{ID: st.certCredID},
-		},
-		[]rawAttempt{{
-			desc: `lifecycle: create_scanner with a bare <credential id="…"/>, ca_pub redacted`,
-			xml:  rawScanner,
-		}})
+			Credential: commands.ScannerCredential{ID: st.certCredID},
+		})
 
 	st.scannerID = r.acceptCreated("create_scanner", "lifecycle: create_scanner", resp, func(id string) {
 		r.send("delete_scanner", "teardown: delete_scanner ultimate",
@@ -754,8 +743,15 @@ func (r *captureRun) lifecycleScanner(st *captureState) {
 	}
 	r.getByID("get_scanners", "ScannerID", st.scannerID,
 		"lifecycle: get_scanners for the scanner just created, ca_pub redacted")
+	comment := captureComment + " (modified)"
 	r.send("modify_scanner", "lifecycle: modify_scanner comment",
-		&commands.ModifyScanner{ScannerID: st.scannerID, Comment: captureComment + " (modified)"})
+		&commands.ModifyScanner{
+			ScannerID: st.scannerID,
+			Host:      "127.0.0.1",
+			Port:      "9391",
+			Type:      "2",
+			Comment:   &comment,
+		})
 }
 
 // lifecycleTask creates a container task: a task with no target, which is the
@@ -1078,9 +1074,4 @@ func (r *captureRun) verifyAReportFormat() {
 // left behind. Registered in TestCaptureLive, not called from run().
 func (r *captureRun) captureEmptyTrashcan() {
 	r.send("empty_trashcan", "teardown: empty_trashcan after every delete", &commands.EmptyTrashcan{})
-}
-
-func xmlEscape(s string) string {
-	rep := strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;", `"`, "&quot;")
-	return rep.Replace(s)
 }

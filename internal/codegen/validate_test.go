@@ -4018,48 +4018,19 @@ func TestValidateTaskGeneratedMatchesOrImproves(t *testing.T) {
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
 
-// TestValidateScannerBeforeMatchesKnownConformance is scanner's counterpart to
-// TestValidateTargetBeforeMatchesKnownConformance. scanner is review-only, so
-// this pins the pre-swap gate against the still-hand-written
-// commands/{create_scanner,get_scanners,modify_scanner}.go: create_scanner
-// and modify_scanner each carry 3 EXTRA findings from a single root cause —
-// both reuse get_scanners.go's response-shaped ScannerCredential
-// (Login/Name/Trash) on the request side, where the schema's <credential>
-// pattern for these two commands declares only @id — plus 2 TYPE findings
-// (port/relay_port are schema text, not numeric). modify_scanner also
-// carries 3 suppressed OMITEMPTY findings, the familiar request-side
-// over-constraint class (host/port/type tagged omitempty against the
-// schema's required attribs). get_scanners carries the family's whole
-// actionable load: 5 EXTRA (a stray top-level truncate, Scanner.KeyPub and
-// .Truncated, ScannerCredential.Login again, and ScannerSortField's
-// chardata) alongside 3 TYPE (in_use/writable/credential.trash are schema
-// booleans held in bare bool) and 10 SCHEMA-DEFECT findings — 8
-// empty-pattern (info/{scanner,daemon,protocol}'s name+version, already
-// allowlisted for a dozen other commands) plus 2 no-pattern
-// (info/description, info/params/param — this defect class's first
-// appearance in the allowlist). 10 suppressed OMITEMPTY findings round it
-// out (Copy/Configs/Info/its four children/Tasks/UserTags gaining the
-// schema's own omitempty, plus Filters.Name). See docs/review-2026-08.md's
-// `scanner` review-only section for the full field-by-field list.
+// TestValidateScannerBeforeMatchesKnownConformance is scanner's counterpart
+// to TestValidateTaskBeforeMatchesKnownConformance. scanner is adopted, so
+// this is a drift detector on the committed commands/ files. Pre-adoption
+// findings are recorded in docs/review-2026-08.md.
 func TestValidateScannerBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_scanner")
 
 	want := map[string]counts{
-		"create_scanner": {
-			actionable: map[string]int{schema.CatExtra: 3, schema.CatType: 2},
-			suppressed: map[string]int{},
-		},
-		"modify_scanner": {
-			actionable: map[string]int{schema.CatExtra: 3, schema.CatType: 2},
-			suppressed: map[string]int{schema.CatOmitEmpty: 3},
-		},
+		"create_scanner": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_scanner": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_scanners": {
-			actionable: map[string]int{
-				schema.CatExtra:  5,
-				schema.CatType:   3,
-				schema.CatDefect: 10,
-			},
-			suppressed: map[string]int{schema.CatOmitEmpty: 10},
+			actionable: map[string]int{schema.CatDefect: 10},
+			suppressed: map[string]int{},
 		},
 	}
 	for _, res := range before {
@@ -4083,12 +4054,6 @@ func TestValidateScannerBeforeMatchesKnownConformance(t *testing.T) {
 // .ca_pub/.relay_host) came from live gvmd evidence, not from a
 // generator-vs-schema mismatch, so none shows up as a suppressed finding
 // here.
-//
-// T-21 used to mean certificate_info regressed from the hand-written code's
-// correct 8-field struct to a bare string with no finding to flag the loss;
-// now fixed, generation resolves it into the same 8 fields. This family
-// stays review-only regardless, per the rank-order method in
-// docs/review-2026-08.md's `scanner` section (unrelated to T-21).
 func TestValidateScannerGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_scanner")
 

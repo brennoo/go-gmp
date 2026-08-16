@@ -13,7 +13,7 @@ type ModifyScanner struct {
 	Type       string             `xml:"type"`
 	Comment    *string            `xml:"comment,omitempty"`
 	Name       *string            `xml:"name,omitempty"`
-	CaPub      *string            `xml:"ca_pub,omitempty"`
+	CAPub      *string            `xml:"ca_pub,omitempty"`
 	Credential *ScannerCredential `xml:"credential,omitempty"`
 	RelayHost  *string            `xml:"relay_host,omitempty"`
 	RelayPort  string             `xml:"relay_port,omitempty"`

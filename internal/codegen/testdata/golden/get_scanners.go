@@ -85,12 +85,12 @@ type Scanner struct {
 	Writable         GMPBool                `xml:"writable"`
 	InUse            GMPBool                `xml:"in_use"`
 	Permissions      ScannerPermissions     `xml:"permissions"`
-	CaPubInfo        ScannerCaPubInfo       `xml:"ca_pub_info"`
+	CAPubInfo        ScannerCAPubInfo       `xml:"ca_pub_info"`
 	CertificateInfo  ScannerCertificateInfo `xml:"certificate_info"`
 	Host             string                 `xml:"host"`
 	Port             string                 `xml:"port"`
 	Type             string                 `xml:"type"`
-	CaPub            string                 `xml:"ca_pub"`
+	CAPub            string                 `xml:"ca_pub"`
 	Credential       GetScannersCredential  `xml:"credential"`
 	RelayHost        string                 `xml:"relay_host"`
 	RelayPort        string                 `xml:"relay_port"`
@@ -116,8 +116,8 @@ type ScannerPermission struct {
 	Name string `xml:"name"`
 }
 
-// ScannerCaPubInfo is the <ca_pub_info> element of get_scanners. See the GMP protocol docs for details.
-type ScannerCaPubInfo struct {
+// ScannerCAPubInfo is the <ca_pub_info> element of get_scanners. See the GMP protocol docs for details.
+type ScannerCAPubInfo struct {
 	TimeStatus        string `xml:"time_status"`
 	ActivationTime    string `xml:"activation_time"`
 	ExpirationTime    string `xml:"expiration_time"`

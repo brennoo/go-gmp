@@ -782,7 +782,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.CreateScanner); ok {
-		if cmd.Name == "Default Scanner" && cmd.Host == "localhost" && cmd.Port == 9391 && cmd.Type == "2" && cmd.CAPub != "" && cmd.Credential != nil && cmd.Credential.ID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+		if cmd.Name == "Default Scanner" && cmd.Host == "localhost" && cmd.Port == "9391" && cmd.Type == "2" && cmd.CAPub != "" && cmd.Credential.ID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
 			(*response.(*commands.CreateScannerResponse)).Status = "201"
 			(*response.(*commands.CreateScannerResponse)).StatusText = "OK, resource created"
 			(*response.(*commands.CreateScannerResponse)).ID = "814cd30f-dee1-4d58-851d-21b8d0c048e3"
@@ -793,7 +793,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.ModifyScanner); ok {
-		if cmd.ScannerID == "scanner-uuid" && cmd.Name == "Updated Scanner" {
+		if cmd.ScannerID == "scanner-uuid" && cmd.Name != nil && *cmd.Name == "Updated Scanner" {
 			(*response.(*commands.ModifyScannerResponse)).Status = "200"
 			(*response.(*commands.ModifyScannerResponse)).StatusText = "OK"
 		} else {
