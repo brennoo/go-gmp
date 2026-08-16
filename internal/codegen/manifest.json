@@ -71,6 +71,11 @@
     {
       "name": "target",
       "commands": ["create_target", "get_targets", "modify_target"]
+    },
+    {
+      "name": "task",
+      "commands": ["create_task", "get_tasks", "modify_task"],
+      "review_only": true
     }
   ]
 }

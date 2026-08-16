@@ -369,6 +369,26 @@ var PointerOverrides = map[string]PointerOverride{
 	"modify_target.comment": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
 	},
+	// modify_task: live gvmd 26.36.1 experiment run against review-only
+	// task's deferred question (created a throwaway container task and a
+	// throwaway second user via create_user, then probed comment, name and
+	// observers via RawXML and read the result back through get_tasks).
+	// comment behaves like modify_alert's (omit leaves the stored value
+	// unchanged, explicit-empty clears it to ""). observers needed the
+	// throwaway user's login as a real value first (an arbitrary chardata
+	// string is rejected with "400 User name error"); once set, it behaves
+	// like comment (omit leaves it unchanged, explicit-empty clears it). name
+	// did not distinguish the two: an explicit-empty <name></name> returns
+	// 200 OK but leaves the stored name unchanged, indistinguishable from
+	// omitting the element entirely, so it keeps the mechanical string
+	// default. See docs/review-2026-08.md's `task` review-only section for
+	// the full experiment record.
+	"modify_task.comment": {
+		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
+	},
+	"modify_task.observers": {
+		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <observers> are distinct requests",
+	},
 }
 
 // CommandWarning attaches a public-facing behavioral-hazard note to a
@@ -598,5 +618,35 @@ var DefectAllowlist = map[DefectKey]DefectAllowlistEntry{
 	},
 	{Command: "get_targets", Class: "empty-pattern", Path: "/get_targets_response/target/tasks/task/permissions"}: {
 		Reason: "T-15; docs/review-2026-08.md `target`",
+	},
+	{Command: "get_tasks", Class: "duplicate-ref", Path: "/get_tasks_response/task/last_report/report/result_count/hole"}: {
+		Reason: "T-9; docs/review-2026-08.md `task`",
+	},
+	{Command: "get_tasks", Class: "duplicate-ref", Path: "/get_tasks_response/task/last_report/report/result_count/info"}: {
+		Reason: "T-9; docs/review-2026-08.md `task`",
+	},
+	{Command: "get_tasks", Class: "duplicate-ref", Path: "/get_tasks_response/task/last_report/report/result_count/warning"}: {
+		Reason: "T-9; docs/review-2026-08.md `task`",
+	},
+	{Command: "get_tasks", Class: "duplicate-ref", Path: "/get_tasks_response/task/name"}: {
+		Reason: "T-9; docs/review-2026-08.md `task`",
+	},
+	{Command: "get_tasks", Class: "duplicate-ref", Path: "/get_tasks_response/task/schedule"}: {
+		Reason: "T-9; docs/review-2026-08.md `task`",
+	},
+	{Command: "get_tasks", Class: "duplicate-ref", Path: "/get_tasks_response/task/schedule_periods"}: {
+		Reason: "T-9; docs/review-2026-08.md `task`",
+	},
+	{Command: "get_tasks", Class: "empty-pattern", Path: "/get_tasks_response/task/alert/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `task`",
+	},
+	{Command: "get_tasks", Class: "empty-pattern", Path: "/get_tasks_response/task/config/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `task`",
+	},
+	{Command: "get_tasks", Class: "empty-pattern", Path: "/get_tasks_response/task/scanner/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `task`",
+	},
+	{Command: "get_tasks", Class: "empty-pattern", Path: "/get_tasks_response/task/target/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `task`",
 	},
 }
