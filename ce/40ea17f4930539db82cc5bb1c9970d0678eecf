@@ -1,0 +1,51 @@
+docs/review-2026-08.md
+  s_3d4acddbc94940::t_2fa385d03ff7b0 1558-1621,2392
+internal/codegen/generate.go
+  s_3d4acddbc94940::t_4e04673fe7febc 180,187,1719-1722,1730,1736-1737
+internal/codegen/manifest.json
+  s_3d4acddbc94940::t_a6897e7faae877 70-74
+internal/codegen/manifest_test.go
+  s_3d4acddbc94940::t_2911fe4c89f8c8 44-47,69-82,97-104,112-113,120-131
+internal/codegen/overrides.go
+  s_3d4acddbc94940::t_aeff12dc525272 353-371,469-482,575-601
+internal/codegen/testdata/golden/create_target.go
+  s_3d4acddbc94940::t_2392d5b06220bb 1-61
+internal/codegen/testdata/golden/get_targets.go
+  s_3d4acddbc94940::t_9ebd81520d5c78 1-204
+internal/codegen/testdata/golden/modify_target.go
+  s_3d4acddbc94940::t_e03e6d6f44ae05 1-54
+internal/codegen/testdata/golden/target_shared.go
+  s_3d4acddbc94940::t_c35ca4528a1ea3 1-43
+internal/codegen/testdata/schema/create_target.json
+  s_3d4acddbc94940::t_2215756b2735e4 1-417
+internal/codegen/testdata/schema/get_targets.json
+  s_3d4acddbc94940::t_be7028bccc6e32 1-1063
+internal/codegen/testdata/schema/modify_target.json
+  s_3d4acddbc94940::t_55b7df601eba26 1-366
+internal/codegen/validate.go
+  s_3d4acddbc94940::t_9ef63b8c5868a9 100-104,316-327
+internal/codegen/validate_test.go
+  s_3d4acddbc94940::t_c88eca18a278e9 3917-3995
+internal/schema/parse.go
+  s_3d4acddbc94940::t_915ec1c1470c76 165,480,536-540,542,548,551,555,560,564,570,585,589-604
+internal/schema/parse_test.go
+  s_3d4acddbc94940::t_8bfd436d0031f5 491-581
+internal/schema/testdata/CONFORMANCE.md
+  s_3d4acddbc94940::t_62f5e5759ab3bb 34,36,43,49,69,81-82,2195,2367-2368,2384,2480-2487,2490-2493
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "ce40ea17f4930539db82cc5bb1c9970d0678eecf",
+  "prompts": {},
+  "sessions": {
+    "s_3d4acddbc94940": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_3d4acddbc94940",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
