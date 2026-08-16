@@ -191,7 +191,7 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 					resp.Target = allTargets[start:end]
 				}
 			}
-			resp.TargetCount = &commands.TargetCount{Filtered: 3}
+			resp.TargetCount = commands.TargetCount{Filtered: 3}
 		}
 	}
 

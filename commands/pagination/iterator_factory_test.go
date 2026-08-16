@@ -77,19 +77,6 @@ func TestResultsIterator_TotalNilCount(t *testing.T) {
 	}
 }
 
-func TestTargetsIterator_TotalNilCount(t *testing.T) {
-	client := &fakeAllClient{
-		targetsResp: &commands.GetTargetsResponse{Target: []commands.Target{{ID: "t1"}}, TargetCount: nil},
-	}
-	it := NewTargetIterator(client, context.Background(), PaginationOptions{Page: 1, PageSize: 2})
-	if !it.Next() {
-		t.Fatalf("expected first Next() true")
-	}
-	if it.Total() != 0 {
-		t.Fatalf("expected total 0 with nil TargetCount, got %d", it.Total())
-	}
-}
-
 func TestSettingsIterator_Layouts_TotalNil(t *testing.T) {
 	// SettingsList variant
 	client1 := &fakeAllClient{

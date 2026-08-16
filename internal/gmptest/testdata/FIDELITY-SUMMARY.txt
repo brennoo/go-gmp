@@ -10,9 +10,9 @@
 # 'added' is elements the round trip invents (non-pointer fields without
 # omitempty, zero time.Time) and is not loss.
 
-fixtures: 321   clean: 188   with-loss: 120   decode-errors: 12   advisory: 1
+fixtures: 321   clean: 188   with-loss: 122   decode-errors: 10   advisory: 1
 commands with loss: 37 of 122
-distinct dropped paths: 221
+distinct dropped paths: 197
 
 ## Per fixture
 
@@ -232,11 +232,11 @@ get_tags                     live      001 ok            dropped=2   truncated=0
 get_tags                     live      002 ok            dropped=2   truncated=0   changed=0   added=0
 get_tags                     live      003 ok            dropped=3   truncated=0   changed=0   added=0
 get_tags                     upstream  001 ok            dropped=3   truncated=0   changed=0   added=15
-get_targets                  live      001 ok            dropped=6   truncated=0   changed=0   added=0
-get_targets                  live      002 ok            dropped=6   truncated=0   changed=0   added=0
-get_targets                  live      003 ok            dropped=29  truncated=0   changed=2   added=0
-get_targets                  upstream  001 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0
-get_targets                  upstream  002 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0
+get_targets                  live      001 ok            dropped=2   truncated=0   changed=0   added=0
+get_targets                  live      002 ok            dropped=2   truncated=0   changed=0   added=0
+get_targets                  live      003 ok            dropped=3   truncated=0   changed=0   added=1
+get_targets                  upstream  001 ok            dropped=1   truncated=0   changed=1   added=54
+get_targets                  upstream  002 ok            dropped=1   truncated=0   changed=1   added=54
 get_tasks                    live      001 ok            dropped=2   truncated=0   changed=0   added=1
 get_tasks                    live      002 ok            dropped=2   truncated=0   changed=0   added=1
 get_tasks                    live      003 ok            dropped=11  truncated=0   changed=1   added=2

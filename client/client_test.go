@@ -110,7 +110,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 						Name: "Test Target 2",
 					},
 				}
-				resp.TargetCount = &commands.TargetCount{
+				resp.TargetCount = commands.TargetCount{
 					Filtered: 2,
 					Page:     1,
 				}

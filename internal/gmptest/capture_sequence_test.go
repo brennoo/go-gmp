@@ -431,7 +431,7 @@ func (r *captureRun) lifecycleTarget(st *captureState) {
 		req.PortList = &commands.TargetPortList{ID: st.portListID}
 	}
 	if st.credentialID != "" {
-		req.SSHCredential = &commands.TargetCredential{ID: st.credentialID, Port: "22"}
+		req.SSHCredential = &commands.TargetSSHCredential{ID: st.credentialID, Port: "22"}
 	}
 
 	st.targetID = r.created("create_target",
@@ -445,8 +445,9 @@ func (r *captureRun) lifecycleTarget(st *captureState) {
 	}
 	r.getByID("get_targets", "TargetID", st.targetID,
 		"lifecycle: get_targets for the target just created")
+	modifiedComment := captureComment + " (modified)"
 	r.send("modify_target", "lifecycle: modify_target comment",
-		&commands.ModifyTarget{TargetID: st.targetID, Comment: captureComment + " (modified)"})
+		&commands.ModifyTarget{TargetID: st.targetID, Comment: &modifiedComment})
 }
 
 // lifecycleFilter also produces the restore fixture: it is the one resource

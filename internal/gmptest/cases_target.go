@@ -73,7 +73,7 @@ func init() {
 
 	RegisterRequestCase("modify_target", "flags_unset", &commands.ModifyTarget{
 		TargetID: "1a2b3c4d-5e6f-7081-92a3-b4c5d6e7f8a9",
-		Comment:  "Renamed after the office move",
+		Comment:  ptr("Renamed after the office move"),
 	})
 
 	RegisterRequestCase("modify_target", "flags_false", &commands.ModifyTarget{

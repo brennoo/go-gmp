@@ -70,8 +70,7 @@
     },
     {
       "name": "target",
-      "commands": ["create_target", "get_targets", "modify_target"],
-      "review_only": true
+      "commands": ["create_target", "get_targets", "modify_target"]
     }
   ]
 }

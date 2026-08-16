@@ -29,23 +29,23 @@ them, so response-side optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             72
-with actionable findings:     50
-actionable findings:          436  (request 221, response 215)
-suppressed findings:          537
-confirmed by fidelity corpus: 63
+fully conformant:             75
+with actionable findings:     47
+actionable findings:          370  (request 185, response 185)
+suppressed findings:          462
+confirmed by fidelity corpus: 55
 in the schema, not in Go:     0
 in Go, not in the schema:     0
 
 ### Findings by category
 
                  actionable suppressed
-  MISSING               155          0
-  EXTRA                 180          5
+  MISSING               143          0
+  EXTRA                 134          5
   CARDINALITY            32          0
-  KIND                    3          0
-  OMITEMPTY               2        532
-  TYPE                   64          0
+  KIND                    0          0
+  OMITEMPTY               2        457
+  TYPE                   59          0
   SCHEMA-DEFECT         114          0
 
 ### Schema defects by class
@@ -79,13 +79,10 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_reports                  70   MISSING=55  EXTRA=6  CARDINALITY=5  TYPE=4
   create_report                52   MISSING=38  EXTRA=5  CARDINALITY=5  TYPE=4
   get_tasks                    38   MISSING=9  EXTRA=14  CARDINALITY=7  TYPE=8
-  get_targets                  30   MISSING=12  EXTRA=10  KIND=3  TYPE=5
   get_info                     22   MISSING=12  EXTRA=7  TYPE=3
-  modify_target                19   EXTRA=19
   delete_agents                18   EXTRA=18
   get_nvts                     18   MISSING=6  EXTRA=1  CARDINALITY=7  TYPE=4
   modify_agents                18   EXTRA=18
-  create_target                17   EXTRA=17
   create_task                  17   MISSING=1  EXTRA=15  CARDINALITY=1
   modify_config                14   EXTRA=6  CARDINALITY=3  OMITEMPTY=2  TYPE=3
   modify_task                  13   MISSING=1  EXTRA=12
@@ -96,7 +93,10 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_results                   6   MISSING=1  EXTRA=4  CARDINALITY=1
   create_scanner                5   EXTRA=3  TYPE=2
   modify_scanner                5   EXTRA=3  TYPE=2
-  ... and 30 more with fewer
+  get_vulns                     4   MISSING=1  EXTRA=3
+  get_feeds                     3   TYPE=3
+  describe_auth                 2   MISSING=1  CARDINALITY=1
+  ... and 27 more with fewer
 
 ### Confirmed by both oracles
 
@@ -161,14 +161,6 @@ attributes, and one of its own captured request fixtures uses three of them.
   get_reports              /get_reports_response/reports
   get_reports              /get_reports_response/sort
   get_results              /get_results_response/result/nvt/severities/severity
-  get_targets              /get_targets_response/filters/keywords
-  get_targets              /get_targets_response/target/esxi_credential/trash
-  get_targets              /get_targets_response/target/krb5_credential/trash
-  get_targets              /get_targets_response/target/port_list/trash
-  get_targets              /get_targets_response/target/smb_credential/trash
-  get_targets              /get_targets_response/target/snmp_credential/trash
-  get_targets              /get_targets_response/target/ssh_credential/trash
-  get_targets              /get_targets_response/target/ssh_elevate_credential/trash
   get_tasks                /get_tasks_response/task/last_report/report/result_count
   get_tasks                /get_tasks_response/task/report_count/*
   help                     /help_response/schema
@@ -701,66 +693,7 @@ conformant
 
 ### create_target  (command_create_target.xml)
 
-EXTRA=17  OMITEMPTY=12
-
-  EXTRA         request  /create_target/esxi_credential/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /create_target/esxi_credential/port
-                Go field Port string has no counterpart in the schema
-  EXTRA         request  /create_target/esxi_lsc_credential/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /create_target/esxi_lsc_credential/port
-                Go field Port string has no counterpart in the schema
-  EXTRA         request  /create_target/krb5_credential/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /create_target/krb5_credential/port
-                Go field Port string has no counterpart in the schema
-  EXTRA         request  /create_target/port_list/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /create_target/smb_credential/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /create_target/smb_credential/port
-                Go field Port string has no counterpart in the schema
-  EXTRA         request  /create_target/smb_lsc_credential/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /create_target/smb_lsc_credential/port
-                Go field Port string has no counterpart in the schema
-  EXTRA         request  /create_target/snmp_credential/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /create_target/snmp_credential/port
-                Go field Port string has no counterpart in the schema
-  EXTRA         request  /create_target/ssh_credential/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /create_target/ssh_elevate_credential/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /create_target/ssh_elevate_credential/port
-                Go field Port string has no counterpart in the schema
-  EXTRA         request  /create_target/ssh_lsc_credential/name
-                Go field Name string has no counterpart in the schema
-  OMITEMPTY     request  /create_target/asset_hosts/@filter
-                schema says required, Filter is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /create_target/esxi_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /create_target/esxi_lsc_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /create_target/krb5_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /create_target/name
-                schema says required, Name is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /create_target/port_list/@id
-                schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /create_target/smb_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /create_target/smb_lsc_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /create_target/snmp_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /create_target/ssh_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /create_target/ssh_elevate_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /create_target/ssh_lsc_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
+conformant
 
 ### create_task  (command_create_task.xml)
 
@@ -2192,174 +2125,8 @@ SCHEMA-DEFECT=1
 
 ### get_targets  (command_get_targets.xml)
 
-MISSING=12  EXTRA=10  KIND=3  OMITEMPTY=53  TYPE=5  SCHEMA-DEFECT=9
+SCHEMA-DEFECT=9
 
-  MISSING       response /get_targets_response/filters/keywords
-                required elem keywords is not modelled  [fidelity]
-  MISSING       response /get_targets_response/sort/#text
-                schema also declares character data (text) here; Go *commands.TargetSort has no `,chardata` field
-  MISSING       response /get_targets_response/sort/field/*
-                schema declares 1 children; Go models this as scalar string
-  MISSING       response /get_targets_response/target/esxi_credential/trash
-                required elem trash is not modelled  [fidelity]
-  MISSING       response /get_targets_response/target/krb5_credential/trash
-                required elem trash is not modelled  [fidelity]
-  MISSING       response /get_targets_response/target/port_list/trash
-                required elem trash is not modelled  [fidelity]
-  MISSING       response /get_targets_response/target/smb_credential/trash
-                required elem trash is not modelled  [fidelity]
-  MISSING       response /get_targets_response/target/snmp_credential/trash
-                required elem trash is not modelled  [fidelity]
-  MISSING       response /get_targets_response/target/ssh_credential/trash
-                required elem trash is not modelled  [fidelity]
-  MISSING       response /get_targets_response/target/ssh_elevate_credential/trash
-                required elem trash is not modelled  [fidelity]
-  MISSING       response /get_targets_response/target/tasks/task/name
-                required elem name is not modelled
-  MISSING       response /get_targets_response/target/user_tags/tag/comment
-                required elem comment is not modelled
-  EXTRA         response /get_targets_response/filters/comment
-                Go field Comment string has no counterpart in the schema
-  EXTRA         response /get_targets_response/sort/order
-                Go field Order string has no counterpart in the schema
-  EXTRA         response /get_targets_response/target/esxi_credential/port
-                Go field Port string has no counterpart in the schema
-  EXTRA         response /get_targets_response/target/krb5_credential/port
-                Go field Port string has no counterpart in the schema
-  EXTRA         response /get_targets_response/target/port_range/*
-                schema declares a "name" leaf; Go models 2 children
-  EXTRA         response /get_targets_response/target/smb_credential/port
-                Go field Port string has no counterpart in the schema
-  EXTRA         response /get_targets_response/target/snmp_credential/port
-                Go field Port string has no counterpart in the schema
-  EXTRA         response /get_targets_response/target/ssh_elevate_credential/port
-                Go field Port string has no counterpart in the schema
-  EXTRA         response /get_targets_response/target/tasks/@count
-                Go field Count int has no counterpart in the schema
-  EXTRA         response /get_targets_response/truncated
-                Go field Truncated string has no counterpart in the schema
-  KIND          response /get_targets_response/target/user_tags/count
-                schema declares elem, Go models it as attr (Count int)
-  KIND          response /get_targets_response/target_count/filtered
-                schema declares elem, Go models it as attr (Filtered int)
-  KIND          response /get_targets_response/target_count/page
-                schema declares elem, Go models it as attr (Page int)
-  OMITEMPTY     response /get_targets_response/filters
-                schema says required, Filters is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/filters/@id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/filters/term
-                schema says required, Term is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/sort
-                schema says required, Sort is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/sort/field
-                schema says required, Field is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/alive_tests
-                schema says required, AliveTests is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/allow_simultaneous_ips
-                schema says required, AllowSimultaneousIPs is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/comment
-                schema says required, Comment is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/creation_time
-                schema says required, CreationTime is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/esxi_credential
-                schema says required, ESXICredential is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/esxi_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/esxi_credential/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/exclude_hosts
-                schema says required, ExcludeHosts is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/hosts
-                schema says required, Hosts is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/in_use
-                schema says required, InUse is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/krb5_credential
-                schema says required, Krb5Credential is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/krb5_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/krb5_credential/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/max_hosts
-                schema says required, MaxHosts is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/modification_time
-                schema says required, ModificationTime is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/owner
-                schema says required, Owner is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/owner/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/permissions
-                schema says required, Permissions is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/permissions/permission/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/port_list
-                schema says required, PortList is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/port_list/@id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/port_list/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/port_range
-                schema says required, PortRange is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/reverse_lookup_only
-                schema says required, ReverseLookupOnly is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/reverse_lookup_unify
-                schema says required, ReverseLookupUnify is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/smb_credential
-                schema says required, SMBCredential is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/smb_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/smb_credential/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/snmp_credential
-                schema says required, SNMPCredential is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/snmp_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/snmp_credential/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/ssh_credential
-                schema says required, SSHCredential is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/ssh_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/ssh_credential/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/ssh_credential/port
-                schema says required, Port is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/ssh_elevate_credential
-                schema says required, SSHElevateCredential is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/ssh_elevate_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/ssh_elevate_credential/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/tasks/task/@id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/user_tags/tag/@id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/user_tags/tag/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/user_tags/tag/value
-                schema says required, Value is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target/writable
-                schema says required, Writable is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/target_count
-                schema says required, TargetCount is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/targets
-                schema says required, Targets is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/targets/@max
-                schema says required, Max is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_targets_response/targets/@start
-                schema says required, Start is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  TYPE          response /get_targets_response/target/allow_simultaneous_ips
-                schema type boolean is text ("" is true), Go AllowSimultaneousIPs is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_targets_response/target/in_use
-                schema type boolean is text ("" is true), Go InUse is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_targets_response/target/reverse_lookup_only
-                schema type boolean is text ("" is true), Go ReverseLookupOnly is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_targets_response/target/reverse_lookup_unify
-                schema type boolean is text ("" is true), Go ReverseLookupUnify is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_targets_response/target/writable
-                schema type boolean is text ("" is true), Go Writable is bool: '7' fails to decode and '1' re-emits as 'true'
   SCHEMA-DEFECT response /get_targets_response/target/esxi_credential/permissions
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_targets_response/target/krb5_credential/permissions
@@ -2750,66 +2517,7 @@ conformant
 
 ### modify_target  (command_modify_target.xml)
 
-EXTRA=19  OMITEMPTY=10
-
-  EXTRA         request  /modify_target/esxi_credential/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /modify_target/esxi_credential/port
-                Go field Port string has no counterpart in the schema
-  EXTRA         request  /modify_target/esxi_lsc_credential/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /modify_target/esxi_lsc_credential/port
-                Go field Port string has no counterpart in the schema
-  EXTRA         request  /modify_target/krb5_credential/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /modify_target/krb5_credential/port
-                Go field Port string has no counterpart in the schema
-  EXTRA         request  /modify_target/port_list/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /modify_target/smb_credential/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /modify_target/smb_credential/port
-                Go field Port string has no counterpart in the schema
-  EXTRA         request  /modify_target/smb_lsc_credential/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /modify_target/smb_lsc_credential/port
-                Go field Port string has no counterpart in the schema
-  EXTRA         request  /modify_target/snmp_credential/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /modify_target/snmp_credential/port
-                Go field Port string has no counterpart in the schema
-  EXTRA         request  /modify_target/ssh_credential/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /modify_target/ssh_credential/port
-                Go field Port string has no counterpart in the schema
-  EXTRA         request  /modify_target/ssh_elevate_credential/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /modify_target/ssh_elevate_credential/port
-                Go field Port string has no counterpart in the schema
-  EXTRA         request  /modify_target/ssh_lsc_credential/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /modify_target/ssh_lsc_credential/port
-                Go field Port string has no counterpart in the schema
-  OMITEMPTY     request  /modify_target/esxi_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /modify_target/esxi_lsc_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /modify_target/krb5_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /modify_target/port_list/@id
-                schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /modify_target/smb_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /modify_target/smb_lsc_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /modify_target/snmp_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /modify_target/ssh_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /modify_target/ssh_elevate_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
-  OMITEMPTY     request  /modify_target/ssh_lsc_credential/@id
-                schema says required, ID is tagged omitempty  [suppressed: request-side over-constraint]
+conformant
 
 ### modify_task  (command_modify_task.xml)
 

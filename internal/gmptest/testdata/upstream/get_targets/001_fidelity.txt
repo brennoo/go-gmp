@@ -1,4 +1,72 @@
 # fidelity: get_targets / upstream / 001
 # provenance: command_get_targets.xml, command "get_targets", example 1
-decode: error
-error: strconv.ParseBool: parsing "7": invalid syntax
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_targets_response/truncated                                          x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_targets_response/target/in_use/#text                                "7" -> "1"
+
+ADDED
+  /get_targets_response/filters                                            x1
+  /get_targets_response/filters/@id                                        x1
+  /get_targets_response/filters/keywords                                   x1
+  /get_targets_response/filters/term                                       x1
+  /get_targets_response/sort                                               x1
+  /get_targets_response/sort/field                                         x1
+  /get_targets_response/sort/field/order                                   x1
+  /get_targets_response/target/alive_tests                                 x1
+  /get_targets_response/target/allow_simultaneous_ips                      x1
+  /get_targets_response/target/allow_simultaneous_ips/#text                x1
+  /get_targets_response/target/esxi_credential/trash                       x1
+  /get_targets_response/target/esxi_credential/trash/#text                 x1
+  /get_targets_response/target/exclude_hosts                               x1
+  /get_targets_response/target/krb5_credential                             x1
+  /get_targets_response/target/krb5_credential/@id                         x1
+  /get_targets_response/target/krb5_credential/name                        x1
+  /get_targets_response/target/krb5_credential/trash                       x1
+  /get_targets_response/target/krb5_credential/trash/#text                 x1
+  /get_targets_response/target/owner                                       x1
+  /get_targets_response/target/owner/name                                  x1
+  /get_targets_response/target/permissions                                 x1
+  /get_targets_response/target/port_list                                   x1
+  /get_targets_response/target/port_list/@id                               x1
+  /get_targets_response/target/port_list/name                              x1
+  /get_targets_response/target/port_list/trash                             x1
+  /get_targets_response/target/port_list/trash/#text                       x1
+  /get_targets_response/target/port_range                                  x1
+  /get_targets_response/target/reverse_lookup_only                         x1
+  /get_targets_response/target/reverse_lookup_only/#text                   x1
+  /get_targets_response/target/reverse_lookup_unify                        x1
+  /get_targets_response/target/reverse_lookup_unify/#text                  x1
+  /get_targets_response/target/smb_credential/trash                        x1
+  /get_targets_response/target/smb_credential/trash/#text                  x1
+  /get_targets_response/target/snmp_credential                             x1
+  /get_targets_response/target/snmp_credential/@id                         x1
+  /get_targets_response/target/snmp_credential/name                        x1
+  /get_targets_response/target/snmp_credential/trash                       x1
+  /get_targets_response/target/snmp_credential/trash/#text                 x1
+  /get_targets_response/target/ssh_credential/port                         x1
+  /get_targets_response/target/ssh_credential/trash                        x1
+  /get_targets_response/target/ssh_credential/trash/#text                  x1
+  /get_targets_response/target/ssh_elevate_credential                      x1
+  /get_targets_response/target/ssh_elevate_credential/@id                  x1
+  /get_targets_response/target/ssh_elevate_credential/name                 x1
+  /get_targets_response/target/ssh_elevate_credential/trash                x1
+  /get_targets_response/target/ssh_elevate_credential/trash/#text          x1
+  /get_targets_response/target_count                                       x1
+  /get_targets_response/target_count/filtered                              x1
+  /get_targets_response/target_count/filtered/#text                        x1
+  /get_targets_response/target_count/page                                  x1
+  /get_targets_response/target_count/page/#text                            x1
+  /get_targets_response/targets                                            x1
+  /get_targets_response/targets/@max                                       x1
+  /get_targets_response/targets/@start                                     x1
+
+DUPLICATED
+  (none)
