@@ -31,16 +31,17 @@ const sharedFileSuffix = "_shared.go"
 // of (cmds, ov, pf): no clock, no filesystem, no map iteration order leaks
 // into it, and nothing here reads vendor/XML. That is what lets the golden
 // test in generate_test.go run in CI with only the committed JSON snapshot.
-func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, fo map[string][]FieldOverride, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry) (map[string]string, error) {
+func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, fo map[string][]FieldOverride, fs map[string][]FieldSuppression, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry) (map[string]string, error) {
 	if len(cmds) == 0 {
 		return nil, fmt.Errorf("codegen: no commands to generate")
 	}
 	g := &gen{
-		ov: ov, pf: pf, fo: fo, cw: cw, da: da,
+		ov: ov, pf: pf, fo: fo, fs: fs, cw: cw, da: da,
 		byHash:      map[string]*structType{},
 		taken:       map[string]bool{},
 		needsErrors: map[*strings.Builder]bool{},
 		foConsumed:  map[string]bool{},
+		fsConsumed:  map[string]bool{},
 		cwConsumed:  map[string]bool{},
 		daConsumed:  map[DefectKey]bool{},
 	}
@@ -71,10 +72,7 @@ func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]Point
 	g.family = familyPrefix(g.cmds)
 	g.familyNoun = familyNoun(g.cmds)
 	g.collect()
-	if err := g.validateFieldOverrides(); err != nil {
-		return nil, err
-	}
-	if err := g.validateCommandWarnings(); err != nil {
+	if err := g.validateOverrideTables(); err != nil {
 		return nil, err
 	}
 	g.name()
@@ -82,16 +80,41 @@ func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]Point
 	if err != nil {
 		return nil, err
 	}
-	if err := g.checkFieldOverridesConsumed(); err != nil {
-		return nil, err
-	}
-	if err := g.checkCommandWarningsConsumed(); err != nil {
-		return nil, err
-	}
-	if err := g.checkDefectAllowlistConsumed(); err != nil {
+	if err := g.checkTablesConsumed(); err != nil {
 		return nil, err
 	}
 	return out, nil
+}
+
+// validateOverrideTables checks the shape of FieldOverrides, the
+// FieldSuppressions/RelocatedFrom relocation link, and CommandWarnings.
+// Grouped into one call so that adding a new override table costs Generate's
+// cyclomatic complexity one branch total, not one per table it validates.
+func (g *gen) validateOverrideTables() error {
+	if err := g.validateFieldOverrides(); err != nil {
+		return err
+	}
+	if err := validateFieldRelocations(g.fo, g.fs); err != nil {
+		return err
+	}
+	return g.validateCommandWarnings()
+}
+
+// checkTablesConsumed fails the build on any stale override-table entry left
+// after emission — one whose command was in scope for this call but never
+// matched a generated field, command, or defect. Grouped for the same reason
+// validateOverrideTables is.
+func (g *gen) checkTablesConsumed() error {
+	if err := g.checkFieldOverridesConsumed(); err != nil {
+		return err
+	}
+	if err := g.checkFieldSuppressionsConsumed(); err != nil {
+		return err
+	}
+	if err := g.checkCommandWarningsConsumed(); err != nil {
+		return err
+	}
+	return g.checkDefectAllowlistConsumed()
 }
 
 // sha256Pattern matches hex.EncodeToString's SHA-256 output: 64 lowercase
@@ -351,6 +374,82 @@ func (g *gen) validateFieldOverrides() error {
 	return nil
 }
 
+// validateFieldRelocations checks the shape of every FieldSuppressions entry
+// and every FieldOverride.RelocatedFrom reference, independent of which
+// command is in scope for this call, the same way validateFieldOverrides
+// checks FieldOverrides. It enforces the bidirectional link a relocation pair
+// depends on: a FieldSuppressions entry's RelocatedTo must resolve to a
+// FieldOverrides entry whose own RelocatedFrom points back at it, and vice
+// versa, so deleting either half without the other fails every future
+// Generate call rather than silently leaving a suppressed field with nowhere
+// to reappear.
+func validateFieldRelocations(fo map[string][]FieldOverride, fs map[string][]FieldSuppression) error {
+	fsKeys := make([]string, 0, len(fs))
+	for k := range fs {
+		fsKeys = append(fsKeys, k)
+	}
+	sort.Strings(fsKeys)
+
+	for _, key := range fsKeys {
+		for i, s := range fs[key] {
+			if s.Name == "" {
+				return fmt.Errorf("codegen: FieldSuppressions[%q][%d]: Name is empty", key, i)
+			}
+			if s.Reason == "" {
+				return fmt.Errorf("codegen: FieldSuppressions[%q][%d]: Reason is empty", key, i)
+			}
+			if s.RelocatedTo == "" {
+				return fmt.Errorf("codegen: FieldSuppressions[%q][%d]: RelocatedTo is empty", key, i)
+			}
+			if !hasRelocationCounterpart(fo[s.RelocatedTo], s.Name, s.Attr, key) {
+				return fmt.Errorf(
+					"codegen: FieldSuppressions[%q][%d]: RelocatedTo %q has no FieldOverrides entry with "+
+						"Name %q, Attr %v and RelocatedFrom %q",
+					key, i, s.RelocatedTo, s.Name, s.Attr, key)
+			}
+		}
+	}
+
+	foKeys := make([]string, 0, len(fo))
+	for k := range fo {
+		foKeys = append(foKeys, k)
+	}
+	sort.Strings(foKeys)
+
+	for _, key := range foKeys {
+		for i, e := range fo[key] {
+			if e.RelocatedFrom == "" {
+				continue
+			}
+			if !hasSuppressionCounterpart(fs[e.RelocatedFrom], e.Name, e.Attr, key) {
+				return fmt.Errorf(
+					"codegen: FieldOverrides[%q][%d]: RelocatedFrom %q has no FieldSuppressions entry with "+
+						"Name %q, Attr %v and RelocatedTo %q",
+					key, i, e.RelocatedFrom, e.Name, e.Attr, key)
+			}
+		}
+	}
+	return nil
+}
+
+func hasRelocationCounterpart(entries []FieldOverride, name string, attr bool, relocatedFrom string) bool {
+	for _, e := range entries {
+		if e.Name == name && e.Attr == attr && e.RelocatedFrom == relocatedFrom {
+			return true
+		}
+	}
+	return false
+}
+
+func hasSuppressionCounterpart(entries []FieldSuppression, name string, attr bool, relocatedTo string) bool {
+	for _, s := range entries {
+		if s.Name == name && s.Attr == attr && s.RelocatedTo == relocatedTo {
+			return true
+		}
+	}
+	return false
+}
+
 // checkFieldOverridesConsumed fails the build on a stale or mistyped
 // FieldOverrides entry: one whose command is among g.cmds (so this call was
 // in a position to apply it) but which never matched a node emitStruct
@@ -361,22 +460,45 @@ func (g *gen) validateFieldOverrides() error {
 // Adopted()-filtered calls), so "unconsumed" only means something once the
 // relevant command was actually part of the run.
 func (g *gen) checkFieldOverridesConsumed() error {
-	present := make(map[string]bool, len(g.cmds))
-	for i := range g.cmds {
-		present[g.cmds[i].Name] = true
-	}
-	var stale []string
-	for key := range g.fo {
-		command, _, _ := strings.Cut(key, ":")
-		if present[command] && !g.foConsumed[key] {
-			stale = append(stale, key)
-		}
-	}
+	stale := staleTableKeys(g.cmds, g.fo, g.foConsumed)
 	if len(stale) == 0 {
 		return nil
 	}
-	sort.Strings(stale)
 	return fmt.Errorf("codegen: FieldOverrides entry(ies) never matched a generated field: %s", strings.Join(stale, ", "))
+}
+
+// checkFieldSuppressionsConsumed fails the build on a stale or mistyped
+// FieldSuppressions entry, using the same in-scope-command test as
+// checkFieldOverridesConsumed.
+func (g *gen) checkFieldSuppressionsConsumed() error {
+	stale := staleTableKeys(g.cmds, g.fs, g.fsConsumed)
+	if len(stale) == 0 {
+		return nil
+	}
+	return fmt.Errorf("codegen: FieldSuppressions entry(ies) never matched a generated field: %s", strings.Join(stale, ", "))
+}
+
+// staleTableKeys returns the keys of a "<command>:/..." keyed table (either
+// FieldOverrides or FieldSuppressions — the value type itself is never
+// inspected) that are in scope for this run — the command is among cmds, so
+// this call was in a position to apply the entry — but never marked
+// consumed, sorted for a deterministic error message. Shared by
+// checkFieldOverridesConsumed and checkFieldSuppressionsConsumed, which
+// differ only in which table and consumed-set they check.
+func staleTableKeys[V any](cmds []schema.Command, table map[string]V, consumed map[string]bool) []string {
+	present := make(map[string]bool, len(cmds))
+	for i := range cmds {
+		present[cmds[i].Name] = true
+	}
+	var stale []string
+	for key := range table {
+		command, _, _ := strings.Cut(key, ":")
+		if present[command] && !consumed[key] {
+			stale = append(stale, key)
+		}
+	}
+	sort.Strings(stale)
+	return stale
 }
 
 // GenerateAll renders every family in m, one Generate call per family, and
@@ -407,7 +529,7 @@ func (g *gen) checkFieldOverridesConsumed() error {
 // cmds may contain commands in any order and must cover every command the
 // manifest names; a command not claimed by any family is an error, since it
 // would otherwise be silently dropped.
-func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, fo map[string][]FieldOverride, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry) (map[string]string, error) {
+func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, fo map[string][]FieldOverride, fs map[string][]FieldSuppression, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry) (map[string]string, error) {
 	byName := make(map[string]schema.Command, len(cmds))
 	for _, c := range cmds {
 		byName[c.Name] = c
@@ -424,7 +546,7 @@ func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf m
 			}
 			fam = append(fam, c)
 		}
-		files, err := Generate(fam, ov, pf, fo, cw, da)
+		files, err := Generate(fam, ov, pf, fo, fs, cw, da)
 		if err != nil {
 			return nil, fmt.Errorf("codegen: family %q: %w", f.Name, err)
 		}
@@ -485,6 +607,7 @@ type gen struct {
 	ov     map[string]Override
 	pf     map[string]PointerOverride
 	fo     map[string][]FieldOverride
+	fs     map[string][]FieldSuppression
 	cw     map[string]CommandWarning
 	da     map[DefectKey]DefectAllowlistEntry
 	family string
@@ -505,6 +628,10 @@ type gen struct {
 	// foConsumed records which FieldOverrides keys matched a node during this
 	// run, so checkFieldOverridesConsumed can flag a stale one.
 	foConsumed map[string]bool
+
+	// fsConsumed records which FieldSuppressions keys matched a node during
+	// this run, so checkFieldSuppressionsConsumed can flag a stale one.
+	fsConsumed map[string]bool
 
 	// cwConsumed records which CommandWarnings keys were attached to a
 	// generated command during this run, so checkCommandWarningsConsumed can
@@ -923,7 +1050,14 @@ func (g *gen) emitRequest(b *strings.Builder, c *schema.Command) error {
 	used := map[string]bool{"XMLName": true}
 	fmt.Fprintf(b, "XMLName xml.Name `xml:%q`\n", c.Name)
 	g.emitChardata(b, c.Request, used)
+	extra, _, err := g.fieldOverridesFor(&structType{node: c.Request, uses: []use{{command: c.Name}}})
+	if err != nil {
+		return err
+	}
 	fields, collided := g.emitFields(c.Request.Children, used, nil, c.Name)
+	for _, ov := range extra {
+		fields = append(fields, g.overrideField(ov, used))
+	}
 	for _, f := range fields {
 		writeField(b, f)
 	}
@@ -978,9 +1112,19 @@ func (g *gen) emitResponse(b *strings.Builder, c *schema.Command) error {
 	return nil
 }
 
+// fieldKey identifies a schema-declared child by wire name and
+// attribute-vs-element kind, for use as an emitFields skip-set key.
+type fieldKey struct {
+	name string
+	attr bool
+}
+
 // envelopeAttrs are the response attributes emitRequest/emitResponse already
 // declare by hand, and must not be declared a second time from the schema.
-var envelopeAttrs = map[string]bool{"status": true, "status_text": true}
+var envelopeAttrs = map[fieldKey]bool{
+	{name: "status", attr: true}:      true,
+	{name: "status_text", attr: true}: true,
+}
 
 func (g *gen) emitStruct(b *strings.Builder, st *structType) error {
 	fmt.Fprintf(b, "// %s is the <%s> element of %s. See the GMP protocol docs for details.\n",
@@ -992,8 +1136,12 @@ func (g *gen) emitStruct(b *strings.Builder, st *structType) error {
 	if err != nil {
 		return err
 	}
+	suppressed, err := g.fieldSuppressionsFor(st)
+	if err != nil {
+		return err
+	}
 	g.emitChardataOverridable(b, st.node, used, chardataOverride)
-	fields, collided := g.emitFields(st.node.Children, used, nil, "")
+	fields, collided := g.emitFields(st.node.Children, used, suppressed, "")
 	for _, ov := range extra {
 		fields = append(fields, g.overrideField(ov, used))
 	}
@@ -1070,6 +1218,61 @@ func (g *gen) fieldOverridesFor(st *structType) (extra []FieldOverride, chardata
 		}
 	}
 	return extra, chardataOverride, nil
+}
+
+// fieldSuppressionsFor looks up st in FieldSuppressions by every path it was
+// reached from, mirroring fieldOverridesFor's per-use agreement discipline:
+// every use — including one with no matching g.fs entry, which resolves to
+// the empty set rather than being skipped — must resolve to the same
+// suppression set, or a suppression on one use could leak onto a
+// structurally-deduplicated sibling use that had none.
+func (g *gen) fieldSuppressionsFor(st *structType) (map[fieldKey]bool, error) {
+	seen := map[string]bool{}
+	haveFirst := false
+	var firstKey string
+	var first map[fieldKey]bool
+
+	for _, u := range st.uses {
+		key := fieldOverrideKey(u.command, u.path, st.node.Name)
+		if seen[key] {
+			continue
+		}
+		seen[key] = true
+
+		res := map[fieldKey]bool{}
+		if entries, ok := g.fs[key]; ok {
+			g.fsConsumed[key] = true
+			for _, e := range entries {
+				res[fieldKey{name: e.Name, attr: e.Attr}] = true
+			}
+		}
+
+		if !haveFirst {
+			haveFirst, firstKey, first = true, key, res
+			continue
+		}
+		if !fieldKeySetEqual(first, res) {
+			return nil, fmt.Errorf(
+				"codegen: %s: FieldSuppressions for %q and %q disagree; a structurally-deduplicated type "+
+					"must resolve to the same suppression set from every path that reaches it",
+				st.goName, firstKey, key)
+		}
+	}
+	return first, nil
+}
+
+// fieldKeySetEqual compares two fieldSuppressionsFor results for value
+// equality, mirroring overrideResultEqual's role for fieldOverridesFor.
+func fieldKeySetEqual(a, b map[fieldKey]bool) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for k := range a {
+		if !b[k] {
+			return false
+		}
+	}
+	return true
 }
 
 // schemaChildCollision reports whether e would duplicate an already
@@ -1170,12 +1373,12 @@ func (g *gen) ownerOf(st *structType) string {
 // field routing rejects two fields with an identical explicit tag outright.
 // Attribute names cannot collide this way: a start tag cannot declare one
 // attribute twice.
-func (g *gen) emitFields(kids []*schema.Node, used, skipAttrs map[string]bool, command string) ([]field, bool) {
+func (g *gen) emitFields(kids []*schema.Node, used map[string]bool, skip map[fieldKey]bool, command string) ([]field, bool) {
 	var fields []field
 	seen := map[string]bool{}
 	collided := false
 	for _, kid := range kids {
-		if kid.Kind == schema.KindAttribute && skipAttrs[kid.Name] {
+		if skip[fieldKey{name: kid.Name, attr: kid.Kind == schema.KindAttribute}] {
 			continue
 		}
 		f := g.fieldOf(command, kid, used)

@@ -5,11 +5,14 @@ package commands
 import "encoding/xml"
 
 // ModifyReportConfig is a modify_report_config command request. See the GMP protocol docs for details.
+//
+// Sending an id attribute instead of ReportConfigID's report_config_id crashes gvmd's request handler outright (confirmed SIGSEGV), rather than failing the request. Whether omitting vs. explicit-emptying Name or Comment leaves the stored value unchanged (like modify_alert) or clears it (like modify_role) could not be tested: this environment has no configurable report format and no pre-existing report config to create or modify against.
 type ModifyReportConfig struct {
-	XMLName xml.Name            `xml:"modify_report_config"`
-	Name    string              `xml:"name,omitempty"`
-	Comment string              `xml:"comment,omitempty"`
-	Param   []ReportConfigParam `xml:"param,omitempty"`
+	XMLName        xml.Name            `xml:"modify_report_config"`
+	Name           string              `xml:"name,omitempty"`
+	Comment        string              `xml:"comment,omitempty"`
+	Param          []ReportConfigParam `xml:"param,omitempty"`
+	ReportConfigID string              `xml:"report_config_id,attr" gmpoverride:"T-9 report_config review: command_modify_report_config.xml's <pattern> declares no selector attribute at all, unlike every other modify_X command, but a live gvmd 26.36.1 test proved gvmd requires one anyway — <modify_report_config report_config_id=\"...\"> against a nonexistent id returned \"404 Failed to find Report Config\" (a resource lookup, not a parse rejection), reproduced on a second connection. Without this field the generated request could never target a specific report config"`
 }
 
 // ModifyReportConfigResponse is a modify_report_config command response. See the GMP protocol docs for details.

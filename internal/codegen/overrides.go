@@ -135,7 +135,14 @@ type FieldOverride struct {
 	Chardata  bool // this struct's own `,chardata` field; mutually exclusive with Name/Attr
 	GoType    string
 	OmitEmpty bool
-	Reason    string // cites the live/upstream evidence
+
+	// RelocatedFrom is the FieldSuppressions key this entry is the other half
+	// of, set only when this addition exists to reproduce a field the schema
+	// declared at the wrong nesting level (see FieldSuppressions). Empty for
+	// every ordinary FieldOverride, which adds a field the schema simply
+	// never declares anywhere.
+	RelocatedFrom string
+	Reason        string // cites the live/upstream evidence
 }
 
 // FieldOverrides is keyed "<command>:/<ancestor>/.../<node-name>" — the same
@@ -146,9 +153,12 @@ type FieldOverride struct {
 // (command, path) use is only allowed when every use resolves to the same
 // effective override set (fieldOverridesFor, generate.go) — a use that
 // disagrees, or has no entry at all, fails the build rather than leaking one
-// use's override onto another. Only emitStruct consults this table (not
-// emitRequest/emitResponse) — widening either needs its own evidence, not a
-// speculative entry now.
+// use's override onto another. emitStruct and emitRequest both consult this
+// table; emitResponse does not — widening it needs its own evidence, not a
+// speculative entry now. emitRequest's own widening is modify_report_config's
+// report_config_id below: a command's top-level request envelope needed a
+// field the schema never declares anywhere, the same shape emitStruct's
+// nested structs already had evidence for.
 var FieldOverrides = map[string][]FieldOverride{
 	"get_tls_certificates:/tls_certificate": {{
 		Name: "valid", GoType: "GMPBool",
@@ -170,6 +180,64 @@ var FieldOverrides = map[string][]FieldOverride{
 			"all recorded as DROPPED in the matching _fidelity.txt. Every captured occurrence is empty, " +
 			"so it is the element's presence that is evidenced, not its content; hence no omitempty, " +
 			"which would re-marshal to the absence gvmd never sends",
+	}},
+	"get_report_configs:/report_config/param": {{
+		Name: "using_default", Attr: true, GoType: "GMPBool",
+		RelocatedFrom: "get_report_configs:/report_config/param/value",
+		Reason: "T-9 report_config review: real position of using_default that " +
+			"FieldSuppressions[\"get_report_configs:/report_config/param/value\"] removes — " +
+			"command_get_report_configs.xml's own <example> and " +
+			"internal/gmptest/testdata/upstream/get_report_configs/001_{response,fidelity}.txt both place " +
+			"the attribute on <param>, not <value>",
+	}},
+	"modify_report_config:/modify_report_config": {{
+		Name: "report_config_id", Attr: true, GoType: "string",
+		Reason: "T-9 report_config review: command_modify_report_config.xml's <pattern> declares no " +
+			"selector attribute at all, unlike every other modify_X command, but a live gvmd 26.36.1 " +
+			"test proved gvmd requires one anyway — <modify_report_config report_config_id=\"...\"> " +
+			"against a nonexistent id returned \"404 Failed to find Report Config\" (a resource lookup, " +
+			"not a parse rejection), reproduced on a second connection. Without this field the generated " +
+			"request could never target a specific report config",
+	}},
+}
+
+// FieldSuppression removes a schema-declared attribute/element from the
+// struct its FieldSuppressions key would otherwise put it on, because live
+// wire evidence contradicts the schema's declared nesting for it — not
+// because the field doesn't exist. RelocatedTo is required and must name the
+// FieldOverrides key holding the real position; this table exists for "the
+// schema puts this in the wrong place, here's where it really goes", not a
+// general-purpose "drop this field" escape hatch.
+type FieldSuppression struct {
+	Name string // wire element/attribute name to remove
+	Attr bool
+
+	RelocatedTo string
+	Reason      string
+}
+
+// FieldSuppressions is keyed exactly like FieldOverrides:
+// "<command>:/<ancestor>/.../<node-name>" identifying the struct the
+// suppressed attribute/element would otherwise appear on. Consulted from
+// emitStruct, before that struct's fields are built from the schema.
+//
+// Every entry's RelocatedTo must name a FieldOverrides entry with the same
+// (Name, Attr) whose own RelocatedFrom points back at this entry's own key —
+// validateFieldRelocations (generate.go) enforces the round trip in both
+// directions, so deleting either half without the other fails Generate for
+// every family, not just this one. This leaves schemaChildCollision's
+// ordinary-collision check untouched: a suppression and its paired addition
+// always live at two different node paths (a child and its parent), so they
+// never appear in the same schemaChildCollision call.
+var FieldSuppressions = map[string][]FieldSuppression{
+	"get_report_configs:/report_config/param/value": {{
+		Name: "using_default", Attr: true,
+		RelocatedTo: "get_report_configs:/report_config/param",
+		Reason: "T-9 report_config review: schema's <pattern> declares using_default as an attribute of " +
+			"<value>, but command_get_report_configs.xml's own <example> and " +
+			"internal/gmptest/testdata/upstream/get_report_configs/001_{response,fidelity}.txt both place " +
+			"it on the enclosing <param> instead; decoding a real response through the schema-faithful " +
+			"nesting leaves UsingDefault permanently false",
 	}},
 }
 
@@ -347,15 +415,17 @@ var CommandWarnings = map[string]CommandWarning{
 		Reason: "T-9: live gvmd 26.36.1 test against the running instance returned a username in " +
 			"this element; see docs/review-2026-08.md's `asset added in review-only mode` section",
 	},
-	"get_report_configs_response": {
-		Text: "Param.Value.UsingDefault follows the schema's own pattern, which declares " +
-			"using_default as an attribute of <value>. Every documented and captured example " +
-			"instead sends it as an attribute of the enclosing <param>, so decoding a real " +
-			"response leaves UsingDefault permanently false.",
-		Reason: "T-9 report_config review: command_get_report_configs.xml's own <example> and " +
-			"internal/gmptest/testdata/upstream/get_report_configs/001_fidelity.txt's " +
-			"`param/@using_default` TRUNCATED entry both place the attribute on <param>, not " +
-			"<value>; see docs/review-2026-08.md's `report_config` review-only section",
+	"modify_report_config": {
+		Text: "Sending an id attribute instead of ReportConfigID's report_config_id crashes gvmd's " +
+			"request handler outright (confirmed SIGSEGV), rather than failing the request. Whether " +
+			"omitting vs. explicit-emptying Name or Comment leaves the stored value unchanged (like " +
+			"modify_alert) or clears it (like modify_role) could not be tested: this environment has no " +
+			"configurable report format and no pre-existing report config to create or modify against.",
+		Reason: "T-9 report_config review: live gvmd 26.36.1 test — <modify_report_config " +
+			"id=\"...\"> crashed the request-handling process (container logs recorded a SIGSEGV " +
+			"backtrace through libglib's markup parser); all 5 installed report formats returned " +
+			"configurable=false and get_report_configs returned zero existing configs, so no valid " +
+			"target existed to exercise the Name/Comment omit-vs-explicit-empty question against",
 	},
 }
 

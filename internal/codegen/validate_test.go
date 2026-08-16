@@ -1,10 +1,12 @@
 package codegen
 
 import (
+	"context"
 	"encoding/xml"
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -32,7 +34,7 @@ func validateOrSkip(t *testing.T, command string) (before, after []schema.Result
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	before, after, err = Validate(cmds, TypeOverrides, PointerOverrides, FieldOverrides, CommandWarnings, DefectAllowlist, nil)
+	before, after, err = Validate(cmds, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, nil)
 	if err != nil {
 		if errors.Is(err, ErrNoGoToolchain) {
 			t.Skipf("Skipping: %v", err)
@@ -3570,27 +3572,38 @@ func TestValidateReportConfigBeforeMatchesKnownConformance(t *testing.T) {
 
 // TestValidateReportConfigGeneratedMatchesOrImproves is the report_config
 // family's post-swap gate, run at the same rigour every prior family's was.
-// Generation closes every actionable and suppressed finding on all three
-// commands except get_report_configs' allowlisted empty-pattern
-// SCHEMA-DEFECT, which no generated shape can resolve — the schema itself
-// declares report_config/report_format/permissions with no content.
+// Generation closes every actionable finding on create_report_config and
+// modify_report_config, and on get_report_configs except the allowlisted
+// empty-pattern SCHEMA-DEFECT (the schema itself declares
+// report_config/report_format/permissions with no content) and the
+// using_default relocation: FieldSuppressions removes
+// param/value/@using_default, which schema.Comparer honestly reports as one
+// MISSING finding — schema.CatMissing has no suppression mechanism, unlike
+// CatExtra's gmpoverride tag — and FieldOverrides' matching addition on
+// <param> is a real, schema-undeclared field, reported as one suppressed
+// EXTRA via that same tag. Both counts are the fix surfacing a previously
+// hidden truth (see TestReportConfigUsingDefaultOnParamAgreesWithFixture and
+// TestReportConfigUsingDefaultDecodesOnGeneratedParam below), not a
+// regression.
 //
-// That clean result hides one real hazard schema.Comparer cannot see:
-// get_report_configs' schema declares param/value/@using_default, and the
-// generated shape matches that pattern exactly, so it reports zero findings
-// for it. But the schema's own placement disagrees with reality — see the
-// get_report_configs_response CommandWarning and
-// TestReportConfigUsingDefaultOnParamAgreesWithFixture below. A clean
-// schema-conformance count is not proof of wire accuracy here.
+// modify_report_config gains its own suppressed EXTRA finding for the same
+// reason: FieldOverrides["modify_report_config:/modify_report_config"] adds
+// ReportConfigID, a live-gvmd-evidenced field the schema's <pattern> never
+// declares at all (see the FieldOverride's Reason and the modify_report_config
+// CommandWarning in overrides.go). schema.Comparer honestly reports the
+// schema-undeclared attribute as EXTRA; the gmpoverride tag suppresses it.
 func TestValidateReportConfigGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_report_config")
 
 	wantAfter := map[string]counts{
 		"create_report_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"modify_report_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_report_config": {
+			actionable: map[string]int{},
+			suppressed: map[string]int{schema.CatExtra: 1},
+		},
 		"get_report_configs": {
-			actionable: map[string]int{schema.CatDefect: 1},
-			suppressed: map[string]int{},
+			actionable: map[string]int{schema.CatDefect: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 1},
 		},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
@@ -3646,6 +3659,108 @@ func TestReportConfigUsingDefaultOnParamAgreesWithFixture(t *testing.T) {
 		t.Errorf("%s: param[1]'s using_default did not decode to true reading it off <param> — the fixture no longer demonstrates the schema/wire mismatch", path)
 	}
 }
+
+// TestReportConfigUsingDefaultDecodesOnGeneratedParam is
+// TestReportConfigUsingDefaultOnParamAgreesWithFixture's counterpart against
+// the actual generated type, not a private probe struct: it proves the
+// FieldSuppressions/FieldOverrides relocation actually lands UsingDefault on
+// the real GetReportConfigsParam this package emits, using the same
+// scratch-package/`go run` machinery as TestGetFiltersCollisionRoundTrips.
+func TestReportConfigUsingDefaultDecodesOnGeneratedParam(t *testing.T) {
+	goBin, err := exec.LookPath("go")
+	if err != nil {
+		t.Skipf("Skipping: no go toolchain on PATH (%v)", err)
+	}
+	got := generateOrFail(t)
+	if _, ok := got[CommandFile("get_report_configs")]; !ok {
+		t.Fatal("get_report_configs was not generated, so this test would not compile it")
+	}
+
+	fixture, err := filepath.Abs("../gmptest/testdata/upstream/get_report_configs/001_response.xml")
+	if err != nil {
+		t.Fatalf("Failed to resolve the fixture path: %v", err)
+	}
+	if _, err := os.Stat(fixture); err != nil {
+		t.Fatalf("Fixture not found: %v", err)
+	}
+
+	root, err := filepath.Abs("../..")
+	if err != nil {
+		t.Fatalf("Failed to resolve the module root: %v", err)
+	}
+	dir := t.TempDir()
+	pkgDir := filepath.Join(dir, "genproto")
+	if err := os.MkdirAll(pkgDir, 0o750); err != nil {
+		t.Fatalf("Failed to create the scratch package: %v", err)
+	}
+
+	goVersion, err := goDirective(filepath.Join(root, "go.mod"))
+	if err != nil {
+		t.Fatalf("Failed to read the module's go directive: %v", err)
+	}
+	gomod := "module gogmpcodegencheck\n\ngo " + goVersion + "\n\n" +
+		"require github.com/brennoo/go-gmp v0.0.0\n\n" +
+		"replace github.com/brennoo/go-gmp => " + root + "\n"
+	mustWriteFile(t, filepath.Join(dir, "go.mod"), gomod)
+	mustWriteFile(t, filepath.Join(pkgDir, "support.go"),
+		strings.Replace(supportShim(), "package "+targetPackage+"\n", "package genproto\n", 1))
+	for name, src := range got {
+		rewritten := strings.Replace(src, "\npackage "+targetPackage+"\n", "\npackage genproto\n", 1)
+		if rewritten == src {
+			t.Fatalf("%s: expected a %q package clause to rewrite", name, targetPackage)
+		}
+		mustWriteFile(t, filepath.Join(pkgDir, name), rewritten)
+	}
+	mustWriteFile(t, filepath.Join(dir, "main.go"), reportConfigUsingDefaultProgram)
+
+	cmd := exec.CommandContext(context.Background(), goBin, "run", ".", fixture)
+	cmd.Dir = dir
+	cmd.Env = append(os.Environ(), "GOWORK=off", "GOFLAGS=")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("Decode program failed: %v\n%s", err, out)
+	}
+	const want = "param[0].UsingDefault=false\nparam[1].UsingDefault=true\n"
+	if got := string(out); got != want {
+		t.Fatalf("Decode program printed:\n%s\nwant:\n%s", got, want)
+	}
+}
+
+// reportConfigUsingDefaultProgram is a `go run` main for
+// TestReportConfigUsingDefaultDecodesOnGeneratedParam. It decodes the fixture
+// named on argv[1] through the actual generated GetReportConfigsResponse and
+// prints each <param>'s UsingDefault, read off the generated
+// GetReportConfigsParam field the relocation adds.
+const reportConfigUsingDefaultProgram = `package main
+
+import (
+	"encoding/xml"
+	"fmt"
+	"os"
+
+	"gogmpcodegencheck/genproto"
+)
+
+func main() {
+	data, err := os.ReadFile(os.Args[1])
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	var decoded genproto.GetReportConfigsResponse
+	if err := xml.Unmarshal(data, &decoded); err != nil {
+		fmt.Fprintln(os.Stderr, "decode:", err)
+		os.Exit(1)
+	}
+	if len(decoded.ReportConfig) != 1 || len(decoded.ReportConfig[0].Param) != 2 {
+		fmt.Fprintf(os.Stderr, "unexpected shape: %d report_config(s), want 1\n", len(decoded.ReportConfig))
+		os.Exit(1)
+	}
+	for i, p := range decoded.ReportConfig[0].Param {
+		fmt.Printf("param[%d].UsingDefault=%v\n", i, bool(p.UsingDefault))
+	}
+}
+`
 
 // assertMatchesOrImproves is the shared body of the two match-or-improve gates:
 // the exact expected "after" counts, plus the two general rules that hold for

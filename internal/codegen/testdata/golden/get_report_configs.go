@@ -15,8 +15,6 @@ type GetReportConfigs struct {
 }
 
 // GetReportConfigsResponse is a get_report_configs command response. See the GMP protocol docs for details.
-//
-// Param.Value.UsingDefault follows the schema's own pattern, which declares using_default as an attribute of <value>. Every documented and captured example instead sends it as an attribute of the enclosing <param>, so decoding a real response leaves UsingDefault permanently false.
 type GetReportConfigsResponse struct {
 	XMLName           xml.Name            `xml:"get_report_configs_response"`
 	Status            string              `xml:"status,attr"`
@@ -131,11 +129,12 @@ type ReportConfigTag struct {
 
 // GetReportConfigsParam is the <param> element of get_report_configs. See the GMP protocol docs for details.
 type GetReportConfigsParam struct {
-	Name    string                 `xml:"name"`
-	Type    ReportConfigType       `xml:"type"`
-	Value   ReportConfigParamValue `xml:"value"`
-	Default ReportConfigDefault    `xml:"default"`
-	Options *ReportConfigOptions   `xml:"options,omitempty"`
+	Name         string                 `xml:"name"`
+	Type         ReportConfigType       `xml:"type"`
+	Value        ReportConfigParamValue `xml:"value"`
+	Default      ReportConfigDefault    `xml:"default"`
+	Options      *ReportConfigOptions   `xml:"options,omitempty"`
+	UsingDefault GMPBool                `xml:"using_default,attr" gmpoverride:"T-9 report_config review: real position of using_default that FieldSuppressions[\"get_report_configs:/report_config/param/value\"] removes — command_get_report_configs.xml's own <example> and internal/gmptest/testdata/upstream/get_report_configs/001_{response,fidelity}.txt both place the attribute on <param>, not <value>"`
 }
 
 // ReportConfigType is the <type> element of get_report_configs. See the GMP protocol docs for details.
@@ -147,7 +146,6 @@ type ReportConfigType struct {
 
 // ReportConfigParamValue is the <value> element of get_report_configs. See the GMP protocol docs for details.
 type ReportConfigParamValue struct {
-	UsingDefault GMPBool                         `xml:"using_default,attr"`
 	ReportFormat []ReportConfigValueReportFormat `xml:"report_format,omitempty"`
 }
 
