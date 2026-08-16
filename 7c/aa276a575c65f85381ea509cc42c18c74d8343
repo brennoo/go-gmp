@@ -1,0 +1,43 @@
+docs/review-2026-08.md
+  s_13401ee77ebb1d::t_980e21a05f4227 1796-1862,2607,3200-3253
+internal/codegen/manifest.json
+  s_13401ee77ebb1d::t_5a1930fa94d200 78-82
+internal/codegen/manifest_test.go
+  s_13401ee77ebb1d::t_a2985e286d4ea2 46-48,72-85,101-109,117-118,125-134,137-138
+internal/codegen/overrides.go
+  s_13401ee77ebb1d::t_d04fb15099f20e 392-421,682-711
+internal/codegen/testdata/golden/create_scanner.go
+  s_13401ee77ebb1d::t_2882a569255672 1-33
+internal/codegen/testdata/golden/get_scanners.go
+  s_13401ee77ebb1d::t_aa64564bff903e 1-206
+internal/codegen/testdata/golden/modify_scanner.go
+  s_13401ee77ebb1d::t_1d8570d49812fa 1-32
+internal/codegen/testdata/golden/scanner_shared.go
+  s_13401ee77ebb1d::t_af65354de86299 1-8
+internal/codegen/testdata/schema/create_scanner.json
+  s_13401ee77ebb1d::t_d6e9310308364e 1-177
+internal/codegen/testdata/schema/get_scanners.json
+  s_13401ee77ebb1d::t_334cde030579ee 1-1015
+internal/codegen/testdata/schema/modify_scanner.json
+  s_13401ee77ebb1d::t_6793e47d18c2a5 1-167
+internal/codegen/validate.go
+  s_13401ee77ebb1d::t_4eff2f31b38dc5 102-104,340-351
+internal/codegen/validate_test.go
+  s_13401ee77ebb1d::t_fce072045ee8c7 4020-4110
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "7caa276a575c65f85381ea509cc42c18c74d8343",
+  "prompts": {},
+  "sessions": {
+    "s_13401ee77ebb1d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_13401ee77ebb1d",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
