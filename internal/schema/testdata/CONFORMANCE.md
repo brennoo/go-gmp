@@ -29,10 +29,10 @@ them, so response-side optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             69
-with actionable findings:     53
-actionable findings:          456  (request 229, response 227)
-suppressed findings:          562
+fully conformant:             72
+with actionable findings:     50
+actionable findings:          440  (request 221, response 219)
+suppressed findings:          537
 confirmed by fidelity corpus: 64
 in the schema, not in Go:     0
 in Go, not in the schema:     0
@@ -40,12 +40,12 @@ in Go, not in the schema:     0
 ### Findings by category
 
                  actionable suppressed
-  MISSING               160          0
-  EXTRA                 185          5
-  CARDINALITY            36          0
-  KIND                    5          0
-  OMITEMPTY               4        557
-  TYPE                   66          0
+  MISSING               159          0
+  EXTRA                 180          5
+  CARDINALITY            32          0
+  KIND                    3          0
+  OMITEMPTY               2        532
+  TYPE                   64          0
   SCHEMA-DEFECT         107          0
 
 ### Schema defects by class
@@ -91,11 +91,11 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_aggregates               12   MISSING=5  EXTRA=5  CARDINALITY=2
   get_agents                    9   MISSING=7  TYPE=2
   get_scanners                  9   EXTRA=6  TYPE=3
-  get_users                     9   MISSING=1  EXTRA=2  CARDINALITY=2  KIND=2  TYPE=2
   get_configs                   7   MISSING=3  EXTRA=2  TYPE=2
   get_results                   6   MISSING=1  EXTRA=4  CARDINALITY=1
   create_scanner                5   EXTRA=3  TYPE=2
-  ... and 33 more with fewer
+  modify_scanner                5   EXTRA=3  TYPE=2
+  ... and 30 more with fewer
 
 ### Confirmed by both oracles
 
@@ -819,16 +819,7 @@ conformant
 
 ### create_user  (command_create_user.xml)
 
-EXTRA=2  CARDINALITY=1  OMITEMPTY=1
-
-  EXTRA         request  /create_user/groups/group/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /create_user/role/name
-                Go field Name string has no counterpart in the schema
-  CARDINALITY   request  /create_user/sources/source
-                schema says optional, Go has a slice []string (Source)
-  OMITEMPTY     request  /create_user/hosts/@allow
-                schema says optional, Allow string has no omitempty and is always emitted
+conformant
 
 ### delete_agents  (command_delete_agents.xml)
 
@@ -2512,76 +2503,8 @@ EXTRA=2
 
 ### get_users  (command_get_users.xml)
 
-MISSING=1  EXTRA=2  CARDINALITY=2  KIND=2  OMITEMPTY=25  TYPE=2  SCHEMA-DEFECT=2
+SCHEMA-DEFECT=2
 
-  MISSING       request  /get_users/@filt_id
-                optional attr filt_id is not modelled
-  EXTRA         response /get_users_response/filters/comment
-                Go field Comment string has no counterpart in the schema
-  EXTRA         response /get_users_response/truncated
-                Go field Truncated string has no counterpart in the schema
-  CARDINALITY   response /get_users_response/user/groups/group
-                schema says required, Go has a slice []commands.UserGroup (Group)
-  CARDINALITY   response /get_users_response/user/role
-                schema says zero-or-more, Go has a single *commands.UserRole (Role)
-  KIND          response /get_users_response/user_count/filtered
-                schema declares elem, Go models it as attr (Filtered int)
-  KIND          response /get_users_response/user_count/page
-                schema declares elem, Go models it as attr (Page int)
-  OMITEMPTY     response /get_users_response/filters
-                schema says required, Filters is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/filters/@id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/filters/keywords
-                schema says required, Keywords is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/filters/keywords/keyword/column
-                schema says required, Column is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/filters/keywords/keyword/relation
-                schema says required, Relation is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/filters/keywords/keyword/value
-                schema says required, Value is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/filters/term
-                schema says required, Term is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/sort
-                schema says required, Sort is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/sort/field
-                schema says required, Field is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/sort/field/order
-                schema says required, Order is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/user/@id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/user/comment
-                schema says required, Comment is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/user/creation_time
-                schema says required, CreationTime is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/user/groups
-                schema says required, Groups is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/user/hosts
-                schema says required, Hosts is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/user/in_use
-                schema says required, InUse is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/user/modification_time
-                schema says required, ModificationTime is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/user/owner
-                schema says required, Owner is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/user/permissions
-                schema says required, Permissions is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/user/sources
-                schema says required, Sources is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/user/writable
-                schema says required, Writable is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/user_count
-                schema says required, UserCount is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/users
-                schema says required, UsersInfo is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/users/@max
-                schema says required, Max is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_users_response/users/@start
-                schema says required, Start is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  TYPE          response /get_users_response/user/in_use
-                schema type boolean is text ("" is true), Go InUse is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_users_response/user/writable
-                schema type boolean is text ("" is true), Go Writable is bool: '7' fails to decode and '1' re-emits as 'true'
   SCHEMA-DEFECT response /get_users_response/user/groups/group/permissions
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_users_response/user/role/permissions
@@ -2923,14 +2846,7 @@ conformant
 
 ### modify_user  (command_modify_user.xml)
 
-EXTRA=1  CARDINALITY=1  OMITEMPTY=1
-
-  EXTRA         request  /modify_user/role/name
-                Go field Name string has no counterpart in the schema
-  CARDINALITY   request  /modify_user/sources/source
-                schema says optional, Go has a slice []string (Source)
-  OMITEMPTY     request  /modify_user/hosts/@allow
-                schema says optional, Allow string has no omitempty and is always emitted
+conformant
 
 ### move_task  (command_move_task.xml)
 

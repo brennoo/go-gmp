@@ -393,7 +393,7 @@ func TestCommittedSpecsRedactRealRequests(t *testing.T) {
 			req: &commands.ModifyUser{
 				UserID:   "id",
 				Name:     "u",
-				Password: &commands.UserPassword{Modify: "1", Text: "PW-USER"},
+				Password: &commands.UserPassword{Modify: commands.Bool(true), Value: "PW-USER"},
 			},
 			secrets: []string{"PW-USER"},
 			keep:    []string{`modify="1"`},

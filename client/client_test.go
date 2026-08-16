@@ -1632,7 +1632,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.CreateUser); ok {
-		if cmd.Name == "testuser" && cmd.Password == "testpass" && len(cmd.Roles) > 0 && cmd.Roles[0].ID == "role-uuid" {
+		if cmd.Name == "testuser" && cmd.Password == "testpass" && len(cmd.Role) > 0 && cmd.Role[0].ID == "role-uuid" {
 			(*response.(*commands.CreateUserResponse)).Status = "201"
 			(*response.(*commands.CreateUserResponse)).StatusText = "OK, resource created"
 			(*response.(*commands.CreateUserResponse)).ID = "created-user-id"
@@ -1642,7 +1642,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.ModifyUser); ok {
-		if cmd.UserID == "user-uuid" && cmd.Name == "testuser" && cmd.NewName == "newuser" && cmd.Comment == "Updated user" && cmd.Password != nil && cmd.Password.Modify == "1" && cmd.Password.Text == "newpass" && len(cmd.Roles) > 0 && cmd.Roles[0].ID == "role-uuid" {
+		if cmd.UserID == "user-uuid" && cmd.Name == "testuser" && cmd.NewName == "newuser" && cmd.Comment != nil && *cmd.Comment == "Updated user" && cmd.Password != nil && cmd.Password.Modify != nil && *cmd.Password.Modify == true && cmd.Password.Value == "newpass" && len(cmd.Role) > 0 && cmd.Role[0].ID == "role-uuid" {
 			(*response.(*commands.ModifyUserResponse)).Status = "200"
 			(*response.(*commands.ModifyUserResponse)).StatusText = "OK"
 		} else {
@@ -1652,12 +1652,12 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	if _, ok := command.(*commands.GetUsers); ok {
 		(*response.(*commands.GetUsersResponse)).Status = "200"
 		(*response.(*commands.GetUsersResponse)).StatusText = "OK"
-		(*response.(*commands.GetUsersResponse)).Users = []commands.User{
+		(*response.(*commands.GetUsersResponse)).User = []commands.User{
 			{
 				Name:    "foobar",
-				Role:    &commands.UserRole{ID: "8d453140-b74d-11e2-b0be-406186ea4fc5", Name: "User"},
-				Hosts:   &commands.UserHosts{Allow: "2"},
-				Sources: &commands.UserSources{Source: []string{"file"}},
+				Role:    []commands.GetUsersRole{{ID: "8d453140-b74d-11e2-b0be-406186ea4fc5", Name: "User"}},
+				Hosts:   commands.GetUsersHosts{Allow: "2"},
+				Sources: commands.GetUsersSources{Source: []string{"file"}},
 			},
 		}
 	}

@@ -17,7 +17,7 @@ func TestCreateUser(t *testing.T) {
 	cmd := &commands.CreateUser{
 		Name:     "testuser",
 		Password: "testpass",
-		Roles:    []*commands.UserRole{{ID: "role-uuid"}},
+		Role:     []commands.UserRole{{ID: "role-uuid"}},
 	}
 	resp, err := cli.CreateUser(context.Background(), cmd)
 	if err != nil {
@@ -51,16 +51,17 @@ func TestModifyUser(t *testing.T) {
 	}
 
 	// Success case
+	comment := "Updated user"
 	cmd := &commands.ModifyUser{
 		UserID:  "user-uuid",
 		Name:    "testuser",
 		NewName: "newuser",
-		Comment: "Updated user",
+		Comment: &comment,
 		Password: &commands.UserPassword{
-			Modify: "1",
-			Text:   "newpass",
+			Modify: commands.Bool(true),
+			Value:  "newpass",
 		},
-		Roles: []*commands.UserRole{{ID: "role-uuid"}},
+		Role: []commands.UserRole{{ID: "role-uuid"}},
 	}
 	resp, err := cli.ModifyUser(context.Background(), cmd)
 	if err != nil {
@@ -99,8 +100,8 @@ func TestGetUsers(t *testing.T) {
 	if resp.Status != "200" {
 		t.Errorf("Expected status 200, got %s", resp.Status)
 	}
-	if len(resp.Users) != 1 || resp.Users[0].Name != "foobar" {
-		t.Errorf("Expected user 'foobar', got %+v", resp.Users)
+	if len(resp.User) != 1 || resp.User[0].Name != "foobar" {
+		t.Errorf("Expected user 'foobar', got %+v", resp.User)
 	}
 
 	// Failure case (simulate by using a special test flag)

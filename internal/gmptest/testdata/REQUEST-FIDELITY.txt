@@ -68,7 +68,7 @@ create_ticket                upstream  001 clean         dropped=0   truncated=0
 create_tls_certificate       live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_tls_certificate       upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 create_user                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
-create_user                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=1
+create_user                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 delete_agents                live      001 clean         dropped=0   truncated=0   changed=0   added=0
 delete_agents                upstream  001 clean         dropped=0   truncated=0   changed=0   added=7
 delete_alert                 live      001 clean         dropped=0   truncated=0   changed=0   added=0
@@ -313,7 +313,7 @@ modify_ticket                upstream  001 clean         dropped=0   truncated=0
 modify_tls_certificate       live      001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_tls_certificate       upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_user                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
-modify_user                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=2
+modify_user                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=1
 move_task                    live      001 clean         dropped=0   truncated=0   changed=0   added=0
 move_task                    upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 restore                      live      001 clean         dropped=0   truncated=0   changed=0   added=0

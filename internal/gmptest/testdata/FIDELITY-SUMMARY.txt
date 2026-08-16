@@ -12,7 +12,7 @@
 
 fixtures: 321   clean: 188   with-loss: 120   decode-errors: 12   advisory: 1
 commands with loss: 37 of 122
-distinct dropped paths: 226
+distinct dropped paths: 221
 
 ## Per fixture
 
@@ -254,10 +254,10 @@ get_tls_certificates         live      002 ok            dropped=2   truncated=0
 get_tls_certificates         live      003 ok            dropped=2   truncated=0   changed=0   added=0
 get_tls_certificates         live      004 ok            dropped=2   truncated=0   changed=0   added=0
 get_tls_certificates         upstream  001 ok            dropped=2   truncated=0   changed=0   added=5
-get_users                    live      001 ok            dropped=7   truncated=0   changed=1   added=0
-get_users                    live      002 ok            dropped=7   truncated=0   changed=1   added=0
-get_users                    live      003 ok            dropped=6   truncated=0   changed=1   added=0
-get_users                    upstream  001 clean         dropped=0   truncated=0   changed=0   added=4
+get_users                    live      001 ok            dropped=2   truncated=0   changed=0   added=3
+get_users                    live      002 ok            dropped=2   truncated=0   changed=0   added=3
+get_users                    live      003 ok            dropped=2   truncated=0   changed=0   added=3
+get_users                    upstream  001 clean         dropped=0   truncated=0   changed=0   added=32
 get_version                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
 get_version                  live      002 clean         dropped=0   truncated=0   changed=0   added=0
 get_version                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0

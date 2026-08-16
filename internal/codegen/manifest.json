@@ -66,8 +66,7 @@
     },
     {
       "name": "user",
-      "commands": ["create_user", "get_users", "modify_user"],
-      "review_only": true
+      "commands": ["create_user", "get_users", "modify_user"]
     }
   ]
 }

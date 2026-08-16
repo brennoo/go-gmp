@@ -569,8 +569,8 @@ func (r *captureRun) lifecycleUser(st *captureState) {
 			UserID: st.userID,
 			Name:   r.resourceName("user"),
 			Password: &commands.UserPassword{
-				Modify: "1",
-				Text:   r.generatedSecret("created user's password, modified"),
+				Modify: commands.Bool(true),
+				Value:  r.generatedSecret("created user's password, modified"),
 			},
 		})
 }

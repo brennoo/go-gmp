@@ -3756,31 +3756,18 @@ func main() {
 `
 
 // TestValidateUserBeforeMatchesKnownConformance is user's counterpart to
-// TestValidateReportConfigBeforeMatchesKnownConformance. user is review-only,
-// so this compares Validate's "before" side against the still-hand-written
-// commands/{create_user,get_users,modify_user}.go.
+// TestValidateReportConfigBeforeMatchesKnownConformance. user is adopted, so
+// this is a drift detector on the committed commands/ files. Pre-adoption
+// findings are recorded in docs/review-2026-08.md.
 func TestValidateUserBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_user")
 
 	want := map[string]counts{
-		"create_user": {
-			actionable: map[string]int{schema.CatExtra: 2, schema.CatCardinality: 1, schema.CatOmitEmpty: 1},
-			suppressed: map[string]int{},
-		},
-		"modify_user": {
-			actionable: map[string]int{schema.CatExtra: 1, schema.CatCardinality: 1, schema.CatOmitEmpty: 1},
-			suppressed: map[string]int{},
-		},
+		"create_user": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_user": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_users": {
-			actionable: map[string]int{
-				schema.CatMissing:     1,
-				schema.CatExtra:       2,
-				schema.CatCardinality: 2,
-				schema.CatKind:        2,
-				schema.CatType:        2,
-				schema.CatDefect:      2,
-			},
-			suppressed: map[string]int{schema.CatOmitEmpty: 25},
+			actionable: map[string]int{schema.CatDefect: 2},
+			suppressed: map[string]int{},
 		},
 	}
 	for _, res := range before {
