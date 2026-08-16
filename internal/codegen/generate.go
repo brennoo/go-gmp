@@ -177,13 +177,14 @@ func sameSchemaSource(a, b schema.Provenance) bool {
 	return a == b
 }
 
-// validDefectClasses are schema.parse.go's eight Defect* constants, checked
+// validDefectClasses are schema.parse.go's nine Defect* constants, checked
 // by name so a typo'd Class in DefectAllowlist fails as malformed metadata
 // rather than surfacing indirectly as a stale entry.
 var validDefectClasses = map[string]bool{
 	schema.DefectTypeForT:      true,
 	schema.DefectDanglingRef:   true,
 	schema.DefectDuplicateEle:  true,
+	schema.DefectDuplicateRef:  true,
 	schema.DefectEmptyPattern:  true,
 	schema.DefectNoPattern:     true,
 	schema.DefectUndefinedType: true,
@@ -1715,10 +1716,10 @@ func encodeStmt(fieldExpr string, f field) string {
 
 // initialisms are the acronyms and other fixed-casing exceptions the
 // hand-written commands/ package already spells this way — most are full-caps
-// acronyms, but "icalendar" is the one mixed-case exception (RFC 5545's own
-// spelling, not an acronym). Keeping the generator's spelling identical is
-// what lets generated types drop in beside them without renaming every call
-// site.
+// acronyms, but "icalendar" (RFC 5545's own spelling, not an acronym) and
+// "ips" (the plural of "ip", not a word of its own) are mixed-case
+// exceptions. Keeping the generator's spelling identical is what lets
+// generated types drop in beside them without renaming every call site.
 var initialisms = map[string]string{
 	"api":       "API",
 	"cpe":       "CPE",
@@ -1726,11 +1727,14 @@ var initialisms = map[string]string{
 	"cvss":      "CVSS",
 	"dn":        "DN",
 	"dns":       "DNS",
+	"esxi":      "ESXI",
 	"http":      "HTTP",
 	"icalendar": "ICalendar",
 	"icmp":      "ICMP",
 	"id":        "ID",
 	"ip":        "IP",
+	"ips":       "IPs",
+	"lsc":       "LSC",
 	"md5":       "MD5",
 	"nvt":       "NVT",
 	"oid":       "OID",

@@ -350,6 +350,25 @@ var PointerOverrides = map[string]PointerOverride{
 	"modify_user.comment": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
 	},
+	// modify_target: live gvmd 26.36.1 experiment run against review-only
+	// target's deferred question (created a throwaway target with unique
+	// hosts/exclude_hosts/port_range, then probed each field via RawXML and
+	// read comment/name/hosts/exclude_hosts back through get_targets).
+	// comment behaves like modify_alert's (omit leaves the stored value
+	// unchanged, explicit-empty clears it to ""). name did not: an
+	// explicit-empty <name></name> is rejected outright ("400 Name must be
+	// at least one character long"), so it keeps the mechanical string
+	// default (see the modify_target CommandWarning below). hosts and
+	// exclude_hosts could not be tested for an omit-vs-explicit-empty
+	// distinction either: gvmd requires both present together whenever
+	// either is touched, and rejects both explicit-empty too, so neither
+	// field has a legal standalone empty state a pointer could express (same
+	// warning). hosts_ordering accepted every value tried but could not be
+	// read back at all: get_targets's response never echoes it, so the
+	// omit-vs-clear question is unanswerable from this client alone.
+	"modify_target.comment": {
+		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
+	},
 }
 
 // CommandWarning attaches a public-facing behavioral-hazard note to a
@@ -447,6 +466,20 @@ var CommandWarnings = map[string]CommandWarning{
 			"configurable=false and get_report_configs returned zero existing configs, so no valid " +
 			"target existed to exercise the Name/Comment omit-vs-explicit-empty question against",
 	},
+	"modify_target": {
+		Text: "Name rejects an explicit-empty <name></name> outright (\"400 Name must be at " +
+			"least one character long\") rather than accepting it as a clear; omitting Name leaves " +
+			"the stored value unchanged. Hosts and ExcludeHosts must always be sent together: " +
+			"omitting either while the other is present in the same request fails (\"400 HOSTS " +
+			"requires an EXCLUDE_HOSTS\" / \"400 EXCLUDE_HOSTS requires a HOSTS\"), even when the " +
+			"omitted field's stored value is not changing, and sending both explicit-empty is " +
+			"rejected too (\"400 HOSTS must be at least one character long\"). HostsOrdering could " +
+			"not be tested for an omit-vs-explicit-empty distinction: get_targets never echoes it " +
+			"back in its response.",
+		Reason: "T-9: live gvmd 26.36.1 test against the running instance confirmed the name " +
+			"rejection, the hosts/exclude_hosts pairing requirement, and hosts_ordering's absence " +
+			"from every get_targets response; see docs/review-2026-08.md's `target` review-only section",
+	},
 }
 
 // DefectKey identifies one schema.Defect (internal/schema/parse.go's
@@ -538,5 +571,32 @@ var DefectAllowlist = map[DefectKey]DefectAllowlistEntry{
 	},
 	{Command: "get_users", Class: "empty-pattern", Path: "/get_users_response/user/groups/group/permissions"}: {
 		Reason: "T-15; docs/review-2026-08.md `user`",
+	},
+	{Command: "get_targets", Class: "duplicate-ref", Path: "/get_targets_response/target/permissions"}: {
+		Reason: "T-9; docs/review-2026-08.md `target`",
+	},
+	{Command: "get_targets", Class: "empty-pattern", Path: "/get_targets_response/target/esxi_credential/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `target`",
+	},
+	{Command: "get_targets", Class: "empty-pattern", Path: "/get_targets_response/target/krb5_credential/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `target`",
+	},
+	{Command: "get_targets", Class: "empty-pattern", Path: "/get_targets_response/target/port_list/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `target`",
+	},
+	{Command: "get_targets", Class: "empty-pattern", Path: "/get_targets_response/target/smb_credential/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `target`",
+	},
+	{Command: "get_targets", Class: "empty-pattern", Path: "/get_targets_response/target/snmp_credential/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `target`",
+	},
+	{Command: "get_targets", Class: "empty-pattern", Path: "/get_targets_response/target/ssh_credential/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `target`",
+	},
+	{Command: "get_targets", Class: "empty-pattern", Path: "/get_targets_response/target/ssh_elevate_credential/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `target`",
+	},
+	{Command: "get_targets", Class: "empty-pattern", Path: "/get_targets_response/target/tasks/task/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `target`",
 	},
 }

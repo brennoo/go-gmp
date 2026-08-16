@@ -41,7 +41,10 @@ func TestCommittedManifest(t *testing.T) {
 	// create_report_format,get_report_formats,modify_report_format,
 	// create_report_config,get_report_configs,modify_report_config,
 	// report_config_shared,create_user,get_users,modify_user,
-	// user_shared}.go are all the generator's output.
+	// user_shared}.go are all the generator's output. target is review-only:
+	// its generated output lives under testdata/golden pending adoption, and
+	// commands/{create_target,get_targets,modify_target}.go stay
+	// hand-written for now.
 	assertFamily(t, m, "get_notes", "note")
 	assertFamily(t, m, "get_overrides", "override")
 	assertFamily(t, m, "get_roles", "role")
@@ -63,6 +66,20 @@ func TestCommittedManifest(t *testing.T) {
 		t.Error("FamilyOf(delete_note) claims a family the manifest does not declare")
 	}
 
+	if f, ok := m.FamilyOf("get_targets"); !ok {
+		t.Fatal("FamilyOf(get_targets) found no family")
+	} else {
+		if f.Name != "target" {
+			t.Errorf("FamilyOf(get_targets).Name = %q, want target", f.Name)
+		}
+		if want := "target_shared.go"; f.SharedFile() != want {
+			t.Errorf("target: SharedFile() = %q, want %s", f.SharedFile(), want)
+		}
+		if !f.ReviewOnly {
+			t.Error("target: ReviewOnly = false, want true")
+		}
+	}
+
 	wantAdopted := []string{
 		"create_alert", "create_asset", "create_credential", "create_filter", "create_group", "create_note",
 		"create_override", "create_permission", "create_port_list", "create_report_config", "create_report_format",
@@ -77,13 +94,14 @@ func TestCommittedManifest(t *testing.T) {
 	want := []string{
 		"create_alert", "create_asset", "create_credential", "create_filter", "create_group", "create_note",
 		"create_override", "create_permission", "create_port_list", "create_report_config", "create_report_format",
-		"create_role", "create_schedule", "create_tag", "create_ticket", "create_tls_certificate", "create_user",
-		"get_alerts", "get_assets", "get_credentials", "get_filters", "get_groups", "get_notes", "get_overrides",
-		"get_permissions", "get_port_lists", "get_report_configs", "get_report_formats", "get_roles",
-		"get_schedules", "get_tags", "get_tickets", "get_tls_certificates", "get_users", "modify_alert",
-		"modify_asset", "modify_credential", "modify_filter", "modify_group", "modify_note", "modify_override",
-		"modify_permission", "modify_port_list", "modify_report_config", "modify_report_format", "modify_role",
-		"modify_schedule", "modify_tag", "modify_ticket", "modify_tls_certificate", "modify_user",
+		"create_role", "create_schedule", "create_tag", "create_target", "create_ticket", "create_tls_certificate",
+		"create_user", "get_alerts", "get_assets", "get_credentials", "get_filters", "get_groups", "get_notes",
+		"get_overrides", "get_permissions", "get_port_lists", "get_report_configs", "get_report_formats",
+		"get_roles", "get_schedules", "get_tags", "get_targets", "get_tickets", "get_tls_certificates", "get_users",
+		"modify_alert", "modify_asset", "modify_credential", "modify_filter", "modify_group", "modify_note",
+		"modify_override", "modify_permission", "modify_port_list", "modify_report_config", "modify_report_format",
+		"modify_role", "modify_schedule", "modify_tag", "modify_target", "modify_ticket", "modify_tls_certificate",
+		"modify_user",
 	}
 	if got := m.AllCommands(); strings.Join(got, ",") != strings.Join(want, ",") {
 		t.Errorf("AllCommands() = %v, want %v", got, want)
@@ -91,26 +109,26 @@ func TestCommittedManifest(t *testing.T) {
 	if got := m.Adopted().AllCommands(); strings.Join(got, ",") != strings.Join(wantAdopted, ",") {
 		t.Errorf("Adopted().AllCommands() = %v, want %v", got, wantAdopted)
 	}
-	if got := m.ReviewOnlyFamilies(); len(got) != 0 {
-		t.Errorf("ReviewOnlyFamilies() = %v, want none", got)
+	if got := m.ReviewOnlyFamilies(); strings.Join(got, ",") != "target" {
+		t.Errorf("ReviewOnlyFamilies() = %v, want [target]", got)
 	}
 
 	assertFiles(t, "ExpectedOutputFiles", m.ExpectedOutputFiles("commands"), []string{
 		"alert_shared.go", "asset_shared.go", "create_alert.go", "create_asset.go", "create_credential.go",
 		"create_filter.go", "create_group.go", "create_note.go", "create_override.go", "create_permission.go",
 		"create_port_list.go", "create_report_config.go", "create_report_format.go", "create_role.go",
-		"create_schedule.go", "create_tag.go", "create_ticket.go", "create_tls_certificate.go", "create_user.go",
-		"credential_shared.go", "filter_shared.go", "get_alerts.go", "get_assets.go", "get_credentials.go",
-		"get_filters.go", "get_groups.go", "get_notes.go", "get_overrides.go", "get_permissions.go",
-		"get_port_lists.go", "get_report_configs.go", "get_report_formats.go", "get_roles.go", "get_schedules.go",
-		"get_tags.go", "get_tickets.go", "get_tls_certificates.go", "get_users.go", "group_shared.go",
-		"modify_alert.go", "modify_asset.go", "modify_credential.go", "modify_filter.go", "modify_group.go",
-		"modify_note.go", "modify_override.go", "modify_permission.go", "modify_port_list.go",
-		"modify_report_config.go", "modify_report_format.go", "modify_role.go", "modify_schedule.go",
-		"modify_tag.go", "modify_ticket.go", "modify_tls_certificate.go", "modify_user.go", "note_shared.go",
-		"override_shared.go", "permission_shared.go", "port_list_shared.go", "report_config_shared.go",
-		"report_format_shared.go", "role_shared.go", "schedule_shared.go", "tag_shared.go", "ticket_shared.go",
-		"tls_certificate_shared.go", "user_shared.go",
+		"create_schedule.go", "create_tag.go", "create_target.go", "create_ticket.go", "create_tls_certificate.go",
+		"create_user.go", "credential_shared.go", "filter_shared.go", "get_alerts.go", "get_assets.go",
+		"get_credentials.go", "get_filters.go", "get_groups.go", "get_notes.go", "get_overrides.go",
+		"get_permissions.go", "get_port_lists.go", "get_report_configs.go", "get_report_formats.go", "get_roles.go",
+		"get_schedules.go", "get_tags.go", "get_targets.go", "get_tickets.go", "get_tls_certificates.go",
+		"get_users.go", "group_shared.go", "modify_alert.go", "modify_asset.go", "modify_credential.go",
+		"modify_filter.go", "modify_group.go", "modify_note.go", "modify_override.go", "modify_permission.go",
+		"modify_port_list.go", "modify_report_config.go", "modify_report_format.go", "modify_role.go",
+		"modify_schedule.go", "modify_tag.go", "modify_target.go", "modify_ticket.go", "modify_tls_certificate.go",
+		"modify_user.go", "note_shared.go", "override_shared.go", "permission_shared.go", "port_list_shared.go",
+		"report_config_shared.go", "report_format_shared.go", "role_shared.go", "schedule_shared.go",
+		"tag_shared.go", "target_shared.go", "ticket_shared.go", "tls_certificate_shared.go", "user_shared.go",
 	})
 	assertFiles(t, "Adopted().ExpectedOutputFiles", m.Adopted().ExpectedOutputFiles("commands"), []string{
 		"alert_shared.go", "asset_shared.go", "create_alert.go", "create_asset.go", "create_credential.go",

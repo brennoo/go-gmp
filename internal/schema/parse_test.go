@@ -488,6 +488,97 @@ func TestIDDisambiguatesSharedWireName(t *testing.T) {
 	if hasDefect(cmd, DefectDanglingRef, "/x/x2") {
 		t.Errorf("<e>x2</e> must resolve through <id>, not be flagged dangling: %v", cmd.Defects)
 	}
+	// "x" and "x2" are distinct tokens as far as the seen set is concerned;
+	// they must never be treated as the same reference repeated.
+	if hasDefect(cmd, DefectDuplicateRef, "/x/x") || hasDefect(cmd, DefectDuplicateRef, "/x/x2") {
+		t.Errorf("Distinct tokens aliased to the same wire name must not be flagged as a duplicate reference: %v", cmd.Defects)
+	}
+}
+
+// The same <e> token referenced twice in one pattern: one definition, but two
+// occurrences. Distinct from DefectDuplicateEle, which is about two
+// colliding definitions.
+func TestDefectDuplicateReference(t *testing.T) {
+	cmd := parseOne(t, `
+    <name>x</name>
+    <pattern><e>dup</e><e>dup</e></pattern>
+    <ele><name>dup</name><pattern>text</pattern></ele>
+    <response><pattern/></response>`)
+
+	got := 0
+	for _, c := range cmd.Request.Children {
+		if c.Name == "dup" {
+			got++
+		}
+	}
+	if got != 1 {
+		t.Errorf("Got %d children named dup, want 1: the repeated reference must not double the node", got)
+	}
+	if !hasDefect(cmd, DefectDuplicateRef, "/x/dup") {
+		t.Errorf("Expected %s at /x/dup, got %v", DefectDuplicateRef, cmd.Defects)
+	}
+}
+
+// seen is shared across one fill call's whole nested walk rather than reset
+// per wrapper, so a token repeated inside an <o>/<any>/<g>/<or> must be caught
+// exactly like one repeated at the top level.
+func TestDefectDuplicateReferenceAcrossWrappers(t *testing.T) {
+	wrappers := []struct{ open, close string }{
+		{"<o>", "</o>"},
+		{"<any>", "</any>"},
+		{"<g>", "</g>"},
+		{"<or>", "</or>"},
+	}
+	for _, w := range wrappers {
+		t.Run(w.open, func(t *testing.T) {
+			cmd := parseOne(t, `
+        <name>x</name>
+        <pattern><e>dup</e>`+w.open+`<e>dup</e>`+w.close+`</pattern>
+        <ele><name>dup</name><pattern>text</pattern></ele>
+        <response><pattern/></response>`)
+
+			got := 0
+			for _, c := range cmd.Request.Children {
+				if c.Name == "dup" {
+					got++
+				}
+			}
+			if got != 1 {
+				t.Errorf("Got %d children named dup, want 1", got)
+			}
+			if !hasDefect(cmd, DefectDuplicateRef, "/x/dup") {
+				t.Errorf("Expected %s at /x/dup, got %v", DefectDuplicateRef, cmd.Defects)
+			}
+		})
+	}
+}
+
+// seen is local to one fill call: two elements' own patterns may each
+// reference the same shared child name without colliding, since expanding
+// into an <ele>'s own <pattern> starts a fresh seen set.
+func TestDuplicateRefSeenResetsPerScope(t *testing.T) {
+	cmd := parseOne(t, `
+    <name>x</name>
+    <pattern><e>a</e><e>b</e></pattern>
+    <ele>
+      <name>a</name>
+      <pattern><e>shared</e></pattern>
+      <ele><name>shared</name><pattern>text</pattern></ele>
+    </ele>
+    <ele>
+      <name>b</name>
+      <pattern><e>shared</e></pattern>
+      <ele><name>shared</name><pattern>text</pattern></ele>
+    </ele>
+    <response><pattern/></response>`)
+
+	find(t, find(t, cmd.Request, "a"), "shared")
+	find(t, find(t, cmd.Request, "b"), "shared")
+	for _, d := range cmd.Defects {
+		if d.Class == DefectDuplicateRef {
+			t.Errorf("A name reused across separate elements' own scopes must not be flagged a duplicate reference: %v", d)
+		}
+	}
 }
 
 // Defect 5: undefined type names resolved through the alias table.

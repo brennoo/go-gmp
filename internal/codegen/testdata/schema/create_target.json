@@ -1,0 +1,417 @@
+{
+  "Name": "create_target",
+  "File": "command_create_target.xml",
+  "Request": {
+    "Name": "create_target",
+    "Kind": 0,
+    "Card": 0,
+    "InChoice": false,
+    "Type": "",
+    "Alts": null,
+    "Children": [
+      {
+        "Name": "name",
+        "Kind": 0,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "name",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "comment",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "copy",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "uuid",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "exclude_hosts",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "ssh_credential",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "id",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "uuid",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "port",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      },
+      {
+        "Name": "ssh_elevate_credential",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "id",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "uuid",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      },
+      {
+        "Name": "krb5_credential",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": true,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "id",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "uuid",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      },
+      {
+        "Name": "smb_credential",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": true,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "id",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "uuid",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      },
+      {
+        "Name": "esxi_credential",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "id",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "uuid",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      },
+      {
+        "Name": "snmp_credential",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "id",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "uuid",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      },
+      {
+        "Name": "ssh_lsc_credential",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "id",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "uuid",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "port",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      },
+      {
+        "Name": "smb_lsc_credential",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "id",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "uuid",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      },
+      {
+        "Name": "esxi_lsc_credential",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "id",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "uuid",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      },
+      {
+        "Name": "alive_tests",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "alive_test",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "allow_simultaneous_ips",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "boolean",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "reverse_lookup_only",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "boolean",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "reverse_lookup_unify",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "boolean",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "asset_hosts",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": true,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "filter",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      },
+      {
+        "Name": "hosts",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": true,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "port_range",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": true,
+        "Type": "port_range",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "port_list",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": true,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "id",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "uuid",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      }
+    ],
+    "Chardata": false
+  },
+  "Response": {
+    "Name": "create_target_response",
+    "Kind": 0,
+    "Card": 0,
+    "InChoice": false,
+    "Type": "",
+    "Alts": null,
+    "Children": [
+      {
+        "Name": "status",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "status",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "status_text",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "id",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "uuid",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      }
+    ],
+    "Chardata": false
+  },
+  "Defects": null,
+  "Provenance": {
+    "Method": "file",
+    "Source": "gvmd/src/schema_formats/XML/GMP.xml.in",
+    "SourceRevision": "",
+    "SourceSHA256": "eb18d64e27d614a27f2499a09443bce65e885b5e256b5629c11b231c17ba11e7",
+    "ParsedSHA256": "9771bce88ff7d65d7b1c2f59083af12897a237e1ec25f8f7aa284b3968ed8c0f",
+    "DeclaredVersion": "@GMP_VERSION@",
+    "ExtractedAt": "2026-08-16T08:53:34.129777Z"
+  }
+}

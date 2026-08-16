@@ -3914,3 +3914,82 @@ func defectDetails(fs []schema.Finding) []string {
 	sort.Strings(out)
 	return out
 }
+
+// TestValidateTargetBeforeMatchesKnownConformance is target's counterpart to
+// TestValidateReportConfigBeforeMatchesKnownConformance. target is
+// review-only, so this pins the pre-swap gate against the still-hand-written
+// commands/{create_target,get_targets,modify_target}.go: create_target and
+// modify_target each carry a raft of schema-undeclared EXTRA fields (the
+// hand-written credential/port-list sub-structs duplicate id/name/port
+// fields the schema never gives those elements) alongside OMITEMPTY findings
+// on fields the schema marks optional but the hand-written struct tags mark
+// required or vice versa. get_targets is worse: wrong attr/element
+// classification on filtered/page/count, missing Trash/Permissions/Comment
+// fields, bool where the wire sends a GMP tri-state, a nested TargetPortRange
+// struct where the wire sends a bare string, a spurious Comment on
+// TargetFilters and Count on TargetTasks, and Keywords support missing
+// entirely — see docs/review-2026-08.md's `target` review-only section for
+// the full field-by-field list. The nine SCHEMA-DEFECT findings are the
+// schema's own get_targets defects (one duplicate-ref, eight empty-pattern),
+// unrelated to the hand-written code and unfixable by generation.
+func TestValidateTargetBeforeMatchesKnownConformance(t *testing.T) {
+	before, _ := validateOrSkip(t, "create_target")
+
+	want := map[string]counts{
+		"create_target": {
+			actionable: map[string]int{schema.CatExtra: 17},
+			suppressed: map[string]int{schema.CatOmitEmpty: 12},
+		},
+		"modify_target": {
+			actionable: map[string]int{schema.CatExtra: 19},
+			suppressed: map[string]int{schema.CatOmitEmpty: 10},
+		},
+		"get_targets": {
+			actionable: map[string]int{
+				schema.CatExtra:   10,
+				schema.CatKind:    3,
+				schema.CatMissing: 12,
+				schema.CatDefect:  9,
+				schema.CatType:    5,
+			},
+			suppressed: map[string]int{schema.CatOmitEmpty: 53},
+		},
+	}
+	for _, res := range before {
+		w, ok := want[res.Command]
+		if !ok {
+			t.Errorf("%s: unexpected command in Validate's before results", res.Command)
+			continue
+		}
+		assertCounts(t, "before", res.Command, w, countFindings(res.Findings))
+	}
+}
+
+// TestValidateTargetGeneratedMatchesOrImproves is target's pre-adoption gate,
+// run at the same rigour every prior family's was. Generation closes every
+// actionable finding on create_target and modify_target, and every
+// actionable finding on get_targets except the nine allowlisted
+// SCHEMA-DEFECT findings the schema itself carries (see
+// internal/codegen/testdata/schema/get_targets.json's Defects array and the
+// matching DefectAllowlist entries in overrides.go). No
+// FieldOverride/FieldSuppression/TypeOverride was needed for this family —
+// every schema-vs-hand-written divergence found during review traced
+// directly to Card/Kind values already in the schema snapshot. The one
+// PointerOverride this family does carry (modify_target.comment) and the
+// modify_target CommandWarning (Name/Hosts/ExcludeHosts/HostsOrdering
+// presence hazards) came from live gvmd evidence, not from a
+// generator-vs-schema mismatch, so neither shows up as a suppressed finding
+// here.
+func TestValidateTargetGeneratedMatchesOrImproves(t *testing.T) {
+	before, after := validateOrSkip(t, "create_target")
+
+	wantAfter := map[string]counts{
+		"create_target": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_target": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_targets": {
+			actionable: map[string]int{schema.CatDefect: 9},
+			suppressed: map[string]int{},
+		},
+	}
+	assertMatchesOrImproves(t, before, after, wantAfter)
+}

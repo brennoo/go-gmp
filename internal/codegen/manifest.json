@@ -67,6 +67,11 @@
     {
       "name": "user",
       "commands": ["create_user", "get_users", "modify_user"]
+    },
+    {
+      "name": "target",
+      "commands": ["create_target", "get_targets", "modify_target"],
+      "review_only": true
     }
   ]
 }

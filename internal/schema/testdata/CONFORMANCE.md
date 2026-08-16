@@ -31,22 +31,22 @@ them, so response-side optionality is trusted and request-side is not.
 commands compared:            122
 fully conformant:             72
 with actionable findings:     50
-actionable findings:          440  (request 221, response 219)
+actionable findings:          436  (request 221, response 215)
 suppressed findings:          537
-confirmed by fidelity corpus: 64
+confirmed by fidelity corpus: 63
 in the schema, not in Go:     0
 in Go, not in the schema:     0
 
 ### Findings by category
 
                  actionable suppressed
-  MISSING               159          0
+  MISSING               155          0
   EXTRA                 180          5
   CARDINALITY            32          0
   KIND                    3          0
   OMITEMPTY               2        532
   TYPE                   64          0
-  SCHEMA-DEFECT         107          0
+  SCHEMA-DEFECT         114          0
 
 ### Schema defects by class
 
@@ -66,6 +66,7 @@ taken against upstream main (155 commands). Two reasons, both expected:
 
   dangling-e           1 sites in 1 commands
   duplicate-ele       10 sites in 5 commands
+  duplicate-ref        7 sites in 2 commands
   empty-pattern       44 sites in 23 commands
   no-pattern          17 sites in 4 commands
   recursion-cut        6 sites in 1 commands
@@ -77,8 +78,8 @@ taken against upstream main (155 commands). Two reasons, both expected:
 
   get_reports                  70   MISSING=55  EXTRA=6  CARDINALITY=5  TYPE=4
   create_report                52   MISSING=38  EXTRA=5  CARDINALITY=5  TYPE=4
-  get_tasks                    41   MISSING=12  EXTRA=14  CARDINALITY=7  TYPE=8
-  get_targets                  31   MISSING=13  EXTRA=10  KIND=3  TYPE=5
+  get_tasks                    38   MISSING=9  EXTRA=14  CARDINALITY=7  TYPE=8
+  get_targets                  30   MISSING=12  EXTRA=10  KIND=3  TYPE=5
   get_info                     22   MISSING=12  EXTRA=7  TYPE=3
   modify_target                19   EXTRA=19
   delete_agents                18   EXTRA=18
@@ -170,7 +171,6 @@ attributes, and one of its own captured request fixtures uses three of them.
   get_targets              /get_targets_response/target/ssh_elevate_credential/trash
   get_tasks                /get_tasks_response/task/last_report/report/result_count
   get_tasks                /get_tasks_response/task/report_count/*
-  get_tasks                /get_tasks_response/task/schedule_periods
   help                     /help_response/schema
 
 ## Per command
@@ -2192,7 +2192,7 @@ SCHEMA-DEFECT=1
 
 ### get_targets  (command_get_targets.xml)
 
-MISSING=13  EXTRA=10  KIND=3  OMITEMPTY=53  TYPE=5  SCHEMA-DEFECT=8
+MISSING=12  EXTRA=10  KIND=3  OMITEMPTY=53  TYPE=5  SCHEMA-DEFECT=9
 
   MISSING       response /get_targets_response/filters/keywords
                 required elem keywords is not modelled  [fidelity]
@@ -2204,8 +2204,6 @@ MISSING=13  EXTRA=10  KIND=3  OMITEMPTY=53  TYPE=5  SCHEMA-DEFECT=8
                 required elem trash is not modelled  [fidelity]
   MISSING       response /get_targets_response/target/krb5_credential/trash
                 required elem trash is not modelled  [fidelity]
-  MISSING       response /get_targets_response/target/permissions
-                required elem permissions is not modelled
   MISSING       response /get_targets_response/target/port_list/trash
                 required elem trash is not modelled  [fidelity]
   MISSING       response /get_targets_response/target/smb_credential/trash
@@ -2366,6 +2364,8 @@ MISSING=13  EXTRA=10  KIND=3  OMITEMPTY=53  TYPE=5  SCHEMA-DEFECT=8
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_targets_response/target/krb5_credential/permissions
                 empty-pattern: pattern declares no content
+  SCHEMA-DEFECT response /get_targets_response/target/permissions
+                duplicate-ref: referenced more than once in the same pattern
   SCHEMA-DEFECT response /get_targets_response/target/port_list/permissions
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_targets_response/target/smb_credential/permissions
@@ -2381,7 +2381,7 @@ MISSING=13  EXTRA=10  KIND=3  OMITEMPTY=53  TYPE=5  SCHEMA-DEFECT=8
 
 ### get_tasks  (command_get_tasks.xml)
 
-MISSING=12  EXTRA=14  CARDINALITY=7  OMITEMPTY=7  TYPE=8  SCHEMA-DEFECT=4
+MISSING=9  EXTRA=14  CARDINALITY=7  OMITEMPTY=7  TYPE=8  SCHEMA-DEFECT=10
 
   MISSING       response /get_tasks_response/task/alert/trash
                 required elem trash is not modelled
@@ -2391,20 +2391,14 @@ MISSING=12  EXTRA=14  CARDINALITY=7  OMITEMPTY=7  TYPE=8  SCHEMA-DEFECT=4
                 optional elem compliance_count is not modelled
   MISSING       response /get_tasks_response/task/last_report/report/result_count
                 optional elem result_count is not modelled  [fidelity]
-  MISSING       response /get_tasks_response/task/name
-                optional elem name is not modelled
   MISSING       response /get_tasks_response/task/observers/#text
                 schema also declares character data (user_list) here; Go *commands.TaskObservers has no `,chardata` field
   MISSING       response /get_tasks_response/task/report_count/*
                 schema declares 1 children; Go models this as scalar int  [fidelity]
-  MISSING       response /get_tasks_response/task/schedule
-                optional elem schedule is not modelled
   MISSING       response /get_tasks_response/task/schedule/icalendar
                 optional elem icalendar is not modelled
   MISSING       response /get_tasks_response/task/schedule/timezone
                 optional elem timezone is not modelled
-  MISSING       response /get_tasks_response/task/schedule_periods
-                optional elem schedule_periods is not modelled  [fidelity]
   MISSING       response /get_tasks_response/task/user_tags
                 optional elem user_tags is not modelled
   EXTRA         response /get_tasks_response/task/config/type
@@ -2483,8 +2477,20 @@ MISSING=12  EXTRA=14  CARDINALITY=7  OMITEMPTY=7  TYPE=8  SCHEMA-DEFECT=4
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_tasks_response/task/config/permissions
                 empty-pattern: pattern declares no content
+  SCHEMA-DEFECT response /get_tasks_response/task/last_report/report/result_count/hole
+                duplicate-ref: referenced more than once in the same pattern
+  SCHEMA-DEFECT response /get_tasks_response/task/last_report/report/result_count/info
+                duplicate-ref: referenced more than once in the same pattern
+  SCHEMA-DEFECT response /get_tasks_response/task/last_report/report/result_count/warning
+                duplicate-ref: referenced more than once in the same pattern
+  SCHEMA-DEFECT response /get_tasks_response/task/name
+                duplicate-ref: referenced more than once in the same pattern
   SCHEMA-DEFECT response /get_tasks_response/task/scanner/permissions
                 empty-pattern: pattern declares no content
+  SCHEMA-DEFECT response /get_tasks_response/task/schedule
+                duplicate-ref: referenced more than once in the same pattern
+  SCHEMA-DEFECT response /get_tasks_response/task/schedule_periods
+                duplicate-ref: referenced more than once in the same pattern
   SCHEMA-DEFECT response /get_tasks_response/task/target/permissions
                 empty-pattern: pattern declares no content
 

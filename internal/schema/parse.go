@@ -162,6 +162,7 @@ const (
 	DefectTypeForT      = "type-for-t"     // <pattern><type>x</type></pattern> where <t>x</t> was meant
 	DefectDanglingRef   = "dangling-e"     // <e>x</e> with no <ele> defining x
 	DefectDuplicateEle  = "duplicate-ele"  // two <ele> definitions of one name in one scope
+	DefectDuplicateRef  = "duplicate-ref"  // the same <e>x</e> token referenced twice in one pattern
 	DefectEmptyPattern  = "empty-pattern"  // <pattern/>, declaring nothing at all
 	DefectNoPattern     = "no-pattern"     // <ele> with neither <pattern> nor <type>
 	DefectUndefinedType = "undefined-type" // a type name with no <type> definition
@@ -476,7 +477,7 @@ func (e *env) fill(n *Node, pattern *rawPattern, defs []rawEle, path string) {
 	for i := range pattern.Attribs {
 		n.Children = append(n.Children, e.attrib(&pattern.Attribs[i], path))
 	}
-	e.refs(n, &pattern.rawGroup, scope, CardRequired, false, path)
+	e.refs(n, &pattern.rawGroup, scope, CardRequired, false, path, map[string]bool{})
 	e.expandShared(n, path)
 
 	if n.Type == "" && len(n.Children) == 0 && len(n.Alts) == 0 {
@@ -532,37 +533,41 @@ func (e *env) scope(defs []rawEle, path string) map[string]*rawEle {
 
 // refs walks a pattern's child references, composing cardinality as it
 // descends through the <o>/<any>/<g>/<or> wrappers.
-func (e *env) refs(n *Node, g *rawGroup, scope map[string]*rawEle, card Card, choice bool, path string) {
+//
+// seen is shared across one fill call's whole nested walk (not reset per
+// wrapper), so a token repeated inside an <o>/<any>/<g>/<or> is caught just
+// as one repeated at the top level would be — see child's use of it.
+func (e *env) refs(n *Node, g *rawGroup, scope map[string]*rawEle, card Card, choice bool, path string, seen map[string]bool) {
 	for _, ref := range g.E {
-		e.child(n, trim(ref), scope, card, choice, path)
+		e.child(n, trim(ref), scope, card, choice, path, seen)
 	}
 	for range g.R {
 		e.defect(DefectUnsupportedR, path, "<r> references a response from inside a pattern")
 	}
 	for i := range g.O {
-		e.nested(n, &g.O[i], scope, weaken(card, CardOptional), choice, path)
+		e.nested(n, &g.O[i], scope, weaken(card, CardOptional), choice, path, seen)
 	}
 	for i := range g.Any {
-		e.nested(n, &g.Any[i], scope, CardRepeated, choice, path)
+		e.nested(n, &g.Any[i], scope, CardRepeated, choice, path, seen)
 	}
 	for i := range g.G {
 		// <g> is a group: it interleaves its members without changing them.
-		e.nested(n, &g.G[i], scope, card, choice, path)
+		e.nested(n, &g.G[i], scope, card, choice, path, seen)
 	}
 	for i := range g.Or {
 		// <or> is a choice: at most one branch is present, so every member is
 		// optional however it is spelled inside the branch.
-		e.nested(n, &g.Or[i], scope, weaken(card, CardOptional), true, path)
+		e.nested(n, &g.Or[i], scope, weaken(card, CardOptional), true, path, seen)
 	}
 }
 
-func (e *env) nested(n *Node, w *rawNest, scope map[string]*rawEle, card Card, choice bool, path string) {
+func (e *env) nested(n *Node, w *rawNest, scope map[string]*rawEle, card Card, choice bool, path string, seen map[string]bool) {
 	for i := range w.Attribs {
 		a := e.attrib(&w.Attribs[i], path)
 		a.InChoice = a.InChoice || choice
 		n.Children = append(n.Children, a)
 	}
-	e.refs(n, &w.rawGroup, scope, card, choice, path)
+	e.refs(n, &w.rawGroup, scope, card, choice, path, seen)
 }
 
 // weaken combines an outer cardinality with an inner one. Repeated absorbs
@@ -577,10 +582,26 @@ func weaken(outer, inner Card) Card {
 	return CardRequired
 }
 
-func (e *env) child(n *Node, name string, scope map[string]*rawEle, card Card, choice bool, path string) {
+func (e *env) child(n *Node, name string, scope map[string]*rawEle, card Card, choice bool, path string, seen map[string]bool) {
 	if name == "" {
 		return
 	}
+	if seen[name] {
+		// The same <e> token referenced twice in one pattern — not two
+		// occurrences, the identical reference accidentally repeated (target's
+		// <e>permissions</e> is declared once before its credential list and
+		// again after, both resolving to the single <ele><name>permissions</name>
+		// definition). This is a distinct defect from DefectDuplicateEle, which
+		// is about two *definitions* colliding; here there is only one
+		// definition and it is referenced twice. get_filters's legitimate
+		// same-wire-name case is unaffected: its two occurrences use different
+		// tokens ("filters" and "filters2", the latter aliased via <id>), so
+		// they never collide here.
+		e.defect(DefectDuplicateRef, path+"/"+name, "referenced more than once in the same pattern")
+		return
+	}
+	seen[name] = true
+
 	kid := &Node{Name: name, Card: card, InChoice: choice}
 	n.Children = append(n.Children, kid)
 
