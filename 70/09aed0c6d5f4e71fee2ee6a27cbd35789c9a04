@@ -1,0 +1,61 @@
+client/client_test.go
+  s_3b90078ce72080::t_2391bc8d42295d 113
+commands/create_target.go
+  s_3b90078ce72080::t_6c9f41860d3bd7 1-2,7,9-30,33,46-58,60
+commands/get_targets.go
+  s_3b90078ce72080::t_81bec352d59f64 1-2,5,7,18-78,80-108,110,113,118,120,123-129,132-137,140-145,148-153,156-161,164-169,172-177,180-183,186-191,194-196,199-203
+commands/modify_target.go
+  s_3b90078ce72080::t_a1b9ae9e56419d 1-2,7-9,11-31,34,45-54
+commands/pagination/iterator_mocks_test.go
+  s_3b90078ce72080::t_08cd3bd25cb617 194
+commands/pagination/targets.go
+  s_3b90078ce72080::t_3ef7da3877b568 33
+commands/target_shared.go
+  s_3b90078ce72080::t_4ed2b2b2ea964b 1-43
+docs/review-2026-08.md
+  s_3b90078ce72080::t_72cdb8918fd366 1622-1652,2423
+internal/codegen/manifest.json
+  s_3b90078ce72080::t_b9d58eaba0e1bb 73
+internal/codegen/manifest_test.go
+  s_3b90078ce72080::t_7007e179d0709b 43-45,63,71-78,98-99,123-134
+internal/codegen/validate_test.go
+  s_3b90078ce72080::t_4ea604c6d46cfb 3919-3921,3926-3927,3929-3930
+internal/gmptest/capture_sequence_test.go
+  s_3b90078ce72080::t_13bc4bed340967 434,448,450
+internal/gmptest/cases_target.go
+  s_3b90078ce72080::t_7a35b294682c93 76
+internal/gmptest/testdata/FIDELITY-SUMMARY.txt
+  s_3b90078ce72080::t_36d0ccb84131a4 13,15,235-239
+internal/gmptest/testdata/live/get_targets/001_fidelity.txt
+  s_3b90078ce72080::t_fce3d94768aeef 7
+internal/gmptest/testdata/live/get_targets/002_fidelity.txt
+  s_3b90078ce72080::t_2c243c0b9a6302 7
+internal/gmptest/testdata/live/get_targets/003_fidelity.txt
+  s_3b90078ce72080::t_5092f343c6408d 7,15,18
+internal/gmptest/testdata/requests/create_target/flags_false.xml
+  s_3b90078ce72080::t_b0906b8648879b 1
+internal/gmptest/testdata/requests/create_target/flags_true.xml
+  s_3b90078ce72080::t_d1563226f06077 1
+internal/gmptest/testdata/upstream/get_targets/001_fidelity.txt
+  s_3b90078ce72080::t_6803d2df1ad8c4 3-72
+internal/gmptest/testdata/upstream/get_targets/002_fidelity.txt
+  s_3b90078ce72080::t_9454f619b9d4fc 3-72
+internal/schema/testdata/CONFORMANCE.md
+  s_3b90078ce72080::t_5b0b57511a7270 32-36,43-44,46-48,96-99,696,2128,2520
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "7009aed0c6d5f4e71fee2ee6a27cbd35789c9a04",
+  "prompts": {},
+  "sessions": {
+    "s_3b90078ce72080": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_3b90078ce72080",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
