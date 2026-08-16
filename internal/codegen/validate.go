@@ -99,9 +99,9 @@ type CommandRoots struct {
 // tls_certificate, permission, ticket, credential, port_list, asset,
 // report_format, report_config, user, target, task) these types are already
 // the generator's output, so the comparison is a drift detector on the
-// committed files. A family entering review-only mode instead compares
-// against its still-hand-written originals — the pre-swap gate every adopted
-// family went through before adoption.
+// committed files. A family entering review-only mode (scanner) instead
+// compares against its still-hand-written originals — the pre-swap gate
+// every adopted family went through before adoption.
 //
 // The map is written out by hand rather than derived from the manifest because
 // reflection needs the concrete types: adding a family here is the one place
@@ -336,6 +336,18 @@ func BeforeGoRoots() map[string]CommandRoots {
 		"get_tasks": {
 			Request:  schema.ModelOf(&commands.GetTasks{}),
 			Response: schema.ModelOf(&commands.GetTasksResponse{}),
+		},
+		"create_scanner": {
+			Request:  schema.ModelOf(&commands.CreateScanner{}),
+			Response: schema.ModelOf(&commands.CreateScannerResponse{}),
+		},
+		"modify_scanner": {
+			Request:  schema.ModelOf(&commands.ModifyScanner{}),
+			Response: schema.ModelOf(&commands.ModifyScannerResponse{}),
+		},
+		"get_scanners": {
+			Request:  schema.ModelOf(&commands.GetScanners{}),
+			Response: schema.ModelOf(&commands.GetScannersResponse{}),
 		},
 	}
 }

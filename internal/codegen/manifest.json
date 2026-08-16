@@ -75,6 +75,11 @@
     {
       "name": "task",
       "commands": ["create_task", "get_tasks", "modify_task"]
+    },
+    {
+      "name": "scanner",
+      "commands": ["create_scanner", "get_scanners", "modify_scanner"],
+      "review_only": true
     }
   ]
 }

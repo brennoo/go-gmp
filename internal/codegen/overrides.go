@@ -389,6 +389,36 @@ var PointerOverrides = map[string]PointerOverride{
 	"modify_task.observers": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <observers> are distinct requests",
 	},
+	// modify_scanner: live gvmd 22.7 experiment run against review-only
+	// scanner's optional fields (created a throwaway CVE-type scanner with a
+	// throwaway "cc" client-certificate credential, since every enabled
+	// scanner type on this instance requires one, then probed each field via
+	// RawXML and read the result back through get_scanners). comment, name
+	// and ca_pub all behave like modify_alert's fields (omit leaves the
+	// stored value unchanged, explicit-empty clears it to ""). relay_host
+	// does too, but clearing it also resets relay_port to 0 as a side effect
+	// -- gvmd treats an empty relay_host as "no relay" and drops the paired
+	// port with it. relay_port did not get its own entry: gvmd validates
+	// relay_port and relay_host together, rejecting an explicit-empty
+	// <relay_port></relay_port> outright ("400 ... RELAY_PORT must be a valid
+	// port number ... if RELAY_HOST is not a UNIX socket path") whenever
+	// relay_host is still set, so there is no legal standalone empty state
+	// for relay_port a pointer could express beyond what relay_host already
+	// covers; it keeps the mechanical string default. See
+	// docs/review-2026-08.md's `scanner` review-only section for the full
+	// experiment record.
+	"modify_scanner.comment": {
+		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
+	},
+	"modify_scanner.name": {
+		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <name> are distinct requests",
+	},
+	"modify_scanner.ca_pub": {
+		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <ca_pub> are distinct requests",
+	},
+	"modify_scanner.relay_host": {
+		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <relay_host> are distinct requests",
+	},
 }
 
 // CommandWarning attaches a public-facing behavioral-hazard note to a
@@ -648,5 +678,35 @@ var DefectAllowlist = map[DefectKey]DefectAllowlistEntry{
 	},
 	{Command: "get_tasks", Class: "empty-pattern", Path: "/get_tasks_response/task/target/permissions"}: {
 		Reason: "T-15; docs/review-2026-08.md `task`",
+	},
+	{Command: "get_scanners", Class: "empty-pattern", Path: "/get_scanners_response/scanner/configs/config/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `scanner`",
+	},
+	{Command: "get_scanners", Class: "empty-pattern", Path: "/get_scanners_response/scanner/tasks/task/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `scanner`",
+	},
+	{Command: "get_scanners", Class: "empty-pattern", Path: "/get_scanners_response/scanner/info/scanner/name"}: {
+		Reason: "T-9; docs/review-2026-08.md `scanner`",
+	},
+	{Command: "get_scanners", Class: "empty-pattern", Path: "/get_scanners_response/scanner/info/scanner/version"}: {
+		Reason: "T-9; docs/review-2026-08.md `scanner`",
+	},
+	{Command: "get_scanners", Class: "empty-pattern", Path: "/get_scanners_response/scanner/info/daemon/name"}: {
+		Reason: "T-9; docs/review-2026-08.md `scanner`",
+	},
+	{Command: "get_scanners", Class: "empty-pattern", Path: "/get_scanners_response/scanner/info/daemon/version"}: {
+		Reason: "T-9; docs/review-2026-08.md `scanner`",
+	},
+	{Command: "get_scanners", Class: "empty-pattern", Path: "/get_scanners_response/scanner/info/protocol/name"}: {
+		Reason: "T-9; docs/review-2026-08.md `scanner`",
+	},
+	{Command: "get_scanners", Class: "empty-pattern", Path: "/get_scanners_response/scanner/info/protocol/version"}: {
+		Reason: "T-9; docs/review-2026-08.md `scanner`",
+	},
+	{Command: "get_scanners", Class: "no-pattern", Path: "/get_scanners_response/scanner/info/description"}: {
+		Reason: "T-9; docs/review-2026-08.md `scanner`",
+	},
+	{Command: "get_scanners", Class: "no-pattern", Path: "/get_scanners_response/scanner/info/params/param"}: {
+		Reason: "T-9; docs/review-2026-08.md `scanner`",
 	},
 }

@@ -4017,3 +4017,94 @@ func TestValidateTaskGeneratedMatchesOrImproves(t *testing.T) {
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
+
+// TestValidateScannerBeforeMatchesKnownConformance is scanner's counterpart to
+// TestValidateTargetBeforeMatchesKnownConformance. scanner is review-only, so
+// this pins the pre-swap gate against the still-hand-written
+// commands/{create_scanner,get_scanners,modify_scanner}.go: create_scanner
+// and modify_scanner each carry 3 EXTRA findings from a single root cause —
+// both reuse get_scanners.go's response-shaped ScannerCredential
+// (Login/Name/Trash) on the request side, where the schema's <credential>
+// pattern for these two commands declares only @id — plus 2 TYPE findings
+// (port/relay_port are schema text, not numeric). modify_scanner also
+// carries 3 suppressed OMITEMPTY findings, the familiar request-side
+// over-constraint class (host/port/type tagged omitempty against the
+// schema's required attribs). get_scanners carries the family's whole
+// actionable load: 6 EXTRA (a stray top-level truncate, Scanner.KeyPub and
+// .Truncated, ScannerCredential.Login again, ScannerSortField's chardata,
+// and certificate_info's 8 fields collapsed to *) alongside 3 TYPE
+// (in_use/writable/credential.trash are schema booleans held in bare bool)
+// and 10 SCHEMA-DEFECT findings — 8 empty-pattern (info/{scanner,daemon,
+// protocol}'s name+version, already allowlisted for a dozen other commands)
+// plus 2 no-pattern (info/description, info/params/param — this defect
+// class's first appearance in the allowlist). 10 suppressed OMITEMPTY
+// findings round it out (Copy/Configs/Info/its four children/Tasks/UserTags
+// gaining the schema's own omitempty, plus Filters.Name). See
+// docs/review-2026-08.md's `scanner` review-only section for the full
+// field-by-field list and, notably, the T-21 caveat: certificate_info's
+// EXTRA finding does not represent an improvement opportunity the way the
+// others do — the hand-written struct already models it correctly, and a
+// parser bug (not a schema gap) is what makes generation collapse it.
+func TestValidateScannerBeforeMatchesKnownConformance(t *testing.T) {
+	before, _ := validateOrSkip(t, "create_scanner")
+
+	want := map[string]counts{
+		"create_scanner": {
+			actionable: map[string]int{schema.CatExtra: 3, schema.CatType: 2},
+			suppressed: map[string]int{},
+		},
+		"modify_scanner": {
+			actionable: map[string]int{schema.CatExtra: 3, schema.CatType: 2},
+			suppressed: map[string]int{schema.CatOmitEmpty: 3},
+		},
+		"get_scanners": {
+			actionable: map[string]int{
+				schema.CatExtra:  6,
+				schema.CatType:   3,
+				schema.CatDefect: 10,
+			},
+			suppressed: map[string]int{schema.CatOmitEmpty: 10},
+		},
+	}
+	for _, res := range before {
+		w, ok := want[res.Command]
+		if !ok {
+			t.Errorf("%s: unexpected command in Validate's before results", res.Command)
+			continue
+		}
+		assertCounts(t, "before", res.Command, w, countFindings(res.Findings))
+	}
+}
+
+// TestValidateScannerGeneratedMatchesOrImproves is scanner's pre-adoption
+// gate, run at the same rigour every prior family's was. Generation closes
+// every actionable finding on create_scanner and modify_scanner, and every
+// actionable finding on get_scanners except the ten allowlisted
+// SCHEMA-DEFECT findings the schema itself carries (see
+// internal/codegen/testdata/schema/get_scanners.json's Defects array and the
+// matching DefectAllowlist entries in overrides.go). The four
+// PointerOverrides this family carries (modify_scanner.comment/.name/
+// .ca_pub/.relay_host) came from live gvmd evidence, not from a
+// generator-vs-schema mismatch, so none shows up as a suppressed finding
+// here.
+//
+// This is not an unqualified improvement, and this family stays review-only
+// rather than adopting on the strength of these numbers alone: T-21 (see
+// docs/review-2026-08.md) means the generated get_scanners.certificate_info
+// regresses from the hand-written code's correct 8-field struct to a bare
+// string, without producing any finding that would flag the loss. Fixing
+// T-21 first, or carving out certificate_info specifically, is a
+// precondition for adopting this family, not just closing the numbers below.
+func TestValidateScannerGeneratedMatchesOrImproves(t *testing.T) {
+	before, after := validateOrSkip(t, "create_scanner")
+
+	wantAfter := map[string]counts{
+		"create_scanner": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_scanner": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_scanners": {
+			actionable: map[string]int{schema.CatDefect: 10},
+			suppressed: map[string]int{},
+		},
+	}
+	assertMatchesOrImproves(t, before, after, wantAfter)
+}

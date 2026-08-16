@@ -1,0 +1,167 @@
+{
+  "Name": "modify_scanner",
+  "File": "command_modify_scanner.xml",
+  "Request": {
+    "Name": "modify_scanner",
+    "Kind": 0,
+    "Card": 0,
+    "InChoice": false,
+    "Type": "",
+    "Alts": null,
+    "Children": [
+      {
+        "Name": "scanner_id",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "uuid",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "host",
+        "Kind": 0,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "port",
+        "Kind": 0,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "type",
+        "Kind": 0,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "comment",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "name",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "name",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "ca_pub",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "credential",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "id",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "uuid",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      },
+      {
+        "Name": "relay_host",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "relay_port",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      }
+    ],
+    "Chardata": false
+  },
+  "Response": {
+    "Name": "modify_scanner_response",
+    "Kind": 0,
+    "Card": 0,
+    "InChoice": false,
+    "Type": "",
+    "Alts": null,
+    "Children": [
+      {
+        "Name": "status",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "status",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "status_text",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      }
+    ],
+    "Chardata": false
+  },
+  "Defects": null,
+  "Provenance": {
+    "Method": "file",
+    "Source": "gvmd/src/schema_formats/XML/GMP.xml.in",
+    "SourceRevision": "",
+    "SourceSHA256": "eb18d64e27d614a27f2499a09443bce65e885b5e256b5629c11b231c17ba11e7",
+    "ParsedSHA256": "9771bce88ff7d65d7b1c2f59083af12897a237e1ec25f8f7aa284b3968ed8c0f",
+    "DeclaredVersion": "@GMP_VERSION@",
+    "ExtractedAt": "2026-08-16T13:14:47.232723Z"
+  }
+}
