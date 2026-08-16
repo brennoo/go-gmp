@@ -1,0 +1,43 @@
+docs/review-2026-08.md
+  s_01eb96a9af7b4f::t_68a142bce8a7ef 1381-1392,1412-1442
+internal/cmd/gengmp/main.go
+  s_01eb96a9af7b4f::t_f006595223551e 106,140
+internal/codegen/check.go
+  s_01eb96a9af7b4f::t_ad7ff79a76cce4 82,99
+internal/codegen/check_test.go
+  s_01eb96a9af7b4f::t_797402ce134280 48,234
+internal/codegen/generate.go
+  s_01eb96a9af7b4f::t_a1a099066f0a75 34,39,44,75,83,86-95,97-98,100-117,377-452,463-491,494,496,501,532,549,610,632-635,1053-1056,1058-1060,1115-1121,1124-1127,1139-1142,1144,1223-1277,1376,1381
+internal/codegen/generate_test.go
+  s_01eb96a9af7b4f::t_c065a72b1dc428 201,1859,1911,1926,1941,1960
+internal/codegen/manifest_test.go
+  s_01eb96a9af7b4f::t_1026f777f041d0 239,258,297,304,352,356,410,414,470,474,525,537
+internal/codegen/overrides.go
+  s_01eb96a9af7b4f::t_248358db7e3d1f 138-145,156-161,184-241,418-428
+internal/codegen/overrides_test.go
+  s_01eb96a9af7b4f::t_d977a32359bd2c 59,105,132,160,178,273,295-343,358,376,381,395,410,449,472,483,502
+internal/codegen/testdata/golden/get_report_configs.go
+  s_01eb96a9af7b4f::t_015c88519fadd5 132-137
+internal/codegen/testdata/golden/modify_report_config.go
+  s_01eb96a9af7b4f::t_674f17a8e4c448 8-9,11-15
+internal/codegen/validate.go
+  s_01eb96a9af7b4f::t_0c01a2b192d652 328,334,464,466
+internal/codegen/validate_test.go
+  s_01eb96a9af7b4f::t_819a3c5381a2fb 4,9,37,3575-3594,3600-3603,3605-3606,3663-3764
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "ef443b42814d7029f3e647ed24a8e1115bf26557",
+  "prompts": {},
+  "sessions": {
+    "s_01eb96a9af7b4f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_01eb96a9af7b4f",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
