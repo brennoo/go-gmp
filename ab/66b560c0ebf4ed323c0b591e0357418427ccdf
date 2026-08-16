@@ -1,0 +1,75 @@
+client/client_scanner_test.go
+  s_136fb361b57c4b::t_2b21c43fc79ed0 19,22,63,66,83,86
+client/client_test.go
+  s_136fb361b57c4b::t_7a6001ddd11138 785,796
+commands/create_scanner.go
+  s_136fb361b57c4b::t_864c601d29c63a 1-2,7,9-19,22
+commands/get_scanners.go
+  s_136fb361b57c4b::t_150aaa26110462 1-2,5,7,13-14,17,19-26,34-77,85-89,94,97-101,104,109,111,114,119-150,153,156,164,166,169,173,176,178,181,185,188,190-194,197,203-204,209-210,215-217
+commands/modify_scanner.go
+  s_136fb361b57c4b::t_e2f9a5b80dca05 1-2,7,11-16,18-19,22
+commands/scanner_shared.go
+  s_136fb361b57c4b::t_a139e76aa1998d 1-8
+docs/review-2026-08.md
+  s_136fb361b57c4b::t_a0e9ccf7379b1b 1780,1826,1829,1842-1846,1862-1925,2670,3274,3335-3336
+internal/codegen/generate.go
+  s_136fb361b57c4b::t_15ea20eadda082 1725
+internal/codegen/manifest.json
+  s_136fb361b57c4b::t_4707aca3915242 81
+internal/codegen/manifest_test.go
+  s_136fb361b57c4b::t_1ae89675f3c4e0 45-46,66,74-82,103-104,130-139,142-143
+internal/codegen/testdata/golden/create_scanner.go
+  s_136fb361b57c4b::t_75aa40393e0494 14
+internal/codegen/testdata/golden/get_scanners.go
+  s_136fb361b57c4b::t_80470f3c1d37ae 88,93,119-120
+internal/codegen/testdata/golden/modify_scanner.go
+  s_136fb361b57c4b::t_0f23f4ea3327c1 16
+internal/codegen/validate.go
+  s_136fb361b57c4b::t_04d8ae85abf945 100-104
+internal/codegen/validate_test.go
+  s_136fb361b57c4b::t_ed45393ea9e729 4021-4024,4029-4030,4032-4033
+internal/gmptest/capture_sequence_test.go
+  s_136fb361b57c4b::t_a5eadd20b731ae 726,731,734-735,746,748-754
+internal/gmptest/capture_test.go
+  s_136fb361b57c4b::t_3ccb5d778aa3fd 272-274
+internal/gmptest/cases_scanner.go
+  s_136fb361b57c4b::t_4ff69721ad3319 9,12,18-25,27,30,33-35,38,40-50
+internal/gmptest/testdata/FIDELITY-SUMMARY.txt
+  s_136fb361b57c4b::t_8d4e248283e742 15,216-219
+internal/gmptest/testdata/REQUEST-FIDELITY.txt
+  s_136fb361b57c4b::t_7a21e4c7f93c02 11-12,55-56,300-301
+internal/gmptest/testdata/live/get_scanners/001_fidelity.txt
+  s_136fb361b57c4b::t_d89b4057900ee3 9
+internal/gmptest/testdata/live/get_scanners/002_fidelity.txt
+  s_136fb361b57c4b::t_bc20ded3baa800 9
+internal/gmptest/testdata/live/get_scanners/003_fidelity.txt
+  s_136fb361b57c4b::t_206075f49f4ac9 9,15
+internal/gmptest/testdata/requests/create_scanner/basic.xml
+  s_136fb361b57c4b::t_dc7bf1e9aef772 1
+internal/gmptest/testdata/requests/create_scanner/with_relay_port.xml
+  s_136fb361b57c4b::t_f6dc4aacf97bad 1
+internal/gmptest/testdata/requests/modify_scanner/optional_fields_set.xml
+  s_136fb361b57c4b::t_3d61b409715c0c 1
+internal/gmptest/testdata/requests/modify_scanner/unset.xml
+  s_136fb361b57c4b::t_427db7c59e3892 1
+internal/gmptest/testdata/upstream/get_scanners/001_fidelity.txt
+  s_136fb361b57c4b::t_c65e46183e21d6 7,9,15
+internal/schema/testdata/CONFORMANCE.md
+  s_136fb361b57c4b::t_b5a3f0e7b58189 33-36,45,48-49,97-100,676,2002,2360
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "ab66b560c0ebf4ed323c0b591e0357418427ccdf",
+  "prompts": {},
+  "sessions": {
+    "s_136fb361b57c4b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_136fb361b57c4b",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
