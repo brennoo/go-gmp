@@ -36,25 +36,18 @@ var TypeOverrides = map[string]Override{
 		GoType: "commands.GMPBool",
 		Reason: `T-9 defect #6: lexical free text ("0"=false, anything else incl. empty=true), not xsd:boolean`,
 	},
-	// boolean_atoi is deliberately NOT mapped to GMPBool: vendor/XML's
+	// boolean_atoi is NOT the same wire rule as boolean: vendor/XML's
 	// <type><name>boolean_atoi</name> says the value is run through atoi(3)
 	// first, "which means that an empty string is considered false" — the
 	// exact opposite of <type><name>boolean</name>'s empty-is-true rule
-	// above (T-9 defect #6's two boolean flavours disagree on the empty
-	// case), so reusing GMPBool would silently invert every empty element.
-	//
-	// Neither generated family uses it. Inventoried by loading all three
-	// note and all three override commands through schema.Load against
-	// vendor/XML/commands and walking every leaf node: zero nodes with a
-	// resolved Type of boolean_atoi, and no entry in internal/schema's
-	// typeAliases maps onto it either — the only boolean_atoi text in those
-	// files is the type definition each split schema file repeats. So there
-	// is still no fixture to verify a dedicated type against, and the name
-	// keeps falling through to the mechanical string default rather than
-	// gaining a plausible-looking but unverified override. Add
-	// commands.GMPAtoiBool (empty/non-numeric -> false, "0" -> false,
-	// anything atoi reads as non-zero -> true) when the first family that
-	// actually declares one is generated.
+	// above. modify_config is the first generated family to declare it
+	// (family_selection/growing, family/all, family/growing), so it gets its
+	// own type rather than reusing GMPBool, which would silently invert
+	// every empty element.
+	"boolean_atoi": {
+		GoType: "commands.GMPAtoiBool",
+		Reason: "T-9 config: atoi(3) semantics (empty/non-numeric=false) differ from boolean's empty=true",
+	},
 	//
 	// gvmd emits ctime(3) strings and empty elements under fields the schema
 	// labels iso_time; time.Time's RFC 3339 UnmarshalText fails on both.
@@ -714,5 +707,11 @@ var DefectAllowlist = map[DefectKey]DefectAllowlistEntry{
 	},
 	{Command: "get_scanners", Class: "no-pattern", Path: "/get_scanners_response/scanner/info/params/param"}: {
 		Reason: "T-9; docs/review-2026-08.md `scanner`",
+	},
+	{Command: "create_config", Class: "unsupported-r", Path: "/create_config"}: {
+		Reason: "T-15; docs/review-2026-08.md `config`",
+	},
+	{Command: "get_configs", Class: "empty-pattern", Path: "/get_configs_response/config/tasks/task/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `config`",
 	},
 }

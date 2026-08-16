@@ -4067,3 +4067,100 @@ func TestValidateScannerGeneratedMatchesOrImproves(t *testing.T) {
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
+
+// TestValidateConfigBeforeMatchesKnownConformance is config's counterpart to
+// TestValidateScannerBeforeMatchesKnownConformance. config is review-only, so
+// this pins the pre-swap gate against the still-hand-written
+// commands/{create_config,get_configs,modify_config}.go: create_config
+// carries 1 EXTRA (a stray GetConfigsResponse field with no schema
+// counterpart) and 1 suppressed OMITEMPTY (name's request-side
+// over-constraint). get_configs carries 3 MISSING (scanner's chardata,
+// user_tags/tag unmodelled, config_count/filtered unmodelled), 2 EXTRA
+// (families/family/type has no schema counterpart, config_count carries a
+// stray chardata field), 2 TYPE (in_use/writable are schema booleans held in
+// bare bool), and 3 suppressed OMITEMPTY (tasks/user_tags/filters.name, all
+// inert-on-decode). modify_config carries 6 EXTRA (preference's
+// alt/default/hr_name/id/nvt.name/type, all reused from get_configs'
+// response-shaped ConfigPreference with no counterpart in modify_config's
+// own request pattern), 3 CARDINALITY and 3 TYPE (family.all/family.growing/
+// family_selection.growing are the schema's boolean_atoi held in bare bool,
+// unable to express absence), 4 suppressed OMITEMPTY (the familiar
+// request-side over-constraint class), and 2 actionable OMITEMPTY
+// (preference/nvt and preference/value are schema-optional but always
+// emitted — unlike the response-side OMITEMPTY findings elsewhere in this
+// family, an unsuppressed request-side OMITEMPTY is a real encoding defect,
+// not an inert one). Both create_config and
+// get_configs also carry one SCHEMA-DEFECT each (unsupported-r,
+// empty-pattern), the schema's own defects, unrelated to the hand-written
+// code. See docs/review-2026-08.md's `config` review-only section for the
+// full field-by-field list.
+func TestValidateConfigBeforeMatchesKnownConformance(t *testing.T) {
+	before, _ := validateOrSkip(t, "create_config")
+
+	want := map[string]counts{
+		"create_config": {
+			actionable: map[string]int{schema.CatExtra: 1, schema.CatDefect: 1},
+			suppressed: map[string]int{schema.CatOmitEmpty: 1},
+		},
+		"get_configs": {
+			actionable: map[string]int{
+				schema.CatMissing: 3,
+				schema.CatExtra:   2,
+				schema.CatType:    2,
+				schema.CatDefect:  1,
+			},
+			suppressed: map[string]int{schema.CatOmitEmpty: 3},
+		},
+		"modify_config": {
+			actionable: map[string]int{
+				schema.CatExtra:       6,
+				schema.CatCardinality: 3,
+				schema.CatType:        3,
+				schema.CatOmitEmpty:   2,
+			},
+			suppressed: map[string]int{schema.CatOmitEmpty: 4},
+		},
+	}
+	for _, res := range before {
+		w, ok := want[res.Command]
+		if !ok {
+			t.Errorf("%s: unexpected command in Validate's before results", res.Command)
+			continue
+		}
+		assertCounts(t, "before", res.Command, w, countFindings(res.Findings))
+	}
+}
+
+// TestValidateConfigGeneratedMatchesOrImproves is config's pre-adoption gate,
+// run at the same rigour every prior family's was. Generation closes every
+// actionable finding on all three commands except the two allowlisted
+// SCHEMA-DEFECT findings the schema itself carries: create_config's
+// unsupported-r at /create_config and get_configs' empty-pattern at
+// /get_configs_response/config/tasks/task/permissions (see
+// internal/codegen/testdata/schema/{create_config,get_configs}.json's
+// Defects arrays and the matching DefectAllowlist entries in overrides.go).
+// modify_config's three CARDINALITY/TYPE pairs on family.all/family.growing/
+// family_selection.growing close via the new boolean_atoi TypeOverrides
+// entry (commands.GMPAtoiBool) together with its pointerScalars
+// registration — without the latter, these fields would regenerate as bare
+// GMPAtoiBool values and reproduce the same CARDINALITY defect under the new
+// type. A live-gvmd experiment against modify_config's name/comment fields
+// found omission and explicit-empty indistinguishable (both no-ops), so
+// neither needed a PointerOverrides entry and no suppressed finding shows up
+// here for them.
+func TestValidateConfigGeneratedMatchesOrImproves(t *testing.T) {
+	before, after := validateOrSkip(t, "create_config")
+
+	wantAfter := map[string]counts{
+		"create_config": {
+			actionable: map[string]int{schema.CatDefect: 1},
+			suppressed: map[string]int{},
+		},
+		"get_configs": {
+			actionable: map[string]int{schema.CatDefect: 1},
+			suppressed: map[string]int{},
+		},
+		"modify_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
+	}
+	assertMatchesOrImproves(t, before, after, wantAfter)
+}

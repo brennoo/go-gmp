@@ -859,7 +859,7 @@ var scalarTypes = map[string]string{
 // and "zero" to stay distinguishable. This is T-5's rule. A string is not one
 // of them: in this protocol an empty string and an absent element mean the
 // same thing, which is why the hand-written code uses `string` + omitempty.
-var pointerScalars = map[string]bool{"int": true, "float64": true, "GMPBool": true}
+var pointerScalars = map[string]bool{"int": true, "float64": true, "GMPBool": true, "GMPAtoiBool": true}
 
 // goTypeOf resolves a node's Go type name, unqualified for targetPackage.
 func (g *gen) goTypeOf(n *schema.Node) string {
@@ -1729,6 +1729,7 @@ var initialisms = map[string]string{
 	"dn":        "DN",
 	"dns":       "DNS",
 	"esxi":      "ESXI",
+	"hr":        "HR",
 	"http":      "HTTP",
 	"icalendar": "ICalendar",
 	"icmp":      "ICMP",

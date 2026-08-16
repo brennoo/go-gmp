@@ -349,6 +349,18 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.GetScanners{}),
 			Response: schema.ModelOf(&commands.GetScannersResponse{}),
 		},
+		"create_config": {
+			Request:  schema.ModelOf(&commands.CreateConfig{}),
+			Response: schema.ModelOf(&commands.CreateConfigResponse{}),
+		},
+		"modify_config": {
+			Request:  schema.ModelOf(&commands.ModifyConfig{}),
+			Response: schema.ModelOf(&commands.ModifyConfigResponse{}),
+		},
+		"get_configs": {
+			Request:  schema.ModelOf(&commands.GetConfigs{}),
+			Response: schema.ModelOf(&commands.GetConfigsResponse{}),
+		},
 	}
 }
 

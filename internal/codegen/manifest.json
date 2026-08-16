@@ -79,6 +79,11 @@
     {
       "name": "scanner",
       "commands": ["create_scanner", "get_scanners", "modify_scanner"]
+    },
+    {
+      "name": "config",
+      "commands": ["create_config", "get_configs", "modify_config"],
+      "review_only": true
     }
   ]
 }
