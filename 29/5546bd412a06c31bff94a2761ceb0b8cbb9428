@@ -1,0 +1,51 @@
+commands/create_config.go
+  s_d7dc9af0ae6db4::t_c5e223a52e2d47 1-2,7,9-13,16
+commands/get_configs.go
+  s_d7dc9af0ae6db4::t_e2e8472a4ee3da 1-2,5,7,13-17,21,28,30,38-81,95-96,98-101,105,108-110,113-116,119-122,125-127,130-131,135-137,140-142,144,147-151,154,156-157,160-165,168-170,173-178,181-183,186-201,204-206,209-214
+commands/modify_config.go
+  s_d7dc9af0ae6db4::t_2b52036a00c28a 1-2,7,9-15,18,30-40,43-47,50-52,55-58
+docs/review-2026-08.md
+  s_d7dc9af0ae6db4::t_9dd7519320f899 2002-2049,2794
+internal/codegen/manifest.json
+  s_d7dc9af0ae6db4::t_5f6d96d7e404b6 85
+internal/codegen/manifest_test.go
+  s_d7dc9af0ae6db4::t_82d106a2f90a28 46-47,68,74-84,105-106,130-147
+internal/codegen/validate.go
+  s_d7dc9af0ae6db4::t_7742d7a025ed7d 100-104
+internal/codegen/validate_test.go
+  s_d7dc9af0ae6db4::t_73040fd2763ad3 4072-4074,4080-4081,4084-4085,4087
+internal/gmptest/testdata/FIDELITY-SUMMARY.txt
+  s_d7dc9af0ae6db4::t_a103fc81891717 138-143
+internal/gmptest/testdata/REQUEST-FIDELITY.txt
+  s_d7dc9af0ae6db4::t_113fda6c3e5e18 11-12,26,275-277
+internal/gmptest/testdata/live/get_configs/001_fidelity.txt
+  s_d7dc9af0ae6db4::t_e192e72a02228a 7,21
+internal/gmptest/testdata/live/get_configs/002_fidelity.txt
+  s_d7dc9af0ae6db4::t_2bf001243f1982 7,21
+internal/gmptest/testdata/live/get_configs/003_fidelity.txt
+  s_d7dc9af0ae6db4::t_fca34ac615d6a4 7,21
+internal/gmptest/testdata/live/get_configs/004_fidelity.txt
+  s_d7dc9af0ae6db4::t_21c8d110b1eced 7,14,21
+internal/gmptest/testdata/upstream/get_configs/001_fidelity.txt
+  s_d7dc9af0ae6db4::t_10c228e65508ce 13,20,22-23
+internal/gmptest/testdata/upstream/get_configs/002_fidelity.txt
+  s_d7dc9af0ae6db4::t_8d56ca12bd20fa 16,20-21
+internal/schema/testdata/CONFORMANCE.md
+  s_d7dc9af0ae6db4::t_feddd5df9499e1 33-37,44-46,48-49,97-100,187,1130-1131,2247
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "295546bd412a06c31bff94a2761ceb0b8cbb9428",
+  "prompts": {},
+  "sessions": {
+    "s_d7dc9af0ae6db4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_d7dc9af0ae6db4",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
