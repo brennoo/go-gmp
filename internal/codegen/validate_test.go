@@ -94,7 +94,7 @@ func TestValidateBeforeMatchesKnownConformance(t *testing.T) {
 		"create_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_notes": {
-			actionable: map[string]int{schema.CatDefect: 2},
+			actionable: map[string]int{schema.CatDefect: 3},
 			suppressed: map[string]int{},
 		},
 	}
@@ -116,8 +116,8 @@ func TestValidateBeforeMatchesKnownConformance(t *testing.T) {
 //
 // What this run actually found, verified against the printed findings while
 // writing this test: generation closes every actionable and suppressed
-// finding for all three commands except the two pre-existing SCHEMA-DEFECT
-// findings on get_notes (both "duplicate-ele: redefined in the same scope"),
+// finding for all three commands except the three pre-existing SCHEMA-DEFECT
+// findings on get_notes (all "duplicate-ele: redefined in the same scope"),
 // which are untouched byte-for-byte. That is expected and correct:
 // SCHEMA-DEFECT findings come from cmd.Defects, the schema's own upstream
 // bugs, not from comparing the Go model at all, so no amount of regenerating
@@ -159,7 +159,7 @@ func TestValidateGeneratedMatchesOrImproves(t *testing.T) {
 	wantAfter := map[string]counts{
 		"create_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_notes":   {actionable: map[string]int{schema.CatDefect: 2}, suppressed: map[string]int{}},
+		"get_notes":   {actionable: map[string]int{schema.CatDefect: 3}, suppressed: map[string]int{}},
 	}
 
 	assertMatchesOrImproves(t, before, after, wantAfter)
@@ -187,7 +187,7 @@ func TestValidateOverrideBeforeMatchesKnownConformance(t *testing.T) {
 		"create_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_overrides": {
-			actionable: map[string]int{schema.CatDefect: 2},
+			actionable: map[string]int{schema.CatDefect: 3},
 			suppressed: map[string]int{},
 		},
 	}
@@ -205,9 +205,9 @@ func TestValidateOverrideBeforeMatchesKnownConformance(t *testing.T) {
 // pre-swap gate, run at the same rigour the note family's was.
 //
 // What this run found while override was still review_only: generation
-// closed all 84 findings (44 actionable, 40 suppressed) except the two
+// closed all 84 findings (44 actionable, 40 suppressed) except the three
 // SCHEMA-DEFECT ones on get_overrides, which are byte-identical before and
-// after. Those two are cmd.Defects — upstream duplicate-ele bugs in the
+// after. Those three are cmd.Defects — upstream duplicate-ele bugs in the
 // schema itself, copied into the result before Comparer looks at any Go
 // type — so no generated output can move them, exactly as for get_notes.
 //
@@ -234,7 +234,7 @@ func TestValidateOverrideGeneratedMatchesOrImproves(t *testing.T) {
 	wantAfter := map[string]counts{
 		"create_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_overrides":   {actionable: map[string]int{schema.CatDefect: 2}, suppressed: map[string]int{}},
+		"get_overrides":   {actionable: map[string]int{schema.CatDefect: 3}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
@@ -4030,21 +4030,17 @@ func TestValidateTaskGeneratedMatchesOrImproves(t *testing.T) {
 // carries 3 suppressed OMITEMPTY findings, the familiar request-side
 // over-constraint class (host/port/type tagged omitempty against the
 // schema's required attribs). get_scanners carries the family's whole
-// actionable load: 6 EXTRA (a stray top-level truncate, Scanner.KeyPub and
-// .Truncated, ScannerCredential.Login again, ScannerSortField's chardata,
-// and certificate_info's 8 fields collapsed to *) alongside 3 TYPE
-// (in_use/writable/credential.trash are schema booleans held in bare bool)
-// and 10 SCHEMA-DEFECT findings — 8 empty-pattern (info/{scanner,daemon,
-// protocol}'s name+version, already allowlisted for a dozen other commands)
-// plus 2 no-pattern (info/description, info/params/param — this defect
-// class's first appearance in the allowlist). 10 suppressed OMITEMPTY
-// findings round it out (Copy/Configs/Info/its four children/Tasks/UserTags
-// gaining the schema's own omitempty, plus Filters.Name). See
-// docs/review-2026-08.md's `scanner` review-only section for the full
-// field-by-field list and, notably, the T-21 caveat: certificate_info's
-// EXTRA finding does not represent an improvement opportunity the way the
-// others do — the hand-written struct already models it correctly, and a
-// parser bug (not a schema gap) is what makes generation collapse it.
+// actionable load: 5 EXTRA (a stray top-level truncate, Scanner.KeyPub and
+// .Truncated, ScannerCredential.Login again, and ScannerSortField's
+// chardata) alongside 3 TYPE (in_use/writable/credential.trash are schema
+// booleans held in bare bool) and 10 SCHEMA-DEFECT findings — 8
+// empty-pattern (info/{scanner,daemon,protocol}'s name+version, already
+// allowlisted for a dozen other commands) plus 2 no-pattern
+// (info/description, info/params/param — this defect class's first
+// appearance in the allowlist). 10 suppressed OMITEMPTY findings round it
+// out (Copy/Configs/Info/its four children/Tasks/UserTags gaining the
+// schema's own omitempty, plus Filters.Name). See docs/review-2026-08.md's
+// `scanner` review-only section for the full field-by-field list.
 func TestValidateScannerBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_scanner")
 
@@ -4059,7 +4055,7 @@ func TestValidateScannerBeforeMatchesKnownConformance(t *testing.T) {
 		},
 		"get_scanners": {
 			actionable: map[string]int{
-				schema.CatExtra:  6,
+				schema.CatExtra:  5,
 				schema.CatType:   3,
 				schema.CatDefect: 10,
 			},
@@ -4088,13 +4084,11 @@ func TestValidateScannerBeforeMatchesKnownConformance(t *testing.T) {
 // generator-vs-schema mismatch, so none shows up as a suppressed finding
 // here.
 //
-// This is not an unqualified improvement, and this family stays review-only
-// rather than adopting on the strength of these numbers alone: T-21 (see
-// docs/review-2026-08.md) means the generated get_scanners.certificate_info
-// regresses from the hand-written code's correct 8-field struct to a bare
-// string, without producing any finding that would flag the loss. Fixing
-// T-21 first, or carving out certificate_info specifically, is a
-// precondition for adopting this family, not just closing the numbers below.
+// T-21 used to mean certificate_info regressed from the hand-written code's
+// correct 8-field struct to a bare string with no finding to flag the loss;
+// now fixed, generation resolves it into the same 8 fields. This family
+// stays review-only regardless, per the rank-order method in
+// docs/review-2026-08.md's `scanner` section (unrelated to T-21).
 func TestValidateScannerGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_scanner")
 

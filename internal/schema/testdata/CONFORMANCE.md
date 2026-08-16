@@ -33,7 +33,7 @@ commands compared:            122
 fully conformant:             78
 with actionable findings:     44
 actionable findings:          302  (request 155, response 147)
-suppressed findings:          451
+suppressed findings:          464
 confirmed by fidelity corpus: 53
 in the schema, not in Go:     0
 in Go, not in the schema:     0
@@ -42,12 +42,12 @@ in Go, not in the schema:     0
 
                  actionable suppressed
   MISSING               132          0
-  EXTRA                  93          5
-  CARDINALITY            24          0
+  EXTRA                  92          5
+  CARDINALITY            25          0
   KIND                    0          0
-  OMITEMPTY               2        446
+  OMITEMPTY               2        459
   TYPE                   51          0
-  SCHEMA-DEFECT         114          0
+  SCHEMA-DEFECT         128          0
 
 ### Schema defects by class
 
@@ -66,11 +66,11 @@ taken against upstream main (155 commands). Two reasons, both expected:
     it is out of scope: 28 of the 31 UUID uses are of that kind.
 
   dangling-e           1 sites in 1 commands
-  duplicate-ele       10 sites in 5 commands
+  duplicate-ele       18 sites in 5 commands
   duplicate-ref        7 sites in 2 commands
   empty-pattern       44 sites in 23 commands
   no-pattern          17 sites in 4 commands
-  recursion-cut        6 sites in 1 commands
+  recursion-cut       12 sites in 1 commands
   type-for-t          23 sites in 1 commands
   undefined-type       3 sites in 3 commands
   unsupported-r        3 sites in 3 commands
@@ -86,9 +86,9 @@ taken against upstream main (155 commands). Two reasons, both expected:
   modify_config                14   EXTRA=6  CARDINALITY=3  OMITEMPTY=2  TYPE=3
   get_aggregates               12   MISSING=5  EXTRA=5  CARDINALITY=2
   get_agents                    9   MISSING=7  TYPE=2
-  get_scanners                  9   EXTRA=6  TYPE=3
+  get_scanners                  8   EXTRA=5  TYPE=3
   get_configs                   7   MISSING=3  EXTRA=2  TYPE=2
-  get_results                   6   MISSING=1  EXTRA=4  CARDINALITY=1
+  get_results                   7   MISSING=1  EXTRA=4  CARDINALITY=2
   create_scanner                5   EXTRA=3  TYPE=2
   modify_scanner                5   EXTRA=3  TYPE=2
   get_vulns                     4   MISSING=1  EXTRA=3
@@ -237,7 +237,7 @@ MISSING=1
 
 ### create_report  (command_create_report.xml)
 
-MISSING=38  EXTRA=5  CARDINALITY=5  OMITEMPTY=144  TYPE=4  SCHEMA-DEFECT=10
+MISSING=38  EXTRA=5  CARDINALITY=5  OMITEMPTY=144  TYPE=4  SCHEMA-DEFECT=12
 
   MISSING       request  /create_report/report/#text
                 schema also declares character data (text) here; Go *commands.Report has no `,chardata` field
@@ -646,6 +646,10 @@ MISSING=38  EXTRA=5  CARDINALITY=5  OMITEMPTY=144  TYPE=4  SCHEMA-DEFECT=10
   SCHEMA-DEFECT request  /create_report/report/report/results/result/delta/notes/note/active
                 duplicate-ele: redefined in the same scope
   SCHEMA-DEFECT request  /create_report/report/report/results/result/delta/overrides/override/active
+                duplicate-ele: redefined in the same scope
+  SCHEMA-DEFECT request  /create_report/report/report/results/result/notes/note/active
+                duplicate-ele: redefined in the same scope
+  SCHEMA-DEFECT request  /create_report/report/report/results/result/overrides/override/active
                 duplicate-ele: redefined in the same scope
   SCHEMA-DEFECT request  /create_report/report/report/ssl_certs/count
                 no-pattern: <ele> has neither <pattern> nor <type>
@@ -1298,11 +1302,13 @@ OMITEMPTY=3  TYPE=1  SCHEMA-DEFECT=1
 
 ### get_notes  (command_get_notes.xml)
 
-SCHEMA-DEFECT=2
+SCHEMA-DEFECT=3
 
   SCHEMA-DEFECT response /get_notes_response/note/active
                 duplicate-ele: redefined in the same scope
   SCHEMA-DEFECT response /get_notes_response/note/result/delta/overrides/override/active
+                duplicate-ele: redefined in the same scope
+  SCHEMA-DEFECT response /get_notes_response/note/result/overrides/override/active
                 duplicate-ele: redefined in the same scope
 
 ### get_nvt_families  (command_get_nvt_families.xml)
@@ -1390,11 +1396,13 @@ MISSING=6  EXTRA=1  CARDINALITY=7  OMITEMPTY=19  TYPE=4
 
 ### get_overrides  (command_get_overrides.xml)
 
-SCHEMA-DEFECT=2
+SCHEMA-DEFECT=3
 
   SCHEMA-DEFECT response /get_overrides_response/override/active
                 duplicate-ele: redefined in the same scope
   SCHEMA-DEFECT response /get_overrides_response/override/result/delta/notes/note/active
+                duplicate-ele: redefined in the same scope
+  SCHEMA-DEFECT response /get_overrides_response/override/result/notes/note/active
                 duplicate-ele: redefined in the same scope
 
 ### get_permissions  (command_get_permissions.xml)
@@ -1437,7 +1445,7 @@ EXTRA=1
 
 ### get_reports  (command_get_reports.xml)
 
-MISSING=55  EXTRA=6  CARDINALITY=5  OMITEMPTY=143  TYPE=4  SCHEMA-DEFECT=10
+MISSING=55  EXTRA=6  CARDINALITY=5  OMITEMPTY=143  TYPE=4  SCHEMA-DEFECT=12
 
   MISSING       request  /get_reports/@alert_id
                 optional attr alert_id is not modelled
@@ -1881,6 +1889,10 @@ MISSING=55  EXTRA=6  CARDINALITY=5  OMITEMPTY=143  TYPE=4  SCHEMA-DEFECT=10
                 duplicate-ele: redefined in the same scope
   SCHEMA-DEFECT response /get_reports_response/report/report/results/result/delta/overrides/override/active
                 duplicate-ele: redefined in the same scope
+  SCHEMA-DEFECT response /get_reports_response/report/report/results/result/notes/note/active
+                duplicate-ele: redefined in the same scope
+  SCHEMA-DEFECT response /get_reports_response/report/report/results/result/overrides/override/active
+                duplicate-ele: redefined in the same scope
   SCHEMA-DEFECT response /get_reports_response/report/report/ssl_certs/count
                 no-pattern: <ele> has neither <pattern> nor <type>
   SCHEMA-DEFECT response /get_reports_response/report/report/vulns/count
@@ -1901,7 +1913,7 @@ OMITEMPTY=2  TYPE=1  SCHEMA-DEFECT=1
 
 ### get_results  (command_get_results.xml)
 
-MISSING=1  EXTRA=4  CARDINALITY=1  OMITEMPTY=20  SCHEMA-DEFECT=2
+MISSING=1  EXTRA=4  CARDINALITY=2  OMITEMPTY=33  SCHEMA-DEFECT=4
 
   MISSING       response /get_results_response/result/nvt/severities/severity
                 repeated elem severity is not modelled  [fidelity]
@@ -1909,11 +1921,13 @@ MISSING=1  EXTRA=4  CARDINALITY=1  OMITEMPTY=20  SCHEMA-DEFECT=2
                 schema declares a "result" leaf; Go models 8 children
   EXTRA         response /get_results_response/result/delta/overrides/override/result/*
                 schema declares a "result" leaf; Go models 8 children
-  EXTRA         response /get_results_response/result/notes/note/*
-                schema declares a "note" leaf; Go models 18 children
-  EXTRA         response /get_results_response/result/overrides/override/*
-                schema declares a "override" leaf; Go models 21 children
+  EXTRA         response /get_results_response/result/notes/note/result/*
+                schema declares a "result" leaf; Go models 8 children
+  EXTRA         response /get_results_response/result/overrides/override/result/*
+                schema declares a "result" leaf; Go models 8 children
   CARDINALITY   response /get_results_response/result/delta/notes/note/severity
+                schema says optional; Severity float64 cannot express absence (zero is a legal value)
+  CARDINALITY   response /get_results_response/result/notes/note/severity
                 schema says optional; Severity float64 cannot express absence (zero is a legal value)
   OMITEMPTY     response /get_results_response/result/delta/diff
                 schema says optional, Diff string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
@@ -1947,6 +1961,20 @@ MISSING=1  EXTRA=4  CARDINALITY=1  OMITEMPTY=20  SCHEMA-DEFECT=2
                 schema says optional, Task commands.ResultOverrideTask has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
   OMITEMPTY     response /get_results_response/result/delta/overrides/override/user_tags
                 schema says optional, UserTags commands.ResultOverrideUserTags has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
+  OMITEMPTY     response /get_results_response/result/notes/note/end_time
+                schema says optional, EndTime string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
+  OMITEMPTY     response /get_results_response/result/notes/note/hosts
+                schema says optional, Hosts string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
+  OMITEMPTY     response /get_results_response/result/notes/note/port
+                schema says optional, Port string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
+  OMITEMPTY     response /get_results_response/result/notes/note/result
+                schema says optional, Result commands.ResultNoteResult has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
+  OMITEMPTY     response /get_results_response/result/notes/note/severity
+                schema says optional, Severity float64 has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
+  OMITEMPTY     response /get_results_response/result/notes/note/task
+                schema says optional, Task commands.ResultNoteTask has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
+  OMITEMPTY     response /get_results_response/result/notes/note/user_tags
+                schema says optional, UserTags commands.ResultNoteUserTags has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
   OMITEMPTY     response /get_results_response/result/nvt/epss/max_epss/cve/@id
                 schema says optional, ID string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
   OMITEMPTY     response /get_results_response/result/nvt/epss/max_severity/cve/@id
@@ -1955,9 +1983,25 @@ MISSING=1  EXTRA=4  CARDINALITY=1  OMITEMPTY=20  SCHEMA-DEFECT=2
                 schema says optional, ID string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
   OMITEMPTY     response /get_results_response/result/nvt/refs/ref/@type
                 schema says optional, Type string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
+  OMITEMPTY     response /get_results_response/result/overrides/override/end_time
+                schema says optional, EndTime string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
+  OMITEMPTY     response /get_results_response/result/overrides/override/hosts
+                schema says optional, Hosts string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
+  OMITEMPTY     response /get_results_response/result/overrides/override/port
+                schema says optional, Port string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
+  OMITEMPTY     response /get_results_response/result/overrides/override/result
+                schema says optional, Result commands.ResultOverrideResult has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
+  OMITEMPTY     response /get_results_response/result/overrides/override/task
+                schema says optional, Task commands.ResultOverrideTask has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
+  OMITEMPTY     response /get_results_response/result/overrides/override/user_tags
+                schema says optional, UserTags commands.ResultOverrideUserTags has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
   SCHEMA-DEFECT response /get_results_response/result/delta/notes/note/active
                 duplicate-ele: redefined in the same scope
   SCHEMA-DEFECT response /get_results_response/result/delta/overrides/override/active
+                duplicate-ele: redefined in the same scope
+  SCHEMA-DEFECT response /get_results_response/result/notes/note/active
+                duplicate-ele: redefined in the same scope
+  SCHEMA-DEFECT response /get_results_response/result/overrides/override/active
                 duplicate-ele: redefined in the same scope
 
 ### get_roles  (command_get_roles.xml)
@@ -1966,10 +2010,8 @@ conformant
 
 ### get_scanners  (command_get_scanners.xml)
 
-EXTRA=6  OMITEMPTY=10  TYPE=3  SCHEMA-DEFECT=10
+EXTRA=5  OMITEMPTY=10  TYPE=3  SCHEMA-DEFECT=10
 
-  EXTRA         response /get_scanners_response/scanner/certificate_info/*
-                schema declares a "certificate_info" leaf; Go models 8 children
   EXTRA         response /get_scanners_response/scanner/credential/login
                 Go field Login string has no counterpart in the schema
   EXTRA         response /get_scanners_response/scanner/key_pub
@@ -2187,7 +2229,7 @@ MISSING=1  EXTRA=3  OMITEMPTY=8
 
 ### help  (command_help.xml)
 
-MISSING=1  SCHEMA-DEFECT=6
+MISSING=1  SCHEMA-DEFECT=12
 
   MISSING       response /help_response/schema
                 optional elem schema is not modelled  [fidelity]
@@ -2202,6 +2244,18 @@ MISSING=1  SCHEMA-DEFECT=6
   SCHEMA-DEFECT response /help_response/schema/protocol/command/pattern/o/g/any/g
                 recursion-cut: g reaches itself; the walk is cut here
   SCHEMA-DEFECT response /help_response/schema/protocol/command/pattern/o/g/o
+                recursion-cut: o reaches itself; the walk is cut here
+  SCHEMA-DEFECT response /help_response/schema/protocol/command/response/any/g/any
+                recursion-cut: any reaches itself; the walk is cut here
+  SCHEMA-DEFECT response /help_response/schema/protocol/command/response/any/g/o/g
+                recursion-cut: g reaches itself; the walk is cut here
+  SCHEMA-DEFECT response /help_response/schema/protocol/command/response/g/any/g
+                recursion-cut: g reaches itself; the walk is cut here
+  SCHEMA-DEFECT response /help_response/schema/protocol/command/response/g/o/g
+                recursion-cut: g reaches itself; the walk is cut here
+  SCHEMA-DEFECT response /help_response/schema/protocol/command/response/o/g/any/g
+                recursion-cut: g reaches itself; the walk is cut here
+  SCHEMA-DEFECT response /help_response/schema/protocol/command/response/o/g/o
                 recursion-cut: o reaches itself; the walk is cut here
 
 ### modify_agents  (command_modify_agents.xml)

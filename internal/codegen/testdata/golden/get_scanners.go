@@ -76,29 +76,29 @@ type ScannerCount struct {
 
 // Scanner is the <scanner> element of get_scanners. See the GMP protocol docs for details.
 type Scanner struct {
-	ID               string                `xml:"id,attr"`
-	Owner            ScannerOwner          `xml:"owner"`
-	Name             string                `xml:"name"`
-	Comment          string                `xml:"comment"`
-	CreationTime     GMPTime               `xml:"creation_time"`
-	ModificationTime GMPTime               `xml:"modification_time"`
-	Writable         GMPBool               `xml:"writable"`
-	InUse            GMPBool               `xml:"in_use"`
-	Permissions      ScannerPermissions    `xml:"permissions"`
-	CaPubInfo        ScannerCaPubInfo      `xml:"ca_pub_info"`
-	CertificateInfo  string                `xml:"certificate_info"`
-	Host             string                `xml:"host"`
-	Port             string                `xml:"port"`
-	Type             string                `xml:"type"`
-	CaPub            string                `xml:"ca_pub"`
-	Credential       GetScannersCredential `xml:"credential"`
-	RelayHost        string                `xml:"relay_host"`
-	RelayPort        string                `xml:"relay_port"`
-	Copy             string                `xml:"copy,omitempty"`
-	UserTags         *ScannerUserTags      `xml:"user_tags,omitempty"`
-	Configs          *ScannerConfigs       `xml:"configs,omitempty"`
-	Tasks            *ScannerTasks         `xml:"tasks,omitempty"`
-	Info             *ScannerInfo          `xml:"info,omitempty"`
+	ID               string                 `xml:"id,attr"`
+	Owner            ScannerOwner           `xml:"owner"`
+	Name             string                 `xml:"name"`
+	Comment          string                 `xml:"comment"`
+	CreationTime     GMPTime                `xml:"creation_time"`
+	ModificationTime GMPTime                `xml:"modification_time"`
+	Writable         GMPBool                `xml:"writable"`
+	InUse            GMPBool                `xml:"in_use"`
+	Permissions      ScannerPermissions     `xml:"permissions"`
+	CaPubInfo        ScannerCaPubInfo       `xml:"ca_pub_info"`
+	CertificateInfo  ScannerCertificateInfo `xml:"certificate_info"`
+	Host             string                 `xml:"host"`
+	Port             string                 `xml:"port"`
+	Type             string                 `xml:"type"`
+	CaPub            string                 `xml:"ca_pub"`
+	Credential       GetScannersCredential  `xml:"credential"`
+	RelayHost        string                 `xml:"relay_host"`
+	RelayPort        string                 `xml:"relay_port"`
+	Copy             string                 `xml:"copy,omitempty"`
+	UserTags         *ScannerUserTags       `xml:"user_tags,omitempty"`
+	Configs          *ScannerConfigs        `xml:"configs,omitempty"`
+	Tasks            *ScannerTasks          `xml:"tasks,omitempty"`
+	Info             *ScannerInfo           `xml:"info,omitempty"`
 }
 
 // ScannerOwner is the <owner> element of get_scanners. See the GMP protocol docs for details.
@@ -118,6 +118,18 @@ type ScannerPermission struct {
 
 // ScannerCaPubInfo is the <ca_pub_info> element of get_scanners. See the GMP protocol docs for details.
 type ScannerCaPubInfo struct {
+	TimeStatus        string `xml:"time_status"`
+	ActivationTime    string `xml:"activation_time"`
+	ExpirationTime    string `xml:"expiration_time"`
+	Issuer            string `xml:"issuer"`
+	MD5Fingerprint    string `xml:"md5_fingerprint"`
+	SHA256Fingerprint string `xml:"sha256_fingerprint,omitempty"`
+	Subject           string `xml:"subject,omitempty"`
+	Serial            string `xml:"serial,omitempty"`
+}
+
+// ScannerCertificateInfo is the <certificate_info> element of get_scanners. See the GMP protocol docs for details.
+type ScannerCertificateInfo struct {
 	TimeStatus        string `xml:"time_status"`
 	ActivationTime    string `xml:"activation_time"`
 	ExpirationTime    string `xml:"expiration_time"`

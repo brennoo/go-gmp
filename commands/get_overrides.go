@@ -175,7 +175,7 @@ type GetOverridesResult struct {
 	OriginalSeverity *float64                `xml:"original_severity,omitempty"`
 	Delta            *OverrideDelta          `xml:"delta,omitempty"`
 	Detection        *OverrideDetection      `xml:"detection,omitempty"`
-	Notes            *OverrideResultNotes    `xml:"notes,omitempty"`
+	Notes            *OverrideNotes          `xml:"notes,omitempty"`
 	Overrides        *OverrideDeltaOverrides `xml:"overrides,omitempty"`
 	Tickets          *OverrideTickets        `xml:"tickets,omitempty"`
 }
@@ -336,11 +336,6 @@ type OverrideDetails struct {
 type OverrideDetail struct {
 	Name  string `xml:"name"`
 	Value string `xml:"value"`
-}
-
-// OverrideResultNotes is the <notes> element of get_overrides. See the GMP protocol docs for details.
-type OverrideResultNotes struct {
-	Note []string `xml:"note,omitempty"`
 }
 
 // OverrideTickets is the <tickets> element of get_overrides. See the GMP protocol docs for details.

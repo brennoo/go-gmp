@@ -496,9 +496,10 @@ func (e *env) expandShared(n *Node, path string) {
 	if !ok || e.expanding[n.Type] {
 		return
 	}
-	e.expanding[n.Type] = true
+	key := n.Type
+	e.expanding[key] = true
 	e.fill(n, def.Pattern, def.Defs, path)
-	delete(e.expanding, n.Type)
+	delete(e.expanding, key)
 	n.Type = ""
 }
 

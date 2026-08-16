@@ -604,6 +604,12 @@ var DefectAllowlist = map[DefectKey]DefectAllowlistEntry{
 	{Command: "get_overrides", Class: "duplicate-ele", Path: "/get_overrides_response/override/result/delta/notes/note/active"}: {
 		Reason: "T-15; upstream `<ele>` redefined in one scope, docs/review-2026-08.md T-15 defect table",
 	},
+	{Command: "get_notes", Class: "duplicate-ele", Path: "/get_notes_response/note/result/overrides/override/active"}: {
+		Reason: "T-21; same upstream redefinition as the delta-path override reference, docs/review-2026-08.md T-21",
+	},
+	{Command: "get_overrides", Class: "duplicate-ele", Path: "/get_overrides_response/override/result/notes/note/active"}: {
+		Reason: "T-21; same upstream redefinition as the delta-path note reference, docs/review-2026-08.md T-21",
+	},
 	{Command: "get_assets", Class: "undefined-type", Path: "/get_assets_response/asset/host/routes/route/host/@distance"}: {
 		Reason: "T-15; docs/review-2026-08.md `asset`",
 	},

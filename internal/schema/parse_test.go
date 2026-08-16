@@ -665,6 +665,51 @@ func TestSharedElementCycleTerminates(t *testing.T) {
 	find(t, a, "self")
 }
 
+// TestSharedElementSecondReferenceIsExpanded guards the T-21 regression:
+// expandShared used to key its recursion guard off n.Type after e.fill had
+// already overwritten it, so it deleted the wrong guard entry and leaked the
+// real one. A shared <element> referenced twice within one command (as
+// get_scanners' ca_pub_info and certificate_info both reference the same
+// shared certificate_info element) expanded correctly the first time and
+// silently stayed an empty leaf, with no recorded Defect, the second time.
+func TestSharedElementSecondReferenceIsExpanded(t *testing.T) {
+	body := `<?xml version="1.0"?><protocol>
+      <element>
+        <name>info</name>
+        <pattern><e>host</e></pattern>
+        <ele><name>host</name><pattern>text</pattern></ele>
+      </element>
+      <command>
+        <name>x</name>
+        <pattern><e>a</e></pattern>
+        <ele>
+          <name>a</name>
+          <pattern><e>first</e><e>second</e></pattern>
+          <ele><name>first</name><type>info</type></ele>
+          <ele><name>second</name><type>info</type></ele>
+        </ele>
+        <response>
+          <pattern><attrib><name>status</name><type>text</type><required>1</required></attrib></pattern>
+        </response>
+      </command></protocol>`
+
+	cmds, err := Parse([]byte(body), "test.xml")
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+	a := find(t, cmds[0].Request, "a")
+	for _, name := range []string{"first", "second"} {
+		kid := find(t, a, name)
+		if kid.Type != "" {
+			t.Errorf("%s: expected the shared type to be replaced by its content, got %q", name, kid.Type)
+		}
+		find(t, kid, "host")
+	}
+	if got := defectClasses(cmds[0]); len(got) != 0 {
+		t.Errorf("Both references resolving is not a defect, got %v", got)
+	}
+}
+
 func TestParseRejectsMalformedXML(t *testing.T) {
 	if _, err := Parse([]byte(`<protocol><command></protocol>`), "bad.xml"); err == nil {
 		t.Fatalf("Expected an error for mismatched tags")

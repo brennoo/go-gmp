@@ -149,32 +149,32 @@ type GetNotesTask struct {
 
 // GetNotesResult is the <result> element of get_notes. See the GMP protocol docs for details.
 type GetNotesResult struct {
-	ID               string               `xml:"id,attr"`
-	Name             string               `xml:"name"`
-	Owner            NoteOwner            `xml:"owner"`
-	Comment          string               `xml:"comment"`
-	CreationTime     GMPTime              `xml:"creation_time"`
-	ModificationTime GMPTime              `xml:"modification_time"`
-	Host             NoteHost             `xml:"host"`
-	Port             string               `xml:"port"`
-	NVT              NoteResultNVT        `xml:"nvt"`
-	ScanNVTVersion   string               `xml:"scan_nvt_version"`
-	Threat           string               `xml:"threat"`
-	Severity         float64              `xml:"severity"`
-	QOD              NoteQOD              `xml:"qod"`
-	Compliance       string               `xml:"compliance"`
-	Description      string               `xml:"description"`
-	UserTags         *NoteUserTags        `xml:"user_tags,omitempty"`
-	Report           *NoteReport          `xml:"report,omitempty"`
-	Task             *NoteResultTask      `xml:"task,omitempty"`
-	Path             string               `xml:"path,omitempty"`
-	OriginalThreat   string               `xml:"original_threat,omitempty"`
-	OriginalSeverity *float64             `xml:"original_severity,omitempty"`
-	Delta            *NoteDelta           `xml:"delta,omitempty"`
-	Detection        *NoteDetection       `xml:"detection,omitempty"`
-	Notes            *NoteDeltaNotes      `xml:"notes,omitempty"`
-	Overrides        *NoteResultOverrides `xml:"overrides,omitempty"`
-	Tickets          *NoteTickets         `xml:"tickets,omitempty"`
+	ID               string          `xml:"id,attr"`
+	Name             string          `xml:"name"`
+	Owner            NoteOwner       `xml:"owner"`
+	Comment          string          `xml:"comment"`
+	CreationTime     GMPTime         `xml:"creation_time"`
+	ModificationTime GMPTime         `xml:"modification_time"`
+	Host             NoteHost        `xml:"host"`
+	Port             string          `xml:"port"`
+	NVT              NoteResultNVT   `xml:"nvt"`
+	ScanNVTVersion   string          `xml:"scan_nvt_version"`
+	Threat           string          `xml:"threat"`
+	Severity         float64         `xml:"severity"`
+	QOD              NoteQOD         `xml:"qod"`
+	Compliance       string          `xml:"compliance"`
+	Description      string          `xml:"description"`
+	UserTags         *NoteUserTags   `xml:"user_tags,omitempty"`
+	Report           *NoteReport     `xml:"report,omitempty"`
+	Task             *NoteResultTask `xml:"task,omitempty"`
+	Path             string          `xml:"path,omitempty"`
+	OriginalThreat   string          `xml:"original_threat,omitempty"`
+	OriginalSeverity *float64        `xml:"original_severity,omitempty"`
+	Delta            *NoteDelta      `xml:"delta,omitempty"`
+	Detection        *NoteDetection  `xml:"detection,omitempty"`
+	Notes            *NoteDeltaNotes `xml:"notes,omitempty"`
+	Overrides        *NoteOverrides  `xml:"overrides,omitempty"`
+	Tickets          *NoteTickets    `xml:"tickets,omitempty"`
 }
 
 // NoteHost is the <host> element of get_notes. See the GMP protocol docs for details.
@@ -336,11 +336,6 @@ type NoteDetails struct {
 type NoteDetail struct {
 	Name  string `xml:"name"`
 	Value string `xml:"value"`
-}
-
-// NoteResultOverrides is the <overrides> element of get_notes. See the GMP protocol docs for details.
-type NoteResultOverrides struct {
-	Override []string `xml:"override,omitempty"`
 }
 
 // NoteTickets is the <tickets> element of get_notes. See the GMP protocol docs for details.
