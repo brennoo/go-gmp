@@ -604,7 +604,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.ModifyReportConfig); ok {
-		if len(cmd.Params) > 0 && cmd.Params[0].Name == "Node Distance" && cmd.Params[0].UsingDefault == true {
+		if len(cmd.Param) > 0 && cmd.Param[0].Name == "Node Distance" && cmd.Param[0].Value.UseDefault != nil && bool(*cmd.Param[0].Value.UseDefault) {
 			(*response.(*commands.ModifyReportConfigResponse)).Status = "200"
 			(*response.(*commands.ModifyReportConfigResponse)).StatusText = "OK"
 			(*response.(*commands.ModifyReportConfigResponse)).ID = "modified-config-id"
@@ -622,38 +622,38 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		if cmd.ReportConfigID == "config-uuid" {
 			(*response.(*commands.GetReportConfigsResponse)).Status = "200"
 			(*response.(*commands.GetReportConfigsResponse)).StatusText = "OK"
-			(*response.(*commands.GetReportConfigsResponse)).ReportConfigs = []commands.ReportConfig{
+			(*response.(*commands.GetReportConfigsResponse)).ReportConfig = []commands.ReportConfig{
 				{
 					ID:               "config-uuid",
 					Name:             "Test config",
-					Owner:            &commands.ReportConfigOwner{Name: "admin"},
+					Owner:            commands.ReportConfigOwner{Name: "admin"},
 					Comment:          "Test comment",
 					CreationTime:     commands.GMPTime{Time: time.Date(2024, 1, 23, 9, 43, 3, 0, time.UTC)},
 					ModificationTime: commands.GMPTime{Time: time.Date(2024, 1, 26, 14, 11, 54, 0, time.UTC)},
 					Writable:         true,
 					InUse:            false,
-					Permissions: &commands.ReportConfigPermissions{
-						Permissions: []commands.ReportConfigPermission{{Name: "Everything"}},
+					Permissions: commands.ReportConfigPermissions{
+						Permission: []commands.ReportConfigPermission{{Name: "Everything"}},
 					},
-					ReportFormat: &commands.ReportConfigReportFormat{
+					ReportFormat: commands.GetReportConfigsReportFormat{
 						ID:   "format-uuid",
 						Name: "Topology SVG",
 					},
-					Params: []commands.ReportConfigParam{
+					Param: []commands.GetReportConfigsParam{
 						{
 							UsingDefault: false,
 							Name:         "Graph Type",
-							Type:         "selection",
-							Value:        "dot",
-							Default:      "twopi",
-							Options:      []string{"circo", "dot", "twopi"},
+							Type:         commands.ReportConfigType{Value: "selection"},
+							Value:        commands.ReportConfigParamValue{},
+							Default:      commands.ReportConfigDefault{Value: "twopi"},
+							Options:      &commands.ReportConfigOptions{Option: []string{"circo", "dot", "twopi"}},
 						},
 						{
 							UsingDefault: true,
 							Name:         "Node Distance",
-							Type:         "integer<min>1</min><max>20</max>",
-							Value:        "8",
-							Default:      "8",
+							Type:         commands.ReportConfigType{Value: "integer", Min: "1", Max: "20"},
+							Value:        commands.ReportConfigParamValue{},
+							Default:      commands.ReportConfigDefault{Value: "8"},
 						},
 					},
 				},

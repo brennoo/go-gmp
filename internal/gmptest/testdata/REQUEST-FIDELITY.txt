@@ -8,8 +8,8 @@
 # silently fails to ever emit).
 # Regenerate with: go test ./internal/gmptest -run TestRequestRoundTrip -update
 
-requests-compared: 321   clean: 300   with-loss: 19   decode-errors: 2   advisory: 0   skipped-no-request: 0
-commands with a recorded request: 122 of 122   commands with loss: 16
+requests-compared: 321   clean: 301   with-loss: 18   decode-errors: 2   advisory: 0   skipped-no-request: 0
+commands with a recorded request: 122 of 122   commands with loss: 15
 
 ## Per fixture
 
@@ -48,7 +48,7 @@ create_port_range            live      002 ok            dropped=1   truncated=0
 create_port_range            upstream  001 ok            dropped=1   truncated=0   changed=0   added=0
 create_report                live      001 ok            dropped=1   truncated=0   changed=2   added=10
 create_report                upstream  001 ok            dropped=4   truncated=0   changed=1   added=12
-create_report_config         upstream  001 clean         dropped=0   truncated=0   changed=0   added=4
+create_report_config         upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 create_report_format         upstream  001 ok            dropped=1   truncated=0   changed=0   added=0
 create_role                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_role                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
@@ -292,7 +292,7 @@ modify_permission            live      001 clean         dropped=0   truncated=0
 modify_permission            upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_port_list             live      001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_port_list             upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
-modify_report_config         upstream  001 ok            dropped=1   truncated=0   changed=0   added=3
+modify_report_config         upstream  001 clean         dropped=0   truncated=0   changed=0   added=1
 modify_report_format         upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_report_format         upstream  002 clean         dropped=0   truncated=0   changed=0   added=0
 modify_role                  live      001 clean         dropped=0   truncated=0   changed=0   added=0

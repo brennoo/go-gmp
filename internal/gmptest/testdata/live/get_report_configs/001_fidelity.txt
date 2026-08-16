@@ -4,12 +4,8 @@ decode: ok
 namespaces-seen:
 
 DROPPED
-  /get_report_configs_response/filters/@id                                 x1
-  /get_report_configs_response/filters/keywords                            x1  (+7 descendant paths)
   /get_report_configs_response/report_config_count/#text                   x1
-  /get_report_configs_response/report_config_count/filtered                x1  (+1 descendant paths)
-  /get_report_configs_response/report_config_count/page                    x1  (+1 descendant paths)
-  /get_report_configs_response/sort/field/order                            x1  (+1 descendant paths)
+  /get_report_configs_response/sort/field/#text                            x1
 
 TRUNCATED
   (none)

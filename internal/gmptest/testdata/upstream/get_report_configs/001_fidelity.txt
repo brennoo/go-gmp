@@ -4,19 +4,31 @@ decode: ok
 namespaces-seen:
 
 DROPPED
-  /get_report_configs_response/report_config/param/type/max                x1  (+1 descendant paths)
-  /get_report_configs_response/report_config/param/type/min                x1  (+1 descendant paths)
+  /get_report_configs_response/report_config/param/value/#text             x2
   /get_report_configs_response/truncated                                   x1  (+1 descendant paths)
 
 TRUNCATED
-  /get_report_configs_response/report_config/param/@using_default          2 -> 1
-
-CHANGED
-  /get_report_configs_response/report_config/in_use/#text                  "0" -> "false"
-  /get_report_configs_response/report_config/writable/#text                "1" -> "true"
-
-ADDED
   (none)
 
+CHANGED
+  (none)
+
+ADDED
+  /get_report_configs_response/filters                                     x1
+  /get_report_configs_response/filters/@id                                 x1
+  /get_report_configs_response/filters/keywords                            x1
+  /get_report_configs_response/filters/term                                x1
+  /get_report_configs_response/report_config_count                         x1
+  /get_report_configs_response/report_config_count/filtered                x1
+  /get_report_configs_response/report_config_count/filtered/#text          x1
+  /get_report_configs_response/report_config_count/page                    x1
+  /get_report_configs_response/report_config_count/page/#text              x1
+  /get_report_configs_response/report_configs                              x1
+  /get_report_configs_response/report_configs/@max                         x1
+  /get_report_configs_response/report_configs/@start                       x1
+  /get_report_configs_response/sort                                        x1
+  /get_report_configs_response/sort/field                                  x1
+  /get_report_configs_response/sort/field/order                            x1
+
 DUPLICATED
-  /get_report_configs_response/report_config/param/options                 1 -> 2
+  (none)

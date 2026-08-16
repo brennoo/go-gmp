@@ -3536,28 +3536,21 @@ func TestPortListSortValueIsWhitespaceOnly(t *testing.T) {
 
 // TestValidateReportConfigBeforeMatchesKnownConformance is report_config's
 // counterpart to TestValidateReportFormatBeforeMatchesKnownConformance.
-// report_config is still review_only, so this pins down the hand-written
-// commands/ package's current conformance, cross-checked against
-// internal/schema/testdata/CONFORMANCE.md's create_report_config,
-// get_report_configs and modify_report_config sections.
+// report_config is adopted, so this is a drift detector on the committed
+// commands/ files. Pre-adoption findings are recorded in
+// docs/review-2026-08.md.
 func TestValidateReportConfigBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_report_config")
 
 	want := map[string]counts{
-		"create_report_config": {
-			actionable: map[string]int{schema.CatMissing: 1, schema.CatExtra: 4},
-			suppressed: map[string]int{},
-		},
+		"create_report_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_report_config": {
-			actionable: map[string]int{schema.CatMissing: 1, schema.CatExtra: 3},
-			suppressed: map[string]int{},
+			actionable: map[string]int{},
+			suppressed: map[string]int{schema.CatExtra: 1},
 		},
 		"get_report_configs": {
-			actionable: map[string]int{
-				schema.CatMissing: 12, schema.CatExtra: 2, schema.CatKind: 2,
-				schema.CatType: 2, schema.CatDefect: 1,
-			},
-			suppressed: map[string]int{schema.CatOmitEmpty: 15},
+			actionable: map[string]int{schema.CatDefect: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 1},
 		},
 	}
 	for _, res := range before {

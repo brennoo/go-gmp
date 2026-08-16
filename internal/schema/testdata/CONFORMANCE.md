@@ -29,10 +29,10 @@ them, so response-side optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             67
-with actionable findings:     55
-actionable findings:          482  (request 242, response 240)
-suppressed findings:          575
+fully conformant:             69
+with actionable findings:     53
+actionable findings:          456  (request 229, response 227)
+suppressed findings:          562
 confirmed by fidelity corpus: 64
 in the schema, not in Go:     0
 in Go, not in the schema:     0
@@ -40,12 +40,12 @@ in Go, not in the schema:     0
 ### Findings by category
 
                  actionable suppressed
-  MISSING               173          0
-  EXTRA                 194          3
+  MISSING               160          0
+  EXTRA                 185          5
   CARDINALITY            36          0
-  KIND                    7          0
-  OMITEMPTY               4        572
-  TYPE                   68          0
+  KIND                    5          0
+  OMITEMPTY               4        557
+  TYPE                   66          0
   SCHEMA-DEFECT         107          0
 
 ### Schema defects by class
@@ -83,7 +83,6 @@ taken against upstream main (155 commands). Two reasons, both expected:
   modify_target                19   EXTRA=19
   delete_agents                18   EXTRA=18
   get_nvts                     18   MISSING=6  EXTRA=1  CARDINALITY=7  TYPE=4
-  get_report_configs           18   MISSING=12  EXTRA=2  KIND=2  TYPE=2
   modify_agents                18   EXTRA=18
   create_target                17   EXTRA=17
   create_task                  17   MISSING=1  EXTRA=15  CARDINALITY=1
@@ -95,7 +94,8 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_users                     9   MISSING=1  EXTRA=2  CARDINALITY=2  KIND=2  TYPE=2
   get_configs                   7   MISSING=3  EXTRA=2  TYPE=2
   get_results                   6   MISSING=1  EXTRA=4  CARDINALITY=1
-  ... and 35 more with fewer
+  create_scanner                5   EXTRA=3  TYPE=2
+  ... and 33 more with fewer
 
 ### Confirmed by both oracles
 
@@ -116,7 +116,7 @@ attributes, and one of its own captured request fixtures uses three of them.
   get_configs              /get_configs_response/config_count/filtered
   get_info                 /get_info_response/info/cve/severity
   get_nvts                 /get_nvts_response/nvt/refs/*
-  get_report_configs       /get_report_configs_response/filters/keywords/*
+  get_report_configs       /get_report_configs_response/report_config/param/value/@using_default
   get_reports              /get_reports_response/filters
   get_reports              /get_reports_response/report/#text
   get_reports              /get_reports_response/report/report/compliance_count/#text
@@ -663,18 +663,7 @@ MISSING=38  EXTRA=5  CARDINALITY=5  OMITEMPTY=144  TYPE=4  SCHEMA-DEFECT=10
 
 ### create_report_config  (command_create_report_config.xml)
 
-MISSING=1  EXTRA=4
-
-  MISSING       request  /create_report_config/param/value/*
-                schema declares 1 children; Go models this as scalar string
-  EXTRA         request  /create_report_config/param/@using_default
-                Go field UsingDefault bool has no counterpart in the schema
-  EXTRA         request  /create_report_config/param/default
-                Go field Default string has no counterpart in the schema
-  EXTRA         request  /create_report_config/param/type
-                Go field Type string has no counterpart in the schema
-  EXTRA         request  /create_report_config/report_format/name
-                Go field Name string has no counterpart in the schema
+conformant
 
 ### create_report_format  (command_create_report_format.xml)
 
@@ -1550,74 +1539,12 @@ conformant
 
 ### get_report_configs  (command_get_report_configs.xml)
 
-MISSING=12  EXTRA=2  KIND=2  OMITEMPTY=15  TYPE=2  SCHEMA-DEFECT=1
+MISSING=1  EXTRA=1  SCHEMA-DEFECT=1
 
-  MISSING       request  /get_report_configs/@details
-                optional attr details is not modelled
-  MISSING       request  /get_report_configs/@filt_id
-                optional attr filt_id is not modelled
-  MISSING       request  /get_report_configs/@filter
-                optional attr filter is not modelled
-  MISSING       request  /get_report_configs/@trash
-                optional attr trash is not modelled
-  MISSING       response /get_report_configs_response/filters/keywords/*
-                schema declares 1 children; Go models this as scalar string  [fidelity]
-  MISSING       response /get_report_configs_response/report_config/orphan
-                optional elem orphan is not modelled
-  MISSING       response /get_report_configs_response/report_config/param/default/*
-                schema declares 1 children; Go models this as scalar string
-  MISSING       response /get_report_configs_response/report_config/param/type/*
-                schema declares 2 children; Go models this as scalar string
-  MISSING       response /get_report_configs_response/report_config/param/value/*
-                schema declares 2 children; Go models this as scalar string
-  MISSING       response /get_report_configs_response/report_config/user_tags
-                optional elem user_tags is not modelled
-  MISSING       response /get_report_configs_response/sort/#text
-                schema also declares character data (text) here; Go *commands.ReportConfigSort has no `,chardata` field
-  MISSING       response /get_report_configs_response/sort/field/*
-                schema declares 1 children; Go models this as scalar string
+  MISSING       response /get_report_configs_response/report_config/param/value/@using_default
+                required attr using_default is not modelled  [fidelity]
   EXTRA         response /get_report_configs_response/report_config/param/@using_default
-                Go field UsingDefault bool has no counterpart in the schema
-  EXTRA         response /get_report_configs_response/sort/order
-                Go field Order string has no counterpart in the schema
-  KIND          response /get_report_configs_response/report_config_count/filtered
-                schema declares elem, Go models it as attr (Filtered int)
-  KIND          response /get_report_configs_response/report_config_count/page
-                schema declares elem, Go models it as attr (Page int)
-  OMITEMPTY     response /get_report_configs_response/filters
-                schema says required, Filters is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_configs_response/filters/@id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_configs_response/filters/keywords
-                schema says required, Keywords is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_configs_response/filters/term
-                schema says required, Term is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_configs_response/report_config/comment
-                schema says required, Comment is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_configs_response/report_config/owner
-                schema says required, Owner is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_configs_response/report_config/param/options
-                schema says optional,  (wrapper) has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_report_configs_response/report_config/permissions
-                schema says required, Permissions is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_configs_response/report_config/report_format/name
-                schema says optional, Name string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_report_configs_response/report_config_count
-                schema says required, Count is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_configs_response/report_configs
-                schema says required, Pagination is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_configs_response/report_configs/@max
-                schema says required, Max is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_configs_response/report_configs/@start
-                schema says required, Start is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_configs_response/sort
-                schema says required, Sort is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_report_configs_response/sort/field
-                schema says required, Field is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  TYPE          response /get_report_configs_response/report_config/in_use
-                schema type boolean is text ("" is true), Go InUse is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_report_configs_response/report_config/writable
-                schema type boolean is text ("" is true), Go Writable is bool: '7' fails to decode and '1' re-emits as 'true'
+                Go field UsingDefault commands.GMPBool has no counterpart in the schema  [suppressed: T-9 report_config review: real position of using_default that FieldSuppressions["get_report_configs:/report_config/param/value"] removes — command_get_report_configs.xml's own <example> and internal/gmptest/testdata/upstream/get_report_configs/001_{response,fidelity}.txt both place the attribute on <param>, not <value>]
   SCHEMA-DEFECT response /get_report_configs_response/report_config/report_format/permissions
                 empty-pattern: pattern declares no content
 
@@ -2846,16 +2773,10 @@ conformant
 
 ### modify_report_config  (command_modify_report_config.xml)
 
-MISSING=1  EXTRA=3
+EXTRA=1
 
-  MISSING       request  /modify_report_config/param/value/*
-                schema declares 1 children; Go models this as scalar string
-  EXTRA         request  /modify_report_config/param/@using_default
-                Go field UsingDefault bool has no counterpart in the schema
-  EXTRA         request  /modify_report_config/param/default
-                Go field Default string has no counterpart in the schema
-  EXTRA         request  /modify_report_config/param/type
-                Go field Type string has no counterpart in the schema
+  EXTRA         request  /modify_report_config/@report_config_id
+                Go field ReportConfigID string has no counterpart in the schema  [suppressed: T-9 report_config review: command_modify_report_config.xml's <pattern> declares no selector attribute at all, unlike every other modify_X command, but a live gvmd 26.36.1 test proved gvmd requires one anyway — <modify_report_config report_config_id="..."> against a nonexistent id returned "404 Failed to find Report Config" (a resource lookup, not a parse rejection), reproduced on a second connection. Without this field the generated request could never target a specific report config]
 
 ### modify_report_format  (command_modify_report_format.xml)
 

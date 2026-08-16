@@ -62,8 +62,7 @@
     },
     {
       "name": "report_config",
-      "commands": ["create_report_config", "get_report_configs", "modify_report_config"],
-      "review_only": true
+      "commands": ["create_report_config", "get_report_configs", "modify_report_config"]
     }
   ]
 }

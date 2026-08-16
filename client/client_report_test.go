@@ -279,7 +279,10 @@ func TestModifyReportConfig(t *testing.T) {
 
 	// Success case: modify param
 	cmdParam := &commands.ModifyReportConfig{
-		Params: []commands.ReportConfigParam{{Name: "Node Distance", UsingDefault: true}},
+		Param: []commands.ReportConfigParam{{
+			Name:  "Node Distance",
+			Value: commands.ReportConfigValue{UseDefault: commands.Bool(true)},
+		}},
 	}
 	respParam, err := cli.ModifyReportConfig(context.Background(), cmdParam)
 	if err != nil {
@@ -425,11 +428,11 @@ func TestGetReportConfigs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GetReportConfigs failed: %v", err)
 	}
-	if resp.Status != "200" || resp.StatusText != "OK" || len(resp.ReportConfigs) != 1 {
+	if resp.Status != "200" || resp.StatusText != "OK" || len(resp.ReportConfig) != 1 {
 		t.Errorf("unexpected response: %+v", resp)
 	}
-	if resp.ReportConfigs[0].ID != "config-uuid" || resp.ReportConfigs[0].Name != "Test config" {
-		t.Errorf("unexpected report config: %+v", resp.ReportConfigs[0])
+	if resp.ReportConfig[0].ID != "config-uuid" || resp.ReportConfig[0].Name != "Test config" {
+		t.Errorf("unexpected report config: %+v", resp.ReportConfig[0])
 	}
 
 	// Failure case
