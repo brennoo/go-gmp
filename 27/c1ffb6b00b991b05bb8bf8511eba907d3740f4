@@ -1,0 +1,59 @@
+client/client_test.go
+  s_b2a5e388fa7510::t_c8dc74345156ff 1635,1645,1655,1658-1660
+client/client_user_test.go
+  s_b2a5e388fa7510::t_8d419f6ff0daf5 20,54,59,61-62,64,103-104
+commands/create_user.go
+  s_b2a5e388fa7510::t_46966ffc026f64 1-2,7,17,20,32-41
+commands/get_users.go
+  s_b2a5e388fa7510::t_048c2d00a04b07 1-2,5,7,12,15,17-24,32-37,40-42,45-49,52-55,58-60,63-66,69-72,75-93,98-100,103-107,110-113,116-118,121-123,126-128,131-134,137-149
+commands/modify_user.go
+  s_b2a5e388fa7510::t_11a880fce7278e 1-2,7,13,17,20,32,34-35
+commands/user_shared.go
+  s_b2a5e388fa7510::t_d7363913a85588 1-19
+docs/review-2026-08.md
+  s_b2a5e388fa7510::t_c69014b5469cae 1533-1557,2328
+internal/codegen/manifest.json
+  s_b2a5e388fa7510::t_7bf7a368e5b425 69
+internal/codegen/manifest_test.go
+  s_b2a5e388fa7510::t_fad71ef42ef343 43-44,61,69-70,72-75,94-95,119,123-130
+internal/codegen/validate_test.go
+  s_b2a5e388fa7510::t_04ff37fba90ef3 3759-3761,3766-3767,3769-3770
+internal/gmptest/capture_sequence_test.go
+  s_b2a5e388fa7510::t_c6803d556965ac 572-573
+internal/gmptest/cases_user.go
+  s_b2a5e388fa7510::t_31727990e23ccc 9,11-12,14-15
+internal/gmptest/redact_test.go
+  s_b2a5e388fa7510::t_54d08f5cb68c62 396
+internal/gmptest/testdata/FIDELITY-SUMMARY.txt
+  s_b2a5e388fa7510::t_5bed50c6a076b2 15,257-260
+internal/gmptest/testdata/REQUEST-FIDELITY.txt
+  s_b2a5e388fa7510::t_9e4a6bae699c2e 71,316
+internal/gmptest/testdata/live/get_users/001_fidelity.txt
+  s_b2a5e388fa7510::t_e6ce0fd8102b87 14,17-19
+internal/gmptest/testdata/live/get_users/002_fidelity.txt
+  s_b2a5e388fa7510::t_fde1ad12a3ec61 14,17-19
+internal/gmptest/testdata/live/get_users/003_fidelity.txt
+  s_b2a5e388fa7510::t_02d6f39e20af28 14,17-19
+internal/gmptest/testdata/requests/modify_user/password_and_roles.xml
+  s_b2a5e388fa7510::t_38da3355701d1d 1
+internal/gmptest/testdata/upstream/get_users/001_fidelity.txt
+  s_b2a5e388fa7510::t_d982dcfb9f9ac2 16-24,27-32,35-47
+internal/schema/testdata/CONFORMANCE.md
+  s_b2a5e388fa7510::t_1d9cc792e67752 32-35,43-48,97-98,822,2506,2849
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "27c1ffb6b00b991b05bb8bf8511eba907d3740f4",
+  "prompts": {},
+  "sessions": {
+    "s_b2a5e388fa7510": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_b2a5e388fa7510",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
