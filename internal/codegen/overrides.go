@@ -330,6 +330,26 @@ var PointerOverrides = map[string]PointerOverride{
 	"modify_credential.comment": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
 	},
+	// modify_user: live gvmd 22.7 experiment run against review-only user's
+	// deferred question (created a throwaway user with the built-in "User"
+	// role, then probed each field via RawXML and read the result back
+	// through get_users, or through a fresh authentication attempt for
+	// password since get_users never echoes it). comment behaves like
+	// modify_alert's (omit leaves the stored value unchanged, explicit-empty
+	// clears it to ""). new_name did not: an explicit-empty <new_name></new_name>
+	// returns 200 OK but leaves the name unchanged, indistinguishable from
+	// omitting the element entirely, so it keeps the mechanical string
+	// default. password's *UserPassword already models every legal
+	// combination structurally (the whole element can be omitted to leave
+	// the password alone; modify="0" and modify="1" with empty chardata both
+	// left the stored password unchanged in this gvmd version; modify="1"
+	// with real chardata changed it) so it needs no override here — see
+	// docs/review-2026-08.md's `user` section for the full experiment
+	// record, including the observed anomaly that the prior password kept
+	// authenticating after a successful rotation on this stack.
+	"modify_user.comment": {
+		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
+	},
 }
 
 // CommandWarning attaches a public-facing behavioral-hazard note to a
@@ -512,5 +532,11 @@ var DefectAllowlist = map[DefectKey]DefectAllowlistEntry{
 	},
 	{Command: "get_report_configs", Class: "empty-pattern", Path: "/get_report_configs_response/report_config/report_format/permissions"}: {
 		Reason: "T-15; docs/review-2026-08.md `report_config`",
+	},
+	{Command: "get_users", Class: "empty-pattern", Path: "/get_users_response/user/role/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `user`",
+	},
+	{Command: "get_users", Class: "empty-pattern", Path: "/get_users_response/user/groups/group/permissions"}: {
+		Reason: "T-15; docs/review-2026-08.md `user`",
 	},
 }

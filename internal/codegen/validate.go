@@ -97,11 +97,11 @@ type CommandRoots struct {
 // "Before" means different things per family, deliberately. For an adopted
 // family (note, override, role, group, tag, schedule, alert, filter,
 // tls_certificate, permission, ticket, credential, port_list, asset,
-// report_format) these types are already the generator's output, so the
-// comparison is a drift detector on the committed files. A family entering
-// review-only mode would instead compare against its still-hand-written
-// originals — the pre-swap gate every adopted family went through before
-// adoption.
+// report_format, report_config) these types are already the generator's
+// output, so the comparison is a drift detector on the committed files. A
+// family entering review-only mode (user) instead compares against its
+// still-hand-written originals — the pre-swap gate every adopted family went
+// through before adoption.
 //
 // The map is written out by hand rather than derived from the manifest because
 // reflection needs the concrete types: adding a family here is the one place
@@ -300,6 +300,18 @@ func BeforeGoRoots() map[string]CommandRoots {
 		"get_report_configs": {
 			Request:  schema.ModelOf(&commands.GetReportConfigs{}),
 			Response: schema.ModelOf(&commands.GetReportConfigsResponse{}),
+		},
+		"create_user": {
+			Request:  schema.ModelOf(&commands.CreateUser{}),
+			Response: schema.ModelOf(&commands.CreateUserResponse{}),
+		},
+		"modify_user": {
+			Request:  schema.ModelOf(&commands.ModifyUser{}),
+			Response: schema.ModelOf(&commands.ModifyUserResponse{}),
+		},
+		"get_users": {
+			Request:  schema.ModelOf(&commands.GetUsers{}),
+			Response: schema.ModelOf(&commands.GetUsersResponse{}),
 		},
 	}
 }

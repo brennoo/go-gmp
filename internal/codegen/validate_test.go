@@ -3755,6 +3755,69 @@ func main() {
 }
 `
 
+// TestValidateUserBeforeMatchesKnownConformance is user's counterpart to
+// TestValidateReportConfigBeforeMatchesKnownConformance. user is review-only,
+// so this compares Validate's "before" side against the still-hand-written
+// commands/{create_user,get_users,modify_user}.go.
+func TestValidateUserBeforeMatchesKnownConformance(t *testing.T) {
+	before, _ := validateOrSkip(t, "create_user")
+
+	want := map[string]counts{
+		"create_user": {
+			actionable: map[string]int{schema.CatExtra: 2, schema.CatCardinality: 1, schema.CatOmitEmpty: 1},
+			suppressed: map[string]int{},
+		},
+		"modify_user": {
+			actionable: map[string]int{schema.CatExtra: 1, schema.CatCardinality: 1, schema.CatOmitEmpty: 1},
+			suppressed: map[string]int{},
+		},
+		"get_users": {
+			actionable: map[string]int{
+				schema.CatMissing:     1,
+				schema.CatExtra:       2,
+				schema.CatCardinality: 2,
+				schema.CatKind:        2,
+				schema.CatType:        2,
+				schema.CatDefect:      2,
+			},
+			suppressed: map[string]int{schema.CatOmitEmpty: 25},
+		},
+	}
+	for _, res := range before {
+		w, ok := want[res.Command]
+		if !ok {
+			t.Errorf("%s: unexpected command in Validate's before results", res.Command)
+			continue
+		}
+		assertCounts(t, "before", res.Command, w, countFindings(res.Findings))
+	}
+}
+
+// TestValidateUserGeneratedMatchesOrImproves is user's pre-adoption gate, run
+// at the same rigour every prior family's was. Generation closes every
+// actionable finding on create_user and modify_user (role/name and
+// groups/group/name have no schema counterpart; sources/source narrows from
+// a hand-written slice to the schema's declared scalar; hosts/@allow gains
+// omitempty) and every actionable finding on get_users except the two
+// allowlisted empty-pattern SCHEMA-DEFECT findings on role/permissions and
+// groups/group/permissions, which the schema itself declares with no
+// content. No FieldOverride/FieldSuppression/PointerOverride/CommandWarning
+// was needed for this family — unlike report_config, no fixture or
+// live-gvmd evidence surfaced a schema/wire mismatch here.
+func TestValidateUserGeneratedMatchesOrImproves(t *testing.T) {
+	before, after := validateOrSkip(t, "create_user")
+
+	wantAfter := map[string]counts{
+		"create_user": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"modify_user": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_users": {
+			actionable: map[string]int{schema.CatDefect: 2},
+			suppressed: map[string]int{},
+		},
+	}
+	assertMatchesOrImproves(t, before, after, wantAfter)
+}
+
 // assertMatchesOrImproves is the shared body of the two match-or-improve gates:
 // the exact expected "after" counts, plus the two general rules that hold for
 // any family — no category may grow, and the schema's own defects may not move.

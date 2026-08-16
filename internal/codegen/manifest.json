@@ -63,6 +63,11 @@
     {
       "name": "report_config",
       "commands": ["create_report_config", "get_report_configs", "modify_report_config"]
+    },
+    {
+      "name": "user",
+      "commands": ["create_user", "get_users", "modify_user"],
+      "review_only": true
     }
   ]
 }
