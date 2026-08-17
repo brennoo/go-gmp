@@ -15,13 +15,13 @@ func TestCreateReport(t *testing.T) {
 
 	// Success case
 	cmd := &commands.CreateReport{
-		Report: &commands.Report{
+		Report: commands.Report{
 			ID:          "report-uuid",
 			FormatID:    "format-uuid",
 			Extension:   "xml",
 			ContentType: "text/xml",
 		},
-		Task:     &commands.ReportTask{ID: "task-uuid"},
+		Task:     commands.CreateReportTask{ID: "task-uuid"},
 		InAssets: nil,
 	}
 	resp, err := cli.CreateReport(context.Background(), cmd)
@@ -40,10 +40,10 @@ func TestCreateReport(t *testing.T) {
 
 	// Failure case
 	cmdFail := &commands.CreateReport{
-		Report: &commands.Report{
+		Report: commands.Report{
 			ID: "wrong-id",
 		},
-		Task: &commands.ReportTask{ID: "wrong-task"},
+		Task: commands.CreateReportTask{ID: "wrong-task"},
 	}
 	respFail, err := cli.CreateReport(context.Background(), cmdFail)
 	if err != nil {
@@ -65,10 +65,8 @@ func TestGetReports(t *testing.T) {
 
 	// Success case
 	cmd := &commands.GetReports{
-		ReportID:    "report-uuid",
-		FormatID:    "format-uuid",
-		Extension:   "xml",
-		ContentType: "text/xml",
+		ReportID: "report-uuid",
+		FormatID: "format-uuid",
 	}
 	resp, err := cli.GetReports(context.Background(), cmd)
 	if err != nil {
@@ -80,10 +78,10 @@ func TestGetReports(t *testing.T) {
 	if resp.StatusText != "OK" {
 		t.Errorf("Expected status text 'OK', got '%s'", resp.StatusText)
 	}
-	if len(resp.Reports) != 1 {
-		t.Errorf("Expected 1 report, got %d", len(resp.Reports))
+	if len(resp.Report) != 1 {
+		t.Errorf("Expected 1 report, got %d", len(resp.Report))
 	} else {
-		report := resp.Reports[0]
+		report := resp.Report[0]
 		if report.ID != "report-uuid" {
 			t.Errorf("Expected report ID 'report-uuid', got '%s'", report.ID)
 		}

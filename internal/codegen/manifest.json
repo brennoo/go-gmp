@@ -202,6 +202,14 @@
         "create_port_range",
         "delete_port_range"
       ]
+    },
+    {
+      "name": "report",
+      "commands": [
+        "create_report",
+        "delete_report",
+        "get_reports"
+      ]
     }
   ]
 }

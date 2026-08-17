@@ -26,12 +26,14 @@ func TestCommittedManifest(t *testing.T) {
 
 	// note, override, role, group, tag, schedule, alert, filter,
 	// tls_certificate, permission, ticket, credential, port_list, asset,
-	// report_format, report_config, user, target, task, scanner, config, and
-	// port_range are all adopted; every family but tls_certificate also has a
-	// delete_X sibling. port_range has no get_X/modify_X commands at all — the
-	// schema only ever declared create_port_range/delete_port_range.
-	// commands/*.go are all the generator's output for these families.
+	// report_format, report_config, report, user, target, task, scanner,
+	// config, and port_range are all adopted; every family but tls_certificate
+	// also has a delete_X sibling. port_range has no get_X/modify_X commands at
+	// all — the schema only ever declared create_port_range/delete_port_range.
+	// report has no modify_X — the schema never declared one. commands/*.go
+	// are all the generator's output for these families.
 	assertFamily(t, m, "get_notes", "note")
+	assertFamily(t, m, "get_reports", "report")
 	assertFamily(t, m, "get_overrides", "override")
 	assertFamily(t, m, "get_roles", "role")
 	assertFamily(t, m, "get_groups", "group")
@@ -54,6 +56,7 @@ func TestCommittedManifest(t *testing.T) {
 	assertFamily(t, m, "get_configs", "config")
 	assertFamily(t, m, "create_port_range", "port_range")
 	assertFamily(t, m, "delete_note", "note")
+	assertFamily(t, m, "delete_report", "report")
 	assertFamily(t, m, "delete_override", "override")
 	assertFamily(t, m, "delete_role", "role")
 	assertFamily(t, m, "delete_group", "group")
@@ -77,15 +80,15 @@ func TestCommittedManifest(t *testing.T) {
 
 	wantAdopted := []string{
 		"create_alert", "create_asset", "create_config", "create_credential", "create_filter", "create_group",
-		"create_note", "create_override", "create_permission", "create_port_list", "create_port_range", "create_report_config",
+		"create_note", "create_override", "create_permission", "create_port_list", "create_port_range", "create_report", "create_report_config",
 		"create_report_format", "create_role", "create_scanner", "create_schedule", "create_tag", "create_target",
 		"create_task", "create_ticket", "create_tls_certificate", "create_user", "delete_alert", "delete_asset", "delete_config",
 		"delete_credential", "delete_filter", "delete_group", "delete_note", "delete_override",
-		"delete_permission", "delete_port_list", "delete_port_range", "delete_report_config", "delete_report_format", "delete_role",
+		"delete_permission", "delete_port_list", "delete_port_range", "delete_report", "delete_report_config", "delete_report_format", "delete_role",
 		"delete_scanner", "delete_schedule", "delete_tag", "delete_target", "delete_task", "delete_ticket",
 		"delete_user", "get_alerts", "get_assets",
 		"get_configs", "get_credentials", "get_filters", "get_groups", "get_notes", "get_overrides",
-		"get_permissions", "get_port_lists", "get_report_configs", "get_report_formats", "get_roles",
+		"get_permissions", "get_port_lists", "get_report_configs", "get_report_formats", "get_reports", "get_roles",
 		"get_scanners", "get_schedules", "get_tags", "get_targets", "get_tasks", "get_tickets",
 		"get_tls_certificates", "get_users", "modify_alert", "modify_asset", "modify_config", "modify_credential",
 		"modify_filter", "modify_group", "modify_note", "modify_override", "modify_permission", "modify_port_list",
@@ -96,15 +99,15 @@ func TestCommittedManifest(t *testing.T) {
 	}
 	want := []string{
 		"create_alert", "create_asset", "create_config", "create_credential", "create_filter", "create_group",
-		"create_note", "create_override", "create_permission", "create_port_list", "create_port_range", "create_report_config",
+		"create_note", "create_override", "create_permission", "create_port_list", "create_port_range", "create_report", "create_report_config",
 		"create_report_format", "create_role", "create_scanner", "create_schedule", "create_tag", "create_target",
 		"create_task", "create_ticket", "create_tls_certificate", "create_user", "delete_alert", "delete_asset", "delete_config",
 		"delete_credential", "delete_filter", "delete_group", "delete_note", "delete_override",
-		"delete_permission", "delete_port_list", "delete_port_range", "delete_report_config", "delete_report_format", "delete_role",
+		"delete_permission", "delete_port_list", "delete_port_range", "delete_report", "delete_report_config", "delete_report_format", "delete_role",
 		"delete_scanner", "delete_schedule", "delete_tag", "delete_target", "delete_task", "delete_ticket",
 		"delete_user", "get_alerts", "get_assets",
 		"get_configs", "get_credentials", "get_filters", "get_groups", "get_notes", "get_overrides",
-		"get_permissions", "get_port_lists", "get_report_configs", "get_report_formats", "get_roles",
+		"get_permissions", "get_port_lists", "get_report_configs", "get_report_formats", "get_reports", "get_roles",
 		"get_scanners", "get_schedules", "get_tags", "get_targets", "get_tasks", "get_tickets",
 		"get_tls_certificates", "get_users", "modify_alert", "modify_asset", "modify_config", "modify_credential",
 		"modify_filter", "modify_group", "modify_note", "modify_override", "modify_permission", "modify_port_list",
@@ -126,25 +129,25 @@ func TestCommittedManifest(t *testing.T) {
 	assertFiles(t, "ExpectedOutputFiles", m.ExpectedOutputFiles("commands"), []string{
 		"alert_shared.go", "asset_shared.go", "config_shared.go", "create_alert.go", "create_asset.go",
 		"create_config.go", "create_credential.go", "create_filter.go", "create_group.go", "create_note.go",
-		"create_override.go", "create_permission.go", "create_port_list.go", "create_port_range.go", "create_report_config.go",
+		"create_override.go", "create_permission.go", "create_port_list.go", "create_port_range.go", "create_report.go", "create_report_config.go",
 		"create_report_format.go", "create_role.go", "create_scanner.go", "create_schedule.go", "create_tag.go",
 		"create_target.go", "create_task.go", "create_ticket.go", "create_tls_certificate.go", "create_user.go",
 		"credential_shared.go", "delete_alert.go", "delete_asset.go", "delete_config.go", "delete_credential.go",
 		"delete_filter.go",
 		"delete_group.go", "delete_note.go", "delete_override.go", "delete_permission.go", "delete_port_list.go",
-		"delete_port_range.go", "delete_report_config.go", "delete_report_format.go", "delete_role.go", "delete_scanner.go",
+		"delete_port_range.go", "delete_report.go", "delete_report_config.go", "delete_report_format.go", "delete_role.go", "delete_scanner.go",
 		"delete_schedule.go", "delete_tag.go", "delete_target.go", "delete_task.go", "delete_ticket.go",
 		"delete_user.go", "filter_shared.go", "get_alerts.go",
 		"get_assets.go", "get_configs.go", "get_credentials.go", "get_filters.go", "get_groups.go", "get_notes.go",
 		"get_overrides.go", "get_permissions.go", "get_port_lists.go", "get_report_configs.go",
-		"get_report_formats.go", "get_roles.go", "get_scanners.go", "get_schedules.go", "get_tags.go",
+		"get_report_formats.go", "get_reports.go", "get_roles.go", "get_scanners.go", "get_schedules.go", "get_tags.go",
 		"get_targets.go", "get_tasks.go", "get_tickets.go", "get_tls_certificates.go", "get_users.go",
 		"group_shared.go", "modify_alert.go", "modify_asset.go", "modify_config.go", "modify_credential.go",
 		"modify_filter.go", "modify_group.go", "modify_note.go", "modify_override.go", "modify_permission.go",
 		"modify_port_list.go", "modify_report_config.go", "modify_report_format.go", "modify_role.go",
 		"modify_scanner.go", "modify_schedule.go", "modify_tag.go", "modify_target.go", "modify_task.go",
 		"modify_ticket.go", "modify_tls_certificate.go", "modify_user.go", "move_task.go", "note_shared.go", "override_shared.go",
-		"permission_shared.go", "port_list_shared.go", "port_range_shared.go", "report_config_shared.go", "report_format_shared.go",
+		"permission_shared.go", "port_list_shared.go", "port_range_shared.go", "report_config_shared.go", "report_format_shared.go", "report_shared.go",
 		"resume_task.go", "role_shared.go", "scanner_shared.go", "schedule_shared.go", "start_task.go", "stop_task.go",
 		"sync_config.go", "tag_shared.go",
 		"target_shared.go", "task_shared.go", "test_alert.go", "ticket_shared.go", "tls_certificate_shared.go",
@@ -153,25 +156,25 @@ func TestCommittedManifest(t *testing.T) {
 	assertFiles(t, "Adopted().ExpectedOutputFiles", m.Adopted().ExpectedOutputFiles("commands"), []string{
 		"alert_shared.go", "asset_shared.go", "config_shared.go", "create_alert.go", "create_asset.go",
 		"create_config.go", "create_credential.go", "create_filter.go", "create_group.go", "create_note.go",
-		"create_override.go", "create_permission.go", "create_port_list.go", "create_port_range.go", "create_report_config.go",
+		"create_override.go", "create_permission.go", "create_port_list.go", "create_port_range.go", "create_report.go", "create_report_config.go",
 		"create_report_format.go", "create_role.go", "create_scanner.go", "create_schedule.go", "create_tag.go",
 		"create_target.go", "create_task.go", "create_ticket.go", "create_tls_certificate.go", "create_user.go",
 		"credential_shared.go", "delete_alert.go", "delete_asset.go", "delete_config.go", "delete_credential.go",
 		"delete_filter.go",
 		"delete_group.go", "delete_note.go", "delete_override.go", "delete_permission.go", "delete_port_list.go",
-		"delete_port_range.go", "delete_report_config.go", "delete_report_format.go", "delete_role.go", "delete_scanner.go",
+		"delete_port_range.go", "delete_report.go", "delete_report_config.go", "delete_report_format.go", "delete_role.go", "delete_scanner.go",
 		"delete_schedule.go", "delete_tag.go", "delete_target.go", "delete_task.go", "delete_ticket.go",
 		"delete_user.go", "filter_shared.go", "get_alerts.go",
 		"get_assets.go", "get_configs.go", "get_credentials.go", "get_filters.go", "get_groups.go", "get_notes.go",
 		"get_overrides.go", "get_permissions.go", "get_port_lists.go", "get_report_configs.go",
-		"get_report_formats.go", "get_roles.go", "get_scanners.go", "get_schedules.go", "get_tags.go",
+		"get_report_formats.go", "get_reports.go", "get_roles.go", "get_scanners.go", "get_schedules.go", "get_tags.go",
 		"get_targets.go", "get_tasks.go", "get_tickets.go", "get_tls_certificates.go", "get_users.go",
 		"group_shared.go", "modify_alert.go", "modify_asset.go", "modify_config.go", "modify_credential.go",
 		"modify_filter.go", "modify_group.go", "modify_note.go", "modify_override.go", "modify_permission.go",
 		"modify_port_list.go", "modify_report_config.go", "modify_report_format.go", "modify_role.go",
 		"modify_scanner.go", "modify_schedule.go", "modify_tag.go", "modify_target.go", "modify_task.go",
 		"modify_ticket.go", "modify_tls_certificate.go", "modify_user.go", "move_task.go", "note_shared.go", "override_shared.go",
-		"permission_shared.go", "port_list_shared.go", "port_range_shared.go", "report_config_shared.go", "report_format_shared.go",
+		"permission_shared.go", "port_list_shared.go", "port_range_shared.go", "report_config_shared.go", "report_format_shared.go", "report_shared.go",
 		"resume_task.go", "role_shared.go", "scanner_shared.go", "schedule_shared.go", "start_task.go", "stop_task.go",
 		"sync_config.go", "tag_shared.go",
 		"target_shared.go", "task_shared.go", "test_alert.go", "ticket_shared.go", "tls_certificate_shared.go",
@@ -289,7 +292,7 @@ func TestGenerateAllIsPerFamily(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	alone, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+	alone, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, NameOverrides, FieldTypeOverrides)
 	if err != nil {
 		t.Fatalf("GenerateAll failed: %v", err)
 	}
@@ -308,7 +311,7 @@ func TestGenerateAllIsPerFamily(t *testing.T) {
 	// checkDefects would reject it for a defect that isn't really its own.
 	twin.Defects = nil
 	two := Manifest{Families: append(append([]Family{}, m.Families...), Family{Name: "twin", Commands: []string{"get_twins"}})}
-	both, err := GenerateAll(two, append(append([]schema.Command{}, cmds...), twin), TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+	both, err := GenerateAll(two, append(append([]schema.Command{}, cmds...), twin), TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, NameOverrides, FieldTypeOverrides)
 	if err != nil {
 		t.Fatalf("GenerateAll with a second family failed: %v", err)
 	}
@@ -347,14 +350,14 @@ func TestRealFamiliesGenerateIndependently(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, NameOverrides, FieldTypeOverrides)
 	if err != nil {
 		t.Fatalf("GenerateAll failed: %v", err)
 	}
 
 	accounted := 0
 	for _, f := range m.Families {
-		alone, err := GenerateAll(Manifest{Families: []Family{f}}, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+		alone, err := GenerateAll(Manifest{Families: []Family{f}}, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, NameOverrides, FieldTypeOverrides)
 		if err != nil {
 			t.Fatalf("GenerateAll(%s alone) failed: %v", f.Name, err)
 		}
@@ -402,11 +405,11 @@ func TestScheduleICalendarNamingIsStable(t *testing.T) {
 	if !ok {
 		t.Fatal("The manifest no longer declares a schedule family")
 	}
-	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, NameOverrides, FieldTypeOverrides)
 	if err != nil {
 		t.Fatalf("GenerateAll(schedule alone) failed: %v", err)
 	}
-	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, NameOverrides, FieldTypeOverrides)
 	if err != nil {
 		t.Fatalf("GenerateAll(full manifest) failed: %v", err)
 	}
@@ -460,11 +463,11 @@ func TestAlertFingerprintNamingIsStable(t *testing.T) {
 	if !ok {
 		t.Fatal("The manifest no longer declares an alert family")
 	}
-	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, NameOverrides, FieldTypeOverrides)
 	if err != nil {
 		t.Fatalf("GenerateAll(alert alone) failed: %v", err)
 	}
-	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, NameOverrides, FieldTypeOverrides)
 	if err != nil {
 		t.Fatalf("GenerateAll(full manifest) failed: %v", err)
 	}
@@ -520,11 +523,11 @@ func TestTLSCertificateDNNamingIsStable(t *testing.T) {
 	if !ok {
 		t.Fatal("The manifest no longer declares a tls_certificate family")
 	}
-	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, NameOverrides, FieldTypeOverrides)
 	if err != nil {
 		t.Fatalf("GenerateAll(tls_certificate alone) failed: %v", err)
 	}
-	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, NameOverrides, FieldTypeOverrides)
 	if err != nil {
 		t.Fatalf("GenerateAll(full manifest) failed: %v", err)
 	}
@@ -575,7 +578,7 @@ func TestOCIImageNamingIsStable(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, NameOverrides, FieldTypeOverrides)
 	if err != nil {
 		t.Fatalf("GenerateAll(full manifest) failed: %v", err)
 	}
@@ -593,7 +596,7 @@ func TestOCIImageNamingIsStable(t *testing.T) {
 		if !ok {
 			t.Fatalf("The manifest no longer declares a %s family", tt.familyName)
 		}
-		alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+		alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, NameOverrides, FieldTypeOverrides)
 		if err != nil {
 			t.Fatalf("GenerateAll(%s alone) failed: %v", tt.familyName, err)
 		}
@@ -638,13 +641,19 @@ func findCommand(cmds []schema.Command, name string) (schema.Command, bool) {
 // put the shared types in a file ExpectedOutputFiles never predicts, and
 // -check would then call that file obsolete.
 func TestGenerateAllRejectsAnUnknownFamilyName(t *testing.T) {
-	m := manifestOrFail(t)
-	cmds, err := LoadSnapshots(snapshotDir, m.AllCommands())
+	// A single real family's own commands, not m.AllCommands(): merging every
+	// family's commands into one batch defeats GenerateAll's family-local
+	// isolation and can make structurally-identical types from unrelated
+	// families (e.g. report's nested tls_certificate and get_tls_certificates'
+	// own) collide on FieldOverrides/NameOverrides before this test's actual
+	// naming-convention check ever runs.
+	noteCommands := []string{"create_note", "delete_note", "get_notes", "modify_note"}
+	cmds, err := LoadSnapshots(snapshotDir, noteCommands)
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	wrong := Manifest{Families: []Family{{Name: "annotation", Commands: m.AllCommands()}}}
-	if _, err := GenerateAll(wrong, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist); err == nil ||
+	wrong := Manifest{Families: []Family{{Name: "annotation", Commands: noteCommands}}}
+	if _, err := GenerateAll(wrong, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, NameOverrides, FieldTypeOverrides); err == nil ||
 		!strings.Contains(err.Error(), "naming convention") {
 		t.Fatalf("GenerateAll error = %v, want a naming-convention complaint", err)
 	}
@@ -656,7 +665,7 @@ func TestGenerateAllNeedsEverySnapshot(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	if _, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist); err == nil ||
+	if _, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, NameOverrides, FieldTypeOverrides); err == nil ||
 		!strings.Contains(err.Error(), "no snapshot loaded for delete_note") {
 		t.Fatalf("GenerateAll error = %v, want a missing-snapshot complaint", err)
 	}

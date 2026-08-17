@@ -206,6 +206,45 @@ var FieldOverrides = map[string][]FieldOverride{
 	}},
 }
 
+// FieldTypeOverride corrects the Go type the mechanical mapping would assign
+// to a schema-declared attribute/element, at one specific nesting path. It
+// changes nothing about the field's presence, position or wire name — for
+// that, see FieldOverride (adds a field) and FieldSuppression (relocates
+// one). This exists because TypeOverrides is keyed by the schema's <type>
+// name globally, which is too broad when the schema declares the *same*
+// element name with two different, inconsistent types depending on where it
+// is nested: overriding "integer" everywhere would silently retype every
+// other integer field in the corpus.
+type FieldTypeOverride struct {
+	Name   string // wire element/attribute name
+	Attr   bool
+	GoType string
+	Reason string
+}
+
+// FieldTypeOverrides is keyed exactly like FieldOverrides/FieldSuppressions:
+// "<command>:/<ancestor>/.../<node-name>" identifying the struct the retyped
+// field lives on. Consulted from fieldOf, after the mechanical type mapping,
+// so the corrected type still goes through the normal cardinality/pointer
+// logic.
+var FieldTypeOverrides = map[string][]FieldTypeOverride{
+	"create_report:/report/report/results/result/nvt": {{
+		Name: "cvss_base", GoType: "float64",
+		Reason: "T-9 report review: command_get_reports.xml's schema declares " +
+			"results/result/nvt/cvss_base as type integer, but " +
+			"internal/gmptest/testdata/live/create_report/001_request.xml sends a real decimal value " +
+			"(\"5.0\") for it — the same element name is declared type severity (float64) a few levels " +
+			"over at errors/error/nvt/cvss_base, so this is the schema itself disagreeing with its own " +
+			"declaration, not a defect in the generated int",
+	}},
+	"get_reports:/report/report/results/result/nvt": {{
+		Name: "cvss_base", GoType: "float64",
+		Reason: "T-9 report review: same schema/wire disagreement as create_report's entry above — " +
+			"internal/gmptest/testdata/upstream/get_reports/002_response.xml sends the same decimal " +
+			"cvss_base shape at this path",
+	}},
+}
+
 // FieldSuppression removes a schema-declared attribute/element from the
 // struct its FieldSuppressions key would otherwise put it on, because live
 // wire evidence contradicts the schema's declared nesting for it — not
@@ -244,6 +283,71 @@ var FieldSuppressions = map[string][]FieldSuppression{
 			"it on the enclosing <param> instead; decoding a real response through the schema-faithful " +
 			"nesting leaves UsingDefault permanently false",
 	}},
+}
+
+// NameOverride assigns an explicit Go type name to a structurally-collected
+// shape, bypassing pick's candidate ladder (generate.go) entirely.
+//
+// The ladder's qualify() step treats a node already starting with the family
+// noun as self-qualified and leaves it bare — the rule that keeps
+// <note_count> as NoteCount rather than NoteNoteCount. That rule is correct
+// for every other family only because English happens not to prefix an
+// unrelated sibling family's name with theirs. "report" breaks it:
+// report_format and report_config are also the top-level entity names of two
+// OTHER adopted families (get_report_formats.go's ReportFormat,
+// get_report_configs.go's ReportConfig). qualify()'s short-circuit hands the
+// report family's own nested <report_format>/<report_config> elements those
+// same bare names, which is a real Go "redeclared in this block" error
+// between two files of the same commands package, not just an awkward name.
+//
+// GenerateAll's family-local isolation (its own doc comment, and
+// TestGenerateAllIsPerFamily/TestRealFamiliesGenerateIndependently) rules out
+// fixing this with a smarter ladder heuristic or a cross-family name
+// registry: a family's generated names may depend on nothing but that
+// family's own commands, and no local string rule can distinguish this
+// collision from note_count's legitimate collapse without regressing it (see
+// docs/review-2026-08.md `report`). This table is the human-curated
+// exception - naming a specific shape from knowledge the generator itself is
+// not allowed to consult.
+type NameOverride struct {
+	GoName string
+	Reason string
+}
+
+// NameOverrides is keyed exactly like FieldOverrides (fieldOverrideKey):
+// "<command>:/<ancestor>/.../<node-name>". Consulted by pick (generate.go)
+// before the candidate ladder runs at all.
+var NameOverrides = map[string]NameOverride{
+	"create_report:/report/report_format": {
+		GoName: "ReportReportFormat",
+		Reason: "T-9; docs/review-2026-08.md `report` — the top-level <report_format> id+name " +
+			"reference would otherwise take the bare name get_report_formats.go's own ReportFormat " +
+			"entity type already declares",
+	},
+	"get_reports:/report/report_format": {
+		GoName: "ReportReportFormat",
+		Reason: "T-9; docs/review-2026-08.md `report` — same collision as create_report's",
+	},
+	"create_report:/report/report/report_format": {
+		GoName: "ReportReportFormatParams",
+		Reason: "T-9; docs/review-2026-08.md `report` — the nested <report/report_format> param list " +
+			"would otherwise also contend for the bare \"ReportFormat\" name; named for its actual " +
+			"param-list shape to stay distinct from the id+name reference above",
+	},
+	"get_reports:/report/report/report_format": {
+		GoName: "ReportReportFormatParams",
+		Reason: "T-9; docs/review-2026-08.md `report` — same collision as create_report's",
+	},
+	"create_report:/report/report_config": {
+		GoName: "ReportReportConfig",
+		Reason: "T-9; docs/review-2026-08.md `report` — the <report_config> id+name reference would " +
+			"otherwise take the bare name get_report_configs.go's own ReportConfig entity type " +
+			"already declares",
+	},
+	"get_reports:/report/report_config": {
+		GoName: "ReportReportConfig",
+		Reason: "T-9; docs/review-2026-08.md `report` — same collision as create_report's",
+	},
 }
 
 var PointerOverrides = map[string]PointerOverride{
@@ -754,5 +858,96 @@ var DefectAllowlist = map[DefectKey]DefectAllowlistEntry{
 		Reason: "T-9; docs/review-2026-08.md `alert` — the response schema references " +
 			"<e>status_details</e> but no <ele>/<elem> resolves it in scope, an upstream schema " +
 			"scoping quirk rather than an adoption risk",
+	},
+	{Command: "create_report", Class: "empty-pattern", Path: "/create_report/report/name"}: {
+		Reason: "T-9; docs/review-2026-08.md `report` — the shared report type's <name> is " +
+			"documented \"Creation time as compatibility placeholder\" with a deliberately empty " +
+			"<pattern/>, not an omission",
+	},
+	{Command: "get_reports", Class: "empty-pattern", Path: "/get_reports_response/report/name"}: {
+		Reason: "T-9; docs/review-2026-08.md `report` — same shared report type as create_report's " +
+			"<name> compatibility placeholder",
+	},
+	{Command: "create_report", Class: "no-pattern", Path: "/create_report/report/report/apps/count"}: {
+		Reason: "T-9; docs/review-2026-08.md `report` — the shared report type's per-category " +
+			"<count> child declares neither <pattern> nor <type>, one of several identically-shaped " +
+			"count elements in this type",
+	},
+	{Command: "create_report", Class: "no-pattern", Path: "/create_report/report/report/closed_cves/count"}: {
+		Reason: "T-9; docs/review-2026-08.md `report` — same shared report type <count> defect as apps/count",
+	},
+	{Command: "create_report", Class: "no-pattern", Path: "/create_report/report/report/cves/count"}: {
+		Reason: "T-9; docs/review-2026-08.md `report` — same shared report type <count> defect as apps/count",
+	},
+	{Command: "create_report", Class: "no-pattern", Path: "/create_report/report/report/errors/count"}: {
+		Reason: "T-9; docs/review-2026-08.md `report` — same shared report type <count> defect as apps/count",
+	},
+	{Command: "create_report", Class: "no-pattern", Path: "/create_report/report/report/hosts/count"}: {
+		Reason: "T-9; docs/review-2026-08.md `report` — same shared report type <count> defect as apps/count",
+	},
+	{Command: "create_report", Class: "no-pattern", Path: "/create_report/report/report/os/count"}: {
+		Reason: "T-9; docs/review-2026-08.md `report` — same shared report type <count> defect as apps/count",
+	},
+	{Command: "create_report", Class: "no-pattern", Path: "/create_report/report/report/ssl_certs/count"}: {
+		Reason: "T-9; docs/review-2026-08.md `report` — same shared report type <count> defect as apps/count",
+	},
+	{Command: "create_report", Class: "no-pattern", Path: "/create_report/report/report/vulns/count"}: {
+		Reason: "T-9; docs/review-2026-08.md `report` — same shared report type <count> defect as apps/count",
+	},
+	{Command: "get_reports", Class: "no-pattern", Path: "/get_reports_response/report/report/apps/count"}: {
+		Reason: "T-9; docs/review-2026-08.md `report` — same shared report type <count> defect as create_report",
+	},
+	{Command: "get_reports", Class: "no-pattern", Path: "/get_reports_response/report/report/closed_cves/count"}: {
+		Reason: "T-9; docs/review-2026-08.md `report` — same shared report type <count> defect as create_report",
+	},
+	{Command: "get_reports", Class: "no-pattern", Path: "/get_reports_response/report/report/cves/count"}: {
+		Reason: "T-9; docs/review-2026-08.md `report` — same shared report type <count> defect as create_report",
+	},
+	{Command: "get_reports", Class: "no-pattern", Path: "/get_reports_response/report/report/errors/count"}: {
+		Reason: "T-9; docs/review-2026-08.md `report` — same shared report type <count> defect as create_report",
+	},
+	{Command: "get_reports", Class: "no-pattern", Path: "/get_reports_response/report/report/hosts/count"}: {
+		Reason: "T-9; docs/review-2026-08.md `report` — same shared report type <count> defect as create_report",
+	},
+	{Command: "get_reports", Class: "no-pattern", Path: "/get_reports_response/report/report/os/count"}: {
+		Reason: "T-9; docs/review-2026-08.md `report` — same shared report type <count> defect as create_report",
+	},
+	{Command: "get_reports", Class: "no-pattern", Path: "/get_reports_response/report/report/ssl_certs/count"}: {
+		Reason: "T-9; docs/review-2026-08.md `report` — same shared report type <count> defect as create_report",
+	},
+	{Command: "get_reports", Class: "no-pattern", Path: "/get_reports_response/report/report/vulns/count"}: {
+		Reason: "T-9; docs/review-2026-08.md `report` — same shared report type <count> defect as create_report",
+	},
+	{Command: "create_report", Class: "duplicate-ele", Path: "/create_report/report/report/results/result/delta/notes/note/active"}: {
+		Reason: "T-9; upstream `<ele>` redefined in one scope, docs/review-2026-08.md `report` — " +
+			"same shared result type as get_notes'/get_overrides' delta-path `active` defect",
+	},
+	{Command: "create_report", Class: "duplicate-ele", Path: "/create_report/report/report/results/result/delta/overrides/override/active"}: {
+		Reason: "T-9; upstream `<ele>` redefined in one scope, docs/review-2026-08.md `report` — " +
+			"same shared result type as get_notes'/get_overrides' delta-path `active` defect",
+	},
+	{Command: "create_report", Class: "duplicate-ele", Path: "/create_report/report/report/results/result/notes/note/active"}: {
+		Reason: "T-9; upstream `<ele>` redefined in one scope, docs/review-2026-08.md `report` — " +
+			"same shared result type as get_notes'/get_overrides' `active` defect",
+	},
+	{Command: "create_report", Class: "duplicate-ele", Path: "/create_report/report/report/results/result/overrides/override/active"}: {
+		Reason: "T-9; upstream `<ele>` redefined in one scope, docs/review-2026-08.md `report` — " +
+			"same shared result type as get_notes'/get_overrides' `active` defect",
+	},
+	{Command: "get_reports", Class: "duplicate-ele", Path: "/get_reports_response/report/report/results/result/delta/notes/note/active"}: {
+		Reason: "T-9; upstream `<ele>` redefined in one scope, docs/review-2026-08.md `report` — " +
+			"same shared result type as create_report's delta-path `active` defect",
+	},
+	{Command: "get_reports", Class: "duplicate-ele", Path: "/get_reports_response/report/report/results/result/delta/overrides/override/active"}: {
+		Reason: "T-9; upstream `<ele>` redefined in one scope, docs/review-2026-08.md `report` — " +
+			"same shared result type as create_report's delta-path `active` defect",
+	},
+	{Command: "get_reports", Class: "duplicate-ele", Path: "/get_reports_response/report/report/results/result/notes/note/active"}: {
+		Reason: "T-9; upstream `<ele>` redefined in one scope, docs/review-2026-08.md `report` — " +
+			"same shared result type as create_report's `active` defect",
+	},
+	{Command: "get_reports", Class: "duplicate-ele", Path: "/get_reports_response/report/report/results/result/overrides/override/active"}: {
+		Reason: "T-9; upstream `<ele>` redefined in one scope, docs/review-2026-08.md `report` — " +
+			"same shared result type as create_report's `active` defect",
 	},
 }

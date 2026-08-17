@@ -4,51 +4,36 @@ decode: ok
 namespaces-seen:
 
 DROPPED
-  /get_reports_response/filters                                            x1  (+11 descendant paths)
-  /get_reports_response/report/@config_id                                  x3
-  /get_reports_response/report/@extension                                  x3
-  /get_reports_response/report/@format_id                                  x3
-  /get_reports_response/report/comment                                     x3
-  /get_reports_response/report/in_use                                      x3  (+1 descendant paths)
-  /get_reports_response/report/report/apps/count                           x3  (+1 descendant paths)
-  /get_reports_response/report/report/closed_cves/count                    x3  (+1 descendant paths)
-  /get_reports_response/report/report/cves                                 x3  (+2 descendant paths)
-  /get_reports_response/report/report/errors/count                         x3  (+1 descendant paths)
   /get_reports_response/report/report/filters/@id                          x3
   /get_reports_response/report/report/filters/keywords                     x3  (+7 descendant paths)
-  /get_reports_response/report/report/hosts/count                          x3  (+1 descendant paths)
-  /get_reports_response/report/report/os/count                             x3  (+1 descendant paths)
   /get_reports_response/report/report/ports/count                          x3  (+1 descendant paths)
-  /get_reports_response/report/report/result_count/#text                   x3
-  /get_reports_response/report/report/result_count/critical                x3  (+4 descendant paths)
   /get_reports_response/report/report/result_count/false_positive          x3  (+4 descendant paths)
-  /get_reports_response/report/report/result_count/high                    x3  (+4 descendant paths)
-  /get_reports_response/report/report/result_count/hole                    x3  (+5 descendant paths)
-  /get_reports_response/report/report/result_count/info                    x3  (+5 descendant paths)
-  /get_reports_response/report/report/result_count/log                     x3  (+4 descendant paths)
-  /get_reports_response/report/report/result_count/low                     x3  (+4 descendant paths)
-  /get_reports_response/report/report/result_count/medium                  x3  (+4 descendant paths)
-  /get_reports_response/report/report/result_count/warning                 x3  (+5 descendant paths)
-  /get_reports_response/report/report/sort/field/#text                     x3
-  /get_reports_response/report/report/ssl_certs/count                      x3  (+1 descendant paths)
-  /get_reports_response/report/report/task/progress                        x3  (+1 descendant paths)
+  /get_reports_response/report/report/result_count/hole/@deprecated        x3
+  /get_reports_response/report/report/result_count/info/@deprecated        x3
+  /get_reports_response/report/report/result_count/warning/@deprecated     x3
   /get_reports_response/report/report/task/target/@id                      x3
-  /get_reports_response/report/report/task/target/comment                  x3
-  /get_reports_response/report/report/task/target/name                     x3
-  /get_reports_response/report/report/task/target/trash                    x3  (+1 descendant paths)
-  /get_reports_response/report/writable                                    x3  (+1 descendant paths)
-  /get_reports_response/report_count                                       x1  (+5 descendant paths)
-  /get_reports_response/reports                                            x1  (+2 descendant paths)
-  /get_reports_response/sort                                               x1  (+4 descendant paths)
+  /get_reports_response/report_count/#text                                 x1
+  /get_reports_response/sort/field/#text                                   x1
 
 TRUNCATED
-  /get_reports_response/report/report/task/comment                         3 -> 2
+  (none)
 
 CHANGED
   (none)
 
 ADDED
-  (none)
+  /get_reports_response/report/report/filters/apply_overrides              x3
+  /get_reports_response/report/report/filters/min_qod                      x3
+  /get_reports_response/report/report/filters/notes                        x3
+  /get_reports_response/report/report/filters/overrides                    x3
+  /get_reports_response/report/report/filters/phrase                       x3
+  /get_reports_response/report/report/filters/result_hosts_only            x3
+  /get_reports_response/report/report/ports/@max                           x3
+  /get_reports_response/report/report/ports/@start                         x3
+  /get_reports_response/report/report/report_format                        x3
+  /get_reports_response/report/report/report_format/param                  x3
+  /get_reports_response/report/report/report_format/param/name             x3
+  /get_reports_response/report/report/report_format/param/value            x3
 
 DUPLICATED
   (none)

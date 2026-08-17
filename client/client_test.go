@@ -479,7 +479,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.CreateReport); ok {
-		if cmd.Report != nil && cmd.Report.ID == "report-uuid" && cmd.Task != nil && cmd.Task.ID == "task-uuid" {
+		if cmd.Report.ID == "report-uuid" && cmd.Task.ID == "task-uuid" {
 			(*response.(*commands.CreateReportResponse)).Status = "201"
 			(*response.(*commands.CreateReportResponse)).StatusText = "OK, resource created"
 			(*response.(*commands.CreateReportResponse)).ID = "created-report-id"
@@ -493,18 +493,18 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		if cmd.ReportID == "report-uuid" && cmd.FormatID == "format-uuid" {
 			(*response.(*commands.GetReportsResponse)).Status = "200"
 			(*response.(*commands.GetReportsResponse)).StatusText = "OK"
-			(*response.(*commands.GetReportsResponse)).Reports = []commands.Report{
+			(*response.(*commands.GetReportsResponse)).Report = []commands.Report{
 				{
 					ID:               "report-uuid",
 					FormatID:         "format-uuid",
 					Extension:        "xml",
 					ContentType:      "text/xml",
 					Name:             "Test Report",
-					Owner:            &commands.ReportOwner{Name: "admin"},
+					Owner:            commands.ReportOwner{Name: "admin"},
 					CreationTime:     commands.GMPTime{Time: time.Date(2024, 1, 23, 9, 43, 3, 0, time.UTC)},
 					ModificationTime: commands.GMPTime{Time: time.Date(2024, 1, 26, 14, 11, 54, 0, time.UTC)},
-					Writable:         true,
-					InUse:            false,
+					Writable:         commands.GMPBool(true),
+					InUse:            commands.GMPBool(false),
 				},
 			}
 		} else {

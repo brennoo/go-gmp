@@ -45,7 +45,7 @@ func writeTestFile(t *testing.T, path, content string) {
 
 func checkOrFail(t *testing.T, m Manifest, schemaDir, outDir string) Report {
 	t.Helper()
-	r, err := CheckOutput(m, schemaDir, outDir, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+	r, err := CheckOutput(m, schemaDir, outDir, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, NameOverrides, FieldTypeOverrides)
 	if err != nil {
 		t.Fatalf("CheckOutput failed: %v", err)
 	}
@@ -152,11 +152,11 @@ func TestCheckOutputDetectsModified(t *testing.T) {
 func TestCheckOutputDetectsObsolete(t *testing.T) {
 	dir := newOutDir(t)
 	// A leftover from a family or command that used to be generated: marked,
-	// but nothing in the manifest accounts for it. delete_report has no
+	// but nothing in the manifest accounts for it. delete_agents has no
 	// family in the manifest at all yet, so this can't collide with a real
 	// generated file the way "delete_note.go" now would.
-	stale := filepath.Join(dir, "delete_report.go")
-	writeTestFile(t, stale, GeneratedMarker+"\n\npackage commands\n\ntype DeleteReport struct{}\n")
+	stale := filepath.Join(dir, "delete_agents.go")
+	writeTestFile(t, stale, GeneratedMarker+"\n\npackage commands\n\ntype DeleteAgents struct{}\n")
 	wantOnly(t, checkOrFail(t, manifestOrFail(t), snapshotDir, dir), "obsolete", []string{stale})
 }
 
@@ -233,7 +233,7 @@ func TestCheckOutputWritesNothing(t *testing.T) {
 	}
 	dirty := dirState(t, dir)
 
-	if _, err := CheckOutput(manifestOrFail(t), snapshotDir, dir, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist); err != nil {
+	if _, err := CheckOutput(manifestOrFail(t), snapshotDir, dir, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, NameOverrides, FieldTypeOverrides); err != nil {
 		t.Fatalf("CheckOutput failed: %v", err)
 	}
 	if got := dirState(t, dir); got != dirty {

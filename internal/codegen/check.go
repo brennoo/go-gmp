@@ -79,7 +79,7 @@ func (r Report) String() string {
 // Review-only families (Family.ReviewOnly) are outside its scope entirely:
 // their output lives in testdata/golden, not outDir, so checking them here
 // would report every one of their still-hand-written files as stale.
-func CheckOutput(m Manifest, schemaDir, outDir string, ov map[string]Override, pf map[string]PointerOverride, ro map[string]RequiredOverride, fo map[string][]FieldOverride, fs map[string][]FieldSuppression, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry) (Report, error) {
+func CheckOutput(m Manifest, schemaDir, outDir string, ov map[string]Override, pf map[string]PointerOverride, ro map[string]RequiredOverride, fo map[string][]FieldOverride, fs map[string][]FieldSuppression, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry, no map[string]NameOverride, tov map[string][]FieldTypeOverride) (Report, error) {
 	var r Report
 	m = m.Adopted()
 
@@ -96,7 +96,7 @@ func CheckOutput(m Manifest, schemaDir, outDir string, ov map[string]Override, p
 			skipped[f.Name] = true
 			continue
 		}
-		files, err := Generate(cmds, ov, pf, ro, fo, fs, cw, da)
+		files, err := Generate(cmds, ov, pf, ro, fo, fs, cw, da, no, tov)
 		if err != nil {
 			return Report{}, fmt.Errorf("codegen: family %q: %w", f.Name, err)
 		}
