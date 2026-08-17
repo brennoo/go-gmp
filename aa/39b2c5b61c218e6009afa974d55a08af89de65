@@ -1,0 +1,723 @@
+client/client_port_test.go
+  s_eb90e28f90a610::t_c913e18a22d2de 97-100
+client/client_test.go
+  s_eb90e28f90a610::t_c3fdd319f0e6f8 858
+commands/create_port_range.go
+  s_eb90e28f90a610::t_13bdcceb6eec51 1-2,7,9-14,17,29-33
+commands/delete_port_range.go
+  s_eb90e28f90a610::t_098cadaf3e6051 1-2,7,13
+docs/review-2026-08.md
+  s_eb90e28f90a610::t_5320081af31208 2812,3213-3247
+internal/codegen/check_test.go
+  s_eb90e28f90a610::t_7f953ace1c6c05 155-159
+internal/codegen/generate_test.go
+  s_eb90e28f90a610::t_acdf374a81bcae 1046,1048
+internal/codegen/manifest.json
+  s_eb90e28f90a610::t_cbc5f6760ee5e5 198-204
+internal/codegen/manifest_test.go
+  s_eb90e28f90a610::t_15f1c3d26b7356 29-33,55,72,80,84,99,103,129,135,147,156,162,174
+internal/codegen/testdata/golden/create_port_range.go
+  s_eb90e28f90a610::t_66610038ac971d 1-33
+internal/codegen/testdata/golden/delete_port_range.go
+  s_eb90e28f90a610::t_868c2a525a1ef8 1-23
+internal/codegen/testdata/schema/create_port_range.json
+  s_eb90e28f90a610::t_d0888bb9f7d57d 1-127
+internal/codegen/testdata/schema/delete_port_range.json
+  s_eb90e28f90a610::t_b90ac2b8146dcd 1-66
+internal/codegen/validate.go
+  s_eb90e28f90a610::t_bf7a0f9da7b709 476-483
+internal/codegen/validate_test.go
+  s_eb90e28f90a610::t_d753ed0748a444 4210-4246
+internal/gmptest/capture_sequence_test.go
+  s_eb90e28f90a610::t_410c8c6fab9ed9 346-350
+internal/gmptest/testdata/FIDELITY-SUMMARY.txt
+  s_eb90e28f90a610::t_29586917da3014 13,49
+internal/gmptest/testdata/REQUEST-FIDELITY.txt
+  s_eb90e28f90a610::t_77fa3c47376756 11-12,47
+internal/gmptest/testdata/live/authenticate/001_meta.json
+  s_eb90e28f90a610::t_50597cc044806b 6
+internal/gmptest/testdata/live/authenticate/002_meta.json
+  s_eb90e28f90a610::t_b49a4955d43b86 6
+internal/gmptest/testdata/live/create_alert/001_meta.json
+  s_eb90e28f90a610::t_01e252169e19cc 6
+internal/gmptest/testdata/live/create_alert/001_request.xml
+  s_eb90e28f90a610::t_838828ddc50376 1
+internal/gmptest/testdata/live/create_alert/001_response.xml
+  s_eb90e28f90a610::t_f4450fb6161369 1
+internal/gmptest/testdata/live/create_config/001_meta.json
+  s_eb90e28f90a610::t_7d51ba16b118a6 6
+internal/gmptest/testdata/live/create_config/001_request.xml
+  s_eb90e28f90a610::t_ed405f30a132a4 1
+internal/gmptest/testdata/live/create_config/001_response.xml
+  s_eb90e28f90a610::t_aa413ebb47cc58 1
+internal/gmptest/testdata/live/create_credential/001_meta.json
+  s_eb90e28f90a610::t_4079688d68d964 6
+internal/gmptest/testdata/live/create_credential/001_request.xml
+  s_eb90e28f90a610::t_4647b170bb77b0 1
+internal/gmptest/testdata/live/create_credential/001_response.xml
+  s_eb90e28f90a610::t_ca88df6c0c7b84 1
+internal/gmptest/testdata/live/create_credential/002_meta.json
+  s_eb90e28f90a610::t_8c6a4bbd2c5e03 6
+internal/gmptest/testdata/live/create_credential/002_request.xml
+  s_eb90e28f90a610::t_2f1e45826008f1 1
+internal/gmptest/testdata/live/create_credential/002_response.xml
+  s_eb90e28f90a610::t_7637dcd2b8b06e 1
+internal/gmptest/testdata/live/create_filter/001_meta.json
+  s_eb90e28f90a610::t_f4a1aa7ee2fc6c 6
+internal/gmptest/testdata/live/create_filter/001_request.xml
+  s_eb90e28f90a610::t_3ba2951cf53e33 1
+internal/gmptest/testdata/live/create_filter/001_response.xml
+  s_eb90e28f90a610::t_e887217a2eed2d 1
+internal/gmptest/testdata/live/create_group/001_meta.json
+  s_eb90e28f90a610::t_637448e415af4b 6
+internal/gmptest/testdata/live/create_group/001_request.xml
+  s_eb90e28f90a610::t_ea34ec4e29c809 1
+internal/gmptest/testdata/live/create_group/001_response.xml
+  s_eb90e28f90a610::t_eb48079fed46d6 1
+internal/gmptest/testdata/live/create_note/001_meta.json
+  s_eb90e28f90a610::t_b00615ca518389 6
+internal/gmptest/testdata/live/create_note/001_response.xml
+  s_eb90e28f90a610::t_58f76a63c3d7a5 1
+internal/gmptest/testdata/live/create_override/001_meta.json
+  s_eb90e28f90a610::t_07f98ec1ec96f2 6
+internal/gmptest/testdata/live/create_override/001_response.xml
+  s_eb90e28f90a610::t_abb356e1f29f42 1
+internal/gmptest/testdata/live/create_permission/001_meta.json
+  s_eb90e28f90a610::t_19d4dea0afce76 6
+internal/gmptest/testdata/live/create_permission/001_request.xml
+  s_eb90e28f90a610::t_72143e095604e0 1
+internal/gmptest/testdata/live/create_permission/001_response.xml
+  s_eb90e28f90a610::t_412cec3e72f974 1
+internal/gmptest/testdata/live/create_port_list/001_meta.json
+  s_eb90e28f90a610::t_27bbe5dfe0973e 6
+internal/gmptest/testdata/live/create_port_list/001_request.xml
+  s_eb90e28f90a610::t_c459f87b8ce45c 1
+internal/gmptest/testdata/live/create_port_list/001_response.xml
+  s_eb90e28f90a610::t_83887c7a62f528 1
+internal/gmptest/testdata/live/create_port_range/001_fidelity.txt
+  s_eb90e28f90a610::t_ad142cfdead42b 16
+internal/gmptest/testdata/live/create_port_range/001_meta.json
+  s_eb90e28f90a610::t_660f3036344d8b 6
+internal/gmptest/testdata/live/create_port_range/001_request.xml
+  s_eb90e28f90a610::t_3c587db446ccfc 1
+internal/gmptest/testdata/live/create_port_range/001_response.xml
+  s_eb90e28f90a610::t_37a05507a96a50 1
+internal/gmptest/testdata/live/create_report/001_meta.json
+  s_eb90e28f90a610::t_73148e412a4bde 6
+internal/gmptest/testdata/live/create_report/001_request.xml
+  s_eb90e28f90a610::t_cb22ad7ef34f24 1
+internal/gmptest/testdata/live/create_report/001_response.xml
+  s_eb90e28f90a610::t_32d00f54834f22 1
+internal/gmptest/testdata/live/create_report_format/001_meta.json
+  s_eb90e28f90a610::t_3a9b1092f88c6b 6
+internal/gmptest/testdata/live/create_report_format/001_request.xml
+  s_eb90e28f90a610::t_adc5c03d07a2cb 1
+internal/gmptest/testdata/live/create_report_format/001_response.xml
+  s_eb90e28f90a610::t_fa2e9c5a32a09b 1
+internal/gmptest/testdata/live/create_role/001_meta.json
+  s_eb90e28f90a610::t_14f8c96eecfd01 6
+internal/gmptest/testdata/live/create_role/001_request.xml
+  s_eb90e28f90a610::t_d7043cda7b9a9b 1
+internal/gmptest/testdata/live/create_role/001_response.xml
+  s_eb90e28f90a610::t_f56a018ec99425 1
+internal/gmptest/testdata/live/create_scanner/001_meta.json
+  s_eb90e28f90a610::t_9e49e6fcb7b47f 6
+internal/gmptest/testdata/live/create_scanner/001_request.xml
+  s_eb90e28f90a610::t_5ad65ef8ac0236 1
+internal/gmptest/testdata/live/create_scanner/001_response.xml
+  s_eb90e28f90a610::t_8cbab384bd5ee0 1
+internal/gmptest/testdata/live/create_schedule/001_meta.json
+  s_eb90e28f90a610::t_7c6073e88b7af7 6
+internal/gmptest/testdata/live/create_schedule/001_request.xml
+  s_eb90e28f90a610::t_a2b45530554454 1
+internal/gmptest/testdata/live/create_schedule/001_response.xml
+  s_eb90e28f90a610::t_0f63015404245f 1
+internal/gmptest/testdata/live/create_tag/001_meta.json
+  s_eb90e28f90a610::t_45164250ffaa07 6
+internal/gmptest/testdata/live/create_tag/001_request.xml
+  s_eb90e28f90a610::t_648476995e5e88 1
+internal/gmptest/testdata/live/create_tag/001_response.xml
+  s_eb90e28f90a610::t_237766a7666488 1
+internal/gmptest/testdata/live/create_target/001_meta.json
+  s_eb90e28f90a610::t_92cb29072aea01 6
+internal/gmptest/testdata/live/create_target/001_request.xml
+  s_eb90e28f90a610::t_16d390ce189002 1
+internal/gmptest/testdata/live/create_target/001_response.xml
+  s_eb90e28f90a610::t_6e5c8d2c2d6d5a 1
+internal/gmptest/testdata/live/create_target/002_meta.json
+  s_eb90e28f90a610::t_849010be99dd49 6
+internal/gmptest/testdata/live/create_task/001_meta.json
+  s_eb90e28f90a610::t_ca5ded9d43b245 6
+internal/gmptest/testdata/live/create_task/001_request.xml
+  s_eb90e28f90a610::t_e8a4b0dca39297 1
+internal/gmptest/testdata/live/create_task/002_meta.json
+  s_eb90e28f90a610::t_027b67bc0ef4b7 6
+internal/gmptest/testdata/live/create_task/002_request.xml
+  s_eb90e28f90a610::t_b0dec3d5aca519 1
+internal/gmptest/testdata/live/create_task/002_response.xml
+  s_eb90e28f90a610::t_1dce65d22fc2dd 1
+internal/gmptest/testdata/live/create_ticket/001_meta.json
+  s_eb90e28f90a610::t_b2ea109a246ba5 6
+internal/gmptest/testdata/live/create_ticket/001_request.xml
+  s_eb90e28f90a610::t_13a97ea1429ebc 1
+internal/gmptest/testdata/live/create_ticket/001_response.xml
+  s_eb90e28f90a610::t_aa0d44e7910f77 1
+internal/gmptest/testdata/live/create_tls_certificate/001_meta.json
+  s_eb90e28f90a610::t_63cb9bbcc58af6 6
+internal/gmptest/testdata/live/create_tls_certificate/001_request.xml
+  s_eb90e28f90a610::t_8bf81fb3d79139 1
+internal/gmptest/testdata/live/create_tls_certificate/001_response.xml
+  s_eb90e28f90a610::t_be418ce1db6a97 1
+internal/gmptest/testdata/live/create_user/001_meta.json
+  s_eb90e28f90a610::t_cf7997434b2731 6
+internal/gmptest/testdata/live/create_user/001_request.xml
+  s_eb90e28f90a610::t_a3ef3c1a158c30 1
+internal/gmptest/testdata/live/create_user/001_response.xml
+  s_eb90e28f90a610::t_d483b45b0b0e8f 1
+internal/gmptest/testdata/live/delete_agents/001_meta.json
+  s_eb90e28f90a610::t_bba836c7be886b 6
+internal/gmptest/testdata/live/delete_alert/001_meta.json
+  s_eb90e28f90a610::t_f7f953cdfa98aa 6
+internal/gmptest/testdata/live/delete_alert/001_request.xml
+  s_eb90e28f90a610::t_878d5bf81cd1f3 1
+internal/gmptest/testdata/live/delete_asset/001_meta.json
+  s_eb90e28f90a610::t_6ac88d19f4a7ef 6
+internal/gmptest/testdata/live/delete_asset/001_request.xml
+  s_eb90e28f90a610::t_18ba394ea8378c 1
+internal/gmptest/testdata/live/delete_config/001_meta.json
+  s_eb90e28f90a610::t_cbf75e0b41fb61 6
+internal/gmptest/testdata/live/delete_config/001_request.xml
+  s_eb90e28f90a610::t_419f9cd9e73ca2 1
+internal/gmptest/testdata/live/delete_credential/001_meta.json
+  s_eb90e28f90a610::t_f0c8877bc116d1 6
+internal/gmptest/testdata/live/delete_credential/001_request.xml
+  s_eb90e28f90a610::t_9b5cc47468c65c 1
+internal/gmptest/testdata/live/delete_credential/002_meta.json
+  s_eb90e28f90a610::t_c8dac35e30dfe0 6
+internal/gmptest/testdata/live/delete_credential/002_request.xml
+  s_eb90e28f90a610::t_d75232b84a5791 1
+internal/gmptest/testdata/live/delete_filter/001_meta.json
+  s_eb90e28f90a610::t_92d18e27068067 6
+internal/gmptest/testdata/live/delete_filter/001_request.xml
+  s_eb90e28f90a610::t_0b9499a54b23e3 1
+internal/gmptest/testdata/live/delete_filter/002_meta.json
+  s_eb90e28f90a610::t_6ffeb9fa344951 6
+internal/gmptest/testdata/live/delete_filter/002_request.xml
+  s_eb90e28f90a610::t_f5b46089ad8ed1 1
+internal/gmptest/testdata/live/delete_group/001_meta.json
+  s_eb90e28f90a610::t_1954c75b1f826f 6
+internal/gmptest/testdata/live/delete_group/001_request.xml
+  s_eb90e28f90a610::t_81cd122a9011a3 1
+internal/gmptest/testdata/live/delete_note/001_meta.json
+  s_eb90e28f90a610::t_9b2add033ac265 6
+internal/gmptest/testdata/live/delete_note/001_request.xml
+  s_eb90e28f90a610::t_e1213b420c5cff 1
+internal/gmptest/testdata/live/delete_override/001_meta.json
+  s_eb90e28f90a610::t_d3bf03c719a5b0 6
+internal/gmptest/testdata/live/delete_override/001_request.xml
+  s_eb90e28f90a610::t_d4808ef2a4f7e7 1
+internal/gmptest/testdata/live/delete_permission/001_meta.json
+  s_eb90e28f90a610::t_cfb451141ad01f 6
+internal/gmptest/testdata/live/delete_permission/001_request.xml
+  s_eb90e28f90a610::t_d3b5f3a08af9ee 1
+internal/gmptest/testdata/live/delete_port_list/001_meta.json
+  s_eb90e28f90a610::t_7eb54277eb91b8 6
+internal/gmptest/testdata/live/delete_port_list/001_request.xml
+  s_eb90e28f90a610::t_c67692b3db1f07 1
+internal/gmptest/testdata/live/delete_port_range/001_meta.json
+  s_eb90e28f90a610::t_fc3466fc29280a 6
+internal/gmptest/testdata/live/delete_port_range/001_request.xml
+  s_eb90e28f90a610::t_965013d7cfaaf2 1
+internal/gmptest/testdata/live/delete_report/001_meta.json
+  s_eb90e28f90a610::t_bacd64cbe2651d 6
+internal/gmptest/testdata/live/delete_report/001_request.xml
+  s_eb90e28f90a610::t_74b708cae974a6 1
+internal/gmptest/testdata/live/delete_report/001_response.xml
+  s_eb90e28f90a610::t_66d2b2238597b0 1
+internal/gmptest/testdata/live/delete_report_format/001_meta.json
+  s_eb90e28f90a610::t_bfc9a87aec9abb 6
+internal/gmptest/testdata/live/delete_report_format/001_request.xml
+  s_eb90e28f90a610::t_633ee75a28fb11 1
+internal/gmptest/testdata/live/delete_role/001_meta.json
+  s_eb90e28f90a610::t_b6f0bb07accfdf 6
+internal/gmptest/testdata/live/delete_role/001_request.xml
+  s_eb90e28f90a610::t_f599862a7ad58c 1
+internal/gmptest/testdata/live/delete_scanner/001_meta.json
+  s_eb90e28f90a610::t_f67db9be441f5c 6
+internal/gmptest/testdata/live/delete_scanner/001_request.xml
+  s_eb90e28f90a610::t_b0627d3059f103 1
+internal/gmptest/testdata/live/delete_schedule/001_meta.json
+  s_eb90e28f90a610::t_037f69bb25e53d 6
+internal/gmptest/testdata/live/delete_schedule/001_request.xml
+  s_eb90e28f90a610::t_dc69a6017dd2f9 1
+internal/gmptest/testdata/live/delete_tag/001_meta.json
+  s_eb90e28f90a610::t_95850d4433b729 6
+internal/gmptest/testdata/live/delete_tag/001_request.xml
+  s_eb90e28f90a610::t_b579f2c03f1f69 1
+internal/gmptest/testdata/live/delete_target/001_meta.json
+  s_eb90e28f90a610::t_71b51e45468ca9 6
+internal/gmptest/testdata/live/delete_target/001_request.xml
+  s_eb90e28f90a610::t_fbaee8f48f3e74 1
+internal/gmptest/testdata/live/delete_ticket/001_meta.json
+  s_eb90e28f90a610::t_fa26a352aee1ab 6
+internal/gmptest/testdata/live/delete_ticket/001_request.xml
+  s_eb90e28f90a610::t_e5adfd740b61c6 1
+internal/gmptest/testdata/live/delete_user/001_meta.json
+  s_eb90e28f90a610::t_60733abbf509f7 6
+internal/gmptest/testdata/live/delete_user/001_request.xml
+  s_eb90e28f90a610::t_600a2ce6ba6730 1
+internal/gmptest/testdata/live/describe_auth/001_meta.json
+  s_eb90e28f90a610::t_a2d52868d559db 6
+internal/gmptest/testdata/live/empty_trashcan/001_meta.json
+  s_eb90e28f90a610::t_2460946058912f 6
+internal/gmptest/testdata/live/get_agents/001_meta.json
+  s_eb90e28f90a610::t_a6b21ac8e5fc8c 6
+internal/gmptest/testdata/live/get_aggregates/001_meta.json
+  s_eb90e28f90a610::t_9868b0dd04ea5d 6
+internal/gmptest/testdata/live/get_aggregates/002_meta.json
+  s_eb90e28f90a610::t_b02b17acea2888 6
+internal/gmptest/testdata/live/get_aggregates/003_meta.json
+  s_eb90e28f90a610::t_9a3a13040cadac 6
+internal/gmptest/testdata/live/get_alerts/001_meta.json
+  s_eb90e28f90a610::t_3b04204087fe7f 6
+internal/gmptest/testdata/live/get_alerts/002_meta.json
+  s_eb90e28f90a610::t_ab369c514ec8cc 6
+internal/gmptest/testdata/live/get_alerts/003_meta.json
+  s_eb90e28f90a610::t_2e52eca0997290 6
+internal/gmptest/testdata/live/get_alerts/003_request.xml
+  s_eb90e28f90a610::t_1d5190141e750d 1
+internal/gmptest/testdata/live/get_alerts/003_response.xml
+  s_eb90e28f90a610::t_ca5bc515f1c622 1
+internal/gmptest/testdata/live/get_assets/001_meta.json
+  s_eb90e28f90a610::t_f7c4fe61d31d7f 6
+internal/gmptest/testdata/live/get_assets/002_meta.json
+  s_eb90e28f90a610::t_072d84254a6c29 6
+internal/gmptest/testdata/live/get_configs/001_meta.json
+  s_eb90e28f90a610::t_304458dc418f5d 6
+internal/gmptest/testdata/live/get_configs/002_meta.json
+  s_eb90e28f90a610::t_3e7b18f6da7789 6
+internal/gmptest/testdata/live/get_configs/003_meta.json
+  s_eb90e28f90a610::t_cc6e7c4d24b8f5 6
+internal/gmptest/testdata/live/get_configs/004_meta.json
+  s_eb90e28f90a610::t_52ec9db8cdfffc 6
+internal/gmptest/testdata/live/get_configs/004_request.xml
+  s_eb90e28f90a610::t_1592801b79a0c6 1
+internal/gmptest/testdata/live/get_configs/004_response.xml
+  s_eb90e28f90a610::t_0da042cc7069ea 1
+internal/gmptest/testdata/live/get_credentials/001_meta.json
+  s_eb90e28f90a610::t_164ee642b85dc6 6
+internal/gmptest/testdata/live/get_credentials/002_meta.json
+  s_eb90e28f90a610::t_d9accb0e15e779 6
+internal/gmptest/testdata/live/get_credentials/003_meta.json
+  s_eb90e28f90a610::t_ce6dd7a97b1084 6
+internal/gmptest/testdata/live/get_credentials/003_request.xml
+  s_eb90e28f90a610::t_86b5f461dafc20 1
+internal/gmptest/testdata/live/get_credentials/003_response.xml
+  s_eb90e28f90a610::t_94ca57c3da8566 1
+internal/gmptest/testdata/live/get_credentials/004_meta.json
+  s_eb90e28f90a610::t_7eae431af64f54 6
+internal/gmptest/testdata/live/get_credentials/004_request.xml
+  s_eb90e28f90a610::t_a74afa0a64b6a4 1
+internal/gmptest/testdata/live/get_credentials/004_response.xml
+  s_eb90e28f90a610::t_9fdbd9f28e67a3 1
+internal/gmptest/testdata/live/get_features/001_meta.json
+  s_eb90e28f90a610::t_e9061c3a9b9552 6
+internal/gmptest/testdata/live/get_feeds/001_meta.json
+  s_eb90e28f90a610::t_075ae7c83eac8e 6
+internal/gmptest/testdata/live/get_filters/001_meta.json
+  s_eb90e28f90a610::t_bf50aaab4602b1 6
+internal/gmptest/testdata/live/get_filters/002_meta.json
+  s_eb90e28f90a610::t_50c393cbef2d96 6
+internal/gmptest/testdata/live/get_filters/003_meta.json
+  s_eb90e28f90a610::t_5bba4f6f89a271 6
+internal/gmptest/testdata/live/get_filters/003_request.xml
+  s_eb90e28f90a610::t_576e6c9b9c2f2f 1
+internal/gmptest/testdata/live/get_filters/003_response.xml
+  s_eb90e28f90a610::t_fd0090c9868874 1
+internal/gmptest/testdata/live/get_groups/001_meta.json
+  s_eb90e28f90a610::t_df08a66a4e7775 6
+internal/gmptest/testdata/live/get_groups/002_meta.json
+  s_eb90e28f90a610::t_c86b8837dd3f0b 6
+internal/gmptest/testdata/live/get_groups/003_meta.json
+  s_eb90e28f90a610::t_370f15583c7186 6
+internal/gmptest/testdata/live/get_groups/003_request.xml
+  s_eb90e28f90a610::t_4266256aa05fba 1
+internal/gmptest/testdata/live/get_groups/003_response.xml
+  s_eb90e28f90a610::t_f570eb318edb88 1
+internal/gmptest/testdata/live/get_info/001_meta.json
+  s_eb90e28f90a610::t_7ef183b57032fe 6
+internal/gmptest/testdata/live/get_info/002_meta.json
+  s_eb90e28f90a610::t_e6cf479c6ef5ec 6
+internal/gmptest/testdata/live/get_license/001_meta.json
+  s_eb90e28f90a610::t_84d1986359acfe 6
+internal/gmptest/testdata/live/get_notes/001_meta.json
+  s_eb90e28f90a610::t_619998e1e7d196 6
+internal/gmptest/testdata/live/get_notes/002_meta.json
+  s_eb90e28f90a610::t_d2f33feb2926d2 6
+internal/gmptest/testdata/live/get_notes/003_meta.json
+  s_eb90e28f90a610::t_cdd67cf027b832 6
+internal/gmptest/testdata/live/get_notes/003_request.xml
+  s_eb90e28f90a610::t_7f87108eb6a27f 1
+internal/gmptest/testdata/live/get_notes/003_response.xml
+  s_eb90e28f90a610::t_66dd9320889df6 1
+internal/gmptest/testdata/live/get_nvt_families/001_meta.json
+  s_eb90e28f90a610::t_ea65bad8717e0e 6
+internal/gmptest/testdata/live/get_overrides/001_meta.json
+  s_eb90e28f90a610::t_7115a06d0cbce4 6
+internal/gmptest/testdata/live/get_overrides/002_meta.json
+  s_eb90e28f90a610::t_9179346098ce98 6
+internal/gmptest/testdata/live/get_overrides/003_meta.json
+  s_eb90e28f90a610::t_e1a8690c268600 6
+internal/gmptest/testdata/live/get_overrides/003_request.xml
+  s_eb90e28f90a610::t_823c8bae220d14 1
+internal/gmptest/testdata/live/get_overrides/003_response.xml
+  s_eb90e28f90a610::t_a786783b80ce8e 1
+internal/gmptest/testdata/live/get_permissions/001_meta.json
+  s_eb90e28f90a610::t_56e0f359016491 6
+internal/gmptest/testdata/live/get_permissions/002_meta.json
+  s_eb90e28f90a610::t_cd622d30114438 6
+internal/gmptest/testdata/live/get_permissions/003_meta.json
+  s_eb90e28f90a610::t_fee2fd5df79fed 6
+internal/gmptest/testdata/live/get_permissions/003_request.xml
+  s_eb90e28f90a610::t_5142b32952a088 1
+internal/gmptest/testdata/live/get_permissions/003_response.xml
+  s_eb90e28f90a610::t_9ff5cee50d9358 1
+internal/gmptest/testdata/live/get_port_lists/001_meta.json
+  s_eb90e28f90a610::t_7c8a233ce5c2ba 6
+internal/gmptest/testdata/live/get_port_lists/002_meta.json
+  s_eb90e28f90a610::t_857543111b2bad 6
+internal/gmptest/testdata/live/get_port_lists/003_meta.json
+  s_eb90e28f90a610::t_fb3def38c42028 6
+internal/gmptest/testdata/live/get_port_lists/003_request.xml
+  s_eb90e28f90a610::t_c9f0fc70845c23 1
+internal/gmptest/testdata/live/get_port_lists/003_response.xml
+  s_eb90e28f90a610::t_c414113c5db56d 1
+internal/gmptest/testdata/live/get_preferences/001_meta.json
+  s_eb90e28f90a610::t_abe532fd0bcbad 6
+internal/gmptest/testdata/live/get_report_configs/001_meta.json
+  s_eb90e28f90a610::t_449fd83cd6e5c1 6
+internal/gmptest/testdata/live/get_report_configs/002_meta.json
+  s_eb90e28f90a610::t_d5fe6870ab3250 6
+internal/gmptest/testdata/live/get_report_formats/001_meta.json
+  s_eb90e28f90a610::t_c04cda95dc3ed0 6
+internal/gmptest/testdata/live/get_report_formats/001_response.xml
+  s_eb90e28f90a610::t_a6f038d0c4cfa5 1
+internal/gmptest/testdata/live/get_report_formats/002_meta.json
+  s_eb90e28f90a610::t_d9af34c71cf9f4 6
+internal/gmptest/testdata/live/get_report_formats/002_response.xml
+  s_eb90e28f90a610::t_c3ef53070e66c6 1
+internal/gmptest/testdata/live/get_report_formats/003_meta.json
+  s_eb90e28f90a610::t_46de7ddfc1cfd6 6
+internal/gmptest/testdata/live/get_report_formats/003_response.xml
+  s_eb90e28f90a610::t_2e508de0471e2c 1
+internal/gmptest/testdata/live/get_report_formats/004_meta.json
+  s_eb90e28f90a610::t_cce80cc962611a 6
+internal/gmptest/testdata/live/get_report_formats/004_request.xml
+  s_eb90e28f90a610::t_4f92b60d2ef88a 1
+internal/gmptest/testdata/live/get_report_formats/004_response.xml
+  s_eb90e28f90a610::t_daf01063db1ffa 1
+internal/gmptest/testdata/live/get_report_formats/005_meta.json
+  s_eb90e28f90a610::t_7becf8166695b2 6
+internal/gmptest/testdata/live/get_report_formats/005_response.xml
+  s_eb90e28f90a610::t_3ee90bfa849f70 1
+internal/gmptest/testdata/live/get_report_formats/006_meta.json
+  s_eb90e28f90a610::t_68ff4d04284180 6
+internal/gmptest/testdata/live/get_report_formats/006_response.xml
+  s_eb90e28f90a610::t_e841eee24acce5 1
+internal/gmptest/testdata/live/get_report_formats/007_meta.json
+  s_eb90e28f90a610::t_8effd3b91b6d64 6
+internal/gmptest/testdata/live/get_report_formats/007_response.xml
+  s_eb90e28f90a610::t_6e74fdf36225b3 1
+internal/gmptest/testdata/live/get_reports/001_meta.json
+  s_eb90e28f90a610::t_45ec054b8309d5 6
+internal/gmptest/testdata/live/get_reports/002_meta.json
+  s_eb90e28f90a610::t_3e9ad2ccc36529 6
+internal/gmptest/testdata/live/get_reports/002_request.xml
+  s_eb90e28f90a610::t_1e7c6ad9aaf631 1
+internal/gmptest/testdata/live/get_reports/002_response.xml
+  s_eb90e28f90a610::t_ac91dd44ff204c 1
+internal/gmptest/testdata/live/get_resource_names/001_meta.json
+  s_eb90e28f90a610::t_8a6da94f182eb9 6
+internal/gmptest/testdata/live/get_resource_names/002_meta.json
+  s_eb90e28f90a610::t_05b50b0b7f79cb 6
+internal/gmptest/testdata/live/get_results/001_meta.json
+  s_eb90e28f90a610::t_7266851be89326 6
+internal/gmptest/testdata/live/get_results/002_meta.json
+  s_eb90e28f90a610::t_6ed866d5788432 6
+internal/gmptest/testdata/live/get_results/003_meta.json
+  s_eb90e28f90a610::t_597134960534de 6
+internal/gmptest/testdata/live/get_results/003_request.xml
+  s_eb90e28f90a610::t_e4a9a52eb0119d 1
+internal/gmptest/testdata/live/get_results/003_response.xml
+  s_eb90e28f90a610::t_3ff9fd9f67f324 1,31,33,35
+internal/gmptest/testdata/live/get_results/004_meta.json
+  s_eb90e28f90a610::t_94f930a8ca51bc 6
+internal/gmptest/testdata/live/get_results/004_request.xml
+  s_eb90e28f90a610::t_e40e761c09880e 1
+internal/gmptest/testdata/live/get_results/004_response.xml
+  s_eb90e28f90a610::t_b2a357a9f6ad18 35
+internal/gmptest/testdata/live/get_roles/001_meta.json
+  s_eb90e28f90a610::t_8d76b5c25a07d3 6
+internal/gmptest/testdata/live/get_roles/002_meta.json
+  s_eb90e28f90a610::t_077b53ad02c848 6
+internal/gmptest/testdata/live/get_roles/003_meta.json
+  s_eb90e28f90a610::t_d0bca840aba8a9 6
+internal/gmptest/testdata/live/get_roles/003_request.xml
+  s_eb90e28f90a610::t_77c4f703deaa6b 1
+internal/gmptest/testdata/live/get_roles/003_response.xml
+  s_eb90e28f90a610::t_945a0f5a7509f2 1
+internal/gmptest/testdata/live/get_scanners/001_meta.json
+  s_eb90e28f90a610::t_a0bbf44793a2fe 6
+internal/gmptest/testdata/live/get_scanners/002_meta.json
+  s_eb90e28f90a610::t_fe0f5763c883dc 6
+internal/gmptest/testdata/live/get_scanners/003_meta.json
+  s_eb90e28f90a610::t_a65f844d2e9049 6
+internal/gmptest/testdata/live/get_scanners/003_request.xml
+  s_eb90e28f90a610::t_c4d7c88959afec 1
+internal/gmptest/testdata/live/get_scanners/003_response.xml
+  s_eb90e28f90a610::t_9a52593e215eda 1
+internal/gmptest/testdata/live/get_schedules/001_meta.json
+  s_eb90e28f90a610::t_a60c891c11277f 6
+internal/gmptest/testdata/live/get_schedules/002_meta.json
+  s_eb90e28f90a610::t_7e505fc57276a4 6
+internal/gmptest/testdata/live/get_schedules/003_meta.json
+  s_eb90e28f90a610::t_4e96e4683d90ae 6
+internal/gmptest/testdata/live/get_schedules/003_request.xml
+  s_eb90e28f90a610::t_26fad6a8252383 1
+internal/gmptest/testdata/live/get_schedules/003_response.xml
+  s_eb90e28f90a610::t_1ae9dd50f6b0bd 1,7-8
+internal/gmptest/testdata/live/get_settings/001_meta.json
+  s_eb90e28f90a610::t_8fb310114f43e6 6
+internal/gmptest/testdata/live/get_settings/002_meta.json
+  s_eb90e28f90a610::t_4cbc3c13a200fa 6
+internal/gmptest/testdata/live/get_settings/003_meta.json
+  s_eb90e28f90a610::t_ee1abafb4410fc 6
+internal/gmptest/testdata/live/get_system_reports/001_meta.json
+  s_eb90e28f90a610::t_00fc3c4097e3c9 6
+internal/gmptest/testdata/live/get_system_reports/001_response.xml
+  s_eb90e28f90a610::t_9bb25def469478 5-6,12-15,17-22,29,31-32,34-40,46,48
+internal/gmptest/testdata/live/get_tags/001_meta.json
+  s_eb90e28f90a610::t_cb0365b8e7cb32 6
+internal/gmptest/testdata/live/get_tags/002_meta.json
+  s_eb90e28f90a610::t_d242f4c1490365 6
+internal/gmptest/testdata/live/get_tags/003_meta.json
+  s_eb90e28f90a610::t_be72784f16a062 6
+internal/gmptest/testdata/live/get_tags/003_request.xml
+  s_eb90e28f90a610::t_71144fe1c46591 1
+internal/gmptest/testdata/live/get_tags/003_response.xml
+  s_eb90e28f90a610::t_fd158a2747ac00 1
+internal/gmptest/testdata/live/get_targets/001_meta.json
+  s_eb90e28f90a610::t_5626023712743c 6
+internal/gmptest/testdata/live/get_targets/002_meta.json
+  s_eb90e28f90a610::t_153dd044624246 6
+internal/gmptest/testdata/live/get_targets/003_meta.json
+  s_eb90e28f90a610::t_fc4477b9ffde7b 6
+internal/gmptest/testdata/live/get_targets/003_request.xml
+  s_eb90e28f90a610::t_1601a108ea945e 1
+internal/gmptest/testdata/live/get_targets/003_response.xml
+  s_eb90e28f90a610::t_f9d6c2d24d746b 1
+internal/gmptest/testdata/live/get_tasks/001_meta.json
+  s_eb90e28f90a610::t_e7ed941dbe3d8f 6
+internal/gmptest/testdata/live/get_tasks/002_meta.json
+  s_eb90e28f90a610::t_a5764cd5f6e56e 6
+internal/gmptest/testdata/live/get_tasks/003_meta.json
+  s_eb90e28f90a610::t_f3f070eb38713e 6
+internal/gmptest/testdata/live/get_tasks/003_request.xml
+  s_eb90e28f90a610::t_fef9ae93245e98 1
+internal/gmptest/testdata/live/get_tasks/003_response.xml
+  s_eb90e28f90a610::t_4098e1224f8462 1
+internal/gmptest/testdata/live/get_tasks/004_meta.json
+  s_eb90e28f90a610::t_0f7369cd8a1ae1 6
+internal/gmptest/testdata/live/get_tasks/005_meta.json
+  s_eb90e28f90a610::t_10676f302c7b49 6
+internal/gmptest/testdata/live/get_tasks/006_meta.json
+  s_eb90e28f90a610::t_be852268c914af 6
+internal/gmptest/testdata/live/get_tickets/001_meta.json
+  s_eb90e28f90a610::t_9361bfa65c21b4 6
+internal/gmptest/testdata/live/get_tickets/002_meta.json
+  s_eb90e28f90a610::t_5e0502b49eb790 6
+internal/gmptest/testdata/live/get_tickets/003_meta.json
+  s_eb90e28f90a610::t_700793d81c51a5 6
+internal/gmptest/testdata/live/get_tickets/003_request.xml
+  s_eb90e28f90a610::t_2370a29d9f5ba0 1
+internal/gmptest/testdata/live/get_tickets/003_response.xml
+  s_eb90e28f90a610::t_27a3bf5a81a98a 1
+internal/gmptest/testdata/live/get_tls_certificates/001_meta.json
+  s_eb90e28f90a610::t_77cbf7d1ec3b07 6
+internal/gmptest/testdata/live/get_tls_certificates/002_meta.json
+  s_eb90e28f90a610::t_52432599c0917e 6
+internal/gmptest/testdata/live/get_tls_certificates/003_meta.json
+  s_eb90e28f90a610::t_8f3e1d0c6f6c75 6
+internal/gmptest/testdata/live/get_tls_certificates/003_request.xml
+  s_eb90e28f90a610::t_18fc5e3d2e07b9 1
+internal/gmptest/testdata/live/get_tls_certificates/003_response.xml
+  s_eb90e28f90a610::t_1ea5c29b3dcd14 1
+internal/gmptest/testdata/live/get_tls_certificates/004_meta.json
+  s_eb90e28f90a610::t_e8943619961711 6
+internal/gmptest/testdata/live/get_tls_certificates/004_request.xml
+  s_eb90e28f90a610::t_9e10dfc52865bb 1
+internal/gmptest/testdata/live/get_tls_certificates/004_response.xml
+  s_eb90e28f90a610::t_f501cce0b14138 1
+internal/gmptest/testdata/live/get_users/001_meta.json
+  s_eb90e28f90a610::t_60e89e036f868b 6
+internal/gmptest/testdata/live/get_users/001_response.xml
+  s_eb90e28f90a610::t_673941b2d5c895 1
+internal/gmptest/testdata/live/get_users/002_meta.json
+  s_eb90e28f90a610::t_3be8dd218cf22d 6
+internal/gmptest/testdata/live/get_users/002_response.xml
+  s_eb90e28f90a610::t_496937412c1bea 1
+internal/gmptest/testdata/live/get_users/003_meta.json
+  s_eb90e28f90a610::t_054cdad291df8e 6
+internal/gmptest/testdata/live/get_users/003_request.xml
+  s_eb90e28f90a610::t_a68fe2f946b68a 1
+internal/gmptest/testdata/live/get_users/003_response.xml
+  s_eb90e28f90a610::t_a9409b8e574362 1
+internal/gmptest/testdata/live/get_version/001_meta.json
+  s_eb90e28f90a610::t_4a91eab25f1bb7 6
+internal/gmptest/testdata/live/get_version/002_meta.json
+  s_eb90e28f90a610::t_c4120a468b4ca2 6
+internal/gmptest/testdata/live/get_vulns/001_meta.json
+  s_eb90e28f90a610::t_30d7d99652b325 6
+internal/gmptest/testdata/live/get_vulns/002_meta.json
+  s_eb90e28f90a610::t_2aa0691547d128 6
+internal/gmptest/testdata/live/help/001_meta.json
+  s_eb90e28f90a610::t_d1b30361c376eb 6
+internal/gmptest/testdata/live/help/002_meta.json
+  s_eb90e28f90a610::t_89a783de125ee0 6
+internal/gmptest/testdata/live/modify_agents/001_meta.json
+  s_eb90e28f90a610::t_4cd93131f70ff3 6
+internal/gmptest/testdata/live/modify_alert/001_meta.json
+  s_eb90e28f90a610::t_abefdd81dd3c11 6
+internal/gmptest/testdata/live/modify_alert/001_request.xml
+  s_eb90e28f90a610::t_881363e13cda8d 1
+internal/gmptest/testdata/live/modify_config/001_meta.json
+  s_eb90e28f90a610::t_ca84a57a2bb885 6
+internal/gmptest/testdata/live/modify_config/001_request.xml
+  s_eb90e28f90a610::t_cee3284eab117f 1
+internal/gmptest/testdata/live/modify_credential/001_meta.json
+  s_eb90e28f90a610::t_1cb716fa5eca9e 6
+internal/gmptest/testdata/live/modify_credential/001_request.xml
+  s_eb90e28f90a610::t_345d64de91e28c 1
+internal/gmptest/testdata/live/modify_filter/001_meta.json
+  s_eb90e28f90a610::t_0677839391c60f 6
+internal/gmptest/testdata/live/modify_filter/001_request.xml
+  s_eb90e28f90a610::t_65f8abb9d83348 1
+internal/gmptest/testdata/live/modify_group/001_meta.json
+  s_eb90e28f90a610::t_dfcd4b90ea0e3c 6
+internal/gmptest/testdata/live/modify_group/001_request.xml
+  s_eb90e28f90a610::t_50f4ded892c127 1
+internal/gmptest/testdata/live/modify_license/001_meta.json
+  s_eb90e28f90a610::t_ff241be242ab46 6
+internal/gmptest/testdata/live/modify_note/001_meta.json
+  s_eb90e28f90a610::t_d8eb528f4fd4d9 6
+internal/gmptest/testdata/live/modify_note/001_request.xml
+  s_eb90e28f90a610::t_f35cd646f36386 1
+internal/gmptest/testdata/live/modify_override/001_meta.json
+  s_eb90e28f90a610::t_aa9feebd6c5d77 6
+internal/gmptest/testdata/live/modify_override/001_request.xml
+  s_eb90e28f90a610::t_6c82caf7056b63 1
+internal/gmptest/testdata/live/modify_permission/001_meta.json
+  s_eb90e28f90a610::t_72fd61678c5acb 6
+internal/gmptest/testdata/live/modify_permission/001_request.xml
+  s_eb90e28f90a610::t_bcc04615413035 1
+internal/gmptest/testdata/live/modify_port_list/001_meta.json
+  s_eb90e28f90a610::t_6adca51dbb2f95 6
+internal/gmptest/testdata/live/modify_port_list/001_request.xml
+  s_eb90e28f90a610::t_6a93add28281c5 1
+internal/gmptest/testdata/live/modify_report_format/001_meta.json
+  s_eb90e28f90a610::t_51871abe58f717 6
+internal/gmptest/testdata/live/modify_report_format/001_request.xml
+  s_eb90e28f90a610::t_7815d0971e78a7 1
+internal/gmptest/testdata/live/modify_role/001_meta.json
+  s_eb90e28f90a610::t_b83f7a1574f673 6
+internal/gmptest/testdata/live/modify_role/001_request.xml
+  s_eb90e28f90a610::t_667ef75f11222f 1
+internal/gmptest/testdata/live/modify_scanner/001_meta.json
+  s_eb90e28f90a610::t_b8400381b2da15 6
+internal/gmptest/testdata/live/modify_scanner/001_request.xml
+  s_eb90e28f90a610::t_facb3f849f460b 1
+internal/gmptest/testdata/live/modify_schedule/001_meta.json
+  s_eb90e28f90a610::t_2fbe4f74d74634 6
+internal/gmptest/testdata/live/modify_schedule/001_request.xml
+  s_eb90e28f90a610::t_0a0755cecb6861 1
+internal/gmptest/testdata/live/modify_setting/001_meta.json
+  s_eb90e28f90a610::t_686a684f7b9d32 6
+internal/gmptest/testdata/live/modify_tag/001_meta.json
+  s_eb90e28f90a610::t_d517c32d35ba62 6
+internal/gmptest/testdata/live/modify_tag/001_request.xml
+  s_eb90e28f90a610::t_996def00b14d0c 1
+internal/gmptest/testdata/live/modify_target/001_meta.json
+  s_eb90e28f90a610::t_4912622db6479a 6
+internal/gmptest/testdata/live/modify_target/001_request.xml
+  s_eb90e28f90a610::t_52ee661bec42b3 1
+internal/gmptest/testdata/live/modify_task/001_meta.json
+  s_eb90e28f90a610::t_7334d621291c5f 6
+internal/gmptest/testdata/live/modify_task/001_request.xml
+  s_eb90e28f90a610::t_04f40beec1db83 1
+internal/gmptest/testdata/live/modify_ticket/001_meta.json
+  s_eb90e28f90a610::t_c60c64e4af08c9 6
+internal/gmptest/testdata/live/modify_ticket/001_request.xml
+  s_eb90e28f90a610::t_c1bc589e972679 1
+internal/gmptest/testdata/live/modify_tls_certificate/001_meta.json
+  s_eb90e28f90a610::t_0e67119180d6e3 6
+internal/gmptest/testdata/live/modify_tls_certificate/001_request.xml
+  s_eb90e28f90a610::t_6333a811e12d41 1
+internal/gmptest/testdata/live/modify_user/001_meta.json
+  s_eb90e28f90a610::t_345477ac06da85 6
+internal/gmptest/testdata/live/modify_user/001_request.xml
+  s_eb90e28f90a610::t_3a74bb4a310779 1
+internal/gmptest/testdata/live/move_task/001_meta.json
+  s_eb90e28f90a610::t_07cf61e5ba235c 6
+internal/gmptest/testdata/live/move_task/001_request.xml
+  s_eb90e28f90a610::t_599792667c82f3 1
+internal/gmptest/testdata/live/restore/001_meta.json
+  s_eb90e28f90a610::t_646142fde3de5c 6
+internal/gmptest/testdata/live/restore/001_request.xml
+  s_eb90e28f90a610::t_b6c6b602f43b2e 1
+internal/gmptest/testdata/live/resume_task/001_meta.json
+  s_eb90e28f90a610::t_48951679f938c1 6
+internal/gmptest/testdata/live/resume_task/001_request.xml
+  s_eb90e28f90a610::t_f7b75471e387d3 1
+internal/gmptest/testdata/live/run_wizard/001_meta.json
+  s_eb90e28f90a610::t_2955b82823ffdd 6
+internal/gmptest/testdata/live/start_task/001_meta.json
+  s_eb90e28f90a610::t_e2736d11440379 6
+internal/gmptest/testdata/live/start_task/001_request.xml
+  s_eb90e28f90a610::t_205f5ea124e42a 1
+internal/gmptest/testdata/live/stop_task/001_meta.json
+  s_eb90e28f90a610::t_48b58375741d9e 6
+internal/gmptest/testdata/live/stop_task/001_request.xml
+  s_eb90e28f90a610::t_766a25e9529703 1
+internal/gmptest/testdata/live/stop_task/001_response.xml
+  s_eb90e28f90a610::t_78b23418b79d62 1
+internal/gmptest/testdata/live/sync_config/001_meta.json
+  s_eb90e28f90a610::t_277217c6438902 6
+internal/gmptest/testdata/live/test_alert/001_meta.json
+  s_eb90e28f90a610::t_f9559a1245f467 6
+internal/gmptest/testdata/live/test_alert/001_request.xml
+  s_eb90e28f90a610::t_e61fe392b0d91a 1
+internal/gmptest/testdata/live/verify_report_format/001_meta.json
+  s_eb90e28f90a610::t_3aaecc4c9c3eff 6
+internal/gmptest/testdata/live/verify_scanner/001_meta.json
+  s_eb90e28f90a610::t_590b1c87412d9e 6
+internal/gmptest/testdata/live/verify_scanner/001_request.xml
+  s_eb90e28f90a610::t_e3b6fc51705854 1
+internal/schema/testdata/CONFORMANCE.md
+  s_eb90e28f90a610::t_8d989fb42b28b7 37-39,48,103-104,233
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "aa39b2c5b61c218e6009afa974d55a08af89de65",
+  "prompts": {},
+  "sessions": {
+    "s_eb90e28f90a610": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_eb90e28f90a610",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
