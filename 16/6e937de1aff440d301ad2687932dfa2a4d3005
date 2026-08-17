@@ -1,0 +1,59 @@
+commands/sync_config.go
+  s_d98bc732423122::t_451ff60690548b 1-2,7,12
+commands/test_alert.go
+  s_d98bc732423122::t_29e7021be3b124 1-2,7,13
+commands/verify_report_format.go
+  s_d98bc732423122::t_1cd710d567daa5 1-2,7,13
+commands/verify_scanner.go
+  s_d98bc732423122::t_e6656ba8290996 1-2,7,13,18
+docs/review-2026-08.md
+  s_d98bc732423122::t_a86a84aecc117e 2812,3083-3132
+internal/codegen/generate.go
+  s_d98bc732423122::t_de10da05fef421 1104-1107,1109-1111
+internal/codegen/generate_test.go
+  s_d98bc732423122::t_e60109f317b7f7 2023-2109
+internal/codegen/manifest.json
+  s_d98bc732423122::t_db89b9e1db4615 63-64,135-136,181-182,191-192
+internal/codegen/manifest_test.go
+  s_d98bc732423122::t_79bc6ddc8adc44 91,109,143-145,169-171
+internal/codegen/overrides.go
+  s_d98bc732423122::t_47d39075afcb62 149-150,153-157,199-206,718-728
+internal/codegen/testdata/golden/sync_config.go
+  s_d98bc732423122::t_2fd5be02d8c834 1-22
+internal/codegen/testdata/golden/test_alert.go
+  s_d98bc732423122::t_afd1fd656d5496 1-24
+internal/codegen/testdata/golden/verify_report_format.go
+  s_d98bc732423122::t_247b5b63ec4fe0 1-23
+internal/codegen/testdata/golden/verify_scanner.go
+  s_d98bc732423122::t_f8a8cebadcd1ef 1-24
+internal/codegen/testdata/schema/sync_config.json
+  s_d98bc732423122::t_65579c457e757f 1-61
+internal/codegen/testdata/schema/test_alert.json
+  s_d98bc732423122::t_ab586785bdfb84 1-82
+internal/codegen/testdata/schema/verify_report_format.json
+  s_d98bc732423122::t_14e9a608eee05d 1-66
+internal/codegen/testdata/schema/verify_scanner.json
+  s_d98bc732423122::t_a91cbb8e836e6e 1-66
+internal/codegen/validate.go
+  s_d98bc732423122::t_ff9045add40c7e 224-227,352-355,436-439,452-455
+internal/codegen/validate_test.go
+  s_d98bc732423122::t_0135df8dec479f 1309,1363,3257,3298,4078-4081,4115-4118,4141,4184
+internal/schema/testdata/CONFORMANCE.md
+  s_d98bc732423122::t_ebea21fddea335 37-40,49,104,2367
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "166e937de1aff440d301ad2687932dfa2a4d3005",
+  "prompts": {},
+  "sessions": {
+    "s_d98bc732423122": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_d98bc732423122",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
