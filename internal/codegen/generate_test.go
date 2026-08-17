@@ -2020,6 +2020,93 @@ func TestFieldOverridesSchemaChildCollision(t *testing.T) {
 	}
 }
 
+// --- emitResponse FieldOverrides support -----------------------------------
+
+// responseOverrideCommand builds a single command whose response envelope has
+// no schema-declared children at all, isolating emitResponse's own
+// FieldOverrides handling from the nested-struct path emitStruct already
+// covers above.
+func responseOverrideCommand() schema.Command {
+	return schema.Command{
+		Name:       "resp_ov_cmd",
+		Request:    &schema.Node{Name: "resp_ov_cmd"},
+		Response:   &schema.Node{Name: "resp_ov_cmd_response"},
+		Provenance: testProvenance(),
+	}
+}
+
+// TestFieldOverrideOnResponseEnvelopeEmitsField is the direct regression test
+// for widening emitResponse to consult FieldOverrides the same way
+// emitRequest already did (see the FieldOverride doc comment and the
+// verify_scanner Version entry it now supports): a response-envelope-keyed
+// override must be emitted as a real field on the response struct, carrying
+// both its XML tag and the gmpoverride tag emitResponse's other fields never
+// go through emitStruct to get.
+func TestFieldOverrideOnResponseEnvelopeEmitsField(t *testing.T) {
+	cmd := responseOverrideCommand()
+	fo := map[string][]FieldOverride{
+		"resp_ov_cmd:/resp_ov_cmd_response": {{
+			Name: "version", GoType: "string", OmitEmpty: true, Reason: "t",
+		}},
+	}
+	out, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, fo, nil, nil, nil)
+	if err != nil {
+		t.Fatalf("Generate failed: %v", err)
+	}
+	var all strings.Builder
+	for _, src := range out {
+		all.WriteString(src)
+	}
+	if !strings.Contains(all.String(), `type RespOvCmdResponse struct {`) {
+		t.Fatalf("generated output has no RespOvCmdResponse struct:\n%s", all.String())
+	}
+	want := "`xml:\"version,omitempty\" gmpoverride:\"t\"`"
+	if !strings.Contains(all.String(), want) || !strings.Contains(all.String(), "Version") {
+		t.Fatalf("generated output missing a Version field with tag %s; got:\n%s", want, all.String())
+	}
+}
+
+// TestFieldOverrideOnResponseEnvelopeSchemaChildCollision mirrors
+// TestFieldOverridesSchemaChildCollision for the response-envelope path: an
+// override whose Name duplicates a schema-declared response child must be
+// rejected rather than silently shadowing it.
+func TestFieldOverrideOnResponseEnvelopeSchemaChildCollision(t *testing.T) {
+	cmd := responseOverrideCommand()
+	cmd.Response.Children = []*schema.Node{
+		{Name: "version", Kind: schema.KindElement, Card: schema.CardRequired, Type: "text"},
+	}
+	fo := map[string][]FieldOverride{
+		"resp_ov_cmd:/resp_ov_cmd_response": {{Name: "version", GoType: "string", Reason: "t"}},
+	}
+	_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, fo, nil, nil, nil)
+	if err == nil {
+		t.Fatal("Generate succeeded; want an error: the override's Name duplicates the response's schema-declared <version> child")
+	}
+	if !strings.Contains(err.Error(), "duplicate") {
+		t.Fatalf("Generate error = %q, want it to mention the duplicate", err.Error())
+	}
+}
+
+// TestFieldOverridesConsumedRejectsStaleResponseEntry confirms a
+// response-envelope-keyed FieldOverrides entry fails closed the same way a
+// stale request- or nested-struct-keyed one does: a misspelled response root
+// name means the entry never matches anything emitResponse looks up, and
+// checkFieldOverridesConsumed must catch that rather than let it silently
+// have no effect.
+func TestFieldOverridesConsumedRejectsStaleResponseEntry(t *testing.T) {
+	cmd := responseOverrideCommand()
+	fo := map[string][]FieldOverride{
+		"resp_ov_cmd:/wrong_response_name": {{Name: "version", GoType: "string", Reason: "t"}},
+	}
+	_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, fo, nil, nil, nil)
+	if err == nil {
+		t.Fatal("Generate succeeded; want an error: the entry's key never matches resp_ov_cmd's actual response root")
+	}
+	if !strings.Contains(err.Error(), "resp_ov_cmd:/wrong_response_name") {
+		t.Fatalf("Generate error = %q, want it to name the stale key", err.Error())
+	}
+}
+
 // firstDiff points at the first differing line, so a failure names the change
 // instead of dumping thirteen kilobytes of struct definitions.
 func firstDiff(want, got string) string {

@@ -34,10 +34,10 @@ optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             91
-with actionable findings:     31
-actionable findings:          258  (request 118, response 140)
-suppressed findings:          439
+fully conformant:             92
+with actionable findings:     30
+actionable findings:          257  (request 118, response 139)
+suppressed findings:          440
 confirmed by fidelity corpus: 53
 in the schema, not in Go:     0
 in Go, not in the schema:     0
@@ -46,7 +46,7 @@ in Go, not in the schema:     0
 
                  actionable suppressed
   MISSING               132          0
-  EXTRA                  81          5
+  EXTRA                  80          6
   CARDINALITY            22          0
   KIND                    0          0
   OMITEMPTY               0        434
@@ -101,7 +101,7 @@ taken against upstream main (155 commands). Two reasons, both expected:
   create_target                 1   EXTRA=1
   create_task                   1   MISSING=1
   get_features                  1   TYPE=1
-  ... and 11 more with fewer
+  ... and 10 more with fewer
 
 ### Confirmed by both oracles
 
@@ -2364,5 +2364,5 @@ conformant
 EXTRA=1
 
   EXTRA         response /verify_scanner_response/version
-                Go field Version string has no counterpart in the schema
+                Go field Version string has no counterpart in the schema  [suppressed: T-9 scanner review: command_verify_scanner.xml's response <pattern> declares only status/status_text (its <example> shows <version> but the pattern never does), yet a live gvmd 26.36.1 test against two real scanners returned a populated <version> element both times ("OpenVAS 23.50.0", "GVM/26.36.1") — real, populated wire data, so dropping it would be a behavior regression rather than a defect fix]
 

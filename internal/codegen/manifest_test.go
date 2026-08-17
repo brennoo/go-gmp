@@ -88,6 +88,7 @@ func TestCommittedManifest(t *testing.T) {
 		"modify_filter", "modify_group", "modify_note", "modify_override", "modify_permission", "modify_port_list",
 		"modify_report_config", "modify_report_format", "modify_role", "modify_scanner", "modify_schedule",
 		"modify_tag", "modify_target", "modify_task", "modify_ticket", "modify_tls_certificate", "modify_user",
+		"sync_config", "test_alert", "verify_report_format", "verify_scanner",
 	}
 	want := []string{
 		"create_alert", "create_asset", "create_config", "create_credential", "create_filter", "create_group",
@@ -105,6 +106,7 @@ func TestCommittedManifest(t *testing.T) {
 		"modify_filter", "modify_group", "modify_note", "modify_override", "modify_permission", "modify_port_list",
 		"modify_report_config", "modify_report_format", "modify_role", "modify_scanner", "modify_schedule",
 		"modify_tag", "modify_target", "modify_task", "modify_ticket", "modify_tls_certificate", "modify_user",
+		"sync_config", "test_alert", "verify_report_format", "verify_scanner",
 	}
 	if got := m.AllCommands(); strings.Join(got, ",") != strings.Join(want, ",") {
 		t.Errorf("AllCommands() = %v, want %v", got, want)
@@ -138,8 +140,9 @@ func TestCommittedManifest(t *testing.T) {
 		"modify_scanner.go", "modify_schedule.go", "modify_tag.go", "modify_target.go", "modify_task.go",
 		"modify_ticket.go", "modify_tls_certificate.go", "modify_user.go", "note_shared.go", "override_shared.go",
 		"permission_shared.go", "port_list_shared.go", "report_config_shared.go", "report_format_shared.go",
-		"role_shared.go", "scanner_shared.go", "schedule_shared.go", "tag_shared.go", "target_shared.go",
-		"task_shared.go", "ticket_shared.go", "tls_certificate_shared.go", "user_shared.go",
+		"role_shared.go", "scanner_shared.go", "schedule_shared.go", "sync_config.go", "tag_shared.go",
+		"target_shared.go", "task_shared.go", "test_alert.go", "ticket_shared.go", "tls_certificate_shared.go",
+		"user_shared.go", "verify_report_format.go", "verify_scanner.go",
 	})
 	assertFiles(t, "Adopted().ExpectedOutputFiles", m.Adopted().ExpectedOutputFiles("commands"), []string{
 		"alert_shared.go", "asset_shared.go", "config_shared.go", "create_alert.go", "create_asset.go",
@@ -163,8 +166,9 @@ func TestCommittedManifest(t *testing.T) {
 		"modify_scanner.go", "modify_schedule.go", "modify_tag.go", "modify_target.go", "modify_task.go",
 		"modify_ticket.go", "modify_tls_certificate.go", "modify_user.go", "note_shared.go", "override_shared.go",
 		"permission_shared.go", "port_list_shared.go", "report_config_shared.go", "report_format_shared.go",
-		"role_shared.go", "scanner_shared.go", "schedule_shared.go", "tag_shared.go", "target_shared.go",
-		"task_shared.go", "ticket_shared.go", "tls_certificate_shared.go", "user_shared.go",
+		"role_shared.go", "scanner_shared.go", "schedule_shared.go", "sync_config.go", "tag_shared.go",
+		"target_shared.go", "task_shared.go", "test_alert.go", "ticket_shared.go", "tls_certificate_shared.go",
+		"user_shared.go", "verify_report_format.go", "verify_scanner.go",
 	})
 
 	if got, want := m.SnapshotPath("d", "get_notes"), SnapshotPath("d", "get_notes"); got != want {

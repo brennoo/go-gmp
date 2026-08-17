@@ -146,12 +146,15 @@ type FieldOverride struct {
 // (command, path) use is only allowed when every use resolves to the same
 // effective override set (fieldOverridesFor, generate.go) — a use that
 // disagrees, or has no entry at all, fails the build rather than leaking one
-// use's override onto another. emitStruct and emitRequest both consult this
-// table; emitResponse does not — widening it needs its own evidence, not a
-// speculative entry now. emitRequest's own widening is modify_report_config's
+// use's override onto another. emitStruct, emitRequest, and emitResponse all
+// consult this table. emitRequest's own widening is modify_report_config's
 // report_config_id below: a command's top-level request envelope needed a
 // field the schema never declares anywhere, the same shape emitStruct's
-// nested structs already had evidence for.
+// nested structs already had evidence for. emitResponse's widening is
+// verify_scanner's version below: live gvmd traffic confirmed the field is a
+// real, populated wire value the schema's <pattern> never declares (only its
+// <example> shows it) — dropping it would be a real behavior regression, not
+// a defect fix.
 var FieldOverrides = map[string][]FieldOverride{
 	"get_tls_certificates:/tls_certificate": {{
 		Name: "valid", GoType: "GMPBool",
@@ -192,6 +195,14 @@ var FieldOverrides = map[string][]FieldOverride{
 			"against a nonexistent id returned \"404 Failed to find Report Config\" (a resource lookup, " +
 			"not a parse rejection), reproduced on a second connection. Without this field the generated " +
 			"request could never target a specific report config",
+	}},
+	"verify_scanner:/verify_scanner_response": {{
+		Name: "version", GoType: "string", OmitEmpty: true,
+		Reason: "T-9 scanner review: command_verify_scanner.xml's response <pattern> declares only " +
+			"status/status_text (its <example> shows <version> but the pattern never does), yet a live " +
+			"gvmd 26.36.1 test against two real scanners returned a populated <version> element both " +
+			"times (\"OpenVAS 23.50.0\", \"GVM/26.36.1\") — real, populated wire data, so dropping it " +
+			"would be a behavior regression rather than a defect fix",
 	}},
 }
 
@@ -703,5 +714,16 @@ var DefectAllowlist = map[DefectKey]DefectAllowlistEntry{
 	},
 	{Command: "get_configs", Class: "empty-pattern", Path: "/get_configs_response/config/tasks/task/permissions"}: {
 		Reason: "T-15; docs/review-2026-08.md `config`",
+	},
+	{Command: "sync_config", Class: "empty-pattern", Path: "/sync_config"}: {
+		Reason: "T-9; docs/review-2026-08.md `config` — sync_config's request is a bare <pattern/> " +
+			"(no fields at all), and this gvmd build rejects the command outright " +
+			"(400 \"Bogus command name\"), likely reflecting upstream deprecation in favor of " +
+			"openvasd-based scanners; the schema still declares the command, so it is adopted as-is",
+	},
+	{Command: "test_alert", Class: "dangling-e", Path: "/test_alert_response/status_details"}: {
+		Reason: "T-9; docs/review-2026-08.md `alert` — the response schema references " +
+			"<e>status_details</e> but no <ele>/<elem> resolves it in scope, an upstream schema " +
+			"scoping quirk rather than an adoption risk",
 	},
 }

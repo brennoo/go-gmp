@@ -60,7 +60,8 @@
         "create_alert",
         "delete_alert",
         "get_alerts",
-        "modify_alert"
+        "modify_alert",
+        "test_alert"
       ]
     },
     {
@@ -131,7 +132,8 @@
         "create_report_format",
         "delete_report_format",
         "get_report_formats",
-        "modify_report_format"
+        "modify_report_format",
+        "verify_report_format"
       ]
     },
     {
@@ -176,7 +178,8 @@
         "create_scanner",
         "delete_scanner",
         "get_scanners",
-        "modify_scanner"
+        "modify_scanner",
+        "verify_scanner"
       ]
     },
     {
@@ -185,7 +188,8 @@
         "create_config",
         "delete_config",
         "get_configs",
-        "modify_config"
+        "modify_config",
+        "sync_config"
       ]
     }
   ]

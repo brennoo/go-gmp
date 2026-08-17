@@ -221,6 +221,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.DeleteAlert{}),
 			Response: schema.ModelOf(&commands.DeleteAlertResponse{}),
 		},
+		"test_alert": {
+			Request:  schema.ModelOf(&commands.TestAlert{}),
+			Response: schema.ModelOf(&commands.TestAlertResponse{}),
+		},
 		"create_filter": {
 			Request:  schema.ModelOf(&commands.CreateFilter{}),
 			Response: schema.ModelOf(&commands.CreateFilterResponse{}),
@@ -345,6 +349,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.DeleteReportFormat{}),
 			Response: schema.ModelOf(&commands.DeleteReportFormatResponse{}),
 		},
+		"verify_report_format": {
+			Request:  schema.ModelOf(&commands.VerifyReportFormat{}),
+			Response: schema.ModelOf(&commands.VerifyReportFormatResponse{}),
+		},
 		"create_report_config": {
 			Request:  schema.ModelOf(&commands.CreateReportConfig{}),
 			Response: schema.ModelOf(&commands.CreateReportConfigResponse{}),
@@ -425,6 +433,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.DeleteScanner{}),
 			Response: schema.ModelOf(&commands.DeleteScannerResponse{}),
 		},
+		"verify_scanner": {
+			Request:  schema.ModelOf(&commands.VerifyScanner{}),
+			Response: schema.ModelOf(&commands.VerifyScannerResponse{}),
+		},
 		"create_config": {
 			Request:  schema.ModelOf(&commands.CreateConfig{}),
 			Response: schema.ModelOf(&commands.CreateConfigResponse{}),
@@ -436,6 +448,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 		"get_configs": {
 			Request:  schema.ModelOf(&commands.GetConfigs{}),
 			Response: schema.ModelOf(&commands.GetConfigsResponse{}),
+		},
+		"sync_config": {
+			Request:  schema.ModelOf(&commands.SyncConfig{}),
+			Response: schema.ModelOf(&commands.SyncConfigResponse{}),
 		},
 		"delete_config": {
 			Request:  schema.ModelOf(&commands.DeleteConfig{}),

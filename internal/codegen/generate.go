@@ -1101,7 +1101,14 @@ func (g *gen) emitResponse(b *strings.Builder, c *schema.Command) error {
 	b.WriteString("Status string `xml:\"status,attr\"`\n")
 	b.WriteString("StatusText string `xml:\"status_text,attr\"`\n")
 	g.emitChardata(b, c.Response, used)
+	extra, _, err := g.fieldOverridesFor(&structType{node: c.Response, uses: []use{{command: c.Name}}})
+	if err != nil {
+		return err
+	}
 	fields, collided := g.emitFields(c.Response.Children, used, envelopeAttrs, c.Name)
+	for _, ov := range extra {
+		fields = append(fields, g.overrideField(ov, used))
+	}
 	for _, f := range fields {
 		writeField(b, f)
 	}
