@@ -4207,3 +4207,40 @@ func TestValidateConfigGeneratedMatchesOrImproves(t *testing.T) {
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
+
+// TestValidatePortRangeBeforeMatchesKnownConformance is port_range's
+// counterpart to TestValidateAssetBeforeMatchesKnownConformance. port_range
+// is adopted, so BeforeGoRoots already reflects the generator's output and
+// this is a drift detector on the committed files, not the pre-adoption
+// MISSING finding create_port_range's <port_list> used to carry (see
+// docs/review-2026-08.md's port_range section for that history).
+func TestValidatePortRangeBeforeMatchesKnownConformance(t *testing.T) {
+	before, _ := validateOrSkip(t, "create_port_range")
+
+	want := map[string]counts{
+		"create_port_range": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"delete_port_range": {actionable: map[string]int{}, suppressed: map[string]int{}},
+	}
+	for _, res := range before {
+		w, ok := want[res.Command]
+		if !ok {
+			t.Errorf("%s: unexpected command in Validate's before results", res.Command)
+			continue
+		}
+		assertCounts(t, "before", res.Command, w, countFindings(res.Findings))
+	}
+}
+
+// TestValidatePortRangeGeneratedMatchesOrImproves is port_range's
+// pre-adoption gate. Generation reshapes <port_list> into a PortRangePortList
+// struct carrying the id attribute, closing the MISSING finding with no
+// override table entry needed — the schema already declared the shape.
+func TestValidatePortRangeGeneratedMatchesOrImproves(t *testing.T) {
+	before, after := validateOrSkip(t, "create_port_range")
+
+	wantAfter := map[string]counts{
+		"create_port_range": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"delete_port_range": {actionable: map[string]int{}, suppressed: map[string]int{}},
+	}
+	assertMatchesOrImproves(t, before, after, wantAfter)
+}

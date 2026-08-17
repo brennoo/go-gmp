@@ -473,6 +473,14 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.DeleteConfig{}),
 			Response: schema.ModelOf(&commands.DeleteConfigResponse{}),
 		},
+		"create_port_range": {
+			Request:  schema.ModelOf(&commands.CreatePortRange{}),
+			Response: schema.ModelOf(&commands.CreatePortRangeResponse{}),
+		},
+		"delete_port_range": {
+			Request:  schema.ModelOf(&commands.DeletePortRange{}),
+			Response: schema.ModelOf(&commands.DeletePortRangeResponse{}),
+		},
 	}
 }
 

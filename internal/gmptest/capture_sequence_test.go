@@ -343,16 +343,11 @@ func (r *captureRun) lifecyclePortList(st *captureState) {
 	r.send("modify_port_list", "lifecycle: modify_port_list comment",
 		&commands.ModifyPortList{PortListID: st.portListID, Comment: captureComment + " (modified)"})
 
-	// CreatePortRange models <port_list> as an element whose text is the id,
-	// while GMP wants <port_list id="..."/>. The typed request is sent first so
-	// the rejection is on the record, then the shape gvmd actually accepts.
-	resp := r.sendWithFallbacks("create_port_range", "lifecycle: create_port_range",
-		&commands.CreatePortRange{PortListID: st.portListID, Start: "20", End: "22", Type: "TCP"},
-		[]rawAttempt{{
-			desc: `lifecycle: create_port_range with <port_list id="…"/> instead of the struct's text form`,
-			xml: fmt.Sprintf(`<create_port_range><port_list id="%s"/><start>20</start>`+
-				`<end>22</end><type>TCP</type></create_port_range>`, st.portListID),
-		}})
+	resp, _ := r.send("create_port_range", "lifecycle: create_port_range",
+		&commands.CreatePortRange{
+			PortList: commands.PortRangePortList{ID: st.portListID},
+			Start:    "20", End: "22", Type: "TCP",
+		})
 	if id := responseID(resp); id != "" {
 		r.send("delete_port_range", "lifecycle: delete_port_range",
 			&commands.DeletePortRange{PortRangeID: id})

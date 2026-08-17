@@ -855,7 +855,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.CreatePortRange); ok {
-		if cmd.PortListID == "354cd3ef-bbe1-4d58-859d-21b8d0c046c4" && cmd.Start == "777" && cmd.End == "779" && cmd.Type == "TCP" {
+		if cmd.PortList.ID == "354cd3ef-bbe1-4d58-859d-21b8d0c046c4" && cmd.Start == "777" && cmd.End == "779" && cmd.Type == "TCP" {
 			(*response.(*commands.CreatePortRangeResponse)).Status = "201"
 			(*response.(*commands.CreatePortRangeResponse)).StatusText = "OK, resource created"
 			(*response.(*commands.CreatePortRangeResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"

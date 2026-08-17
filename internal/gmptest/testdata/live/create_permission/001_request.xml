@@ -1,1 +1,1 @@
-<create_permission><name>get_tasks</name><subject id="efa72376-f685-4772-b76b-fdc882b681dd"><type>user</type></subject><comment>Created by go-gmp fixture capture. Safe to delete.</comment></create_permission>
+<create_permission><name>get_tasks</name><subject id="470d41e4-1298-48c4-8058-a9363cef7fcb"><type>user</type></subject><comment>Created by go-gmp fixture capture. Safe to delete.</comment></create_permission>

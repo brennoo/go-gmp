@@ -10,7 +10,7 @@
 # 'added' is elements the round trip invents (non-pointer fields without
 # omitempty, zero time.Time) and is not loss.
 
-fixtures: 339   clean: 195   with-loss: 133   decode-errors: 10   advisory: 1
+fixtures: 338   clean: 194   with-loss: 133   decode-errors: 10   advisory: 1
 commands with loss: 37 of 122
 distinct dropped paths: 198
 
@@ -46,8 +46,7 @@ create_permission            upstream  001 clean         dropped=0   truncated=0
 create_permission            upstream  002 clean         dropped=0   truncated=0   changed=0   added=0
 create_port_list             live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_port_list             upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
-create_port_range            live      001 clean         dropped=0   truncated=0   changed=0   added=1
-create_port_range            live      002 clean         dropped=0   truncated=0   changed=0   added=0
+create_port_range            live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_port_range            upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 create_report                live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_report                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0

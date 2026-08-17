@@ -1,1 +1,1 @@
-<create_port_range_response status="400" status_text="A START, END and PORT_LIST ID are required"/>
+<create_port_range_response status="201" status_text="OK, resource created" id="cfe08d60-9fd6-4c97-8141-3d9a5de8f1a4"/>

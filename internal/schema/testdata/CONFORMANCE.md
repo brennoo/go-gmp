@@ -34,9 +34,9 @@ optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             92
-with actionable findings:     30
-actionable findings:          257  (request 118, response 139)
+fully conformant:             93
+with actionable findings:     29
+actionable findings:          256  (request 117, response 139)
 suppressed findings:          439
 confirmed by fidelity corpus: 53
 in the schema, not in Go:     0
@@ -45,7 +45,7 @@ in Go, not in the schema:     0
 ### Findings by category
 
                  actionable suppressed
-  MISSING               132          0
+  MISSING               131          0
   EXTRA                  80          6
   CARDINALITY            22          0
   KIND                    0          0
@@ -97,11 +97,11 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_scanners                  2   EXTRA=2
   get_settings                  2   EXTRA=2
   modify_target                 2   MISSING=1  EXTRA=1
-  create_port_range             1   MISSING=1
   create_target                 1   EXTRA=1
   create_task                   1   MISSING=1
   get_features                  1   TYPE=1
-  ... and 10 more with fewer
+  get_license                   1   TYPE=1
+  ... and 9 more with fewer
 
 ### Confirmed by both oracles
 
@@ -230,10 +230,7 @@ SCHEMA-DEFECT=1
 
 ### create_port_range  (command_create_port_range.xml)
 
-MISSING=1
-
-  MISSING       request  /create_port_range/port_list/*
-                schema declares 1 children; Go models this as scalar string
+conformant
 
 ### create_report  (command_create_report.xml)
 

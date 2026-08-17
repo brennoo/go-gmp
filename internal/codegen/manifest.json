@@ -195,6 +195,13 @@
         "modify_config",
         "sync_config"
       ]
+    },
+    {
+      "name": "port_range",
+      "commands": [
+        "create_port_range",
+        "delete_port_range"
+      ]
     }
   ]
 }
