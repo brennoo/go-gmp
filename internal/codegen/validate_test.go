@@ -34,7 +34,7 @@ func validateOrSkip(t *testing.T, command string) (before, after []schema.Result
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	before, after, err = Validate(cmds, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, nil)
+	before, after, err = Validate(cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, nil)
 	if err != nil {
 		if errors.Is(err, ErrNoGoToolchain) {
 			t.Skipf("Skipping: %v", err)
@@ -4021,6 +4021,16 @@ func TestValidateTaskBeforeMatchesKnownConformance(t *testing.T) {
 			suppressed: map[string]int{},
 		},
 		"delete_task": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"move_task":   {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"resume_task": {
+			actionable: map[string]int{},
+			suppressed: map[string]int{schema.CatOmitEmpty: 1},
+		},
+		"start_task": {
+			actionable: map[string]int{},
+			suppressed: map[string]int{schema.CatOmitEmpty: 1},
+		},
+		"stop_task": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -4044,7 +4054,9 @@ func TestValidateTaskBeforeMatchesKnownConformance(t *testing.T) {
 // PointerOverrides this family carries (modify_task.comment,
 // modify_task.observers) came from live gvmd evidence, not from a
 // generator-vs-schema mismatch, so neither shows up as a suppressed finding
-// here.
+// here. resume_task.report_id and start_task.report_id do: their
+// RequiredOverrides entries deliberately keep omitempty despite the schema's
+// declared requiredness, so each still shows one suppressed OMITEMPTY finding.
 func TestValidateTaskGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_task")
 
@@ -4056,6 +4068,16 @@ func TestValidateTaskGeneratedMatchesOrImproves(t *testing.T) {
 			suppressed: map[string]int{},
 		},
 		"delete_task": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"move_task":   {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"resume_task": {
+			actionable: map[string]int{},
+			suppressed: map[string]int{schema.CatOmitEmpty: 1},
+		},
+		"start_task": {
+			actionable: map[string]int{},
+			suppressed: map[string]int{schema.CatOmitEmpty: 1},
+		},
+		"stop_task": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }

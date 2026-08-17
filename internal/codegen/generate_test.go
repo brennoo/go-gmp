@@ -198,7 +198,7 @@ func TestCollisionRequiresAttributeDiscriminators(t *testing.T) {
 		t.Fatal("get_filters's response no longer has a second <filters> child to weaken; did the snapshot change?")
 	}
 
-	if _, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist); err == nil {
+	if _, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist); err == nil {
 		t.Fatal("Generate succeeded with an attribute-less collision member; want an error")
 	} else if !strings.Contains(err.Error(), "no attribute that uniquely identifies it") {
 		t.Fatalf("Generate error = %q, want it to mention a missing discriminating attribute", err)
@@ -1856,7 +1856,7 @@ func generateManifest(t *testing.T, m Manifest) map[string]string {
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	out, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+	out, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
 	if err != nil {
 		t.Fatalf("GenerateAll failed: %v", err)
 	}
@@ -1918,7 +1918,10 @@ func TestFieldOfInChoiceCardinality(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			f := g.fieldOf("", tt.node, map[string]bool{})
+			f, err := g.fieldOf("", tt.node, map[string]bool{})
+			if err != nil {
+				t.Fatalf("fieldOf: %v", err)
+			}
 			if f.goType != tt.wantGoType {
 				t.Errorf("goType = %q, want %q", f.goType, tt.wantGoType)
 			}
@@ -1927,6 +1930,57 @@ func TestFieldOfInChoiceCardinality(t *testing.T) {
 			}
 		})
 	}
+}
+
+// TestFieldOfRequiredOverride pins fieldOf's RequiredOverrides handling
+// directly: a matching entry keeps a required string field's `,omitempty`,
+// an ordinary required field with no entry is untouched, and a matching
+// entry is recorded in roConsumed so checkRequiredOverridesConsumed can
+// later prove it wasn't stale.
+func TestFieldOfRequiredOverride(t *testing.T) {
+	ro := map[string]RequiredOverride{"resume_task.report_id": {Reason: "r"}}
+
+	t.Run("exact match on a required string field gains omitempty, stays non-pointer", func(t *testing.T) {
+		g := &gen{ro: ro, roConsumed: map[string]bool{}}
+		n := &schema.Node{Name: "report_id", Kind: schema.KindElement, Card: schema.CardRequired, Type: "text"}
+		f, err := g.fieldOf("resume_task", n, map[string]bool{})
+		if err != nil {
+			t.Fatalf("fieldOf: %v", err)
+		}
+		if f.goType != "string" || f.tag != "report_id,omitempty" {
+			t.Errorf("goType/tag = %q/%q, want %q/%q", f.goType, f.tag, "string", "report_id,omitempty")
+		}
+		if !g.roConsumed["resume_task.report_id"] {
+			t.Error("roConsumed was not marked for the matched entry")
+		}
+	})
+
+	t.Run("an ordinary required field with no override entry is unaffected", func(t *testing.T) {
+		g := &gen{ro: ro, roConsumed: map[string]bool{}}
+		n := &schema.Node{Name: "task_id", Kind: schema.KindAttribute, Card: schema.CardRequired, Type: "text"}
+		f, err := g.fieldOf("resume_task", n, map[string]bool{})
+		if err != nil {
+			t.Fatalf("fieldOf: %v", err)
+		}
+		if f.goType != "string" || f.tag != "task_id,attr" {
+			t.Errorf("goType/tag = %q/%q, want %q/%q", f.goType, f.tag, "string", "task_id,attr")
+		}
+		if len(g.roConsumed) != 0 {
+			t.Errorf("roConsumed = %v, want empty: no entry names task_id", g.roConsumed)
+		}
+	})
+
+	t.Run("a different command's identically-named field does not match", func(t *testing.T) {
+		g := &gen{ro: ro, roConsumed: map[string]bool{}}
+		n := &schema.Node{Name: "report_id", Kind: schema.KindElement, Card: schema.CardRequired, Type: "text"}
+		f, err := g.fieldOf("start_task", n, map[string]bool{})
+		if err != nil {
+			t.Fatalf("fieldOf: %v", err)
+		}
+		if f.tag != "report_id" {
+			t.Errorf("tag = %q, want %q (no override should apply to a different command)", f.tag, "report_id")
+		}
+	})
 }
 
 // --- fieldOverridesFor cross-use consistency (bug #2 regression tests) -----
@@ -1962,7 +2016,7 @@ func TestFieldOverridesCrossUseMismatchOnMissingKey(t *testing.T) {
 	fo := map[string][]FieldOverride{
 		"cmd_a:/thing": {{Name: "extra", GoType: "string", Reason: "t"}},
 	}
-	_, err := Generate([]schema.Command{cmdA, cmdB}, TypeOverrides, PointerOverrides, fo, nil, nil, nil)
+	_, err := Generate([]schema.Command{cmdA, cmdB}, TypeOverrides, PointerOverrides, nil, fo, nil, nil, nil)
 	if err == nil {
 		t.Fatal("Generate succeeded; want an error: cmd_b's use has no matching override while cmd_a's does")
 	}
@@ -1977,7 +2031,7 @@ func TestFieldOverridesCrossUseMismatchOnDifferentEntries(t *testing.T) {
 		"cmd_a:/thing": {{Name: "extra", GoType: "string", Reason: "t"}},
 		"cmd_b:/thing": {{Name: "other", GoType: "string", Reason: "t"}},
 	}
-	_, err := Generate([]schema.Command{cmdA, cmdB}, TypeOverrides, PointerOverrides, fo, nil, nil, nil)
+	_, err := Generate([]schema.Command{cmdA, cmdB}, TypeOverrides, PointerOverrides, nil, fo, nil, nil, nil)
 	if err == nil {
 		t.Fatal("Generate succeeded; want an error: cmd_a and cmd_b disagree on the override for the shared <thing> shape")
 	}
@@ -1992,7 +2046,7 @@ func TestFieldOverridesCrossUseIdenticalEntriesSucceed(t *testing.T) {
 		"cmd_a:/thing": {{Name: "extra", GoType: "string", Reason: "t"}},
 		"cmd_b:/thing": {{Name: "extra", GoType: "string", Reason: "t"}},
 	}
-	out, err := Generate([]schema.Command{cmdA, cmdB}, TypeOverrides, PointerOverrides, fo, nil, nil, nil)
+	out, err := Generate([]schema.Command{cmdA, cmdB}, TypeOverrides, PointerOverrides, nil, fo, nil, nil, nil)
 	if err != nil {
 		t.Fatalf("Generate failed with identical overrides on both uses: %v", err)
 	}
@@ -2011,7 +2065,7 @@ func TestFieldOverridesSchemaChildCollision(t *testing.T) {
 	fo := map[string][]FieldOverride{
 		"cmd_a:/thing": {{Name: "leaf", GoType: "string", Reason: "t"}},
 	}
-	_, err := Generate([]schema.Command{cmdA}, TypeOverrides, PointerOverrides, fo, nil, nil, nil)
+	_, err := Generate([]schema.Command{cmdA}, TypeOverrides, PointerOverrides, nil, fo, nil, nil, nil)
 	if err == nil {
 		t.Fatal("Generate succeeded; want an error: the override's Name duplicates <thing>'s schema-declared <leaf> child")
 	}
@@ -2049,7 +2103,7 @@ func TestFieldOverrideOnResponseEnvelopeEmitsField(t *testing.T) {
 			Name: "version", GoType: "string", OmitEmpty: true, Reason: "t",
 		}},
 	}
-	out, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, fo, nil, nil, nil)
+	out, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, nil, fo, nil, nil, nil)
 	if err != nil {
 		t.Fatalf("Generate failed: %v", err)
 	}
@@ -2078,7 +2132,7 @@ func TestFieldOverrideOnResponseEnvelopeSchemaChildCollision(t *testing.T) {
 	fo := map[string][]FieldOverride{
 		"resp_ov_cmd:/resp_ov_cmd_response": {{Name: "version", GoType: "string", Reason: "t"}},
 	}
-	_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, fo, nil, nil, nil)
+	_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, nil, fo, nil, nil, nil)
 	if err == nil {
 		t.Fatal("Generate succeeded; want an error: the override's Name duplicates the response's schema-declared <version> child")
 	}
@@ -2098,7 +2152,7 @@ func TestFieldOverridesConsumedRejectsStaleResponseEntry(t *testing.T) {
 	fo := map[string][]FieldOverride{
 		"resp_ov_cmd:/wrong_response_name": {{Name: "version", GoType: "string", Reason: "t"}},
 	}
-	_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, fo, nil, nil, nil)
+	_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, nil, fo, nil, nil, nil)
 	if err == nil {
 		t.Fatal("Generate succeeded; want an error: the entry's key never matches resp_ov_cmd's actual response root")
 	}

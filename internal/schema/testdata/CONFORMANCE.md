@@ -37,7 +37,7 @@ commands compared:            122
 fully conformant:             92
 with actionable findings:     30
 actionable findings:          257  (request 118, response 139)
-suppressed findings:          440
+suppressed findings:          439
 confirmed by fidelity corpus: 53
 in the schema, not in Go:     0
 in Go, not in the schema:     0
@@ -49,7 +49,7 @@ in Go, not in the schema:     0
   EXTRA                  80          6
   CARDINALITY            22          0
   KIND                    0          0
-  OMITEMPTY               0        434
+  OMITEMPTY               0        433
   TYPE                   23          0
   SCHEMA-DEFECT         128          0
 
@@ -2331,15 +2331,12 @@ OMITEMPTY=1  SCHEMA-DEFECT=1
 
 OMITEMPTY=1
 
-  OMITEMPTY     request  /start_task/@task_id
-                schema says required, TaskID is tagged omitempty  [suppressed: request-side over-constraint]
+  OMITEMPTY     response /start_task_response/report_id
+                schema says required, ReportID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
 
 ### stop_task  (command_stop_task.xml)
 
-OMITEMPTY=1
-
-  OMITEMPTY     request  /stop_task/@task_id
-                schema says required, TaskID is tagged omitempty  [suppressed: request-side over-constraint]
+conformant
 
 ### sync_config  (command_sync_config.xml)
 

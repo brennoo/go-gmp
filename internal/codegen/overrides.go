@@ -426,6 +426,35 @@ var PointerOverrides = map[string]PointerOverride{
 	},
 }
 
+// RequiredOverride keeps a schema-required field's Go tag carrying `,omitempty`
+// despite that, because live protocol evidence contradicts the schema's
+// declared requiredness for that specific field: gvmd genuinely omits it under
+// some response status, so a non-omitempty Go field would fabricate the
+// element on re-encode. Unlike PointerOverride, which only ever adjusts the
+// pointer-vs-value choice for a field the schema already marks optional, this
+// overrides fieldOf's requiredness-derived omitempty decision itself.
+type RequiredOverride struct {
+	Reason string
+}
+
+// RequiredOverrides is keyed exactly like PointerOverrides:
+// "<command>.<element or attribute name>", a command's own top-level
+// request/response fields only.
+var RequiredOverrides = map[string]RequiredOverride{
+	"resume_task.report_id": {
+		Reason: "T-9 task lifecycle review: command_resume_task.xml's response <pattern> marks " +
+			"report_id required, but internal/gmptest/testdata/live/resume_task/001_response.xml " +
+			"(a genuine 400 \"Task must be in Stopped or Interrupted state\") omits it entirely — " +
+			"status-dependent presence, not unconditional requiredness",
+	},
+	"start_task.report_id": {
+		Reason: "T-9 task lifecycle review: command_start_task.xml's response <pattern> marks " +
+			"report_id required, but internal/gmptest/testdata/live/start_task/001_response.xml " +
+			"(a genuine 500 \"Internal error\") omits it entirely — status-dependent presence, not " +
+			"unconditional requiredness",
+	},
+}
+
 // CommandWarning attaches a public-facing behavioral-hazard note to a
 // generated command's doc comment: wire behavior a caller could not infer
 // from the struct's field types alone, and that emitRequest/emitResponse

@@ -88,6 +88,7 @@ func TestCommittedManifest(t *testing.T) {
 		"modify_filter", "modify_group", "modify_note", "modify_override", "modify_permission", "modify_port_list",
 		"modify_report_config", "modify_report_format", "modify_role", "modify_scanner", "modify_schedule",
 		"modify_tag", "modify_target", "modify_task", "modify_ticket", "modify_tls_certificate", "modify_user",
+		"move_task", "resume_task", "start_task", "stop_task",
 		"sync_config", "test_alert", "verify_report_format", "verify_scanner",
 	}
 	want := []string{
@@ -106,6 +107,7 @@ func TestCommittedManifest(t *testing.T) {
 		"modify_filter", "modify_group", "modify_note", "modify_override", "modify_permission", "modify_port_list",
 		"modify_report_config", "modify_report_format", "modify_role", "modify_scanner", "modify_schedule",
 		"modify_tag", "modify_target", "modify_task", "modify_ticket", "modify_tls_certificate", "modify_user",
+		"move_task", "resume_task", "start_task", "stop_task",
 		"sync_config", "test_alert", "verify_report_format", "verify_scanner",
 	}
 	if got := m.AllCommands(); strings.Join(got, ",") != strings.Join(want, ",") {
@@ -138,9 +140,10 @@ func TestCommittedManifest(t *testing.T) {
 		"modify_filter.go", "modify_group.go", "modify_note.go", "modify_override.go", "modify_permission.go",
 		"modify_port_list.go", "modify_report_config.go", "modify_report_format.go", "modify_role.go",
 		"modify_scanner.go", "modify_schedule.go", "modify_tag.go", "modify_target.go", "modify_task.go",
-		"modify_ticket.go", "modify_tls_certificate.go", "modify_user.go", "note_shared.go", "override_shared.go",
+		"modify_ticket.go", "modify_tls_certificate.go", "modify_user.go", "move_task.go", "note_shared.go", "override_shared.go",
 		"permission_shared.go", "port_list_shared.go", "report_config_shared.go", "report_format_shared.go",
-		"role_shared.go", "scanner_shared.go", "schedule_shared.go", "sync_config.go", "tag_shared.go",
+		"resume_task.go", "role_shared.go", "scanner_shared.go", "schedule_shared.go", "start_task.go", "stop_task.go",
+		"sync_config.go", "tag_shared.go",
 		"target_shared.go", "task_shared.go", "test_alert.go", "ticket_shared.go", "tls_certificate_shared.go",
 		"user_shared.go", "verify_report_format.go", "verify_scanner.go",
 	})
@@ -164,9 +167,10 @@ func TestCommittedManifest(t *testing.T) {
 		"modify_filter.go", "modify_group.go", "modify_note.go", "modify_override.go", "modify_permission.go",
 		"modify_port_list.go", "modify_report_config.go", "modify_report_format.go", "modify_role.go",
 		"modify_scanner.go", "modify_schedule.go", "modify_tag.go", "modify_target.go", "modify_task.go",
-		"modify_ticket.go", "modify_tls_certificate.go", "modify_user.go", "note_shared.go", "override_shared.go",
+		"modify_ticket.go", "modify_tls_certificate.go", "modify_user.go", "move_task.go", "note_shared.go", "override_shared.go",
 		"permission_shared.go", "port_list_shared.go", "report_config_shared.go", "report_format_shared.go",
-		"role_shared.go", "scanner_shared.go", "schedule_shared.go", "sync_config.go", "tag_shared.go",
+		"resume_task.go", "role_shared.go", "scanner_shared.go", "schedule_shared.go", "start_task.go", "stop_task.go",
+		"sync_config.go", "tag_shared.go",
 		"target_shared.go", "task_shared.go", "test_alert.go", "ticket_shared.go", "tls_certificate_shared.go",
 		"user_shared.go", "verify_report_format.go", "verify_scanner.go",
 	})
@@ -282,7 +286,7 @@ func TestGenerateAllIsPerFamily(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	alone, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+	alone, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
 	if err != nil {
 		t.Fatalf("GenerateAll failed: %v", err)
 	}
@@ -301,7 +305,7 @@ func TestGenerateAllIsPerFamily(t *testing.T) {
 	// checkDefects would reject it for a defect that isn't really its own.
 	twin.Defects = nil
 	two := Manifest{Families: append(append([]Family{}, m.Families...), Family{Name: "twin", Commands: []string{"get_twins"}})}
-	both, err := GenerateAll(two, append(append([]schema.Command{}, cmds...), twin), TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+	both, err := GenerateAll(two, append(append([]schema.Command{}, cmds...), twin), TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
 	if err != nil {
 		t.Fatalf("GenerateAll with a second family failed: %v", err)
 	}
@@ -340,14 +344,14 @@ func TestRealFamiliesGenerateIndependently(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
 	if err != nil {
 		t.Fatalf("GenerateAll failed: %v", err)
 	}
 
 	accounted := 0
 	for _, f := range m.Families {
-		alone, err := GenerateAll(Manifest{Families: []Family{f}}, cmds, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+		alone, err := GenerateAll(Manifest{Families: []Family{f}}, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
 		if err != nil {
 			t.Fatalf("GenerateAll(%s alone) failed: %v", f.Name, err)
 		}
@@ -395,11 +399,11 @@ func TestScheduleICalendarNamingIsStable(t *testing.T) {
 	if !ok {
 		t.Fatal("The manifest no longer declares a schedule family")
 	}
-	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
 	if err != nil {
 		t.Fatalf("GenerateAll(schedule alone) failed: %v", err)
 	}
-	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
 	if err != nil {
 		t.Fatalf("GenerateAll(full manifest) failed: %v", err)
 	}
@@ -453,11 +457,11 @@ func TestAlertFingerprintNamingIsStable(t *testing.T) {
 	if !ok {
 		t.Fatal("The manifest no longer declares an alert family")
 	}
-	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
 	if err != nil {
 		t.Fatalf("GenerateAll(alert alone) failed: %v", err)
 	}
-	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
 	if err != nil {
 		t.Fatalf("GenerateAll(full manifest) failed: %v", err)
 	}
@@ -513,11 +517,11 @@ func TestTLSCertificateDNNamingIsStable(t *testing.T) {
 	if !ok {
 		t.Fatal("The manifest no longer declares a tls_certificate family")
 	}
-	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+	alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
 	if err != nil {
 		t.Fatalf("GenerateAll(tls_certificate alone) failed: %v", err)
 	}
-	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
 	if err != nil {
 		t.Fatalf("GenerateAll(full manifest) failed: %v", err)
 	}
@@ -568,7 +572,7 @@ func TestOCIImageNamingIsStable(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+	together, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
 	if err != nil {
 		t.Fatalf("GenerateAll(full manifest) failed: %v", err)
 	}
@@ -586,7 +590,7 @@ func TestOCIImageNamingIsStable(t *testing.T) {
 		if !ok {
 			t.Fatalf("The manifest no longer declares a %s family", tt.familyName)
 		}
-		alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
+		alone, err := GenerateAll(Manifest{Families: []Family{fam}}, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist)
 		if err != nil {
 			t.Fatalf("GenerateAll(%s alone) failed: %v", tt.familyName, err)
 		}
@@ -637,7 +641,7 @@ func TestGenerateAllRejectsAnUnknownFamilyName(t *testing.T) {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
 	wrong := Manifest{Families: []Family{{Name: "annotation", Commands: m.AllCommands()}}}
-	if _, err := GenerateAll(wrong, cmds, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist); err == nil ||
+	if _, err := GenerateAll(wrong, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist); err == nil ||
 		!strings.Contains(err.Error(), "naming convention") {
 		t.Fatalf("GenerateAll error = %v, want a naming-convention complaint", err)
 	}
@@ -649,7 +653,7 @@ func TestGenerateAllNeedsEverySnapshot(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
-	if _, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist); err == nil ||
+	if _, err := GenerateAll(m, cmds, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist); err == nil ||
 		!strings.Contains(err.Error(), "no snapshot loaded for delete_note") {
 		t.Fatalf("GenerateAll error = %v, want a missing-snapshot complaint", err)
 	}

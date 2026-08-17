@@ -417,6 +417,22 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.DeleteTask{}),
 			Response: schema.ModelOf(&commands.DeleteTaskResponse{}),
 		},
+		"move_task": {
+			Request:  schema.ModelOf(&commands.MoveTask{}),
+			Response: schema.ModelOf(&commands.MoveTaskResponse{}),
+		},
+		"resume_task": {
+			Request:  schema.ModelOf(&commands.ResumeTask{}),
+			Response: schema.ModelOf(&commands.ResumeTaskResponse{}),
+		},
+		"start_task": {
+			Request:  schema.ModelOf(&commands.StartTask{}),
+			Response: schema.ModelOf(&commands.StartTaskResponse{}),
+		},
+		"stop_task": {
+			Request:  schema.ModelOf(&commands.StopTask{}),
+			Response: schema.ModelOf(&commands.StopTaskResponse{}),
+		},
 		"create_scanner": {
 			Request:  schema.ModelOf(&commands.CreateScanner{}),
 			Response: schema.ModelOf(&commands.CreateScannerResponse{}),
@@ -481,13 +497,13 @@ func packageDir() (string, error) {
 // mechanism this file's package doc explains. The temporary directory it
 // creates under testdata/ is removed before it returns, on both the success
 // and the error path.
-func GeneratedGoRoots(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, fo map[string][]FieldOverride, fs map[string][]FieldSuppression, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry) (map[string]CommandRoots, error) {
+func GeneratedGoRoots(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, ro map[string]RequiredOverride, fo map[string][]FieldOverride, fs map[string][]FieldSuppression, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry) (map[string]CommandRoots, error) {
 	goBin, err := exec.LookPath("go")
 	if err != nil {
 		return nil, fmt.Errorf("%w (%w)", ErrNoGoToolchain, err)
 	}
 
-	files, err := Generate(cmds, ov, pf, fo, fs, cw, da)
+	files, err := Generate(cmds, ov, pf, ro, fo, fs, cw, da)
 	if err != nil {
 		return nil, fmt.Errorf("codegen: generate: %w", err)
 	}
@@ -617,9 +633,9 @@ func reflectHelperSource(cmds []schema.Command, genImportPath string) (string, e
 // dropped is the fidelity corpus's per-command dropped-path set
 // (schema.LoadDroppedPaths); passing nil just means no [fidelity]
 // cross-reference, not an error.
-func Validate(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, fo map[string][]FieldOverride, fs map[string][]FieldSuppression, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry, dropped map[string]map[string]bool) (before, after []schema.Result, err error) {
+func Validate(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, ro map[string]RequiredOverride, fo map[string][]FieldOverride, fs map[string][]FieldSuppression, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry, dropped map[string]map[string]bool) (before, after []schema.Result, err error) {
 	beforeRoots := BeforeGoRoots()
-	afterRoots, err := GeneratedGoRoots(cmds, ov, pf, fo, fs, cw, da)
+	afterRoots, err := GeneratedGoRoots(cmds, ov, pf, ro, fo, fs, cw, da)
 	if err != nil {
 		return nil, nil, err
 	}

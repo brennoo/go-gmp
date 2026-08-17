@@ -56,7 +56,7 @@ func TestCheckProvenanceRejectsMissingFields(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := minimalCommand()
 			tt.mutate(&cmd.Provenance)
-			_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, nil)
+			_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, nil)
 			if err == nil {
 				t.Fatalf("Generate succeeded with %s; want an error", tt.name)
 			}
@@ -102,7 +102,7 @@ func TestCheckProvenanceRejectsMalformedFields(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := minimalCommand()
 			tt.mutate(&cmd.Provenance)
-			_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, nil)
+			_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, nil)
 			if err == nil {
 				t.Fatalf("Generate succeeded with %s; want an error", tt.name)
 			}
@@ -129,7 +129,7 @@ func TestCheckProvenanceRejectsMixedBatch(t *testing.T) {
 	cmdB.Response = &schema.Node{Name: "cmd_b_response"}
 	cmdB.Provenance.SourceSHA256 = strings.Repeat("f", 64)
 
-	_, err := Generate([]schema.Command{cmdA, cmdB}, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, nil)
+	_, err := Generate([]schema.Command{cmdA, cmdB}, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, nil)
 	if err == nil {
 		t.Fatal("Generate succeeded with mixed schema provenance; want an error")
 	}
@@ -157,7 +157,7 @@ func TestCheckProvenanceAllowsDifferentExtractionTimes(t *testing.T) {
 	cmdB.Response = &schema.Node{Name: "cmd_b_response"}
 	cmdB.Provenance.ExtractedAt = cmdA.Provenance.ExtractedAt.Add(time.Hour)
 
-	if _, err := Generate([]schema.Command{cmdA, cmdB}, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, nil); err != nil {
+	if _, err := Generate([]schema.Command{cmdA, cmdB}, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, nil); err != nil {
 		t.Fatalf("Generate failed on one schema extracted at two times: %v", err)
 	}
 }
@@ -175,7 +175,7 @@ func TestCheckProvenanceAcceptsConsistentBatch(t *testing.T) {
 	cmdB.Request = &schema.Node{Name: "cmd_b"}
 	cmdB.Response = &schema.Node{Name: "cmd_b_response"}
 
-	if _, err := Generate([]schema.Command{cmdA, cmdB}, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, nil); err != nil {
+	if _, err := Generate([]schema.Command{cmdA, cmdB}, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, nil); err != nil {
 		t.Fatalf("Generate failed on a consistent provenance batch: %v", err)
 	}
 }
@@ -270,7 +270,7 @@ func TestValidateFieldOverridesRejectsBadEntries(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := Generate([]schema.Command{minimalCommand()}, TypeOverrides, PointerOverrides, tt.fo, nil, nil, nil)
+			_, err := Generate([]schema.Command{minimalCommand()}, TypeOverrides, PointerOverrides, nil, tt.fo, nil, nil, nil)
 			if err == nil {
 				t.Fatalf("Generate succeeded; want an error containing %q", tt.wantSub)
 			}
@@ -350,12 +350,23 @@ func commandWithDefects(defects ...schema.Defect) schema.Command {
 	return c
 }
 
+// commandWithResponseChild returns a minimal command whose response declares
+// exactly one top-level child, for exercising fieldOf's RequiredOverrides
+// branch through the real Generate() pipeline — needed for any node with
+// Children, since goTypeOf resolves those through g.byHash, which only
+// g.collect() (run inside Generate) populates.
+func commandWithResponseChild(child *schema.Node) schema.Command {
+	c := minimalCommand()
+	c.Response.Children = []*schema.Node{child}
+	return c
+}
+
 // TestCheckDefectsRejectsUnallowlisted proves the fail-closed gate: a
 // snapshot defect whose {Command, Class, Path} has no DefectAllowlist entry
 // must refuse generation, regardless of what Detail says.
 func TestCheckDefectsRejectsUnallowlisted(t *testing.T) {
 	cmd := commandWithDefects(schema.Defect{Class: schema.DefectEmptyPattern, Path: "/test_cmd/x", Detail: "pattern declares no content"})
-	_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, nil)
+	_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, nil)
 	if err == nil {
 		t.Fatal("Generate succeeded with an unallowlisted defect; want an error")
 	}
@@ -373,12 +384,12 @@ func TestCheckDefectsAcceptsMatchingEntry(t *testing.T) {
 	da := map[DefectKey]DefectAllowlistEntry{
 		{Command: "test_cmd", Class: schema.DefectEmptyPattern, Path: "/test_cmd/x"}: {Reason: "test"},
 	}
-	if _, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, da); err != nil {
+	if _, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, da); err != nil {
 		t.Fatalf("Generate failed on an allowlisted defect: %v", err)
 	}
 
 	cmd2 := commandWithDefects(schema.Defect{Class: schema.DefectEmptyPattern, Path: "/test_cmd/x", Detail: "totally different detail"})
-	if _, err := Generate([]schema.Command{cmd2}, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, da); err != nil {
+	if _, err := Generate([]schema.Command{cmd2}, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, da); err != nil {
 		t.Fatalf("Generate failed on an allowlisted defect with a different Detail: %v", err)
 	}
 }
@@ -392,7 +403,7 @@ func TestCheckDefectsMultipleFailuresAreDeterministic(t *testing.T) {
 		schema.Defect{Class: schema.DefectEmptyPattern, Path: "/test_cmd/z"},
 		schema.Defect{Class: schema.DefectEmptyPattern, Path: "/test_cmd/a"},
 	)
-	_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, nil)
+	_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, nil)
 	if err == nil {
 		t.Fatal("Generate succeeded with two unallowlisted defects; want an error")
 	}
@@ -407,7 +418,7 @@ func TestCheckDefectsMultipleFailuresAreDeterministic(t *testing.T) {
 	}
 
 	second := err
-	_, err = Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, nil)
+	_, err = Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, nil)
 	if err == nil || err.Error() != second.Error() {
 		t.Fatalf("Generate error was not deterministic across runs: %q vs %q", second, err)
 	}
@@ -446,7 +457,7 @@ func TestValidateDefectAllowlistRejectsBadEntries(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := Generate([]schema.Command{minimalCommand()}, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, tt.da)
+			_, err := Generate([]schema.Command{minimalCommand()}, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, tt.da)
 			if err == nil {
 				t.Fatalf("Generate succeeded; want an error containing %q", tt.wantSub)
 			}
@@ -469,7 +480,7 @@ func TestCheckDefectAllowlistConsumedRejectsStaleEntry(t *testing.T) {
 			{Command: "test_cmd", Class: schema.DefectEmptyPattern, Path: "/test_cmd/x"}:    {Reason: "real"},
 			{Command: "test_cmd", Class: schema.DefectEmptyPattern, Path: "/test_cmd/gone"}: {Reason: "stale"},
 		}
-		_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, da)
+		_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, da)
 		if err == nil || !strings.Contains(err.Error(), "never matched a generated defect") {
 			t.Fatalf("Generate error = %v, want a stale-entry error", err)
 		}
@@ -480,7 +491,7 @@ func TestCheckDefectAllowlistConsumedRejectsStaleEntry(t *testing.T) {
 			{Command: "test_cmd", Class: schema.DefectEmptyPattern, Path: "/test_cmd/x"}: {Reason: "real"},
 			{Command: "test_cmd", Class: schema.DefectNoPattern, Path: "/test_cmd/x"}:    {Reason: "stale"},
 		}
-		_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, da)
+		_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, da)
 		if err == nil || !strings.Contains(err.Error(), "never matched a generated defect") {
 			t.Fatalf("Generate error = %v, want a stale-entry error", err)
 		}
@@ -499,7 +510,7 @@ func TestCheckDefectAllowlistConsumedIgnoresOutOfScopeEntries(t *testing.T) {
 		{Command: "test_cmd", Class: schema.DefectEmptyPattern, Path: "/test_cmd/x"}:        {Reason: "real"},
 		{Command: "some_other_command", Class: schema.DefectEmptyPattern, Path: "/other/y"}: {Reason: "out of scope"},
 	}
-	if _, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, da); err != nil {
+	if _, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, da); err != nil {
 		t.Fatalf("Generate failed because of an out-of-scope allowlist entry: %v", err)
 	}
 }
@@ -538,5 +549,146 @@ func TestDefectAllowlistHasNoOrphans(t *testing.T) {
 			t.Errorf("DefectAllowlist entry %s/%s at %s matches no defect in the committed snapshots; "+
 				"remove it or re-extract", key.Command, key.Class, key.Path)
 		}
+	}
+}
+
+// TestValidateRequiredOverridesRejectsBadEntries proves RequiredOverrides'
+// table-shape checks fail closed the same way validateFieldOverrides and
+// validateDefectAllowlist do: a malformed key or missing Reason is a defect
+// in the table itself, caught before generation ever looks for a matching
+// field.
+func TestValidateRequiredOverridesRejectsBadEntries(t *testing.T) {
+	tests := []struct {
+		name    string
+		ro      map[string]RequiredOverride
+		wantSub string
+	}{
+		{
+			name:    "key with no dot separator",
+			ro:      map[string]RequiredOverride{"test_cmdreport_id": {Reason: "r"}},
+			wantSub: `key must be "<command>.<field>"`,
+		},
+		{
+			name:    "empty command",
+			ro:      map[string]RequiredOverride{".report_id": {Reason: "r"}},
+			wantSub: `key must be "<command>.<field>"`,
+		},
+		{
+			name:    "empty field",
+			ro:      map[string]RequiredOverride{"test_cmd.": {Reason: "r"}},
+			wantSub: `key must be "<command>.<field>"`,
+		},
+		{
+			name:    "empty Reason",
+			ro:      map[string]RequiredOverride{"test_cmd.report_id": {Reason: ""}},
+			wantSub: "Reason is empty",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := Generate([]schema.Command{minimalCommand()}, TypeOverrides, PointerOverrides, tt.ro, nil, nil, nil, nil)
+			if err == nil {
+				t.Fatalf("Generate succeeded; want an error containing %q", tt.wantSub)
+			}
+			if !strings.Contains(err.Error(), tt.wantSub) {
+				t.Fatalf("Generate error = %q, want it to contain %q", err.Error(), tt.wantSub)
+			}
+		})
+	}
+}
+
+// TestValidateRequiredOverridesAcceptsCommittedTable is a regression net: the
+// real, committed RequiredOverrides table must always pass the table-shape
+// checks, so any future entry that fails this test has a defect in the entry
+// itself, not in the checker.
+func TestValidateRequiredOverridesAcceptsCommittedTable(t *testing.T) {
+	g := &gen{ro: RequiredOverrides}
+	if err := g.validateRequiredOverrides(); err != nil {
+		t.Fatalf("The committed RequiredOverrides table failed validation: %v", err)
+	}
+}
+
+// TestCheckRequiredOverridesConsumedRejectsStaleEntry proves the fail-closed
+// guarantee finding 1 asked for: an override entry for a command in scope
+// that never matched a generated required field — a typo'd field name here —
+// fails generation rather than silently doing nothing.
+func TestCheckRequiredOverridesConsumedRejectsStaleEntry(t *testing.T) {
+	cmd := commandWithResponseChild(&schema.Node{
+		Name: "report_id", Kind: schema.KindElement, Card: schema.CardRequired, Type: "text",
+	})
+	ro := map[string]RequiredOverride{"test_cmd.reportid": {Reason: "typo'd field name"}}
+	_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, ro, nil, nil, nil, nil)
+	if err == nil || !strings.Contains(err.Error(), "never matched a generated required field") {
+		t.Fatalf("Generate error = %v, want a stale-entry error", err)
+	}
+}
+
+// TestCheckRequiredOverridesConsumedRejectsWrongCardinality proves an entry
+// aimed at a field that is not schema-required (fieldOf only ever consults
+// RequiredOverrides from its CardRequired branch) is stale in exactly the
+// same way a typo is, rather than being silently ignored.
+func TestCheckRequiredOverridesConsumedRejectsWrongCardinality(t *testing.T) {
+	cmd := commandWithResponseChild(&schema.Node{
+		Name: "report_id", Kind: schema.KindElement, Card: schema.CardOptional, Type: "text",
+	})
+	ro := map[string]RequiredOverride{"test_cmd.report_id": {Reason: "field is optional, not required"}}
+	_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, ro, nil, nil, nil, nil)
+	if err == nil || !strings.Contains(err.Error(), "never matched a generated required field") {
+		t.Fatalf("Generate error = %v, want a stale-entry error", err)
+	}
+}
+
+// TestCheckRequiredOverridesConsumedIgnoresOutOfScopeEntries mirrors
+// TestCheckDefectAllowlistConsumedIgnoresOutOfScopeEntries: an entry for a
+// command that is not part of this Generate call is not "stale" for this
+// call, the per-family scoping GenerateAll's family-local generation depends
+// on for a table shared across families.
+func TestCheckRequiredOverridesConsumedIgnoresOutOfScopeEntries(t *testing.T) {
+	cmd := commandWithResponseChild(&schema.Node{
+		Name: "report_id", Kind: schema.KindElement, Card: schema.CardRequired, Type: "text",
+	})
+	ro := map[string]RequiredOverride{
+		"test_cmd.report_id":         {Reason: "real"},
+		"some_other_command.field_x": {Reason: "out of scope for this call"},
+	}
+	if _, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, ro, nil, nil, nil, nil); err != nil {
+		t.Fatalf("Generate failed because of an out-of-scope RequiredOverrides entry: %v", err)
+	}
+}
+
+// TestRequiredOverrideRejectsUnsupportedTargets is finding 2's regression
+// test: RequiredOverrides is only evidenced for a plain required string leaf
+// (resume_task/start_task's report_id). A non-string scalar or a structured
+// field would additionally need a pointer to stay distinguishable from its
+// zero value — a bigger, unevidenced API change — so Generate must refuse
+// rather than silently reshaping the field into a pointer.
+func TestRequiredOverrideRejectsUnsupportedTargets(t *testing.T) {
+	tests := []struct {
+		name  string
+		child *schema.Node
+	}{
+		{
+			name:  "non-string scalar",
+			child: &schema.Node{Name: "count", Kind: schema.KindElement, Card: schema.CardRequired, Type: "integer"},
+		},
+		{
+			name: "structured field with children",
+			child: &schema.Node{
+				Name: "nested", Kind: schema.KindElement, Card: schema.CardRequired,
+				Children: []*schema.Node{{Name: "leaf", Kind: schema.KindElement, Card: schema.CardRequired, Type: "text"}},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cmd := commandWithResponseChild(tt.child)
+			ro := map[string]RequiredOverride{"test_cmd." + tt.child.Name: {Reason: "r"}}
+			_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, ro, nil, nil, nil, nil)
+			if err == nil || !strings.Contains(err.Error(), "only evidenced for plain string fields") {
+				t.Fatalf("Generate error = %v, want a plain-string-only rejection", err)
+			}
+		})
 	}
 }

@@ -343,7 +343,7 @@ resume_task                  live      001 clean         dropped=0   truncated=0
 resume_task                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 run_wizard                   live      001 clean         dropped=0   truncated=0   changed=0   added=0
 run_wizard                   upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
-start_task                   live      001 clean         dropped=0   truncated=0   changed=0   added=1
+start_task                   live      001 clean         dropped=0   truncated=0   changed=0   added=0
 start_task                   upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 stop_task                    live      001 clean         dropped=0   truncated=0   changed=0   added=0
 stop_task                    upstream  001 clean         dropped=0   truncated=0   changed=0   added=0

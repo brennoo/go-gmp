@@ -28,15 +28,15 @@ const sharedFileSuffix = "_shared.go"
 // Generate renders Go source for every command in cmds.
 //
 // It returns a filename -> gofmt'd source map. The output is a pure function
-// of (cmds, ov, pf): no clock, no filesystem, no map iteration order leaks
+// of (cmds, ov, pf, ro): no clock, no filesystem, no map iteration order leaks
 // into it, and nothing here reads vendor/XML. That is what lets the golden
 // test in generate_test.go run in CI with only the committed JSON snapshot.
-func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, fo map[string][]FieldOverride, fs map[string][]FieldSuppression, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry) (map[string]string, error) {
+func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, ro map[string]RequiredOverride, fo map[string][]FieldOverride, fs map[string][]FieldSuppression, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry) (map[string]string, error) {
 	if len(cmds) == 0 {
 		return nil, fmt.Errorf("codegen: no commands to generate")
 	}
 	g := &gen{
-		ov: ov, pf: pf, fo: fo, fs: fs, cw: cw, da: da,
+		ov: ov, pf: pf, ro: ro, fo: fo, fs: fs, cw: cw, da: da,
 		byHash:      map[string]*structType{},
 		taken:       map[string]bool{},
 		needsErrors: map[*strings.Builder]bool{},
@@ -44,6 +44,7 @@ func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]Point
 		fsConsumed:  map[string]bool{},
 		cwConsumed:  map[string]bool{},
 		daConsumed:  map[DefectKey]bool{},
+		roConsumed:  map[string]bool{},
 	}
 
 	// Sorting decouples the output from the caller's slice order, so a
@@ -97,7 +98,10 @@ func (g *gen) validateOverrideTables() error {
 	if err := validateFieldRelocations(g.fo, g.fs); err != nil {
 		return err
 	}
-	return g.validateCommandWarnings()
+	if err := g.validateCommandWarnings(); err != nil {
+		return err
+	}
+	return g.validateRequiredOverrides()
 }
 
 // checkTablesConsumed fails the build on any stale override-table entry left
@@ -114,7 +118,10 @@ func (g *gen) checkTablesConsumed() error {
 	if err := g.checkCommandWarningsConsumed(); err != nil {
 		return err
 	}
-	return g.checkDefectAllowlistConsumed()
+	if err := g.checkDefectAllowlistConsumed(); err != nil {
+		return err
+	}
+	return g.checkRequiredOverridesConsumed()
 }
 
 // sha256Pattern matches hex.EncodeToString's SHA-256 output: 64 lowercase
@@ -318,6 +325,58 @@ func (g *gen) checkCommandWarningsConsumed() error {
 	}
 	sort.Strings(stale)
 	return fmt.Errorf("codegen: CommandWarnings entry(ies) never attached to a generated command: %s", strings.Join(stale, ", "))
+}
+
+// validateRequiredOverrides checks the shape of every RequiredOverrides entry
+// in g.ro, independent of which command is in scope for this call, the same
+// reasoning validateFieldOverrides applies to g.fo: a malformed key or a
+// missing Reason is a defect in the table itself, not something that could
+// ever become valid depending on which family is being generated.
+func (g *gen) validateRequiredOverrides() error {
+	keys := make([]string, 0, len(g.ro))
+	for k := range g.ro {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, key := range keys {
+		command, field, ok := strings.Cut(key, ".")
+		if !ok || command == "" || field == "" {
+			return fmt.Errorf(`codegen: RequiredOverrides[%q]: key must be "<command>.<field>"`, key)
+		}
+		if g.ro[key].Reason == "" {
+			return fmt.Errorf("codegen: RequiredOverrides[%q]: Reason is empty", key)
+		}
+	}
+	return nil
+}
+
+// checkRequiredOverridesConsumed fails the build on a stale or mistyped
+// RequiredOverrides entry: one whose command is among g.cmds (so this call
+// was in a position to apply it) but which never matched a generated
+// required field — a typo'd field name, an entry aimed at an optional or
+// nested field (fieldOf only ever consults g.ro from its CardRequired,
+// command != "" case), or a schema correction that removed the requiredness
+// the override existed to work around. Scoped by command like
+// checkFieldOverridesConsumed, for the same GenerateAll/CheckOutput
+// per-family reason.
+func (g *gen) checkRequiredOverridesConsumed() error {
+	present := make(map[string]bool, len(g.cmds))
+	for i := range g.cmds {
+		present[g.cmds[i].Name] = true
+	}
+	var stale []string
+	for key := range g.ro {
+		command, _, _ := strings.Cut(key, ".")
+		if present[command] && !g.roConsumed[key] {
+			stale = append(stale, key)
+		}
+	}
+	if len(stale) == 0 {
+		return nil
+	}
+	sort.Strings(stale)
+	return fmt.Errorf("codegen: RequiredOverrides entry(ies) never matched a generated required field: %s", strings.Join(stale, ", "))
 }
 
 // validateFieldOverrides checks the shape of every FieldOverrides entry in
@@ -530,7 +589,7 @@ func staleTableKeys[V any](cmds []schema.Command, table map[string]V, consumed m
 // cmds may contain commands in any order and must cover every command the
 // manifest names; a command not claimed by any family is an error, since it
 // would otherwise be silently dropped.
-func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, fo map[string][]FieldOverride, fs map[string][]FieldSuppression, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry) (map[string]string, error) {
+func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, ro map[string]RequiredOverride, fo map[string][]FieldOverride, fs map[string][]FieldSuppression, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry) (map[string]string, error) {
 	byName := make(map[string]schema.Command, len(cmds))
 	for _, c := range cmds {
 		byName[c.Name] = c
@@ -547,7 +606,7 @@ func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf m
 			}
 			fam = append(fam, c)
 		}
-		files, err := Generate(fam, ov, pf, fo, fs, cw, da)
+		files, err := Generate(fam, ov, pf, ro, fo, fs, cw, da)
 		if err != nil {
 			return nil, fmt.Errorf("codegen: family %q: %w", f.Name, err)
 		}
@@ -607,6 +666,7 @@ type gen struct {
 	cmds   []schema.Command
 	ov     map[string]Override
 	pf     map[string]PointerOverride
+	ro     map[string]RequiredOverride
 	fo     map[string][]FieldOverride
 	fs     map[string][]FieldSuppression
 	cw     map[string]CommandWarning
@@ -642,6 +702,11 @@ type gen struct {
 	// daConsumed records which DefectAllowlist keys matched a schema.Defect
 	// during this run, so checkDefectAllowlistConsumed can flag a stale one.
 	daConsumed map[DefectKey]bool
+
+	// roConsumed records which RequiredOverrides keys matched a required
+	// top-level field during this run, so checkRequiredOverridesConsumed can
+	// flag a stale or mistyped one.
+	roConsumed map[string]bool
 }
 
 // fieldOverrideKey builds a FieldOverrides key from a structType's use: the
@@ -905,11 +970,11 @@ type field struct {
 }
 
 // fieldOf applies the DSL -> Go cardinality mapping. command is the request's
-// or response's own command name, used only to look up PointerOverrides; it
-// is "" when n belongs to a nested struct (emitStruct), since a shape shared
-// by more than one command has no single owner for that table to key on —
-// see PointerOverrides' doc comment.
-func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool) field {
+// or response's own command name, used only to look up PointerOverrides and
+// RequiredOverrides; it is "" when n belongs to a nested struct (emitStruct),
+// since a shape shared by more than one command has no single owner for
+// either table to key on — see PointerOverrides' doc comment.
+func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool) (field, error) {
 	base := g.goTypeOf(n)
 	goType, opts := base, ""
 
@@ -929,7 +994,24 @@ func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool) fiel
 		opts = ",omitempty"
 	case n.Card == schema.CardRequired:
 		// A required item outside any <or> is present by definition: no
-		// pointer, no omitempty.
+		// pointer, no omitempty — unless RequiredOverrides names this field as
+		// an exception live evidence disproved that default for. Scoped to
+		// plain string leaves: that is the only shape live evidence
+		// (resume_task/start_task's report_id) has ever justified, and a
+		// non-string scalar or structured field would additionally need a
+		// pointer to stay distinguishable from its zero value — a bigger,
+		// unevidenced API change this mechanism does not take on.
+		key := command + "." + n.Name
+		if _, ok := g.ro[key]; ok {
+			if len(n.Children) > 0 || base != "string" {
+				return field{}, fmt.Errorf(
+					"codegen: RequiredOverrides[%q]: only evidenced for plain string fields, got Go type %q; "+
+						"no live evidence yet justifies overriding requiredness for a structured or "+
+						"non-string-scalar field", key, base)
+			}
+			g.roConsumed[key] = true
+			opts = ",omitempty"
+		}
 	}
 
 	tag := n.Name
@@ -938,7 +1020,7 @@ func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool) fiel
 	}
 	tag += opts
 
-	return field{name: uniqueName(goName(n.Name), used), goType: goType, tag: tag, node: n}
+	return field{name: uniqueName(goName(n.Name), used), goType: goType, tag: tag, node: n}, nil
 }
 
 // emitChardata declares the field for a mixed-content node's bare text, if it
@@ -1060,7 +1142,10 @@ func (g *gen) emitRequest(b *strings.Builder, c *schema.Command) error {
 	if err != nil {
 		return err
 	}
-	fields, collided := g.emitFields(c.Request.Children, used, nil, c.Name)
+	fields, collided, err := g.emitFields(c.Request.Children, used, nil, c.Name)
+	if err != nil {
+		return err
+	}
 	for _, ov := range extra {
 		fields = append(fields, g.overrideField(ov, used))
 	}
@@ -1105,7 +1190,10 @@ func (g *gen) emitResponse(b *strings.Builder, c *schema.Command) error {
 	if err != nil {
 		return err
 	}
-	fields, collided := g.emitFields(c.Response.Children, used, envelopeAttrs, c.Name)
+	fields, collided, err := g.emitFields(c.Response.Children, used, envelopeAttrs, c.Name)
+	if err != nil {
+		return err
+	}
 	for _, ov := range extra {
 		fields = append(fields, g.overrideField(ov, used))
 	}
@@ -1154,7 +1242,10 @@ func (g *gen) emitStruct(b *strings.Builder, st *structType) error {
 		return err
 	}
 	g.emitChardataOverridable(b, st.node, used, chardataOverride)
-	fields, collided := g.emitFields(st.node.Children, used, suppressed, "")
+	fields, collided, err := g.emitFields(st.node.Children, used, suppressed, "")
+	if err != nil {
+		return err
+	}
 	for _, ov := range extra {
 		fields = append(fields, g.overrideField(ov, used))
 	}
@@ -1386,7 +1477,7 @@ func (g *gen) ownerOf(st *structType) string {
 // field routing rejects two fields with an identical explicit tag outright.
 // Attribute names cannot collide this way: a start tag cannot declare one
 // attribute twice.
-func (g *gen) emitFields(kids []*schema.Node, used map[string]bool, skip map[fieldKey]bool, command string) ([]field, bool) {
+func (g *gen) emitFields(kids []*schema.Node, used map[string]bool, skip map[fieldKey]bool, command string) ([]field, bool, error) {
 	var fields []field
 	seen := map[string]bool{}
 	collided := false
@@ -1394,7 +1485,10 @@ func (g *gen) emitFields(kids []*schema.Node, used map[string]bool, skip map[fie
 		if skip[fieldKey{name: kid.Name, attr: kid.Kind == schema.KindAttribute}] {
 			continue
 		}
-		f := g.fieldOf(command, kid, used)
+		f, err := g.fieldOf(command, kid, used)
+		if err != nil {
+			return nil, false, err
+		}
 		if kid.Kind == schema.KindElement {
 			if seen[kid.Name] {
 				f.wireTag = f.tag
@@ -1405,7 +1499,7 @@ func (g *gen) emitFields(kids []*schema.Node, used map[string]bool, skip map[fie
 		}
 		fields = append(fields, f)
 	}
-	return fields, collided
+	return fields, collided, nil
 }
 
 func writeField(b *strings.Builder, f field) {

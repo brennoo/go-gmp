@@ -169,7 +169,11 @@
         "create_task",
         "delete_task",
         "get_tasks",
-        "modify_task"
+        "modify_task",
+        "move_task",
+        "resume_task",
+        "start_task",
+        "stop_task"
       ]
     },
     {
