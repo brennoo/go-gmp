@@ -1,0 +1,73 @@
+commands/move_task.go
+  s_9a737206f55bde::t_fe81f91584e556 1-2,7,14
+commands/resume_task.go
+  s_9a737206f55bde::t_c61abc81927c18 1-2,7,13
+commands/start_task.go
+  s_9a737206f55bde::t_3b665a08662bbd 1-2,7,10,13,18
+commands/stop_task.go
+  s_9a737206f55bde::t_174255b2846eca 1-2,5,7,10,13
+commands/task_lifecycle_report_id_test.go
+  s_9a737206f55bde::t_e1b01cf80dc747 1-77
+docs/review-2026-08.md
+  s_9a737206f55bde::t_720510c0c6dd9c 2812,3133-3212
+internal/cmd/gengmp/main.go
+  s_9a737206f55bde::t_6ba35e8a82288c 106,140
+internal/codegen/check.go
+  s_9a737206f55bde::t_d221af43713d0c 82,99
+internal/codegen/check_test.go
+  s_9a737206f55bde::t_8793001cc0baf4 48,236
+internal/codegen/generate.go
+  s_9a737206f55bde::t_b1302a24765b21 31,34,39,47,101-104,121-124,330-381,592,609,669,705-709,973-977,997-1014,1023,1145-1148,1193-1196,1245-1248,1480,1488-1491,1502
+internal/codegen/generate_test.go
+  s_9a737206f55bde::t_b8a832cd17f549 201,1859,1921-1924,1935-1985,2019,2034,2049,2068,2106,2135,2155
+internal/codegen/manifest.json
+  s_9a737206f55bde::t_a26bbd63453e5d 172-176
+internal/codegen/manifest_test.go
+  s_9a737206f55bde::t_651188c26fb7c2 91,110,143,145-146,170,172-173,289,308,347,354,402,406,460,464,520,524,575,593,644,656
+internal/codegen/overrides.go
+  s_9a737206f55bde::t_4b168ae36ea26b 429-457
+internal/codegen/overrides_test.go
+  s_9a737206f55bde::t_1a4503189d534b 59,105,132,160,178,273,353-363,369,387,392,406,421,460,483,494,513,554-694
+internal/codegen/testdata/golden/move_task.go
+  s_9a737206f55bde::t_61c977469c71f7 1-24
+internal/codegen/testdata/golden/resume_task.go
+  s_9a737206f55bde::t_0851960f5a1f35 1-24
+internal/codegen/testdata/golden/start_task.go
+  s_9a737206f55bde::t_72fab8a9adf5ef 1-24
+internal/codegen/testdata/golden/stop_task.go
+  s_9a737206f55bde::t_abc1dceb6abdf6 1-23
+internal/codegen/testdata/schema/move_task.json
+  s_9a737206f55bde::t_11093bddbffc20 1-76
+internal/codegen/testdata/schema/resume_task.json
+  s_9a737206f55bde::t_e0b7fb3333bdb8 1-76
+internal/codegen/testdata/schema/start_task.json
+  s_9a737206f55bde::t_779c79aee63f27 1-76
+internal/codegen/testdata/schema/stop_task.json
+  s_9a737206f55bde::t_41e5056d3bec7d 1-66
+internal/codegen/validate.go
+  s_9a737206f55bde::t_588b96ad71789e 420-435,500,506,636,638
+internal/codegen/validate_test.go
+  s_9a737206f55bde::t_89d2b6cfb118b1 37,4024-4033,4057-4059,4071-4080
+internal/gmptest/testdata/FIDELITY-SUMMARY.txt
+  s_9a737206f55bde::t_a78b43f5520220 346
+internal/gmptest/testdata/live/start_task/001_fidelity.txt
+  s_9a737206f55bde::t_1bdf1714d1676a 16
+internal/schema/testdata/CONFORMANCE.md
+  s_9a737206f55bde::t_0b11b21dc11073 40,52,2334-2335,2339
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "f8eaaa6da947ef132886a39542ce439cbdd1a9d1",
+  "prompts": {},
+  "sessions": {
+    "s_9a737206f55bde": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_9a737206f55bde",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
