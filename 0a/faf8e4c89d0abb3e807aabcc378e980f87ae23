@@ -1,0 +1,39 @@
+.github/workflows/schema-drift.yml
+  s_209d6ed7602ff4::t_f976164913c834 1-67
+docs/review-2026-08.md
+  s_209d6ed7602ff4::t_52e9d6eae45d1b 3583,3586-3587,3591-3629
+hack/compose-lib.sh
+  s_209d6ed7602ff4::t_a7ac4105b04db7 36-39,42-46
+hack/docker-compose.schema-drift-override.yml
+  s_209d6ed7602ff4::t_2ae6da834dfc32 1-9
+hack/schema-drift.sh
+  s_209d6ed7602ff4::t_81f0dc40147a84 1-25
+internal/cmd/schemadrift/main.go
+  s_209d6ed7602ff4::t_b55382c7f50f7f 1-20
+internal/cmd/schemadrift/schemadrift.go
+  s_209d6ed7602ff4::t_7176a67a15d765 1-218
+internal/cmd/schemadrift/schemadrift_test.go
+  s_209d6ed7602ff4::t_3336bafed7bf97 1-314
+internal/codegen/drift.go
+  s_209d6ed7602ff4::t_54de434d7e0288 1-241
+internal/codegen/drift_test.go
+  s_209d6ed7602ff4::t_054bdc2d07aca4 1-255
+internal/dockerstack/dockerstack.go
+  s_209d6ed7602ff4::t_ece4ff6808a8ef 43,77-84
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "0afaf8e4c89d0abb3e807aabcc378e980f87ae23",
+  "prompts": {},
+  "sessions": {
+    "s_209d6ed7602ff4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_209d6ed7602ff4",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
