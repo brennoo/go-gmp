@@ -1,0 +1,81 @@
+client/client_report_test.go
+  s_00e6ffa593227e::t_eb0ad6e1717319 18,24,43,46,68-69,81-82,84
+client/client_test.go
+  s_00e6ffa593227e::t_077e21f723e3bb 482,496,503,506-507
+commands/create_report.go
+  s_00e6ffa593227e::t_b98286db85f9cd 1-2,7,9-12,15,27-31
+commands/delete_report.go
+  s_00e6ffa593227e::t_7662cb3f07cf50 1-2,7,13
+commands/get_reports.go
+  s_00e6ffa593227e::t_3a42ac0bb0f813 1-2,5,7,9-28,30-37,45-50,53-55,58-62,65-68,71,73,76-79,82,84-85
+commands/report_shared.go
+  s_00e6ffa593227e::t_eb417c58c96cc6 1-801
+docs/review-2026-08.md
+  s_00e6ffa593227e::t_4907e16db40961 2812,3248-3343
+internal/cmd/gengmp/main.go
+  s_00e6ffa593227e::t_6e4fde87e36ac0 106,140
+internal/codegen/check.go
+  s_00e6ffa593227e::t_94b0dcfafe17e4 82,99
+internal/codegen/check_test.go
+  s_00e6ffa593227e::t_147b701ae13913 48,155,158-159,236
+internal/codegen/generate.go
+  s_00e6ffa593227e::t_526808340ba43e 5,8,36,41,50-51,83-85,110-115,136-142,531-618,647-668,720,737,802-803,840-847,959,965-969,973,976-979,984-995,999,1005,1010-1050,1174,1176-1178,1345-1349,1397-1401,1452-1455,1457,1594-1647,1746,1754
+internal/codegen/generate_test.go
+  s_00e6ffa593227e::t_405123ead63299 201,1859,1921,1946,1961,1976,2019,2034,2049,2068,2077-2131,2161,2190,2210
+internal/codegen/manifest.json
+  s_00e6ffa593227e::t_5a8475d877b967 205-212
+internal/codegen/manifest_test.go
+  s_00e6ffa593227e::t_07d56b148ab451 29-34,36,59,83,87,91,102,106,110,132,138,143,150,159,165,170,177,295,314,353,360,408,412,466,470,526,530,581,599,644-651,655-656,668
+internal/codegen/overrides.go
+  s_00e6ffa593227e::t_37e25735819f18 209-247,288-352,862-952
+internal/codegen/overrides_test.go
+  s_00e6ffa593227e::t_ef76a3aa86192a 59,105,132,160,178,273,369,387,392,406,421,460,483,494,513,590,612-764,774,789,808,841
+internal/codegen/testdata/golden/create_report.go
+  s_00e6ffa593227e::t_982257429ff0ba 1-31
+internal/codegen/testdata/golden/delete_report.go
+  s_00e6ffa593227e::t_b04b86f9fbe797 1-23
+internal/codegen/testdata/golden/get_reports.go
+  s_00e6ffa593227e::t_26f6a8a2aba950 1-86
+internal/codegen/testdata/golden/report_shared.go
+  s_00e6ffa593227e::t_5ba8b562c4f115 1-801
+internal/codegen/testdata/schema/create_report.json
+  s_00e6ffa593227e::t_565187450b1611 1-5160
+internal/codegen/testdata/schema/delete_report.json
+  s_00e6ffa593227e::t_c8d52b8086e10c 1-66
+internal/codegen/testdata/schema/get_reports.json
+  s_00e6ffa593227e::t_b45b850f9925ff 1-5475
+internal/codegen/validate.go
+  s_00e6ffa593227e::t_5c5d545b24a0aa 484-495,520,526,656,658
+internal/codegen/validate_test.go
+  s_00e6ffa593227e::t_f2d8ecdab39954 37
+internal/gmptest/testdata/FIDELITY-SUMMARY.txt
+  s_00e6ffa593227e::t_37e019d2a563cb 13,15,213-216
+internal/gmptest/testdata/REQUEST-FIDELITY.txt
+  s_00e6ffa593227e::t_f0da0184347847 48-49
+internal/gmptest/testdata/live/get_reports/001_fidelity.txt
+  s_00e6ffa593227e::t_d3984ea664e32a 11-13,15-16,19,25-36
+internal/gmptest/testdata/live/get_reports/002_fidelity.txt
+  s_00e6ffa593227e::t_4b83e2fe6e8b7e 11-13,15-16,26-37
+internal/gmptest/testdata/upstream/get_reports/001_fidelity.txt
+  s_00e6ffa593227e::t_428e09af7bd0dd 7,16-17,20-21,24-56
+internal/gmptest/testdata/upstream/get_reports/002_fidelity.txt
+  s_00e6ffa593227e::t_6217295bd47c28 10,25-26,29-30,33-50,53-55,58-90
+internal/schema/testdata/CONFORMANCE.md
+  s_00e6ffa593227e::t_ae84683832664a 39-41,48-50,52-53,92,94,195-202,946-953
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "309f95b0222113cf85a72b981fec11c8e3ede68a",
+  "prompts": {},
+  "sessions": {
+    "s_00e6ffa593227e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_00e6ffa593227e",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
