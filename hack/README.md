@@ -158,23 +158,30 @@ the way generating certs against a not-yet-started container would.
 
 ## Pinned images
 
-Every `image:` in `docker-compose.yml` is pinned to a `repo@sha256:digest`
-reference, with what it was pinned from (a tag, or "untagged" for the
-implicit `:latest`) kept as a trailing comment — including the images with no
-explicit tag, since those are exactly the feed/data containers that
-determine what `get_*` responses actually contain.
+Every `image:` in `docker-compose.yml` points at
+`ghcr.io/brennoo/gvm-mirror/*`, a mirror of the upstream Greenbone images this
+project controls, pinned to a `repo@sha256:digest` reference with the tag it
+was pinned from kept as a trailing comment. Mirroring, not just digest
+pinning, exists because a digest alone only protects against a tag moving —
+it does nothing if the upstream registry garbage-collects the blob, changes
+retention, removes the repository, or is simply unreachable. See T-22 in
+`docs/review-2026-08.md`.
 
-To move a pin (picking up a new `:stable` build, for instance), re-run:
+`hack/image-mirror.lock.json` is the durable record of what was mirrored from
+where; it is also the seed the next run reads to know what to re-mirror. To
+refresh the mirror (picking up a new upstream `:stable` build, for instance),
+re-run:
 
 ```bash
-hack/pin-images.sh
+hack/mirror-images.sh
 ```
 
-This resolves each image's current digest from the registry (no pull
-required) and rewrites the file in place. Nothing does this automatically or
-on a schedule — review the diff it produces like any other dependency bump
-before committing it, since a moved digest is exactly the kind of change
-that deserves a human look.
+This re-resolves each image from the channel its lock entry recorded, copies
+anything new to the mirror with Skopeo (no pull required), and rewrites both
+the lock file and `docker-compose.yml`'s pins in place. Nothing does this
+automatically or on a schedule — review the diff it produces like any other
+dependency bump before committing it, since a moved digest is exactly the
+kind of change that deserves a human look.
 
 ## Stopping
 

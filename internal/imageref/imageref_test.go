@@ -45,6 +45,101 @@ func TestValidateDigestAccepts(t *testing.T) {
 	}
 }
 
+func TestImageLineRepository(t *testing.T) {
+	tests := []struct {
+		name     string
+		line     string
+		wantRepo string
+		wantOK   bool
+	}{
+		{
+			name:   "not an image line",
+			line:   "    build: .",
+			wantOK: false,
+		},
+		{
+			name:     "tagged",
+			line:     "    image: registry.community.greenbone.net/community/gvmd:stable",
+			wantRepo: "registry.community.greenbone.net/community/gvmd",
+			wantOK:   true,
+		},
+		{
+			name:     "bare, no tag",
+			line:     "    image: registry.community.greenbone.net/community/gvm-tools",
+			wantRepo: "registry.community.greenbone.net/community/gvm-tools",
+			wantOK:   true,
+		},
+		{
+			name:     "tagged behind a host:port registry",
+			line:     "    image: localhost:5000/community/gvmd:stable",
+			wantRepo: "localhost:5000/community/gvmd",
+			wantOK:   true,
+		},
+		{
+			name:     "digest-pinned",
+			line:     "    image: gvmd@sha256:aaaa # was stable",
+			wantRepo: "gvmd",
+			wantOK:   true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo, ok := ImageLineRepository(tt.line)
+			if ok != tt.wantOK {
+				t.Fatalf("ok = %v, want %v", ok, tt.wantOK)
+			}
+			if !ok {
+				return
+			}
+			if repo != tt.wantRepo {
+				t.Errorf("ImageLineRepository(%q) = %q, want %q", tt.line, repo, tt.wantRepo)
+			}
+		})
+	}
+}
+
+func TestValidateTagNameAccepts(t *testing.T) {
+	tests := []string{
+		"stable",
+		"23.0.0",
+		"v1.2.3-rc1",
+		"sha256-" + strings.Repeat("a", 64),
+		"a",
+		strings.Repeat("a", 128),
+	}
+	for _, tag := range tests {
+		t.Run(tag, func(t *testing.T) {
+			if err := ValidateTagName(tag); err != nil {
+				t.Errorf("ValidateTagName(%q) = %v, want nil", tag, err)
+			}
+		})
+	}
+}
+
+func TestValidateTagNameRejects(t *testing.T) {
+	tests := []struct {
+		name string
+		tag  string
+	}{
+		{"empty", ""},
+		{"too long", strings.Repeat("a", 129)},
+		{"leading dot", ".stable"},
+		{"leading dash", "-stable"},
+		{"leading underscore", "_stable"},
+		{"embedded slash", "stable/v1"},
+		{"embedded colon", "stable:v1"},
+		{"embedded space", "stable v1"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := ValidateTagName(tt.tag); err == nil {
+				t.Errorf("ValidateTagName(%q) = nil, want an error", tt.tag)
+			}
+		})
+	}
+}
+
 func TestValidateDigestRejects(t *testing.T) {
 	hex := strings.Repeat("ab", 32)
 	tests := []struct {
