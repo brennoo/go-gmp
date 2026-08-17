@@ -98,6 +98,7 @@ type flags struct {
 	manifestFile     string
 	schemaDir        string
 	composeFile      string
+	expectDigest     string
 	dial             dialOptions
 }
 
@@ -122,6 +123,10 @@ func parseFlags(args []string) (flags, error) {
 		"skip TLS certificate verification instead of using -gmp.cafile/-gmp.servername; never the default, opt in explicitly")
 	fs.StringVar(&f.composeFile, "live.compose-file", "hack/docker-compose.yml",
 		"path to the Compose file backing the live gvmd, used to resolve its served image digest")
+	fs.StringVar(&f.expectDigest, "expect-digest", "",
+		"if set, fail unless gvmd's served image digest matches this repo@sha256:... reference — "+
+			"binds the report to the digest -resolve-only produced, so a stale or reused container "+
+			"can't silently be reported as the intended candidate")
 	if err := fs.Parse(args); err != nil {
 		return flags{}, err
 	}
@@ -181,6 +186,9 @@ func runReport(ctx context.Context, f flags, dial dialFunc, imageDigest imageDig
 	if err != nil {
 		return fmt.Errorf("resolving gvmd's served image digest: %w", err)
 	}
+	if err := checkExpectedDigest(f.expectDigest, servedDigest); err != nil {
+		return err
+	}
 
 	raw, err := conn.RawXML(ctx, `<help format="XML" type=""/>`)
 	if err != nil {
@@ -203,6 +211,29 @@ func runReport(ctx context.Context, f flags, dial dialFunc, imageDigest imageDig
 	}
 
 	return writeReport(stdout, entry.DestinationDigest, servedDigest, report)
+}
+
+// checkExpectedDigest fails closed unless servedDigest's content matches
+// expectDigest — the digest -resolve-only produced and hack/schema-drift.sh
+// booted the candidate stack from. Compared by SHA-256 hex only, like
+// digestHex's other callers, so a repository rewrite (upstream vs. this
+// project's GHCR mirror) alone isn't mistaken for a mismatch. A no-op when
+// expectDigest is empty, for standalone use against an arbitrary
+// already-running gvmd with no resolved candidate to bind to.
+func checkExpectedDigest(expectDigest, servedDigest string) error {
+	if expectDigest == "" {
+		return nil
+	}
+	wantHex, ok := digestHex(expectDigest)
+	if !ok {
+		return fmt.Errorf("-expect-digest %q is not a repo@sha256:<hex> reference", expectDigest)
+	}
+	if gotHex, ok := digestHex(servedDigest); !ok || gotHex != wantHex {
+		return fmt.Errorf("served image %s does not match the resolved candidate %s — "+
+			"the running container is not the digest this report was supposed to inspect",
+			servedDigest, expectDigest)
+	}
+	return nil
 }
 
 func writeReport(stdout io.Writer, pinnedDigest, servedDigest string, report codegen.DriftReport) error {

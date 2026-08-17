@@ -189,6 +189,16 @@ func TestDetectDriftMissingSnapshotFails(t *testing.T) {
 	}
 }
 
+func TestDetectDriftDuplicateLiveCommandFailsClosed(t *testing.T) {
+	dir := t.TempDir()
+	m := Manifest{Families: []Family{{Name: "task", Commands: []string{"get_tasks"}}}}
+	live := schema.Command{Name: "get_tasks", Request: elem("get_tasks", "", schema.CardRequired), Response: elem("get_tasks_response", "", schema.CardRequired)}
+
+	if _, err := DetectDrift([]schema.Command{live, live}, m, dir); err == nil {
+		t.Fatal("expected an error for a duplicate live command name, got nil")
+	}
+}
+
 func TestDetectDriftRanksChangedByNodeCountDescending(t *testing.T) {
 	dir := t.TempDir()
 	m := Manifest{Families: []Family{

@@ -45,6 +45,9 @@ type DriftReport struct {
 func DetectDrift(live []schema.Command, m Manifest, snapshotDir string) (DriftReport, error) {
 	byName := make(map[string]schema.Command, len(live))
 	for _, c := range live {
+		if _, dup := byName[c.Name]; dup {
+			return DriftReport{}, fmt.Errorf("live schema declares command %q more than once", c.Name)
+		}
 		byName[c.Name] = c
 	}
 

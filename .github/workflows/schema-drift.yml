@@ -49,14 +49,24 @@ jobs:
         # hack/gvmd-up.sh's certificates carry no SAN (see its own log output),
         # so -gmp.insecure is the documented-correct choice here, not a
         # shortcut — see internal/codegen/snapshot_live_test.go.
+        #
+        # No `set -e`: this step is informational (see the file header), so a
+        # failure here (upstream unreachable, stack failed to boot, auth
+        # failed) must still produce a closed, readable summary block — with
+        # whatever schema-drift.sh wrote to stdout/stderr — instead of losing
+        # the diagnostic and leaving an unterminated code fence. The step
+        # still exits with the original status, so the run is visibly red.
         run: |
-          set -eu
+          set -u
+          output="$(hack/schema-drift.sh -gmp.insecure -gmp.pass="$GVMD_ADMIN_PASSWORD" 2>&1)"
+          status=$?
           {
             echo '## Schema drift report'
             echo '```'
-            hack/schema-drift.sh -gmp.insecure -gmp.pass="$GVMD_ADMIN_PASSWORD"
+            printf '%s\n' "$output"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+          exit "$status"
 
       - name: gvmd logs
         if: always()

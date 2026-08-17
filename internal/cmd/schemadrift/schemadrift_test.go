@@ -165,6 +165,47 @@ func TestRunReportModeDetectsDrift(t *testing.T) {
 	}
 }
 
+func TestRunReportModeExpectDigestMismatchFails(t *testing.T) {
+	dir := t.TempDir()
+	pinnedDigest := "ghcr.io/brennoo/gvm-mirror/gvmd@sha256:" + strings.Repeat("aa", 32)
+	lockFile := writeLockFile(t, dir, mirror.LockEntry{
+		SourceRepository:      testSourceRepository,
+		SourceChannel:         testSourceRepository + ":stable",
+		DestinationRepository: "ghcr.io/brennoo/gvm-mirror/gvmd",
+		DestinationDigest:     pinnedDigest,
+	})
+
+	manifestFile := filepath.Join(dir, "manifest.json")
+	writeManifestFixture(t, manifestFile)
+	schemaDir := filepath.Join(dir, "schema")
+	if err := os.MkdirAll(schemaDir, 0o755); err != nil {
+		t.Fatalf("mkdir schema dir: %v", err)
+	}
+	writeGetFixtureSnapshot(t, schemaDir)
+
+	expectDigest := "registry.community.greenbone.net/community/gvmd@sha256:" + strings.Repeat("cc", 32)
+	servedDigest := "registry.community.greenbone.net/community/gvmd@sha256:" + strings.Repeat("bb", 32)
+	conn := &fakeConn{rawXML: helpResponseXML}
+	dial := func(context.Context, dialOptions) (gmp.Connection, error) { return conn, nil }
+	imageDigest := func(context.Context, string, string) (string, error) { return servedDigest, nil }
+
+	var stdout, stderr bytes.Buffer
+	err := run(context.Background(),
+		[]string{"-lock-file", lockFile, "-source-repository", testSourceRepository,
+			"-manifest", manifestFile, "-schema", schemaDir, "-gmp.insecure",
+			"-expect-digest", expectDigest},
+		unusedRunner(t), dial, imageDigest, &stdout, &stderr)
+	if err == nil {
+		t.Fatal("expected an error for a served digest not matching -expect-digest, got nil")
+	}
+	if !conn.closed {
+		t.Error("connection was not closed")
+	}
+	if stdout.String() != "" {
+		t.Errorf("stdout = %q, want no report written on a digest mismatch", stdout.String())
+	}
+}
+
 func TestRunReportModeNoDrift(t *testing.T) {
 	dir := t.TempDir()
 	digest := "ghcr.io/brennoo/gvm-mirror/gvmd@sha256:" + strings.Repeat("aa", 32)
@@ -187,12 +228,17 @@ func TestRunReportModeNoDrift(t *testing.T) {
 
 	conn := &fakeConn{rawXML: helpResponseXML}
 	dial := func(context.Context, dialOptions) (gmp.Connection, error) { return conn, nil }
-	imageDigest := func(context.Context, string, string) (string, error) { return digest, nil }
+	servedDigest := "registry.community.greenbone.net/community/gvmd@sha256:" + strings.Repeat("aa", 32)
+	imageDigest := func(context.Context, string, string) (string, error) { return servedDigest, nil }
 
 	var stdout, stderr bytes.Buffer
 	err := run(context.Background(),
 		[]string{"-lock-file", lockFile, "-source-repository", testSourceRepository,
-			"-manifest", manifestFile, "-schema", schemaDir, "-gmp.insecure"},
+			"-manifest", manifestFile, "-schema", schemaDir, "-gmp.insecure",
+			// A different repository than servedDigest's (upstream vs. this
+			// project's GHCR mirror) but the same content hash — proving the
+			// -expect-digest check compares hashes, not whole refs.
+			"-expect-digest", digest},
 		unusedRunner(t), dial, imageDigest, &stdout, &stderr)
 	if err != nil {
 		t.Fatalf("run: %v", err)

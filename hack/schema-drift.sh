@@ -22,4 +22,4 @@ log "Candidate gvmd image: $SCHEMA_DRIFT_GVMD_IMAGE"
 export COMPOSE_OVERRIDE_FILE="$HACK_DIR/docker-compose.schema-drift-override.yml"
 hack/gvmd-up.sh
 
-exec go run ./internal/cmd/schemadrift "$@"
+exec go run ./internal/cmd/schemadrift -expect-digest="$SCHEMA_DRIFT_GVMD_IMAGE" "$@"
