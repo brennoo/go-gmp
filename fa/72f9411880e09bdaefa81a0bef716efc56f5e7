@@ -1,0 +1,19 @@
+docs/review-2026-08.md
+  s_2f16968f328682::t_fba28f87e0bf79 2050-2067,2812-2905
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "fa72f9411880e09bdaefa81a0bef716efc56f5e7",
+  "prompts": {},
+  "sessions": {
+    "s_2f16968f328682": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_2f16968f328682",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
