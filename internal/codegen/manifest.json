@@ -2,87 +2,187 @@
   "families": [
     {
       "name": "note",
-      "commands": ["create_note", "get_notes", "modify_note"]
+      "commands": [
+        "create_note",
+        "delete_note",
+        "get_notes",
+        "modify_note"
+      ]
     },
     {
       "name": "override",
-      "commands": ["create_override", "get_overrides", "modify_override"]
+      "commands": [
+        "create_override",
+        "delete_override",
+        "get_overrides",
+        "modify_override"
+      ]
     },
     {
       "name": "role",
-      "commands": ["create_role", "get_roles", "modify_role"]
+      "commands": [
+        "create_role",
+        "delete_role",
+        "get_roles",
+        "modify_role"
+      ]
     },
     {
       "name": "group",
-      "commands": ["create_group", "get_groups", "modify_group"]
+      "commands": [
+        "create_group",
+        "delete_group",
+        "get_groups",
+        "modify_group"
+      ]
     },
     {
       "name": "tag",
-      "commands": ["create_tag", "get_tags", "modify_tag"]
+      "commands": [
+        "create_tag",
+        "delete_tag",
+        "get_tags",
+        "modify_tag"
+      ]
     },
     {
       "name": "schedule",
-      "commands": ["create_schedule", "get_schedules", "modify_schedule"]
+      "commands": [
+        "create_schedule",
+        "delete_schedule",
+        "get_schedules",
+        "modify_schedule"
+      ]
     },
     {
       "name": "alert",
-      "commands": ["create_alert", "get_alerts", "modify_alert"]
+      "commands": [
+        "create_alert",
+        "delete_alert",
+        "get_alerts",
+        "modify_alert"
+      ]
     },
     {
       "name": "filter",
-      "commands": ["create_filter", "get_filters", "modify_filter"]
+      "commands": [
+        "create_filter",
+        "delete_filter",
+        "get_filters",
+        "modify_filter"
+      ]
     },
     {
       "name": "tls_certificate",
-      "commands": ["create_tls_certificate", "get_tls_certificates", "modify_tls_certificate"]
+      "commands": [
+        "create_tls_certificate",
+        "get_tls_certificates",
+        "modify_tls_certificate"
+      ]
     },
     {
       "name": "permission",
-      "commands": ["create_permission", "get_permissions", "modify_permission"]
+      "commands": [
+        "create_permission",
+        "delete_permission",
+        "get_permissions",
+        "modify_permission"
+      ]
     },
     {
       "name": "ticket",
-      "commands": ["create_ticket", "get_tickets", "modify_ticket"]
+      "commands": [
+        "create_ticket",
+        "delete_ticket",
+        "get_tickets",
+        "modify_ticket"
+      ]
     },
     {
       "name": "credential",
-      "commands": ["create_credential", "get_credentials", "modify_credential"]
+      "commands": [
+        "create_credential",
+        "delete_credential",
+        "get_credentials",
+        "modify_credential"
+      ]
     },
     {
       "name": "port_list",
-      "commands": ["create_port_list", "get_port_lists", "modify_port_list"]
+      "commands": [
+        "create_port_list",
+        "delete_port_list",
+        "get_port_lists",
+        "modify_port_list"
+      ]
     },
     {
       "name": "asset",
-      "commands": ["create_asset", "get_assets", "modify_asset"]
+      "commands": [
+        "create_asset",
+        "get_assets",
+        "modify_asset"
+      ]
     },
     {
       "name": "report_format",
-      "commands": ["create_report_format", "get_report_formats", "modify_report_format"]
+      "commands": [
+        "create_report_format",
+        "delete_report_format",
+        "get_report_formats",
+        "modify_report_format"
+      ]
     },
     {
       "name": "report_config",
-      "commands": ["create_report_config", "get_report_configs", "modify_report_config"]
+      "commands": [
+        "create_report_config",
+        "delete_report_config",
+        "get_report_configs",
+        "modify_report_config"
+      ]
     },
     {
       "name": "user",
-      "commands": ["create_user", "get_users", "modify_user"]
+      "commands": [
+        "create_user",
+        "get_users",
+        "modify_user"
+      ]
     },
     {
       "name": "target",
-      "commands": ["create_target", "get_targets", "modify_target"]
+      "commands": [
+        "create_target",
+        "get_targets",
+        "modify_target"
+      ]
     },
     {
       "name": "task",
-      "commands": ["create_task", "get_tasks", "modify_task"]
+      "commands": [
+        "create_task",
+        "get_tasks",
+        "modify_task"
+      ]
     },
     {
       "name": "scanner",
-      "commands": ["create_scanner", "get_scanners", "modify_scanner"]
+      "commands": [
+        "create_scanner",
+        "delete_scanner",
+        "get_scanners",
+        "modify_scanner"
+      ]
     },
     {
       "name": "config",
-      "commands": ["create_config", "get_configs", "modify_config"]
+      "commands": [
+        "create_config",
+        "delete_config",
+        "get_configs",
+        "modify_config"
+      ]
     }
   ]
 }

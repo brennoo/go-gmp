@@ -268,8 +268,8 @@ func TestGetFiltersCollisionRoundTrips(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Round-trip program failed: %v\n%s", err, out)
 	}
-	const want = "decode: Term=\"first=1 rows=10 sort=name\" Keywords=3 Start=1 Max=1000 Filters=0\n" +
-		"roundtrip: Term=\"first=1 rows=10 sort=name\" Keywords=3 Start=1 Max=1000 Filters=0\n" +
+	const want = "decode: Term=\"first=1 rows=11 sort=name\" Keywords=3 Start=1 Max=1000 Filters=0\n" +
+		"roundtrip: Term=\"first=1 rows=11 sort=name\" Keywords=3 Start=1 Max=1000 Filters=0\n" +
 		"zero-marshal-root: get_filters_response\n" +
 		"reset: Status=201 FilterCount=0 Term=\"t2\"\n" +
 		"extra-occurrence: GetFiltersResponse: unexpected extra <filters> element\n" +
@@ -1043,9 +1043,9 @@ func TestCredentialGeneratedResponseRoundTrips(t *testing.T) {
 		"upstream-package-roundtrip: credentials=1 filtered=0 page=0\n" +
 		"  credential id=\"8e305b0b-260d-450d-91a8-dadf0b144e15\" type=\"up\" target.id=\"1f28d970-17ef-4c69-ba8a-13827059f2b9\" package.format=\"deb\" package.len=29 allow_insecure=false writable=true in_use=true\n" +
 		"live-decode: credentials=1 filtered=1 page=1\n" +
-		"  credential id=\"81c535ac-5b43-427d-ba8a-a865051eb096\" type=\"cc\" formats=[pem] allow_insecure=false writable=true in_use=false\n" +
+		"  credential id=\"3eb63d05-e835-474b-ab05-27751336805d\" type=\"cc\" formats=[pem] allow_insecure=false writable=true in_use=false\n" +
 		"live-roundtrip: credentials=1 filtered=1 page=1\n" +
-		"  credential id=\"81c535ac-5b43-427d-ba8a-a865051eb096\" type=\"cc\" formats=[pem] allow_insecure=false writable=true in_use=false\n" +
+		"  credential id=\"3eb63d05-e835-474b-ab05-27751336805d\" type=\"cc\" formats=[pem] allow_insecure=false writable=true in_use=false\n" +
 		"synthetic-decode: credentials=1 filtered=1 page=1\n" +
 		"  credential id=\"cred-syn-1\" type=\"krb5\" formats=[key] kdcs=[kdc1.example.com kdc2.example.com] scanner.id=\"scanner-1\" privacy.algorithm=\"aes\" cert_info.time_status=\"valid\" cert_info.activation_time=\"2020-01-01T00:00:00Z\" cert_info.expiration_time=\"2030-01-01T00:00:00Z\" cert_info.issuer=\"CN=test\" cert_info.md5=\"aa:bb\" cert_info.sha256=\"cc:dd\" cert_info.subject=\"CN=subject\" cert_info.serial=\"01\" allow_insecure=false writable=true in_use=false\n" +
 		"synthetic-roundtrip: credentials=1 filtered=1 page=1\n" +
@@ -1345,11 +1345,11 @@ func TestPortListGeneratedResponseRoundTrips(t *testing.T) {
 		"  port_list id=\"b993b6f5-f9fb-4e6e-9c94-dd46c00e058d\" name=\"All TCP\" writable=false in_use=true predefined=false deprecated=false port_ranges=[TCP:1-65535] targets=[1f28d970-17ef-4c69-ba8a-13827059f2b9]\n" +
 		"upstream-roundtrip: port_lists=1 filtered=0 page=0 sort_value=\"\" sort_field_order=\"\"\n" +
 		"  port_list id=\"b993b6f5-f9fb-4e6e-9c94-dd46c00e058d\" name=\"All TCP\" writable=false in_use=true predefined=false deprecated=false port_ranges=[TCP:1-65535] targets=[1f28d970-17ef-4c69-ba8a-13827059f2b9]\n" +
-		"live-decode: port_lists=3 filtered=3 page=3 sort_value=\"\" sort_field_order=\"ascending\" keywords=[first=1 rows=10 sort=name]\n" +
+		"live-decode: port_lists=3 filtered=3 page=3 sort_value=\"\" sort_field_order=\"ascending\" keywords=[first=1 rows=11 sort=name]\n" +
 		"  port_list id=\"33d0cd82-57c6-11e1-8ed1-406186ea4fc5\" name=\"All IANA assigned TCP\" writable=true in_use=false predefined=true deprecated=false\n" +
 		"  port_list id=\"4a4717fe-57d2-11e1-9a26-406186ea4fc5\" name=\"All IANA assigned TCP and UDP\" writable=true in_use=false predefined=true deprecated=false\n" +
 		"  port_list id=\"730ef368-57e2-11e1-a90f-406186ea4fc5\" name=\"All TCP and Nmap top 100 UDP\" writable=true in_use=false predefined=true deprecated=false\n" +
-		"live-roundtrip: port_lists=3 filtered=3 page=3 sort_value=\"\" sort_field_order=\"ascending\" keywords=[first=1 rows=10 sort=name]\n" +
+		"live-roundtrip: port_lists=3 filtered=3 page=3 sort_value=\"\" sort_field_order=\"ascending\" keywords=[first=1 rows=11 sort=name]\n" +
 		"  port_list id=\"33d0cd82-57c6-11e1-8ed1-406186ea4fc5\" name=\"All IANA assigned TCP\" writable=true in_use=false predefined=true deprecated=false\n" +
 		"  port_list id=\"4a4717fe-57d2-11e1-9a26-406186ea4fc5\" name=\"All IANA assigned TCP and UDP\" writable=true in_use=false predefined=true deprecated=false\n" +
 		"  port_list id=\"730ef368-57e2-11e1-a90f-406186ea4fc5\" name=\"All TCP and Nmap top 100 UDP\" writable=true in_use=false predefined=true deprecated=false\n" +

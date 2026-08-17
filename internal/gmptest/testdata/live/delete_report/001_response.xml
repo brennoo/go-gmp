@@ -1,1 +1,1 @@
-<delete_report_response status="200" status_text="OK"/>
+<delete_report_response status="404" status_text="Failed to find report '3f0e6106-8f9a-4485-b6cf-166ed5a4b887'"/>

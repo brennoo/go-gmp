@@ -97,6 +97,7 @@ func TestValidateBeforeMatchesKnownConformance(t *testing.T) {
 			actionable: map[string]int{schema.CatDefect: 3},
 			suppressed: map[string]int{},
 		},
+		"delete_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		got := countFindings(res.Findings)
@@ -160,6 +161,7 @@ func TestValidateGeneratedMatchesOrImproves(t *testing.T) {
 		"create_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_notes":   {actionable: map[string]int{schema.CatDefect: 3}, suppressed: map[string]int{}},
+		"delete_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 
 	assertMatchesOrImproves(t, before, after, wantAfter)
@@ -190,6 +192,7 @@ func TestValidateOverrideBeforeMatchesKnownConformance(t *testing.T) {
 			actionable: map[string]int{schema.CatDefect: 3},
 			suppressed: map[string]int{},
 		},
+		"delete_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -235,6 +238,7 @@ func TestValidateOverrideGeneratedMatchesOrImproves(t *testing.T) {
 		"create_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_overrides":   {actionable: map[string]int{schema.CatDefect: 3}, suppressed: map[string]int{}},
+		"delete_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
@@ -264,6 +268,7 @@ func TestValidateRoleBeforeMatchesKnownConformance(t *testing.T) {
 		"create_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_roles":   {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"delete_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -309,6 +314,7 @@ func TestValidateRoleGeneratedMatchesOrImproves(t *testing.T) {
 		"create_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_roles":   {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"delete_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
@@ -455,6 +461,7 @@ func TestValidateGroupBeforeMatchesKnownConformance(t *testing.T) {
 		},
 		"modify_group": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_groups":   {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"delete_group": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -495,6 +502,7 @@ func TestValidateGroupGeneratedMatchesOrImproves(t *testing.T) {
 		"create_group": {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{}},
 		"modify_group": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_groups":   {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"delete_group": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
@@ -736,6 +744,7 @@ func TestValidateTagBeforeMatchesKnownConformance(t *testing.T) {
 		"create_tag": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_tags":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{}},
 		"modify_tag": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"delete_tag": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -795,6 +804,7 @@ func TestValidateTagGeneratedMatchesOrImproves(t *testing.T) {
 		"create_tag": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_tags":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{}},
 		"modify_tag": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"delete_tag": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
@@ -1006,6 +1016,7 @@ func TestValidateScheduleBeforeMatchesKnownConformance(t *testing.T) {
 		"create_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_schedules":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{}},
+		"delete_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -1061,6 +1072,7 @@ func TestValidateScheduleGeneratedMatchesOrImproves(t *testing.T) {
 		"create_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_schedules":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{}},
+		"delete_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
@@ -1293,6 +1305,7 @@ func TestValidateAlertBeforeMatchesKnownConformance(t *testing.T) {
 		"create_alert": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_alert": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_alerts":   {actionable: map[string]int{schema.CatDefect: 2}, suppressed: map[string]int{}},
+		"delete_alert": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -1345,6 +1358,7 @@ func TestValidateAlertGeneratedMatchesOrImproves(t *testing.T) {
 		"create_alert": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_alert": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_alerts":   {actionable: map[string]int{schema.CatDefect: 2}, suppressed: map[string]int{}},
+		"delete_alert": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
@@ -1585,6 +1599,7 @@ func TestValidateFilterBeforeMatchesKnownConformance(t *testing.T) {
 			},
 			suppressed: map[string]int{},
 		},
+		"delete_filter": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -1633,6 +1648,7 @@ func TestValidateFilterGeneratedMatchesOrImproves(t *testing.T) {
 			},
 			suppressed: map[string]int{},
 		},
+		"delete_filter": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
@@ -2271,6 +2287,7 @@ func TestValidatePermissionBeforeMatchesKnownConformance(t *testing.T) {
 			},
 			suppressed: map[string]int{},
 		},
+		"delete_permission": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -2320,6 +2337,7 @@ func TestValidatePermissionGeneratedMatchesOrImproves(t *testing.T) {
 			},
 			suppressed: map[string]int{},
 		},
+		"delete_permission": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
@@ -2388,7 +2406,7 @@ func TestPermissionCountBareTotalIsAnAcceptedLoss(t *testing.T) {
 		wantFilter int
 		wantPage   int
 	}{
-		{"live_001", filepath.Join(gmptestDir, "live", "get_permissions", "001_response.xml"), "260", 260, 10},
+		{"live_001", filepath.Join(gmptestDir, "live", "get_permissions", "001_response.xml"), "260", 260, 11},
 		{"live_002", filepath.Join(gmptestDir, "live", "get_permissions", "002_response.xml"), "260", 260, 2},
 		{"live_003", filepath.Join(gmptestDir, "live", "get_permissions", "003_response.xml"), "262", 1, 1},
 		{"upstream_001", filepath.Join(gmptestDir, "upstream", "get_permissions", "001_response.xml"), "1", 1, 1},
@@ -2619,6 +2637,7 @@ func TestValidateTicketBeforeMatchesKnownConformance(t *testing.T) {
 		"create_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_tickets":   {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"delete_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -2640,6 +2659,7 @@ func TestValidateTicketGeneratedMatchesOrImproves(t *testing.T) {
 		"create_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_tickets":   {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"delete_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
@@ -2869,6 +2889,7 @@ func TestValidateCredentialBeforeMatchesKnownConformance(t *testing.T) {
 			actionable: map[string]int{schema.CatDefect: 2},
 			suppressed: map[string]int{},
 		},
+		"delete_credential": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -2908,6 +2929,7 @@ func TestValidateCredentialGeneratedMatchesOrImproves(t *testing.T) {
 			actionable: map[string]int{schema.CatDefect: 2},
 			suppressed: map[string]int{},
 		},
+		"delete_credential": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
@@ -3132,6 +3154,7 @@ func TestValidatePortListBeforeMatchesKnownConformance(t *testing.T) {
 			actionable: map[string]int{schema.CatDefect: 1},
 			suppressed: map[string]int{},
 		},
+		"delete_port_list": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -3161,6 +3184,7 @@ func TestValidatePortListGeneratedMatchesOrImproves(t *testing.T) {
 			actionable: map[string]int{schema.CatDefect: 1},
 			suppressed: map[string]int{},
 		},
+		"delete_port_list": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
@@ -3225,6 +3249,7 @@ func TestValidateReportFormatBeforeMatchesKnownConformance(t *testing.T) {
 			actionable: map[string]int{},
 			suppressed: map[string]int{schema.CatExtra: 1},
 		},
+		"delete_report_format": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -3264,6 +3289,7 @@ func TestValidateReportFormatGeneratedMatchesOrImproves(t *testing.T) {
 			actionable: map[string]int{},
 			suppressed: map[string]int{schema.CatExtra: 1},
 		},
+		"delete_report_format": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
@@ -3302,7 +3328,7 @@ func TestReportFormatCommentRoundTrips(t *testing.T) {
 		count int
 	}{
 		{filepath.Join(fixtures, "live", "get_report_formats", "001_response.xml"), 5},
-		{filepath.Join(fixtures, "live", "get_report_formats", "002_response.xml"), 5},
+		{filepath.Join(fixtures, "live", "get_report_formats", "006_response.xml"), 6},
 		{filepath.Join(fixtures, "upstream", "get_report_formats", "002_response.xml"), 1},
 	} {
 		data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture paths under this package's own tree
@@ -3552,6 +3578,7 @@ func TestValidateReportConfigBeforeMatchesKnownConformance(t *testing.T) {
 			actionable: map[string]int{schema.CatDefect: 1, schema.CatMissing: 1},
 			suppressed: map[string]int{schema.CatExtra: 1},
 		},
+		"delete_report_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -3598,6 +3625,7 @@ func TestValidateReportConfigGeneratedMatchesOrImproves(t *testing.T) {
 			actionable: map[string]int{schema.CatDefect: 1, schema.CatMissing: 1},
 			suppressed: map[string]int{schema.CatExtra: 1},
 		},
+		"delete_report_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
@@ -4034,6 +4062,7 @@ func TestValidateScannerBeforeMatchesKnownConformance(t *testing.T) {
 			actionable: map[string]int{schema.CatDefect: 10},
 			suppressed: map[string]int{},
 		},
+		"delete_scanner": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -4066,6 +4095,7 @@ func TestValidateScannerGeneratedMatchesOrImproves(t *testing.T) {
 			actionable: map[string]int{schema.CatDefect: 10},
 			suppressed: map[string]int{},
 		},
+		"delete_scanner": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
@@ -4087,6 +4117,7 @@ func TestValidateConfigBeforeMatchesKnownConformance(t *testing.T) {
 			suppressed: map[string]int{},
 		},
 		"modify_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"delete_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -4128,6 +4159,7 @@ func TestValidateConfigGeneratedMatchesOrImproves(t *testing.T) {
 			suppressed: map[string]int{},
 		},
 		"modify_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"delete_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }

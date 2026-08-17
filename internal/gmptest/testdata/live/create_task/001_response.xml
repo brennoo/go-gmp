@@ -1,1 +1,1 @@
-<create_task_response status="201" status_text="OK, resource created" id="3a4c8122-30a5-45c9-9660-d7982f8406b7"/>
+<create_task_response status="404" status_text="Failed to find scanner ''"/>

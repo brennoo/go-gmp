@@ -1,0 +1,19 @@
+# fidelity: create_task / live / 002
+# provenance: lifecycle: create_task container form with <target id="0"/>
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

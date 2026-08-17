@@ -1,0 +1,20 @@
+# fidelity: get_roles / live / 003
+# provenance: lifecycle: get_roles for the role just created
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_roles_response/role_count/#text                                     x1
+  /get_roles_response/sort/field/#text                                     x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

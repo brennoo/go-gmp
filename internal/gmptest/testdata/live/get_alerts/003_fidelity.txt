@@ -14,10 +14,7 @@ CHANGED
   (none)
 
 ADDED
-  /get_alerts_response/alert/filter                                        x1
-  /get_alerts_response/alert/filter/name                                   x1
-  /get_alerts_response/alert/filter/trash                                  x1
-  /get_alerts_response/alert/filter/trash/#text                            x1
+  (none)
 
 DUPLICATED
   (none)

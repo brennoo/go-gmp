@@ -771,9 +771,9 @@ func responseID(doc string) string {
 	}
 }
 
-// firstAttr returns the value of attr on the first <element> in doc, which is
+// firstID returns the id attribute of the first <element> in doc, which is
 // how an id is lifted out of a list response without a typed decode.
-func firstAttr(doc, element, attr string) string {
+func firstID(doc, element string) string {
 	dec := xml.NewDecoder(strings.NewReader(doc))
 	for {
 		tok, err := dec.Token()
@@ -785,7 +785,7 @@ func firstAttr(doc, element, attr string) string {
 			continue
 		}
 		for _, a := range se.Attr {
-			if a.Name.Local == attr {
+			if a.Name.Local == "id" {
 				return a.Value
 			}
 		}

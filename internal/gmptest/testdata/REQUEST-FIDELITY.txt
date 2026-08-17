@@ -8,8 +8,8 @@
 # silently fails to ever emit).
 # Regenerate with: go test ./internal/gmptest -run TestRequestRoundTrip -update
 
-requests-compared: 321   clean: 299   with-loss: 20   decode-errors: 2   advisory: 0   skipped-no-request: 0
-commands with a recorded request: 122 of 122   commands with loss: 17
+requests-compared: 339   clean: 324   with-loss: 13   decode-errors: 2   advisory: 0   skipped-no-request: 0
+commands with a recorded request: 122 of 122   commands with loss: 11
 
 ## Per fixture
 
@@ -17,7 +17,7 @@ authenticate                 live      001 clean         dropped=0   truncated=0
 authenticate                 live      002 clean         dropped=0   truncated=0   changed=0   added=0
 authenticate                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 authenticate                 upstream  002 clean         dropped=0   truncated=0   changed=0   added=0
-create_alert                 live      001 clean         dropped=0   truncated=0   changed=0   added=2
+create_alert                 live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_alert                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=2
 create_alert                 upstream  002 clean         dropped=0   truncated=0   changed=0   added=2
 create_asset                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
@@ -49,21 +49,24 @@ create_port_range            upstream  001 ok            dropped=1   truncated=0
 create_report                live      001 ok            dropped=1   truncated=0   changed=2   added=10
 create_report                upstream  001 ok            dropped=4   truncated=0   changed=1   added=12
 create_report_config         upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
+create_report_format         live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_report_format         upstream  001 ok            dropped=1   truncated=0   changed=0   added=0
 create_role                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_role                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
-create_scanner               live      001 ok            dropped=3   truncated=0   changed=0   added=0
+create_scanner               live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_scanner               upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 create_schedule              live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_schedule              upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
-create_tag                   live      001 ok            dropped=3   truncated=0   changed=0   added=0
+create_tag                   live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_tag                   upstream  001 ok            dropped=1   truncated=0   changed=0   added=2
-create_target                live      001 ok            dropped=1   truncated=0   changed=0   added=0
+create_target                live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_target                live      002 clean         dropped=0   truncated=0   changed=0   added=0
 create_target                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
-create_task                  live      001 ok            dropped=1   truncated=0   changed=0   added=4
+create_task                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
+create_task                  live      002 clean         dropped=0   truncated=0   changed=0   added=4
 create_task                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 create_task                  upstream  002 clean         dropped=0   truncated=0   changed=0   added=4
+create_ticket                live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_ticket                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 create_tls_certificate       live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_tls_certificate       upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
@@ -98,6 +101,7 @@ delete_port_range            upstream  001 clean         dropped=0   truncated=0
 delete_report                live      001 clean         dropped=0   truncated=0   changed=0   added=0
 delete_report                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 delete_report_config         upstream  001 clean         dropped=0   truncated=0   changed=0   added=1
+delete_report_format         live      001 clean         dropped=0   truncated=0   changed=0   added=0
 delete_report_format         upstream  001 clean         dropped=0   truncated=0   changed=0   added=1
 delete_role                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
 delete_role                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=1
@@ -107,10 +111,11 @@ delete_schedule              live      001 clean         dropped=0   truncated=0
 delete_schedule              upstream  001 clean         dropped=0   truncated=0   changed=0   added=1
 delete_tag                   live      001 clean         dropped=0   truncated=0   changed=0   added=0
 delete_tag                   upstream  001 ok            dropped=1   truncated=0   changed=0   added=2
-delete_target                live      001 ok            dropped=0   truncated=0   changed=1   added=0
+delete_target                live      001 clean         dropped=0   truncated=0   changed=0   added=0
 delete_target                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
-delete_task                  live      001 ok            dropped=0   truncated=0   changed=1   added=0
+delete_task                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
 delete_task                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
+delete_ticket                live      001 clean         dropped=0   truncated=0   changed=0   added=0
 delete_ticket                upstream  001 clean         dropped=0   truncated=0   changed=0   added=1
 delete_user                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
 delete_user                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
@@ -165,6 +170,8 @@ get_info                     upstream  002 clean         dropped=0   truncated=0
 get_license                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
 get_license                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 get_notes                    live      001 clean         dropped=0   truncated=0   changed=0   added=0
+get_notes                    live      002 clean         dropped=0   truncated=0   changed=0   added=0
+get_notes                    live      003 clean         dropped=0   truncated=0   changed=0   added=0
 get_notes                    upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 get_notes                    upstream  002 clean         dropped=0   truncated=0   changed=0   added=0
 get_nvt_families             live      001 clean         dropped=0   truncated=0   changed=0   added=0
@@ -190,9 +197,15 @@ get_preferences              upstream  002 clean         dropped=0   truncated=0
 get_preferences              upstream  003 clean         dropped=0   truncated=0   changed=0   added=0
 get_preferences              upstream  004 clean         dropped=0   truncated=0   changed=0   added=0
 get_report_configs           live      001 clean         dropped=0   truncated=0   changed=0   added=0
+get_report_configs           live      002 clean         dropped=0   truncated=0   changed=0   added=0
 get_report_configs           upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 get_report_formats           live      001 clean         dropped=0   truncated=0   changed=0   added=0
 get_report_formats           live      002 clean         dropped=0   truncated=0   changed=0   added=0
+get_report_formats           live      003 clean         dropped=0   truncated=0   changed=0   added=0
+get_report_formats           live      004 clean         dropped=0   truncated=0   changed=0   added=0
+get_report_formats           live      005 clean         dropped=0   truncated=0   changed=0   added=0
+get_report_formats           live      006 clean         dropped=0   truncated=0   changed=0   added=0
+get_report_formats           live      007 clean         dropped=0   truncated=0   changed=0   added=0
 get_report_formats           upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 get_report_formats           upstream  002 clean         dropped=0   truncated=0   changed=0   added=0
 get_reports                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
@@ -204,11 +217,13 @@ get_resource_names           live      002 clean         dropped=0   truncated=0
 get_resource_names           upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 get_results                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
 get_results                  live      002 clean         dropped=0   truncated=0   changed=0   added=0
-get_results                  live      003 ok            dropped=0   truncated=0   changed=1   added=0
+get_results                  live      003 clean         dropped=0   truncated=0   changed=0   added=0
 get_results                  live      004 clean         dropped=0   truncated=0   changed=0   added=0
 get_results                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 get_results                  upstream  002 clean         dropped=0   truncated=0   changed=0   added=0
 get_roles                    live      001 clean         dropped=0   truncated=0   changed=0   added=0
+get_roles                    live      002 clean         dropped=0   truncated=0   changed=0   added=0
+get_roles                    live      003 clean         dropped=0   truncated=0   changed=0   added=0
 get_roles                    upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 get_scanners                 live      001 clean         dropped=0   truncated=0   changed=0   added=0
 get_scanners                 live      002 clean         dropped=0   truncated=0   changed=0   added=0
@@ -245,6 +260,7 @@ get_tasks                    upstream  002 clean         dropped=0   truncated=0
 get_tasks                    upstream  003 clean         dropped=0   truncated=0   changed=0   added=0
 get_tickets                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
 get_tickets                  live      002 clean         dropped=0   truncated=0   changed=0   added=0
+get_tickets                  live      003 clean         dropped=0   truncated=0   changed=0   added=0
 get_tickets                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 get_tls_certificates         live      001 clean         dropped=0   truncated=0   changed=0   added=0
 get_tls_certificates         live      002 clean         dropped=0   truncated=0   changed=0   added=0
@@ -293,11 +309,12 @@ modify_permission            upstream  001 clean         dropped=0   truncated=0
 modify_port_list             live      001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_port_list             upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_report_config         upstream  001 clean         dropped=0   truncated=0   changed=0   added=1
+modify_report_format         live      001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_report_format         upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_report_format         upstream  002 clean         dropped=0   truncated=0   changed=0   added=0
 modify_role                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_role                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
-modify_scanner               live      001 clean         dropped=0   truncated=0   changed=0   added=3
+modify_scanner               live      001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_scanner               upstream  001 clean         dropped=0   truncated=0   changed=0   added=3
 modify_schedule              live      001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_schedule              upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
@@ -309,6 +326,7 @@ modify_target                live      001 clean         dropped=0   truncated=0
 modify_target                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_task                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_task                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
+modify_ticket                live      001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_ticket                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_tls_certificate       live      001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_tls_certificate       upstream  001 clean         dropped=0   truncated=0   changed=0   added=0

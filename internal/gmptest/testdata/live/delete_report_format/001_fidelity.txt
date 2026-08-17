@@ -1,0 +1,19 @@
+# fidelity: delete_report_format / live / 001
+# provenance: teardown: delete_report_format ultimate
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

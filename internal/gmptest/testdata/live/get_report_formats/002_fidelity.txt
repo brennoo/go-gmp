@@ -1,5 +1,5 @@
 # fidelity: get_report_formats / live / 002
-# provenance: expected failure: get_report_formats to pick one to verify
+# provenance: read-only: get_report_formats with filter="rows=2 first=1"
 decode: ok
 namespaces-seen:
 
@@ -14,7 +14,7 @@ CHANGED
   (none)
 
 ADDED
-  /get_report_formats_response/report_format/trust/@name                   x5
+  /get_report_formats_response/report_format/trust/@name                   x2
 
 DUPLICATED
   (none)

@@ -1,0 +1,20 @@
+# fidelity: get_notes / live / 002
+# provenance: read-only: get_notes with filter="rows=2 first=1"
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_notes_response/note_count/#text                                     x1
+  /get_notes_response/sort/field/#text                                     x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

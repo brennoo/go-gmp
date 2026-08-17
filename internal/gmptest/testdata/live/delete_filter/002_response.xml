@@ -1,1 +1,1 @@
-<delete_filter_response status="404" status_text="Failed to find filter 'ccc1fbb8-ffc8-42b5-9269-def2dfd7a826'"/>
+<delete_filter_response status="200" status_text="OK"/>

@@ -168,8 +168,9 @@ var FieldOverrides = map[string][]FieldOverride{
 	"get_report_formats:/report_format": {{
 		Name: "comment", GoType: "string",
 		Reason: "T-9 report_format review: schema's report_format pattern never declares <comment>, but " +
-			"gvmd emits one on every report format — x5 in each of " +
-			"internal/gmptest/testdata/live/get_report_formats/{001,002}_response.xml and x1 upstream, " +
+			"gvmd emits one on every report format — x5 in " +
+			"internal/gmptest/testdata/live/get_report_formats/001_response.xml, x6 in 006_response.xml " +
+			"(after a report format copy was added to the fixture set), and x1 upstream, " +
 			"all recorded as DROPPED in the matching _fidelity.txt. Every captured occurrence is empty, " +
 			"so it is the element's presence that is evidenced, not its content; hence no omitempty, " +
 			"which would re-marshal to the absence gvmd never sends",

@@ -34,9 +34,9 @@ optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             75
-with actionable findings:     47
-actionable findings:          274  (request 134, response 140)
+fully conformant:             91
+with actionable findings:     31
+actionable findings:          258  (request 118, response 140)
 suppressed findings:          443
 confirmed by fidelity corpus: 53
 in the schema, not in Go:     0
@@ -50,7 +50,7 @@ in Go, not in the schema:     0
   CARDINALITY            22          0
   KIND                    0          0
   OMITEMPTY               0        438
-  TYPE                   39          0
+  TYPE                   23          0
   SCHEMA-DEFECT         128          0
 
 ### Schema defects by class
@@ -100,8 +100,8 @@ taken against upstream main (155 commands). Two reasons, both expected:
   create_port_range             1   MISSING=1
   create_target                 1   EXTRA=1
   create_task                   1   MISSING=1
-  delete_alert                  1   TYPE=1
-  ... and 27 more with fewer
+  get_features                  1   TYPE=1
+  ... and 11 more with fewer
 
 ### Confirmed by both oracles
 
@@ -752,10 +752,7 @@ EXTRA=18
 
 ### delete_alert  (command_delete_alert.xml)
 
-TYPE=1
-
-  TYPE          request  /delete_alert/@ultimate
-                schema type boolean is text ("" is true), Go Ultimate is bool: '7' fails to decode and '1' re-emits as 'true'
+conformant
 
 ### delete_asset  (command_delete_asset.xml)
 
@@ -768,59 +765,35 @@ OMITEMPTY=2
 
 ### delete_config  (command_delete_config.xml)
 
-TYPE=1
-
-  TYPE          request  /delete_config/@ultimate
-                schema type boolean is text ("" is true), Go Ultimate is bool: '7' fails to decode and '1' re-emits as 'true'
+conformant
 
 ### delete_credential  (command_delete_credential.xml)
 
-TYPE=1
-
-  TYPE          request  /delete_credential/@ultimate
-                schema type boolean is text ("" is true), Go Ultimate is bool: '7' fails to decode and '1' re-emits as 'true'
+conformant
 
 ### delete_filter  (command_delete_filter.xml)
 
-TYPE=1
-
-  TYPE          request  /delete_filter/@ultimate
-                schema type boolean is text ("" is true), Go Ultimate is bool: '7' fails to decode and '1' re-emits as 'true'
+conformant
 
 ### delete_group  (command_delete_group.xml)
 
-TYPE=1
-
-  TYPE          request  /delete_group/@ultimate
-                schema type boolean is text ("" is true), Go Ultimate is bool: '7' fails to decode and '1' re-emits as 'true'
+conformant
 
 ### delete_note  (command_delete_note.xml)
 
-TYPE=1
-
-  TYPE          request  /delete_note/@ultimate
-                schema type boolean is text ("" is true), Go Ultimate is bool: '7' fails to decode and '1' re-emits as 'true'
+conformant
 
 ### delete_override  (command_delete_override.xml)
 
-TYPE=1
-
-  TYPE          request  /delete_override/@ultimate
-                schema type boolean is text ("" is true), Go Ultimate is bool: '7' fails to decode and '1' re-emits as 'true'
+conformant
 
 ### delete_permission  (command_delete_permission.xml)
 
-TYPE=1
-
-  TYPE          request  /delete_permission/@ultimate
-                schema type boolean is text ("" is true), Go Ultimate is bool: '7' fails to decode and '1' re-emits as 'true'
+conformant
 
 ### delete_port_list  (command_delete_port_list.xml)
 
-TYPE=1
-
-  TYPE          request  /delete_port_list/@ultimate
-                schema type boolean is text ("" is true), Go Ultimate is bool: '7' fails to decode and '1' re-emits as 'true'
+conformant
 
 ### delete_port_range  (command_delete_port_range.xml)
 
@@ -832,45 +805,27 @@ conformant
 
 ### delete_report_config  (command_delete_report_config.xml)
 
-TYPE=1
-
-  TYPE          request  /delete_report_config/@ultimate
-                schema type boolean is text ("" is true), Go Ultimate is bool: '7' fails to decode and '1' re-emits as 'true'
+conformant
 
 ### delete_report_format  (command_delete_report_format.xml)
 
-TYPE=1
-
-  TYPE          request  /delete_report_format/@ultimate
-                schema type boolean is text ("" is true), Go Ultimate is bool: '7' fails to decode and '1' re-emits as 'true'
+conformant
 
 ### delete_role  (command_delete_role.xml)
 
-TYPE=1
-
-  TYPE          request  /delete_role/@ultimate
-                schema type boolean is text ("" is true), Go Ultimate is bool: '7' fails to decode and '1' re-emits as 'true'
+conformant
 
 ### delete_scanner  (command_delete_scanner.xml)
 
-TYPE=1
-
-  TYPE          request  /delete_scanner/@ultimate
-                schema type boolean is text ("" is true), Go Ultimate is bool: '7' fails to decode and '1' re-emits as 'true'
+conformant
 
 ### delete_schedule  (command_delete_schedule.xml)
 
-TYPE=1
-
-  TYPE          request  /delete_schedule/@ultimate
-                schema type boolean is text ("" is true), Go Ultimate is bool: '7' fails to decode and '1' re-emits as 'true'
+conformant
 
 ### delete_tag  (command_delete_tag.xml)
 
-TYPE=1
-
-  TYPE          request  /delete_tag/@ultimate
-                schema type boolean is text ("" is true), Go Ultimate is bool: '7' fails to decode and '1' re-emits as 'true'
+conformant
 
 ### delete_target  (command_delete_target.xml)
 
@@ -892,10 +847,7 @@ OMITEMPTY=2
 
 ### delete_ticket  (command_delete_ticket.xml)
 
-TYPE=1
-
-  TYPE          request  /delete_ticket/@ultimate
-                schema type boolean is text ("" is true), Go Ultimate is bool: '7' fails to decode and '1' re-emits as 'true'
+conformant
 
 ### delete_user  (command_delete_user.xml)
 
@@ -1424,7 +1376,7 @@ MISSING=1  EXTRA=1  SCHEMA-DEFECT=1
 EXTRA=1
 
   EXTRA         response /get_report_formats_response/report_format/comment
-                Go field Comment string has no counterpart in the schema  [suppressed: T-9 report_format review: schema's report_format pattern never declares <comment>, but gvmd emits one on every report format — x5 in each of internal/gmptest/testdata/live/get_report_formats/{001,002}_response.xml and x1 upstream, all recorded as DROPPED in the matching _fidelity.txt. Every captured occurrence is empty, so it is the element's presence that is evidenced, not its content; hence no omitempty, which would re-marshal to the absence gvmd never sends]
+                Go field Comment string has no counterpart in the schema  [suppressed: T-9 report_format review: schema's report_format pattern never declares <comment>, but gvmd emits one on every report format — x5 in internal/gmptest/testdata/live/get_report_formats/001_response.xml, x6 in 006_response.xml (after a report format copy was added to the fixture set), and x1 upstream, all recorded as DROPPED in the matching _fidelity.txt. Every captured occurrence is empty, so it is the element's presence that is evidenced, not its content; hence no omitempty, which would re-marshal to the absence gvmd never sends]
 
 ### get_reports  (command_get_reports.xml)
 

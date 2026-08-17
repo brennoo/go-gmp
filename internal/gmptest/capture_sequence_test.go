@@ -11,6 +11,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/pem"
+	"encoding/xml"
 	"fmt"
 	"math/big"
 	"sort"
@@ -51,25 +52,27 @@ const (
 
 // captureState carries the identifiers one step creates and a later one needs.
 type captureState struct {
-	portListID   string
-	credentialID string
-	certCredID   string
-	targetID     string
-	filterID     string
-	tagID        string
-	groupID      string
-	roleID       string
-	userID       string
-	permissionID string
-	scheduleID   string
-	alertID      string
-	tlsCertID    string
-	configID     string
-	scannerID    string
-	taskID       string
-	reportID     string
-	resultID     string
-	nvtOID       string
+	portListID     string
+	credentialID   string
+	certCredID     string
+	targetID       string
+	filterID       string
+	tagID          string
+	groupID        string
+	roleID         string
+	userID         string
+	permissionID   string
+	scheduleID     string
+	alertID        string
+	tlsCertID      string
+	configID       string
+	reportFormatID string
+	reportConfigID string
+	scannerID      string
+	taskID         string
+	reportID       string
+	resultID       string
+	nvtOID         string
 
 	certPEM string
 	keyPEM  string
@@ -253,6 +256,8 @@ func (r *captureRun) captureLifecycle(st *captureState) {
 	r.lifecycleAlert(st)
 	r.lifecycleTLSCertificate(st)
 	r.lifecycleConfig(st)
+	r.lifecycleReportFormat(st)
+	r.lifecycleReportConfig(st)
 	r.lifecycleScanner(st)
 	r.lifecycleTask(st)
 	r.lifecycleSetting()
@@ -459,7 +464,7 @@ func (r *captureRun) lifecycleFilter(st *captureState) {
 			Name:    r.resourceName("filter"),
 			Comment: captureComment,
 			Term:    "rows=2 first=1 sort=name",
-			Type:    "task",
+			Type:    "result",
 		},
 		func(id string) {
 			r.send("delete_filter", "teardown: delete_filter ultimate",
@@ -695,7 +700,7 @@ func (r *captureRun) lifecycleConfig(st *captureState) {
 	if !ok {
 		return
 	}
-	source := firstAttr(resp, "config", "id")
+	source := firstID(resp, "config")
 	if source == "" {
 		r.skip("create_config", "lifecycle: create_config as a copy",
 			"get_configs returned no config to copy; the feed import owner is probably unset "+
@@ -715,6 +720,75 @@ func (r *captureRun) lifecycleConfig(st *captureState) {
 	r.getByID("get_configs", "ConfigID", st.configID, "lifecycle: get_configs for the copied config")
 	r.send("modify_config", "lifecycle: modify_config comment",
 		&commands.ModifyConfig{ConfigID: st.configID, Comment: captureComment + " (modified)"})
+}
+
+func (r *captureRun) lifecycleReportFormat(st *captureState) {
+	resp, ok := r.send("get_report_formats", "lifecycle: get_report_formats to choose a format to copy",
+		&commands.GetReportFormats{Filter: readOnlyFilter})
+	if !ok {
+		return
+	}
+	source := firstID(resp, "report_format")
+	if source == "" {
+		r.skip("create_report_format", "lifecycle: create_report_format as a copy",
+			"get_report_formats returned no report format to copy; the feed import owner is probably unset "+
+				"(see hack/gvmd-up.sh step 5)")
+		return
+	}
+
+	st.reportFormatID = r.created("create_report_format",
+		"lifecycle: create_report_format copying an existing format",
+		&commands.CreateReportFormat{Name: r.resourceName("report-format"), Copy: source},
+		func(id string) {
+			r.send("delete_report_format", "teardown: delete_report_format ultimate",
+				&commands.DeleteReportFormat{ReportFormatID: id, Ultimate: true})
+		})
+	if st.reportFormatID == "" {
+		return
+	}
+	r.getByID("get_report_formats", "ReportFormatID", st.reportFormatID,
+		"lifecycle: get_report_formats for the copied report format")
+	r.send("modify_report_format", "lifecycle: modify_report_format name",
+		&commands.ModifyReportFormat{
+			ReportFormatID: st.reportFormatID,
+			Name:           r.resourceName("report-format") + "-modified",
+		})
+}
+
+// lifecycleReportConfig skips create_report_config when no configurable
+// report format exists — see docs/review-2026-08.md's delete_X sibling batch
+// section for why this stack never has one.
+func (r *captureRun) lifecycleReportConfig(st *captureState) {
+	resp, ok := r.send("get_report_formats", "lifecycle: get_report_formats to find a configurable format",
+		&commands.GetReportFormats{})
+	if !ok {
+		return
+	}
+	formatID := firstConfigurableReportFormatID(resp)
+	if formatID == "" {
+		r.skip("create_report_config", "lifecycle: create_report_config",
+			"no configurable report format exists on this stack (command_create_report_config.xml requires "+
+				"one); the default feed install's built-in formats are all non-configurable")
+		return
+	}
+
+	st.reportConfigID = r.created("create_report_config", "lifecycle: create_report_config",
+		&commands.CreateReportConfig{
+			Name:         r.resourceName("report-config"),
+			Comment:      captureComment,
+			ReportFormat: commands.ReportConfigReportFormat{ID: formatID},
+		},
+		func(id string) {
+			r.send("delete_report_config", "teardown: delete_report_config ultimate",
+				&commands.DeleteReportConfig{ReportConfigID: id, Ultimate: true})
+		})
+	if st.reportConfigID == "" {
+		return
+	}
+	r.getByID("get_report_configs", "ReportConfigID", st.reportConfigID,
+		"lifecycle: get_report_configs for the report config just created")
+	r.send("modify_report_config", "lifecycle: modify_report_config comment",
+		&commands.ModifyReportConfig{ReportConfigID: st.reportConfigID, Comment: captureComment + " (modified)"})
 }
 
 func (r *captureRun) lifecycleScanner(st *captureState) {
@@ -772,7 +846,9 @@ func (r *captureRun) lifecycleTask(st *captureState) {
 		`<create_task><name>%s</name><comment>%s</comment><target id=""/></create_task>`,
 		name, captureComment)
 
-	resp := r.sendWithFallbacks("create_task", "lifecycle: create_task as a container task",
+	resp := r.sendWithFallbacks("create_task",
+		"lifecycle: create_task, typed request (expected to fail: Scanner has no omitempty, "+
+			"so it always sends an empty scanner id gvmd now rejects)",
 		&commands.CreateTask{
 			Name:    name,
 			Comment: captureComment,
@@ -816,21 +892,34 @@ func (r *captureRun) lifecycleSetting() {
 
 // --- 4. The container-task trick ---------------------------------------------
 
-// captureContainerReport uploads a synthetic report into the container task.
-//
-// This is the unlock for the whole reporting half of the protocol: with a
-// report in place, get_reports, get_results and get_aggregates all return
-// content on a stack where no scan has ever run and no scanner exists. The
-// payload shape follows testdata/upstream/create_report/001_request.xml, which
-// nests <report> inside <report>.
+// captureContainerReport uploads a synthetic report into the container task —
+// the only way to get non-empty get_reports/get_results/get_aggregates
+// content on a stack where no scan has ever run and no scanner exists.
 func (r *captureRun) captureContainerReport(st *captureState) {
 	if st.taskID == "" {
 		r.missingDep("create_report", "container task: create_report", "the container task")
 		return
 	}
 
+	// Without format_id on the outer <report>, gvmd never parses the nested
+	// <results>. The built-in "XML" format's id is per-install, not the fixed
+	// UUID GMP.xml.in's example uses, so it must be resolved by name.
+	formatsResp, ok := r.send("get_report_formats",
+		"container task: get_report_formats to find the native XML format",
+		&commands.GetReportFormats{})
+	if !ok {
+		return
+	}
+	formatID := reportFormatIDByName(formatsResp, "XML")
+	if formatID == "" {
+		r.skip("create_report", "container task: create_report",
+			`get_report_formats returned no format named "XML"; the feed import owner is probably unset `+
+				"(see hack/gvmd-up.sh step 5)")
+		return
+	}
+
 	now := time.Now().UTC()
-	payload := fmt.Sprintf(`<create_report><report><report>`+
+	payload := fmt.Sprintf(`<create_report><report format_id="%s"><report>`+
 		`<scan_start>%s</scan_start>`+
 		`<results start="1" max="-1"><result>`+
 		`<name>go-gmp fixture result</name>`+
@@ -844,7 +933,7 @@ func (r *captureRun) captureContainerReport(st *captureState) {
 		`</result></results>`+
 		`<scan_end>%s</scan_end>`+
 		`</report></report><task id="%s"/><in_assets>1</in_assets></create_report>`,
-		now.Add(-time.Minute).Format(time.RFC3339), fixtureNVTOID, now.Format(time.RFC3339), st.taskID)
+		formatID, now.Add(-time.Minute).Format(time.RFC3339), fixtureNVTOID, now.Format(time.RFC3339), st.taskID)
 
 	resp, ok := r.sendRaw("create_report", "container task: create_report uploading a synthetic report", payload)
 	if !ok {
@@ -852,11 +941,14 @@ func (r *captureRun) captureContainerReport(st *captureState) {
 	}
 	st.nvtOID = fixtureNVTOID
 	st.reportID = r.acceptCreated("create_report", "container task: create_report", resp, func(id string) {
-		// in_assets=1 means the import created host and OS assets. They are not
-		// owned by the task, so deleting the task does not remove them.
+		// This 404s intermittently: gvmd can discard a container task's
+		// synthetic report on its own once in_assets=1 finishes importing it,
+		// independent of the order relative to delete_asset (confirmed by an
+		// isolated create/delete probe) — see docs/review-2026-08.md.
 		r.send("delete_asset", "teardown: delete_asset for the imported report's assets",
 			&commands.DeleteAsset{ReportID: id})
-		r.send("delete_report", "teardown: delete_report", &commands.DeleteReport{ReportID: id})
+		r.send("delete_report", "teardown: delete_report, occasionally already gone",
+			&commands.DeleteReport{ReportID: id})
 	})
 	if st.reportID == "" {
 		return
@@ -870,7 +962,7 @@ func (r *captureRun) captureContainerReport(st *captureState) {
 
 	if results, ok := r.send("get_results", "container task: get_results to pick a result id",
 		&commands.GetResults{TaskID: st.taskID}); ok {
-		st.resultID = firstAttr(results, "result", "id")
+		st.resultID = firstID(results, "result")
 	}
 }
 
@@ -878,6 +970,44 @@ func (r *captureRun) captureContainerReport(st *captureState) {
 // looks like something gvmd would have produced. Nothing depends on the plugin
 // existing; a container import is not validated against the NVT feed.
 const fixtureNVTOID = "1.3.6.1.4.1.25623.1.0.90022"
+
+// firstID won't do here: <report_format> also carries <owner><name>, and
+// encoding/xml's "name" tag binds only the format's own direct child.
+func reportFormatIDByName(doc, name string) string {
+	var parsed struct {
+		Formats []struct {
+			ID   string `xml:"id,attr"`
+			Name string `xml:"name"`
+		} `xml:"report_format"`
+	}
+	if err := xml.Unmarshal([]byte(doc), &parsed); err != nil {
+		return ""
+	}
+	for _, f := range parsed.Formats {
+		if f.Name == name {
+			return f.ID
+		}
+	}
+	return ""
+}
+
+func firstConfigurableReportFormatID(doc string) string {
+	var parsed struct {
+		Formats []struct {
+			ID           string           `xml:"id,attr"`
+			Configurable commands.GMPBool `xml:"configurable"`
+		} `xml:"report_format"`
+	}
+	if err := xml.Unmarshal([]byte(doc), &parsed); err != nil {
+		return ""
+	}
+	for _, f := range parsed.Formats {
+		if bool(f.Configurable) {
+			return f.ID
+		}
+	}
+	return ""
+}
 
 // --- 5. Annotations that need a result --------------------------------------
 
@@ -1059,7 +1189,7 @@ func (r *captureRun) verifyAReportFormat() {
 	if !ok {
 		return
 	}
-	id := firstAttr(resp, "report_format", "id")
+	id := firstID(resp, "report_format")
 	if id == "" {
 		r.skip("verify_report_format", "expected failure: verify_report_format",
 			"get_report_formats returned none; the feed import owner is probably unset")

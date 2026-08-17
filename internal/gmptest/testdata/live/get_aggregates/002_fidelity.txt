@@ -5,8 +5,6 @@ namespaces-seen:
 
 DROPPED
   /get_aggregates_response/aggregate/column_info/aggregate_column/column   x2
-  /get_aggregates_response/aggregate/overall/c_count                       x1  (+1 descendant paths)
-  /get_aggregates_response/aggregate/overall/count                         x1  (+1 descendant paths)
   /get_aggregates_response/filters                                         x1  (+11 descendant paths)
 
 TRUNCATED

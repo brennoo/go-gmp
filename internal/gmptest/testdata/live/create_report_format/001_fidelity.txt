@@ -1,0 +1,19 @@
+# fidelity: create_report_format / live / 001
+# provenance: lifecycle: create_report_format copying an existing format
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

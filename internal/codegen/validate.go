@@ -121,6 +121,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.GetNotes{}),
 			Response: schema.ModelOf(&commands.GetNotesResponse{}),
 		},
+		"delete_note": {
+			Request:  schema.ModelOf(&commands.DeleteNote{}),
+			Response: schema.ModelOf(&commands.DeleteNoteResponse{}),
+		},
 		"create_override": {
 			Request:  schema.ModelOf(&commands.CreateOverride{}),
 			Response: schema.ModelOf(&commands.CreateOverrideResponse{}),
@@ -132,6 +136,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 		"get_overrides": {
 			Request:  schema.ModelOf(&commands.GetOverrides{}),
 			Response: schema.ModelOf(&commands.GetOverridesResponse{}),
+		},
+		"delete_override": {
+			Request:  schema.ModelOf(&commands.DeleteOverride{}),
+			Response: schema.ModelOf(&commands.DeleteOverrideResponse{}),
 		},
 		"create_role": {
 			Request:  schema.ModelOf(&commands.CreateRole{}),
@@ -145,6 +153,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.GetRoles{}),
 			Response: schema.ModelOf(&commands.GetRolesResponse{}),
 		},
+		"delete_role": {
+			Request:  schema.ModelOf(&commands.DeleteRole{}),
+			Response: schema.ModelOf(&commands.DeleteRoleResponse{}),
+		},
 		"create_group": {
 			Request:  schema.ModelOf(&commands.CreateGroup{}),
 			Response: schema.ModelOf(&commands.CreateGroupResponse{}),
@@ -156,6 +168,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 		"get_groups": {
 			Request:  schema.ModelOf(&commands.GetGroups{}),
 			Response: schema.ModelOf(&commands.GetGroupsResponse{}),
+		},
+		"delete_group": {
+			Request:  schema.ModelOf(&commands.DeleteGroup{}),
+			Response: schema.ModelOf(&commands.DeleteGroupResponse{}),
 		},
 		"create_tag": {
 			Request:  schema.ModelOf(&commands.CreateTag{}),
@@ -169,6 +185,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.GetTags{}),
 			Response: schema.ModelOf(&commands.GetTagsResponse{}),
 		},
+		"delete_tag": {
+			Request:  schema.ModelOf(&commands.DeleteTag{}),
+			Response: schema.ModelOf(&commands.DeleteTagResponse{}),
+		},
 		"create_schedule": {
 			Request:  schema.ModelOf(&commands.CreateSchedule{}),
 			Response: schema.ModelOf(&commands.CreateScheduleResponse{}),
@@ -180,6 +200,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 		"get_schedules": {
 			Request:  schema.ModelOf(&commands.GetSchedules{}),
 			Response: schema.ModelOf(&commands.GetSchedulesResponse{}),
+		},
+		"delete_schedule": {
+			Request:  schema.ModelOf(&commands.DeleteSchedule{}),
+			Response: schema.ModelOf(&commands.DeleteScheduleResponse{}),
 		},
 		"create_alert": {
 			Request:  schema.ModelOf(&commands.CreateAlert{}),
@@ -193,6 +217,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.GetAlerts{}),
 			Response: schema.ModelOf(&commands.GetAlertsResponse{}),
 		},
+		"delete_alert": {
+			Request:  schema.ModelOf(&commands.DeleteAlert{}),
+			Response: schema.ModelOf(&commands.DeleteAlertResponse{}),
+		},
 		"create_filter": {
 			Request:  schema.ModelOf(&commands.CreateFilter{}),
 			Response: schema.ModelOf(&commands.CreateFilterResponse{}),
@@ -204,6 +232,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 		"get_filters": {
 			Request:  schema.ModelOf(&commands.GetFilters{}),
 			Response: schema.ModelOf(&commands.GetFiltersResponse{}),
+		},
+		"delete_filter": {
+			Request:  schema.ModelOf(&commands.DeleteFilter{}),
+			Response: schema.ModelOf(&commands.DeleteFilterResponse{}),
 		},
 		"create_tls_certificate": {
 			Request:  schema.ModelOf(&commands.CreateTLSCertificate{}),
@@ -229,6 +261,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.GetPermissions{}),
 			Response: schema.ModelOf(&commands.GetPermissionsResponse{}),
 		},
+		"delete_permission": {
+			Request:  schema.ModelOf(&commands.DeletePermission{}),
+			Response: schema.ModelOf(&commands.DeletePermissionResponse{}),
+		},
 		"create_ticket": {
 			Request:  schema.ModelOf(&commands.CreateTicket{}),
 			Response: schema.ModelOf(&commands.CreateTicketResponse{}),
@@ -240,6 +276,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 		"get_tickets": {
 			Request:  schema.ModelOf(&commands.GetTickets{}),
 			Response: schema.ModelOf(&commands.GetTicketsResponse{}),
+		},
+		"delete_ticket": {
+			Request:  schema.ModelOf(&commands.DeleteTicket{}),
+			Response: schema.ModelOf(&commands.DeleteTicketResponse{}),
 		},
 		"create_credential": {
 			Request:  schema.ModelOf(&commands.CreateCredential{}),
@@ -253,6 +293,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.GetCredentials{}),
 			Response: schema.ModelOf(&commands.GetCredentialsResponse{}),
 		},
+		"delete_credential": {
+			Request:  schema.ModelOf(&commands.DeleteCredential{}),
+			Response: schema.ModelOf(&commands.DeleteCredentialResponse{}),
+		},
 		"create_port_list": {
 			Request:  schema.ModelOf(&commands.CreatePortList{}),
 			Response: schema.ModelOf(&commands.CreatePortListResponse{}),
@@ -264,6 +308,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 		"get_port_lists": {
 			Request:  schema.ModelOf(&commands.GetPortLists{}),
 			Response: schema.ModelOf(&commands.GetPortListsResponse{}),
+		},
+		"delete_port_list": {
+			Request:  schema.ModelOf(&commands.DeletePortList{}),
+			Response: schema.ModelOf(&commands.DeletePortListResponse{}),
 		},
 		"create_asset": {
 			Request:  schema.ModelOf(&commands.CreateAsset{}),
@@ -289,6 +337,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.GetReportFormats{}),
 			Response: schema.ModelOf(&commands.GetReportFormatsResponse{}),
 		},
+		"delete_report_format": {
+			Request:  schema.ModelOf(&commands.DeleteReportFormat{}),
+			Response: schema.ModelOf(&commands.DeleteReportFormatResponse{}),
+		},
 		"create_report_config": {
 			Request:  schema.ModelOf(&commands.CreateReportConfig{}),
 			Response: schema.ModelOf(&commands.CreateReportConfigResponse{}),
@@ -300,6 +352,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 		"get_report_configs": {
 			Request:  schema.ModelOf(&commands.GetReportConfigs{}),
 			Response: schema.ModelOf(&commands.GetReportConfigsResponse{}),
+		},
+		"delete_report_config": {
+			Request:  schema.ModelOf(&commands.DeleteReportConfig{}),
+			Response: schema.ModelOf(&commands.DeleteReportConfigResponse{}),
 		},
 		"create_user": {
 			Request:  schema.ModelOf(&commands.CreateUser{}),
@@ -349,6 +405,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.GetScanners{}),
 			Response: schema.ModelOf(&commands.GetScannersResponse{}),
 		},
+		"delete_scanner": {
+			Request:  schema.ModelOf(&commands.DeleteScanner{}),
+			Response: schema.ModelOf(&commands.DeleteScannerResponse{}),
+		},
 		"create_config": {
 			Request:  schema.ModelOf(&commands.CreateConfig{}),
 			Response: schema.ModelOf(&commands.CreateConfigResponse{}),
@@ -360,6 +420,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 		"get_configs": {
 			Request:  schema.ModelOf(&commands.GetConfigs{}),
 			Response: schema.ModelOf(&commands.GetConfigsResponse{}),
+		},
+		"delete_config": {
+			Request:  schema.ModelOf(&commands.DeleteConfig{}),
+			Response: schema.ModelOf(&commands.DeleteConfigResponse{}),
 		},
 	}
 }

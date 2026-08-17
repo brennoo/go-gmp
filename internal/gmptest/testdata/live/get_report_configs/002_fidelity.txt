@@ -1,0 +1,20 @@
+# fidelity: get_report_configs / live / 002
+# provenance: read-only: get_report_configs with filter="rows=2 first=1"
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_report_configs_response/report_config_count/#text                   x1
+  /get_report_configs_response/sort/field/#text                            x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

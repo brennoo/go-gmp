@@ -33,7 +33,6 @@ DROPPED
   /get_reports_response/report/report/result_count/warning                 x1  (+5 descendant paths)
   /get_reports_response/report/report/sort/field/#text                     x1
   /get_reports_response/report/report/ssl_certs/count                      x1  (+1 descendant paths)
-  /get_reports_response/report/report/task/progress                        x1  (+1 descendant paths)
   /get_reports_response/report/report/task/target/@id                      x1
   /get_reports_response/report/report/task/target/comment                  x1
   /get_reports_response/report/report/task/target/name                     x1
@@ -52,8 +51,7 @@ CHANGED
   /get_reports_response/report/report/severity/full/#text                  "-99.0" -> "-99"
 
 ADDED
-  /get_reports_response/report/report/scan_end/#text                       x1
-  /get_reports_response/report/report/scan_start/#text                     x1
+  (none)
 
 DUPLICATED
   (none)
