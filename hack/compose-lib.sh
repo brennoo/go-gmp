@@ -33,7 +33,15 @@ fi
 # (./CA), which Compose resolves against the file's own directory rather than
 # the caller's cwd — so there is nothing to cd into and no way to end up
 # mounting the wrong CA.
+#
+# COMPOSE_OVERRIDE_FILE, if set, is layered on top via a second -f — used by
+# hack/schema-drift.sh to boot gvmd from a freshly-resolved candidate image
+# without touching this checked-in compose file.
 dc() {
 	# shellcheck disable=SC2086 # COMPOSE_CMD is one or two words, deliberately unquoted.
-	$COMPOSE_CMD -f "$COMPOSE_FILE" "$@"
+	if [ -n "${COMPOSE_OVERRIDE_FILE:-}" ]; then
+		$COMPOSE_CMD -f "$COMPOSE_FILE" -f "$COMPOSE_OVERRIDE_FILE" "$@"
+	else
+		$COMPOSE_CMD -f "$COMPOSE_FILE" "$@"
+	fi
 }

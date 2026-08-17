@@ -40,7 +40,7 @@ func ImageDigest(ctx context.Context, composeFile, service string) (string, erro
 		return "", err
 	}
 
-	configured, err := configuredImage(ctx, composeCmd, composeFile, service)
+	configured, err := configuredImage(ctx, containerID)
 	if err != nil {
 		return "", err
 	}
@@ -74,27 +74,14 @@ func ImageDigest(ctx context.Context, composeFile, service string) (string, erro
 	return digest, nil
 }
 
-// configuredImage returns the image reference the Compose service is
-// configured to run, resolved the same way Compose itself resolves it
-// (env/var interpolation, defaults) rather than read back out of the YAML.
-func configuredImage(ctx context.Context, composeCmd []string, composeFile, service string) (string, error) {
-	args := append(append([]string{}, composeCmd[1:]...), "-f", composeFile, "config", "--images", service)
-	out, err := runCommand(ctx, composeCmd[0], args...)
-	if err != nil {
-		return "", fmt.Errorf("dockerstack: resolving configured image for %q: %w", service, err)
-	}
-
-	var images []string
-	for _, line := range strings.Split(strings.TrimSpace(string(out)), "\n") {
-		if line = strings.TrimSpace(line); line != "" {
-			images = append(images, line)
-		}
-	}
-	if len(images) != 1 {
-		return "", fmt.Errorf("dockerstack: expected exactly one configured image for %q, got %d (%v)",
-			service, len(images), images)
-	}
-	return images[0], nil
+// configuredImage returns the image reference containerID was started from.
+// `docker inspect` on the container itself, rather than `compose config
+// --images <service>`, because the latter resolves service's full dependency
+// subtree (Compose prints every transitive depends_on's image too), and gvmd
+// depends_on six other services in hack/docker-compose.yml — there is no
+// single-service filter to ask Compose for instead.
+func configuredImage(ctx context.Context, containerID string) (string, error) {
+	return inspectFormat(ctx, containerID, "{{.Config.Image}}")
 }
 
 // selectDigest returns the one entry in digests whose repository is repo,

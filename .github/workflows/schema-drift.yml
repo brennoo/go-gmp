@@ -1,0 +1,67 @@
+name: Schema drift
+
+# Nonblocking and informational, on purpose — see docs/review-2026-08.md, T-17.
+# Upstream availability and movement are external factors this repository does
+# not control, so this never runs on pull_request/push and never fails a PR:
+# schedule (weekly) plus workflow_dispatch only, same reasoning as
+# mirror-images.yml for the GitHub 60-day schedule-disable caveat.
+#
+# Unlike mirror-images.yml, this job never touches GHCR: it only reads the
+# lock file and pulls directly from upstream to resolve a candidate digest,
+# so contents: read is enough and there is no packages: write to guard with
+# SHA-pinned actions.
+on:
+  schedule:
+    - cron: '23 4 * * 2'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Install skopeo
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y skopeo
+
+      - name: Generate a throwaway admin password
+        # Not a secret in any meaningful sense: it belongs to an admin user on
+        # a container destroyed with the runner. Generated per run so nothing
+        # that ends up in a log is reusable, masked so it should not end up in
+        # one either.
+        run: |
+          set -eu
+          password="$(openssl rand -hex 16)"
+          echo "::add-mask::$password"
+          echo "GVMD_ADMIN_PASSWORD=$password" >> "$GITHUB_ENV"
+
+      - name: Resolve candidate, boot, and report drift
+        # hack/gvmd-up.sh's certificates carry no SAN (see its own log output),
+        # so -gmp.insecure is the documented-correct choice here, not a
+        # shortcut — see internal/codegen/snapshot_live_test.go.
+        run: |
+          set -eu
+          {
+            echo '## Schema drift report'
+            echo '```'
+            hack/schema-drift.sh -gmp.insecure -gmp.pass="$GVMD_ADMIN_PASSWORD"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: gvmd logs
+        if: always()
+        run: docker compose -f hack/docker-compose.yml logs --tail=400 gvmd || true
+
+      - name: Tear down
+        if: always()
+        run: hack/gvmd-down.sh --purge || true
