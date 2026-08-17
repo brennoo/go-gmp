@@ -152,12 +152,11 @@ func TestCheckOutputDetectsModified(t *testing.T) {
 func TestCheckOutputDetectsObsolete(t *testing.T) {
 	dir := newOutDir(t)
 	// A leftover from a family or command that used to be generated: marked,
-	// but nothing in the manifest accounts for it. target has no delete_X in
-	// the manifest (it needs its own review, unlike the 16 uniform deletes),
-	// so this can't collide with a real generated file the way "delete_note.go"
-	// now would.
-	stale := filepath.Join(dir, "delete_target.go")
-	writeTestFile(t, stale, GeneratedMarker+"\n\npackage commands\n\ntype DeleteTarget struct{}\n")
+	// but nothing in the manifest accounts for it. port_range isn't a family
+	// in the manifest at all yet, so this can't collide with a real generated
+	// file the way "delete_note.go" now would.
+	stale := filepath.Join(dir, "delete_port_range.go")
+	writeTestFile(t, stale, GeneratedMarker+"\n\npackage commands\n\ntype DeletePortRange struct{}\n")
 	wantOnly(t, checkOrFail(t, manifestOrFail(t), snapshotDir, dir), "obsolete", []string{stale})
 }
 

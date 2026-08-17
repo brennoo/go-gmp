@@ -169,7 +169,7 @@ func (g *GMPClient) DeleteTarget(ctx context.Context, targetID string) error {
 
 	cmd := &commands.DeleteTarget{
 		TargetID: targetID,
-		Ultimate: commands.Bool(true), // Delete permanently, not just to trash
+		Ultimate: true, // Delete permanently, not just to trash
 	}
 
 	resp, err := g.client.DeleteTarget(ctx, cmd)
@@ -258,7 +258,7 @@ func (g *GMPClient) DeleteTask(ctx context.Context, taskID string) error {
 
 	cmd := &commands.DeleteTask{
 		TaskID:   taskID,
-		Ultimate: commands.Bool(true),
+		Ultimate: true,
 	}
 
 	resp, err := g.client.DeleteTask(ctx, cmd)

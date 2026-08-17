@@ -2,50 +2,50 @@
 produce more powerful reports.  Please contact your system administrator
 for more information.
 
-Load average for past minute:     0.1
-Load average for past 5 minutes:  0.2
-Load average for past 15 minutes: 0.2
+Load average for past minute:     0.2
+Load average for past 5 minutes:  0.1
+Load average for past 15 minutes: 0.1
 
 /proc/meminfo:
 
 MemTotal:        8113120 kB
-MemFree:          814664 kB
-MemAvailable:    6791008 kB
-Buffers:           44180 kB
-Cached:          5745672 kB
+MemFree:          827816 kB
+MemAvailable:    6812660 kB
+Buffers:           46028 kB
+Cached:          5752324 kB
 SwapCached:            0 kB
-Active:          2723704 kB
-Inactive:        3841944 kB
-Active(anon):     730440 kB
-Inactive(anon):   191580 kB
-Active(file):    1993264 kB
-Inactive(file):  3650364 kB
+Active:          2722736 kB
+Inactive:        3845988 kB
+Active(anon):     725224 kB
+Inactive(anon):   191372 kB
+Active(file):    1997512 kB
+Inactive(file):  3654616 kB
 Unevictable:          16 kB
 Mlocked:              16 kB
 SwapTotal:             0 kB
 SwapFree:              0 kB
 Zswap:                 0 kB
 Zswapped:              0 kB
-Dirty:               340 kB
+Dirty:               204 kB
 Writeback:             0 kB
-AnonPages:        775708 kB
-Mapped:           266412 kB
+AnonPages:        770292 kB
+Mapped:           268548 kB
 Shmem:            146224 kB
 KReclaimable:     535848 kB
-Slab:             655172 kB
+Slab:             654904 kB
 SReclaimable:     535848 kB
-SUnreclaim:       119324 kB
-KernelStack:        7744 kB
-ShadowCallStack:    1952 kB
-PageTables:        12848 kB
+SUnreclaim:       119056 kB
+KernelStack:        7728 kB
+ShadowCallStack:    1948 kB
+PageTables:        12864 kB
 SecPageTables:         0 kB
 NFS_Unstable:          0 kB
 Bounce:                0 kB
 WritebackTmp:          0 kB
 CommitLimit:     4056560 kB
-Committed_AS:    4722624 kB
+Committed_AS:    4722616 kB
 VmallocTotal:   133141626880 kB
-VmallocUsed:       15088 kB
+VmallocUsed:       15080 kB
 VmallocChunk:          0 kB
 Percpu:             2048 kB
 HardwareCorrupted:     0 kB

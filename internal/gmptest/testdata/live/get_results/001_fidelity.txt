@@ -4,8 +4,8 @@ decode: ok
 namespaces-seen:
 
 DROPPED
-  /get_results_response/result/nvt/severities/severity                     x1  (+8 descendant paths)
-  /get_results_response/result/nvt/solution                                x1  (+1 descendant paths)
+  /get_results_response/result/nvt/severities/severity                     x3  (+8 descendant paths)
+  /get_results_response/result/nvt/solution                                x3  (+1 descendant paths)
   /get_results_response/result_count/#text                                 x1
   /get_results_response/sort/field/#text                                   x1
 
@@ -13,13 +13,11 @@ TRUNCATED
   (none)
 
 CHANGED
-  /get_results_response/result/nvt/cvss_base/#text                         "0.0" -> "0"
-  /get_results_response/result/nvt/severities/@score                       "0.0" -> "0"
-  /get_results_response/result/severity/#text                              "5.0" -> "5"
+  (none)
 
 ADDED
-  /get_results_response/result/nvt/cpe                                     x1
-  /get_results_response/result/nvt/refs                                    x1
+  /get_results_response/result/nvt/cpe                                     x3
+  /get_results_response/result/nvt/refs                                    x3
 
 DUPLICATED
   (none)

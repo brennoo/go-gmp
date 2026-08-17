@@ -913,18 +913,23 @@ func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool) fiel
 	base := g.goTypeOf(n)
 	goType, opts := base, ""
 
-	switch n.Card {
-	case schema.CardRepeated:
+	switch {
+	case n.Card == schema.CardRepeated:
 		goType = "[]" + base
 		opts = ",omitempty"
-	case schema.CardOptional:
+	case n.Card == schema.CardOptional || n.InChoice:
+		// InChoice means this field was reached through an <or>: the schema
+		// marks each branch required, but at most one branch is ever present,
+		// so its cardinality is advisory (see schema.Node.InChoice) and it
+		// needs the same omitempty treatment as a genuinely optional field.
 		_, forced := g.pf[command+"."+n.Name]
 		if len(n.Children) > 0 || pointerScalars[base] || forced {
 			goType = "*" + base
 		}
 		opts = ",omitempty"
-	case schema.CardRequired:
-		// A required item is present by definition: no pointer, no omitempty.
+	case n.Card == schema.CardRequired:
+		// A required item outside any <or> is present by definition: no
+		// pointer, no omitempty.
 	}
 
 	tag := n.Name

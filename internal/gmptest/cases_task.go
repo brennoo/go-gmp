@@ -72,19 +72,15 @@ func init() {
 	RegisterRequestCase("get_tasks", "by_id", &commands.GetTasks{TaskID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"})
 	RegisterRequestCase("get_tasks", "with_filter_false", &commands.GetTasks{Filter: "rows=2 first=1", Details: commands.Bool(false)})
 
-	// DeleteTask.Ultimate is *bool: unset, true, and an explicit false all
-	// round-trip distinctly.
+	// DeleteTask.Ultimate is a required GMPBool: true and false round-trip to
+	// distinct wire values ("1"/"0"), and the attribute is always present.
 	RegisterRequestCase("delete_task", "ultimate_true", &commands.DeleteTask{
 		TaskID:   "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
-		Ultimate: commands.Bool(true),
-	})
-
-	RegisterRequestCase("delete_task", "ultimate_unset", &commands.DeleteTask{
-		TaskID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
+		Ultimate: true,
 	})
 
 	RegisterRequestCase("delete_task", "ultimate_false", &commands.DeleteTask{
 		TaskID:   "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
-		Ultimate: commands.Bool(false),
+		Ultimate: false,
 	})
 }

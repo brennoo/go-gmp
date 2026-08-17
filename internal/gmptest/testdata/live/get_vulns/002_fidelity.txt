@@ -11,7 +11,7 @@ TRUNCATED
   (none)
 
 CHANGED
-  /get_vulns_response/vuln/severity/#text                                  "0.0" -> "0"
+  (none)
 
 ADDED
   (none)

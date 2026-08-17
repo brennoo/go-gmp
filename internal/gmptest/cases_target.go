@@ -46,20 +46,16 @@ func init() {
 		Details: commands.Bool(false),
 	})
 
-	// DeleteTarget.Ultimate is *bool: unset, true, and an explicit false all
-	// round-trip distinctly.
+	// DeleteTarget.Ultimate is a required GMPBool: true and false round-trip
+	// to distinct wire values ("1"/"0"), and the attribute is always present.
 	RegisterRequestCase("delete_target", "ultimate_true", &commands.DeleteTarget{
 		TargetID: "1a2b3c4d-5e6f-7081-92a3-b4c5d6e7f8a9",
-		Ultimate: commands.Bool(true),
-	})
-
-	RegisterRequestCase("delete_target", "ultimate_unset", &commands.DeleteTarget{
-		TargetID: "1a2b3c4d-5e6f-7081-92a3-b4c5d6e7f8a9",
+		Ultimate: true,
 	})
 
 	RegisterRequestCase("delete_target", "ultimate_false", &commands.DeleteTarget{
 		TargetID: "1a2b3c4d-5e6f-7081-92a3-b4c5d6e7f8a9",
-		Ultimate: commands.Bool(false),
+		Ultimate: false,
 	})
 
 	// ModifyTarget.ReverseLookupOnly/ReverseLookupUnify/AllowSimultaneousIPs

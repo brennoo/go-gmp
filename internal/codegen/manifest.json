@@ -120,6 +120,7 @@
       "name": "asset",
       "commands": [
         "create_asset",
+        "delete_asset",
         "get_assets",
         "modify_asset"
       ]
@@ -146,6 +147,7 @@
       "name": "user",
       "commands": [
         "create_user",
+        "delete_user",
         "get_users",
         "modify_user"
       ]
@@ -154,6 +156,7 @@
       "name": "target",
       "commands": [
         "create_target",
+        "delete_target",
         "get_targets",
         "modify_target"
       ]
@@ -162,6 +165,7 @@
       "name": "task",
       "commands": [
         "create_task",
+        "delete_task",
         "get_tasks",
         "modify_task"
       ]

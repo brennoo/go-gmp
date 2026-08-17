@@ -325,6 +325,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.GetAssets{}),
 			Response: schema.ModelOf(&commands.GetAssetsResponse{}),
 		},
+		"delete_asset": {
+			Request:  schema.ModelOf(&commands.DeleteAsset{}),
+			Response: schema.ModelOf(&commands.DeleteAssetResponse{}),
+		},
 		"create_report_format": {
 			Request:  schema.ModelOf(&commands.CreateReportFormat{}),
 			Response: schema.ModelOf(&commands.CreateReportFormatResponse{}),
@@ -369,6 +373,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.GetUsers{}),
 			Response: schema.ModelOf(&commands.GetUsersResponse{}),
 		},
+		"delete_user": {
+			Request:  schema.ModelOf(&commands.DeleteUser{}),
+			Response: schema.ModelOf(&commands.DeleteUserResponse{}),
+		},
 		"create_target": {
 			Request:  schema.ModelOf(&commands.CreateTarget{}),
 			Response: schema.ModelOf(&commands.CreateTargetResponse{}),
@@ -381,6 +389,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.GetTargets{}),
 			Response: schema.ModelOf(&commands.GetTargetsResponse{}),
 		},
+		"delete_target": {
+			Request:  schema.ModelOf(&commands.DeleteTarget{}),
+			Response: schema.ModelOf(&commands.DeleteTargetResponse{}),
+		},
 		"create_task": {
 			Request:  schema.ModelOf(&commands.CreateTask{}),
 			Response: schema.ModelOf(&commands.CreateTaskResponse{}),
@@ -392,6 +404,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 		"get_tasks": {
 			Request:  schema.ModelOf(&commands.GetTasks{}),
 			Response: schema.ModelOf(&commands.GetTasksResponse{}),
+		},
+		"delete_task": {
+			Request:  schema.ModelOf(&commands.DeleteTask{}),
+			Response: schema.ModelOf(&commands.DeleteTaskResponse{}),
 		},
 		"create_scanner": {
 			Request:  schema.ModelOf(&commands.CreateScanner{}),

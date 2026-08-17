@@ -443,7 +443,7 @@ func (r *captureRun) lifecycleTarget(st *captureState) {
 		"lifecycle: create_target using the created port list and credential", req,
 		func(id string) {
 			r.send("delete_target", "teardown: delete_target ultimate",
-				&commands.DeleteTarget{TargetID: id, Ultimate: commands.Bool(true)})
+				&commands.DeleteTarget{TargetID: id, Ultimate: true})
 		})
 	if st.targetID == "" {
 		return
@@ -861,7 +861,7 @@ func (r *captureRun) lifecycleTask(st *captureState) {
 
 	st.taskID = r.acceptCreated("create_task", "lifecycle: create_task", resp, func(id string) {
 		r.send("delete_task", "teardown: delete_task ultimate",
-			&commands.DeleteTask{TaskID: id, Ultimate: commands.Bool(true)})
+			&commands.DeleteTask{TaskID: id, Ultimate: true})
 	})
 	if st.taskID == "" {
 		return

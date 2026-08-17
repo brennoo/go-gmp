@@ -3203,6 +3203,7 @@ func TestValidateAssetBeforeMatchesKnownConformance(t *testing.T) {
 			actionable: map[string]int{schema.CatDefect: 1},
 			suppressed: map[string]int{},
 		},
+		"delete_asset": {actionable: map[string]int{}, suppressed: map[string]int{schema.CatOmitEmpty: 2}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -3228,6 +3229,7 @@ func TestValidateAssetGeneratedMatchesOrImproves(t *testing.T) {
 			actionable: map[string]int{schema.CatDefect: 1},
 			suppressed: map[string]int{},
 		},
+		"delete_asset": {actionable: map[string]int{}, suppressed: map[string]int{schema.CatOmitEmpty: 2}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
@@ -3797,6 +3799,7 @@ func TestValidateUserBeforeMatchesKnownConformance(t *testing.T) {
 			actionable: map[string]int{schema.CatDefect: 2},
 			suppressed: map[string]int{},
 		},
+		"delete_user": {actionable: map[string]int{}, suppressed: map[string]int{schema.CatOmitEmpty: 4}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -3829,6 +3832,7 @@ func TestValidateUserGeneratedMatchesOrImproves(t *testing.T) {
 			actionable: map[string]int{schema.CatDefect: 2},
 			suppressed: map[string]int{},
 		},
+		"delete_user": {actionable: map[string]int{}, suppressed: map[string]int{schema.CatOmitEmpty: 4}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
@@ -3957,6 +3961,7 @@ func TestValidateTargetBeforeMatchesKnownConformance(t *testing.T) {
 			actionable: map[string]int{schema.CatDefect: 9},
 			suppressed: map[string]int{},
 		},
+		"delete_target": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -3992,6 +3997,7 @@ func TestValidateTargetGeneratedMatchesOrImproves(t *testing.T) {
 			actionable: map[string]int{schema.CatDefect: 9},
 			suppressed: map[string]int{},
 		},
+		"delete_target": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
@@ -4010,6 +4016,7 @@ func TestValidateTaskBeforeMatchesKnownConformance(t *testing.T) {
 			actionable: map[string]int{schema.CatDefect: 7},
 			suppressed: map[string]int{},
 		},
+		"delete_task": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -4044,6 +4051,7 @@ func TestValidateTaskGeneratedMatchesOrImproves(t *testing.T) {
 			actionable: map[string]int{schema.CatDefect: 7},
 			suppressed: map[string]int{},
 		},
+		"delete_task": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }

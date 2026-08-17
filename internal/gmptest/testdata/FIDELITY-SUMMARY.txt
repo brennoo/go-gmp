@@ -12,7 +12,7 @@
 
 fixtures: 339   clean: 195   with-loss: 133   decode-errors: 10   advisory: 1
 commands with loss: 37 of 122
-distinct dropped paths: 200
+distinct dropped paths: 198
 
 ## Per fixture
 
@@ -211,15 +211,15 @@ get_report_formats           live      006 ok            dropped=2   truncated=0
 get_report_formats           live      007 ok            dropped=2   truncated=0   changed=0   added=1
 get_report_formats           upstream  001 ok            dropped=2   truncated=0   changed=1   added=25
 get_report_formats           upstream  002 ok            dropped=4   truncated=0   changed=0   added=29
-get_reports                  live      001 ok            dropped=37  truncated=0   changed=2   added=0
+get_reports                  live      001 ok            dropped=36  truncated=1   changed=0   added=0
 get_reports                  live      002 ok            dropped=38  truncated=0   changed=2   added=0
 get_reports                  upstream  001 ok            dropped=1   truncated=0   changed=0   added=4
 get_reports                  upstream  002 ok            dropped=22  truncated=0   changed=5   added=8
 get_resource_names           live      001 clean         dropped=0   truncated=0   changed=0   added=0
 get_resource_names           live      002 clean         dropped=0   truncated=0   changed=0   added=0
 get_resource_names           upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
-get_results                  live      001 ok            dropped=4   truncated=0   changed=3   added=2
-get_results                  live      002 ok            dropped=4   truncated=0   changed=3   added=2
+get_results                  live      001 ok            dropped=4   truncated=0   changed=0   added=2
+get_results                  live      002 ok            dropped=4   truncated=0   changed=0   added=2
 get_results                  live      003 ok            dropped=4   truncated=0   changed=0   added=2
 get_results                  live      004 ok            dropped=4   truncated=0   changed=0   added=2
 get_results                  upstream  001 ok            dropped=5   truncated=0   changed=1   added=15
@@ -252,8 +252,8 @@ get_targets                  live      002 ok            dropped=2   truncated=0
 get_targets                  live      003 ok            dropped=3   truncated=0   changed=0   added=1
 get_targets                  upstream  001 ok            dropped=1   truncated=0   changed=1   added=54
 get_targets                  upstream  002 ok            dropped=1   truncated=0   changed=1   added=54
-get_tasks                    live      001 ok            dropped=9   truncated=0   changed=1   added=2
-get_tasks                    live      002 ok            dropped=9   truncated=0   changed=1   added=2
+get_tasks                    live      001 ok            dropped=8   truncated=1   changed=0   added=2
+get_tasks                    live      002 ok            dropped=8   truncated=0   changed=0   added=2
 get_tasks                    live      003 ok            dropped=4   truncated=0   changed=0   added=2
 get_tasks                    live      004 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0
 get_tasks                    live      005 clean         dropped=0   truncated=0   changed=0   added=16
@@ -277,8 +277,8 @@ get_users                    upstream  001 clean         dropped=0   truncated=0
 get_version                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
 get_version                  live      002 clean         dropped=0   truncated=0   changed=0   added=0
 get_version                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
-get_vulns                    live      001 ok            dropped=2   truncated=0   changed=1   added=0
-get_vulns                    live      002 ok            dropped=2   truncated=0   changed=1   added=0
+get_vulns                    live      001 ok            dropped=2   truncated=0   changed=0   added=0
+get_vulns                    live      002 ok            dropped=2   truncated=0   changed=0   added=0
 get_vulns                    upstream  001 ok            dropped=3   truncated=0   changed=0   added=0
 help                         live      001 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0
 help                         live      002 clean         dropped=0   truncated=0   changed=0   added=0

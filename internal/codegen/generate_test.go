@@ -1043,9 +1043,9 @@ func TestCredentialGeneratedResponseRoundTrips(t *testing.T) {
 		"upstream-package-roundtrip: credentials=1 filtered=0 page=0\n" +
 		"  credential id=\"8e305b0b-260d-450d-91a8-dadf0b144e15\" type=\"up\" target.id=\"1f28d970-17ef-4c69-ba8a-13827059f2b9\" package.format=\"deb\" package.len=29 allow_insecure=false writable=true in_use=true\n" +
 		"live-decode: credentials=1 filtered=1 page=1\n" +
-		"  credential id=\"3eb63d05-e835-474b-ab05-27751336805d\" type=\"cc\" formats=[pem] allow_insecure=false writable=true in_use=false\n" +
+		"  credential id=\"02c492db-8f0e-428c-a341-302807abead9\" type=\"cc\" formats=[pem] allow_insecure=false writable=true in_use=false\n" +
 		"live-roundtrip: credentials=1 filtered=1 page=1\n" +
-		"  credential id=\"3eb63d05-e835-474b-ab05-27751336805d\" type=\"cc\" formats=[pem] allow_insecure=false writable=true in_use=false\n" +
+		"  credential id=\"02c492db-8f0e-428c-a341-302807abead9\" type=\"cc\" formats=[pem] allow_insecure=false writable=true in_use=false\n" +
 		"synthetic-decode: credentials=1 filtered=1 page=1\n" +
 		"  credential id=\"cred-syn-1\" type=\"krb5\" formats=[key] kdcs=[kdc1.example.com kdc2.example.com] scanner.id=\"scanner-1\" privacy.algorithm=\"aes\" cert_info.time_status=\"valid\" cert_info.activation_time=\"2020-01-01T00:00:00Z\" cert_info.expiration_time=\"2030-01-01T00:00:00Z\" cert_info.issuer=\"CN=test\" cert_info.md5=\"aa:bb\" cert_info.sha256=\"cc:dd\" cert_info.subject=\"CN=subject\" cert_info.serial=\"01\" allow_insecure=false writable=true in_use=false\n" +
 		"synthetic-roundtrip: credentials=1 filtered=1 page=1\n" +
@@ -1873,6 +1873,60 @@ func manifestOrFail(t *testing.T) Manifest {
 		t.Fatalf("Failed to load the manifest: %v", err)
 	}
 	return m
+}
+
+// TestFieldOfInChoiceCardinality pins fieldOf's InChoice handling directly,
+// rather than relying on full-family goldens to exercise it indirectly: a
+// node reached through an <or> is marked Card: CardRequired by the schema
+// (each branch is required in isolation) but InChoice: true (only one branch
+// is ever present on the wire), and fieldOf must treat that like a genuinely
+// optional field regardless of the schema's own Card value.
+func TestFieldOfInChoiceCardinality(t *testing.T) {
+	g := &gen{ov: map[string]Override{}, pf: map[string]PointerOverride{}}
+
+	tests := []struct {
+		name       string
+		node       *schema.Node
+		wantGoType string
+		wantTag    string
+	}{
+		{
+			name:       "choice scalar gets omitempty, no pointer (string zero value is not meaningful)",
+			node:       &schema.Node{Name: "asset_id", Kind: schema.KindAttribute, Card: schema.CardRequired, InChoice: true, Type: "text"},
+			wantGoType: "string",
+			wantTag:    "asset_id,attr,omitempty",
+		},
+		{
+			name:       "choice pointer-scalar gets omitempty and a pointer (zero value is meaningful)",
+			node:       &schema.Node{Name: "limit", Kind: schema.KindAttribute, Card: schema.CardRequired, InChoice: true, Type: "integer"},
+			wantGoType: "*int",
+			wantTag:    "limit,attr,omitempty",
+		},
+		{
+			name:       "required field outside any choice stays non-pointer, non-omitempty",
+			node:       &schema.Node{Name: "task_id", Kind: schema.KindAttribute, Card: schema.CardRequired, InChoice: false, Type: "text"},
+			wantGoType: "string",
+			wantTag:    "task_id,attr",
+		},
+		{
+			name:       "repeated field marked InChoice stays a slice, not a pointer-if-eligible scalar",
+			node:       &schema.Node{Name: "host", Kind: schema.KindElement, Card: schema.CardRepeated, InChoice: true, Type: "integer"},
+			wantGoType: "[]int",
+			wantTag:    "host,omitempty",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f := g.fieldOf("", tt.node, map[string]bool{})
+			if f.goType != tt.wantGoType {
+				t.Errorf("goType = %q, want %q", f.goType, tt.wantGoType)
+			}
+			if f.tag != tt.wantTag {
+				t.Errorf("tag = %q, want %q", f.tag, tt.wantTag)
+			}
+		})
+	}
 }
 
 // --- fieldOverridesFor cross-use consistency (bug #2 regression tests) -----
