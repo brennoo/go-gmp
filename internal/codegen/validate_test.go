@@ -4244,3 +4244,37 @@ func TestValidatePortRangeGeneratedMatchesOrImproves(t *testing.T) {
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
+
+// TestValidateTrashBeforeMatchesKnownConformance is trash's counterpart to
+// TestValidatePortRangeBeforeMatchesKnownConformance. trash is adopted, so
+// BeforeGoRoots already reflects the generator's output; empty_trashcan's
+// SCHEMA-DEFECT is the allowlisted empty-pattern defect (docs/review-2026-08.md
+// `trash`) — allowlisting unblocks generation but the finding itself is
+// upstream-schema and stays actionable, same as get_notes' SCHEMA-DEFECT.
+func TestValidateTrashBeforeMatchesKnownConformance(t *testing.T) {
+	before, _ := validateOrSkip(t, "empty_trashcan")
+
+	want := map[string]counts{
+		"empty_trashcan": {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{}},
+		"restore":        {actionable: map[string]int{}, suppressed: map[string]int{}},
+	}
+	for _, res := range before {
+		w, ok := want[res.Command]
+		if !ok {
+			t.Errorf("%s: unexpected command in Validate's before results", res.Command)
+			continue
+		}
+		assertCounts(t, "before", res.Command, w, countFindings(res.Findings))
+	}
+}
+
+// TestValidateTrashGeneratedMatchesOrImproves is trash's pre-adoption gate.
+func TestValidateTrashGeneratedMatchesOrImproves(t *testing.T) {
+	before, after := validateOrSkip(t, "empty_trashcan")
+
+	wantAfter := map[string]counts{
+		"empty_trashcan": {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{}},
+		"restore":        {actionable: map[string]int{}, suppressed: map[string]int{}},
+	}
+	assertMatchesOrImproves(t, before, after, wantAfter)
+}

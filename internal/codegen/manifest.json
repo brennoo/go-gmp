@@ -210,6 +210,13 @@
         "delete_report",
         "get_reports"
       ]
+    },
+    {
+      "name": "trash",
+      "commands": [
+        "empty_trashcan",
+        "restore"
+      ]
     }
   ]
 }

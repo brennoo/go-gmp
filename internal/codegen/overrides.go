@@ -950,4 +950,8 @@ var DefectAllowlist = map[DefectKey]DefectAllowlistEntry{
 		Reason: "T-9; upstream `<ele>` redefined in one scope, docs/review-2026-08.md `report` — " +
 			"same shared result type as create_report's `active` defect",
 	},
+	{Command: "empty_trashcan", Class: "empty-pattern", Path: "/empty_trashcan"}: {
+		Reason: "T-9; docs/review-2026-08.md `trash` — the request pattern declares no content, " +
+			"same generic upstream-schema class already carried by note/override/create_group",
+	},
 }

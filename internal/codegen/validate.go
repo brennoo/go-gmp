@@ -493,6 +493,14 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.GetReports{}),
 			Response: schema.ModelOf(&commands.GetReportsResponse{}),
 		},
+		"empty_trashcan": {
+			Request:  schema.ModelOf(&commands.EmptyTrashcan{}),
+			Response: schema.ModelOf(&commands.EmptyTrashcanResponse{}),
+		},
+		"restore": {
+			Request:  schema.ModelOf(&commands.Restore{}),
+			Response: schema.ModelOf(&commands.RestoreResponse{}),
+		},
 	}
 }
 

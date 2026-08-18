@@ -27,11 +27,15 @@ func TestCommittedManifest(t *testing.T) {
 	// note, override, role, group, tag, schedule, alert, filter,
 	// tls_certificate, permission, ticket, credential, port_list, asset,
 	// report_format, report_config, report, user, target, task, scanner,
-	// config, and port_range are all adopted; every family but tls_certificate
-	// also has a delete_X sibling. port_range has no get_X/modify_X commands at
-	// all — the schema only ever declared create_port_range/delete_port_range.
-	// report has no modify_X — the schema never declared one. commands/*.go
-	// are all the generator's output for these families.
+	// config, port_range, and trash are all adopted; every family but
+	// tls_certificate and trash also has a delete_X sibling. port_range has
+	// no get_X/modify_X commands at all — the schema only ever declared
+	// create_port_range/delete_port_range. report has no modify_X — the
+	// schema never declared one. trash has neither: empty_trashcan/restore
+	// are its only two commands. commands/*.go are all the generator's
+	// output for these families.
+	assertFamily(t, m, "empty_trashcan", "trash")
+	assertFamily(t, m, "restore", "trash")
 	assertFamily(t, m, "get_notes", "note")
 	assertFamily(t, m, "get_reports", "report")
 	assertFamily(t, m, "get_overrides", "override")
@@ -86,7 +90,7 @@ func TestCommittedManifest(t *testing.T) {
 		"delete_credential", "delete_filter", "delete_group", "delete_note", "delete_override",
 		"delete_permission", "delete_port_list", "delete_port_range", "delete_report", "delete_report_config", "delete_report_format", "delete_role",
 		"delete_scanner", "delete_schedule", "delete_tag", "delete_target", "delete_task", "delete_ticket",
-		"delete_user", "get_alerts", "get_assets",
+		"delete_user", "empty_trashcan", "get_alerts", "get_assets",
 		"get_configs", "get_credentials", "get_filters", "get_groups", "get_notes", "get_overrides",
 		"get_permissions", "get_port_lists", "get_report_configs", "get_report_formats", "get_reports", "get_roles",
 		"get_scanners", "get_schedules", "get_tags", "get_targets", "get_tasks", "get_tickets",
@@ -94,7 +98,7 @@ func TestCommittedManifest(t *testing.T) {
 		"modify_filter", "modify_group", "modify_note", "modify_override", "modify_permission", "modify_port_list",
 		"modify_report_config", "modify_report_format", "modify_role", "modify_scanner", "modify_schedule",
 		"modify_tag", "modify_target", "modify_task", "modify_ticket", "modify_tls_certificate", "modify_user",
-		"move_task", "resume_task", "start_task", "stop_task",
+		"move_task", "restore", "resume_task", "start_task", "stop_task",
 		"sync_config", "test_alert", "verify_report_format", "verify_scanner",
 	}
 	want := []string{
@@ -105,7 +109,7 @@ func TestCommittedManifest(t *testing.T) {
 		"delete_credential", "delete_filter", "delete_group", "delete_note", "delete_override",
 		"delete_permission", "delete_port_list", "delete_port_range", "delete_report", "delete_report_config", "delete_report_format", "delete_role",
 		"delete_scanner", "delete_schedule", "delete_tag", "delete_target", "delete_task", "delete_ticket",
-		"delete_user", "get_alerts", "get_assets",
+		"delete_user", "empty_trashcan", "get_alerts", "get_assets",
 		"get_configs", "get_credentials", "get_filters", "get_groups", "get_notes", "get_overrides",
 		"get_permissions", "get_port_lists", "get_report_configs", "get_report_formats", "get_reports", "get_roles",
 		"get_scanners", "get_schedules", "get_tags", "get_targets", "get_tasks", "get_tickets",
@@ -113,7 +117,7 @@ func TestCommittedManifest(t *testing.T) {
 		"modify_filter", "modify_group", "modify_note", "modify_override", "modify_permission", "modify_port_list",
 		"modify_report_config", "modify_report_format", "modify_role", "modify_scanner", "modify_schedule",
 		"modify_tag", "modify_target", "modify_task", "modify_ticket", "modify_tls_certificate", "modify_user",
-		"move_task", "resume_task", "start_task", "stop_task",
+		"move_task", "restore", "resume_task", "start_task", "stop_task",
 		"sync_config", "test_alert", "verify_report_format", "verify_scanner",
 	}
 	if got := m.AllCommands(); strings.Join(got, ",") != strings.Join(want, ",") {
@@ -137,7 +141,7 @@ func TestCommittedManifest(t *testing.T) {
 		"delete_group.go", "delete_note.go", "delete_override.go", "delete_permission.go", "delete_port_list.go",
 		"delete_port_range.go", "delete_report.go", "delete_report_config.go", "delete_report_format.go", "delete_role.go", "delete_scanner.go",
 		"delete_schedule.go", "delete_tag.go", "delete_target.go", "delete_task.go", "delete_ticket.go",
-		"delete_user.go", "filter_shared.go", "get_alerts.go",
+		"delete_user.go", "empty_trashcan.go", "filter_shared.go", "get_alerts.go",
 		"get_assets.go", "get_configs.go", "get_credentials.go", "get_filters.go", "get_groups.go", "get_notes.go",
 		"get_overrides.go", "get_permissions.go", "get_port_lists.go", "get_report_configs.go",
 		"get_report_formats.go", "get_reports.go", "get_roles.go", "get_scanners.go", "get_schedules.go", "get_tags.go",
@@ -148,10 +152,10 @@ func TestCommittedManifest(t *testing.T) {
 		"modify_scanner.go", "modify_schedule.go", "modify_tag.go", "modify_target.go", "modify_task.go",
 		"modify_ticket.go", "modify_tls_certificate.go", "modify_user.go", "move_task.go", "note_shared.go", "override_shared.go",
 		"permission_shared.go", "port_list_shared.go", "port_range_shared.go", "report_config_shared.go", "report_format_shared.go", "report_shared.go",
-		"resume_task.go", "role_shared.go", "scanner_shared.go", "schedule_shared.go", "start_task.go", "stop_task.go",
+		"restore.go", "resume_task.go", "role_shared.go", "scanner_shared.go", "schedule_shared.go", "start_task.go", "stop_task.go",
 		"sync_config.go", "tag_shared.go",
 		"target_shared.go", "task_shared.go", "test_alert.go", "ticket_shared.go", "tls_certificate_shared.go",
-		"user_shared.go", "verify_report_format.go", "verify_scanner.go",
+		"trash_shared.go", "user_shared.go", "verify_report_format.go", "verify_scanner.go",
 	})
 	assertFiles(t, "Adopted().ExpectedOutputFiles", m.Adopted().ExpectedOutputFiles("commands"), []string{
 		"alert_shared.go", "asset_shared.go", "config_shared.go", "create_alert.go", "create_asset.go",
@@ -164,7 +168,7 @@ func TestCommittedManifest(t *testing.T) {
 		"delete_group.go", "delete_note.go", "delete_override.go", "delete_permission.go", "delete_port_list.go",
 		"delete_port_range.go", "delete_report.go", "delete_report_config.go", "delete_report_format.go", "delete_role.go", "delete_scanner.go",
 		"delete_schedule.go", "delete_tag.go", "delete_target.go", "delete_task.go", "delete_ticket.go",
-		"delete_user.go", "filter_shared.go", "get_alerts.go",
+		"delete_user.go", "empty_trashcan.go", "filter_shared.go", "get_alerts.go",
 		"get_assets.go", "get_configs.go", "get_credentials.go", "get_filters.go", "get_groups.go", "get_notes.go",
 		"get_overrides.go", "get_permissions.go", "get_port_lists.go", "get_report_configs.go",
 		"get_report_formats.go", "get_reports.go", "get_roles.go", "get_scanners.go", "get_schedules.go", "get_tags.go",
@@ -175,10 +179,10 @@ func TestCommittedManifest(t *testing.T) {
 		"modify_scanner.go", "modify_schedule.go", "modify_tag.go", "modify_target.go", "modify_task.go",
 		"modify_ticket.go", "modify_tls_certificate.go", "modify_user.go", "move_task.go", "note_shared.go", "override_shared.go",
 		"permission_shared.go", "port_list_shared.go", "port_range_shared.go", "report_config_shared.go", "report_format_shared.go", "report_shared.go",
-		"resume_task.go", "role_shared.go", "scanner_shared.go", "schedule_shared.go", "start_task.go", "stop_task.go",
+		"restore.go", "resume_task.go", "role_shared.go", "scanner_shared.go", "schedule_shared.go", "start_task.go", "stop_task.go",
 		"sync_config.go", "tag_shared.go",
 		"target_shared.go", "task_shared.go", "test_alert.go", "ticket_shared.go", "tls_certificate_shared.go",
-		"user_shared.go", "verify_report_format.go", "verify_scanner.go",
+		"trash_shared.go", "user_shared.go", "verify_report_format.go", "verify_scanner.go",
 	})
 
 	if got, want := m.SnapshotPath("d", "get_notes"), SnapshotPath("d", "get_notes"); got != want {
