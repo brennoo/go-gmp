@@ -553,6 +553,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.GetResourceNames{}),
 			Response: schema.ModelOf(&commands.GetResourceNamesResponse{}),
 		},
+		"get_version": {
+			Request:  schema.ModelOf(&commands.GetVersion{}),
+			Response: schema.ModelOf(&commands.GetVersionResponse{}),
+		},
 	}
 }
 

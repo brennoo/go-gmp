@@ -255,6 +255,12 @@
         "get_settings",
         "modify_setting"
       ]
+    },
+    {
+      "name": "version",
+      "commands": [
+        "get_version"
+      ]
     }
   ]
 }

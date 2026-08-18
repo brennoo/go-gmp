@@ -1104,6 +1104,10 @@ var DefectAllowlist = map[DefectKey]DefectAllowlistEntry{
 		Reason: "T-9; docs/review-2026-08.md `license` — the request pattern declares no content, same " +
 			"generic upstream-schema class already carried by describe_auth/empty_trashcan",
 	},
+	{Command: "get_version", Class: "empty-pattern", Path: "/get_version"}: {
+		Reason: "T-9; docs/review-2026-08.md `version` — the request pattern declares no content, same " +
+			"generic upstream-schema class already carried by describe_auth/get_license/empty_trashcan",
+	},
 	{Command: "get_resource_names", Class: "undefined-type", Path: "/get_resource_names_response/type"}: {
 		Reason: "T-9; docs/review-2026-08.md `settings` — <type>'s own declared <type> is itself " +
 			"`type`, a self-reference with no defined alias, same class as get_assets' @distance and " +
