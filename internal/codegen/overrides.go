@@ -261,6 +261,26 @@ var FieldOverrides = map[string][]FieldOverride{
 			"an alternate/legacy form. AggregateText is one structurally-deduplicated type shared by both " +
 			"aggregate/group/text and aggregate/overall/text, so both must carry this same entry",
 	}},
+	"get_settings:/setting": {{
+		Name: "id", Attr: true, GoType: "string",
+		Reason: "T-9 settings review: command_get_settings.xml's formal <setting> pattern declares only " +
+			"name/comment/value, no id attribute, but internal/gmptest/testdata/live/get_settings/" +
+			"{001,002,003}_response.xml all show every <setting id=\"...\"> carrying a real UUID — the " +
+			"schema's own baked <example> agrees a setting has an id, it just nests <setting> inside " +
+			"<settings> in a way no live capture ever confirms",
+	}},
+	"get_settings:/settings": {{
+		Name: "setting", GoType: "[]SettingsSetting", OmitEmpty: true,
+		Reason: "T-9 settings review: command_get_settings.xml's <settings> pattern declares only the " +
+			"start/max pagination attributes, but the command's own <example> — reproduced verbatim in " +
+			"testdata/upstream/get_settings/001_response.xml — nests a real <setting id=\"...\"> inside " +
+			"<settings>, the same pattern-vs-example disagreement as verify_scanner's version; without " +
+			"this field the round trip silently drops that nested setting (confirmed by the upstream " +
+			"fixture's DROPPED settings/setting finding). No live capture against current gvmd ever " +
+			"produces this nested shape — every live fixture uses the flat top-level <setting> siblings " +
+			"already modelled by GetSettingsResponse.Setting — so this is an alternate/legacy wire form " +
+			"kept alongside the flat one, not a replacement for it",
+	}},
 }
 
 // FieldTypeOverride corrects the Go type the mechanical mapping would assign
@@ -314,6 +334,14 @@ var FieldTypeOverrides = map[string][]FieldTypeOverride{
 			"internal/gmptest/testdata/live/get_info/001_response.xml's type=cve lookups return the CVE " +
 			"name itself (\"CVE-1999-0001\") as @id, not a numeric ID — real wire data the generated *int " +
 			"can't even decode",
+	}},
+	"get_resource_names:/resource": {{
+		Name: "id", Attr: true, GoType: "string",
+		Reason: "T-9 settings review: command_get_resource_names.xml declares resource/@id as type " +
+			"integer, but its own baked <example> and internal/gmptest/testdata/live/get_resource_names/" +
+			"{001,002}_response.xml and testdata/upstream/get_resource_names/001_response.xml all show a " +
+			"UUID string (e.g. \"5b6b6aef-b320-42ca-899f-3161ee2a4195\") — real wire data the generated " +
+			"*int can't even decode, same class as get_info's id entry above",
 	}},
 }
 
@@ -1075,5 +1103,10 @@ var DefectAllowlist = map[DefectKey]DefectAllowlistEntry{
 	{Command: "get_license", Class: "empty-pattern", Path: "/get_license"}: {
 		Reason: "T-9; docs/review-2026-08.md `license` — the request pattern declares no content, same " +
 			"generic upstream-schema class already carried by describe_auth/empty_trashcan",
+	},
+	{Command: "get_resource_names", Class: "undefined-type", Path: "/get_resource_names_response/type"}: {
+		Reason: "T-9; docs/review-2026-08.md `settings` — <type>'s own declared <type> is itself " +
+			"`type`, a self-reference with no defined alias, same class as get_assets' @distance and " +
+			"get_info's recursive <node>",
 	},
 }

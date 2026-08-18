@@ -77,31 +77,19 @@ func TestResultsIterator_TotalNilCount(t *testing.T) {
 	}
 }
 
-func TestSettingsIterator_Layouts_TotalNil(t *testing.T) {
-	// SettingsList variant
-	client1 := &fakeAllClient{
-		settingsResp: &commands.GetSettingsResponse{SettingsList: []commands.Setting{{ID: "s1"}, {ID: "s2"}}, SettingCount: nil},
+func TestSettingsIterator_TotalZero(t *testing.T) {
+	client := &fakeAllClient{
+		settingsResp: &commands.GetSettingsResponse{Setting: []commands.SettingsSetting{{ID: "s1"}, {ID: "s2"}}},
 	}
-	it1 := NewSettingsIterator(client1, context.Background(), PaginationOptions{Page: 1, PageSize: 3})
-	if !it1.Next() {
+	it := NewSettingsIterator(client, context.Background(), PaginationOptions{Page: 1, PageSize: 3})
+	if !it.Next() {
 		t.Fatalf("expected first Next() true")
 	}
-	for it1.Next() {
-		_ = it1.Current()
+	for it.Next() {
+		_ = it.Current()
 	}
-	if it1.Total() != 0 {
-		t.Fatalf("expected total 0 with nil SettingCount (list), got %d", it1.Total())
-	}
-	// Settings.Settings variant
-	client2 := &fakeAllClient{
-		settingsResp: &commands.GetSettingsResponse{Settings: &commands.Settings{Setting: []commands.Setting{{ID: "s3"}}}, SettingCount: nil},
-	}
-	it2 := NewSettingsIterator(client2, context.Background(), PaginationOptions{Page: 1, PageSize: 2})
-	if !it2.Next() {
-		t.Fatalf("expected first Next() true")
-	}
-	if it2.Total() != 0 {
-		t.Fatalf("expected total 0 with nil SettingCount (nested), got %d", it2.Total())
+	if it.Total() != 0 {
+		t.Fatalf("expected total 0 with zero-value SettingCount, got %d", it.Total())
 	}
 }
 

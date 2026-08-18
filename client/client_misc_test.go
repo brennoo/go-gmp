@@ -313,17 +313,17 @@ func TestGetSettings(t *testing.T) {
 	if resp.StatusText != "OK" {
 		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
 	}
-	if resp.Settings == nil || len(resp.Settings.Setting) == 0 {
-		t.Fatalf("Expected at least one setting, got %+v", resp.Settings)
+	if len(resp.Setting) == 0 {
+		t.Fatalf("Expected at least one setting, got %+v", resp.Setting)
 	}
-	if resp.Settings.Setting[0].ID != "5f5a8712-8017-11e1-8556-406186ea4fc5" {
-		t.Fatalf("Unexpected setting id. Expected: 5f5a8712-8017-11e1-8556-406186ea4fc5 Got: %s", resp.Settings.Setting[0].ID)
+	if resp.Setting[0].ID != "5f5a8712-8017-11e1-8556-406186ea4fc5" {
+		t.Fatalf("Unexpected setting id. Expected: 5f5a8712-8017-11e1-8556-406186ea4fc5 Got: %s", resp.Setting[0].ID)
 	}
-	if resp.Settings.Setting[0].Name != "Rows Per Page" {
-		t.Fatalf("Unexpected setting name. Expected: Rows Per Page Got: %s", resp.Settings.Setting[0].Name)
+	if resp.Setting[0].Name != "Rows Per Page" {
+		t.Fatalf("Unexpected setting name. Expected: Rows Per Page Got: %s", resp.Setting[0].Name)
 	}
-	if resp.Settings.Setting[0].Value != "15" {
-		t.Fatalf("Unexpected setting value. Expected: 15 Got: %s", resp.Settings.Setting[0].Value)
+	if resp.Setting[0].Value != "15" {
+		t.Fatalf("Unexpected setting value. Expected: 15 Got: %s", resp.Setting[0].Value)
 	}
 }
 
@@ -347,20 +347,20 @@ func TestGetResourceNames(t *testing.T) {
 	if resp.Type != "os" {
 		t.Fatalf("Unexpected type. Expected: os Got: %s", resp.Type)
 	}
-	if len(resp.Resources) != 2 {
-		t.Fatalf("Expected 2 resources, got %d", len(resp.Resources))
+	if len(resp.Resource) != 2 {
+		t.Fatalf("Expected 2 resources, got %d", len(resp.Resource))
 	}
-	if resp.Resources[0].ID != "5b6b6aef-b320-42ca-899f-3161ee2a4195" {
-		t.Fatalf("Unexpected resource id. Expected: 5b6b6aef-b320-42ca-899f-3161ee2a4195 Got: %s", resp.Resources[0].ID)
+	if resp.Resource[0].ID != "5b6b6aef-b320-42ca-899f-3161ee2a4195" {
+		t.Fatalf("Unexpected resource id. Expected: 5b6b6aef-b320-42ca-899f-3161ee2a4195 Got: %s", resp.Resource[0].ID)
 	}
-	if resp.Resources[0].Name != "cpe:/h:hp:jetdirect" {
-		t.Fatalf("Unexpected resource name. Expected: cpe:/h:hp:jetdirect Got: %s", resp.Resources[0].Name)
+	if resp.Resource[0].Name != "cpe:/h:hp:jetdirect" {
+		t.Fatalf("Unexpected resource name. Expected: cpe:/h:hp:jetdirect Got: %s", resp.Resource[0].Name)
 	}
-	if resp.Resources[1].ID != "5be25864-9249-431e-8a91-039e334371ad" {
-		t.Fatalf("Unexpected resource id. Expected: 5be25864-9249-431e-8a91-039e334371ad Got: %s", resp.Resources[1].ID)
+	if resp.Resource[1].ID != "5be25864-9249-431e-8a91-039e334371ad" {
+		t.Fatalf("Unexpected resource id. Expected: 5be25864-9249-431e-8a91-039e334371ad Got: %s", resp.Resource[1].ID)
 	}
-	if resp.Resources[1].Name != "cpe:/o:canonical:ubuntu_linux:18.04" {
-		t.Fatalf("Unexpected resource name. Expected: cpe:/o:canonical:ubuntu_linux:18.04 Got: %s", resp.Resources[1].Name)
+	if resp.Resource[1].Name != "cpe:/o:canonical:ubuntu_linux:18.04" {
+		t.Fatalf("Unexpected resource name. Expected: cpe:/o:canonical:ubuntu_linux:18.04 Got: %s", resp.Resource[1].Name)
 	}
 }
 

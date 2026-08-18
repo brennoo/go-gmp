@@ -7,7 +7,7 @@ DROPPED
   (none)
 
 TRUNCATED
-  /get_settings_response/setting/value                                     20 -> 18
+  (none)
 
 CHANGED
   (none)

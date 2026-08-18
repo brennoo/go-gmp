@@ -4,10 +4,10 @@ decode: ok
 namespaces-seen:
 
 DROPPED
-  /get_settings_response/filters/term                                      x1
+  (none)
 
 TRUNCATED
-  /get_settings_response/setting/value                                     20 -> 18
+  (none)
 
 CHANGED
   (none)

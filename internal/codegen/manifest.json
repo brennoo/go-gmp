@@ -247,6 +247,14 @@
         "get_license",
         "modify_license"
       ]
+    },
+    {
+      "name": "settings",
+      "commands": [
+        "get_resource_names",
+        "get_settings",
+        "modify_setting"
+      ]
     }
   ]
 }

@@ -1170,7 +1170,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp.StatusText = "OK"
 		if cmd.Filter != "" {
 			// Return mock data for pagination
-			resp.SettingsList = []commands.Setting{
+			resp.Setting = []commands.SettingsSetting{
 				{
 					ID:    "setting-1",
 					Name:  "Test Setting 1",
@@ -1182,19 +1182,17 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 					Value: "value2",
 				},
 			}
-			resp.SettingCount = &commands.SettingCount{
+			resp.SettingCount = commands.SettingsSettingCount{
 				Filtered: 2,
 				Page:     1,
 			}
 		} else {
 			// Return original data for specific requests
-			resp.Settings = &commands.Settings{
-				Setting: []commands.Setting{{
-					ID:    "5f5a8712-8017-11e1-8556-406186ea4fc5",
-					Name:  "Rows Per Page",
-					Value: "15",
-				}},
-			}
+			resp.Setting = []commands.SettingsSetting{{
+				ID:    "5f5a8712-8017-11e1-8556-406186ea4fc5",
+				Name:  "Rows Per Page",
+				Value: "15",
+			}}
 		}
 	}
 
@@ -1203,7 +1201,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp.Status = "200"
 		resp.StatusText = "OK"
 		resp.Type = "os"
-		resp.Resources = []commands.Resource{
+		resp.Resource = []commands.SettingsResource{
 			{ID: "5b6b6aef-b320-42ca-899f-3161ee2a4195", Name: "cpe:/h:hp:jetdirect"},
 			{ID: "5be25864-9249-431e-8a91-039e334371ad", Name: "cpe:/o:canonical:ubuntu_linux:18.04"},
 		}
@@ -1763,12 +1761,12 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp.StatusText = "OK"
 		if cmd.Filter != "" {
 			// Return mock data for pagination
-			resp.SettingsList = []commands.Setting{
+			resp.Setting = []commands.SettingsSetting{
 				{ID: "setting-1", Name: "Test Setting 1"},
 				{ID: "setting-2", Name: "Test Setting 2"},
 				{ID: "setting-3", Name: "Test Setting 3"},
 			}
-			resp.SettingCount = &commands.SettingCount{Filtered: 3}
+			resp.SettingCount = commands.SettingsSettingCount{Filtered: 3}
 		}
 	}
 

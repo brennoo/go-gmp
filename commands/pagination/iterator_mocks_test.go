@@ -294,7 +294,7 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 		if cmd.Filter != "" {
 			// Check if page size is 0
 			if cmd.Filter == "first=1 rows=0" {
-				resp.SettingsList = []commands.Setting{}
+				resp.Setting = []commands.SettingsSetting{}
 			} else {
 				// Parse pagination parameters
 				first := 1
@@ -312,7 +312,7 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 				}
 
 				// Return appropriate slice based on pagination
-				allSettings := []commands.Setting{
+				allSettings := []commands.SettingsSetting{
 					{ID: "setting-1", Name: "Test Setting 1"},
 					{ID: "setting-2", Name: "Test Setting 2"},
 					{ID: "setting-3", Name: "Test Setting 3"},
@@ -321,15 +321,15 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 				start := first - 1
 				end := start + rows
 				if start >= len(allSettings) {
-					resp.SettingsList = []commands.Setting{}
+					resp.Setting = []commands.SettingsSetting{}
 				} else {
 					if end > len(allSettings) {
 						end = len(allSettings)
 					}
-					resp.SettingsList = allSettings[start:end]
+					resp.Setting = allSettings[start:end]
 				}
 			}
-			resp.SettingCount = &commands.SettingCount{Filtered: 3}
+			resp.SettingCount = commands.SettingsSettingCount{Filtered: 3}
 		}
 	}
 

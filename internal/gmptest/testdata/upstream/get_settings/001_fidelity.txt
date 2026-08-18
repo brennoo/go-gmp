@@ -13,7 +13,16 @@ CHANGED
   (none)
 
 ADDED
-  (none)
+  /get_settings_response/filters                                           x1
+  /get_settings_response/filters/term                                      x1
+  /get_settings_response/setting_count                                     x1
+  /get_settings_response/setting_count/filtered                            x1
+  /get_settings_response/setting_count/filtered/#text                      x1
+  /get_settings_response/setting_count/page                                x1
+  /get_settings_response/setting_count/page/#text                          x1
+  /get_settings_response/settings/@max                                     x1
+  /get_settings_response/settings/@start                                   x1
+  /get_settings_response/settings/setting/comment                          x1
 
 DUPLICATED
   (none)

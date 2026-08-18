@@ -10,9 +10,9 @@
 # 'added' is elements the round trip invents (non-pointer fields without
 # omitempty, zero time.Time) and is not loss.
 
-fixtures: 344   clean: 203   with-loss: 130   decode-errors: 10   advisory: 1
-commands with loss: 36 of 122
-distinct dropped paths: 164
+fixtures: 344   clean: 206   with-loss: 127   decode-errors: 10   advisory: 1
+commands with loss: 35 of 122
+distinct dropped paths: 163
 
 ## Per fixture
 
@@ -240,10 +240,10 @@ get_schedules                live      001 ok            dropped=2   truncated=0
 get_schedules                live      002 ok            dropped=2   truncated=0   changed=0   added=0
 get_schedules                live      003 ok            dropped=2   truncated=0   changed=0   added=0
 get_schedules                upstream  001 ok            dropped=2   truncated=0   changed=0   added=15
-get_settings                 live      001 ok            dropped=1   truncated=1   changed=0   added=0
-get_settings                 live      002 ok            dropped=0   truncated=1   changed=0   added=0
-get_settings                 live      003 ok            dropped=1   truncated=0   changed=0   added=0
-get_settings                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
+get_settings                 live      001 clean         dropped=0   truncated=0   changed=0   added=0
+get_settings                 live      002 clean         dropped=0   truncated=0   changed=0   added=0
+get_settings                 live      003 clean         dropped=0   truncated=0   changed=0   added=0
+get_settings                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=10
 get_system_reports           live      001 ok            dropped=2   truncated=0   changed=1   added=0
 get_system_reports           upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 get_system_reports           upstream  002 clean         dropped=0   truncated=0   changed=0   added=0

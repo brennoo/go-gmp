@@ -34,10 +34,10 @@ optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             97
-with actionable findings:     25
-actionable findings:          87  (request 47, response 40)
-suppressed findings:          110
+fully conformant:             98
+with actionable findings:     24
+actionable findings:          85  (request 47, response 38)
+suppressed findings:          99
 confirmed by fidelity corpus: 8
 in the schema, not in Go:     0
 in Go, not in the schema:     0
@@ -46,10 +46,10 @@ in Go, not in the schema:     0
 
                  actionable suppressed
   MISSING                14          0
-  EXTRA                  63         14
+  EXTRA                  61         16
   CARDINALITY             2          2
   KIND                    0          0
-  OMITEMPTY               0         94
+  OMITEMPTY               0         81
   TYPE                    8          0
   SCHEMA-DEFECT         128          0
 
@@ -92,7 +92,6 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_credentials               2   EXTRA=2
   get_info                      2   EXTRA=1  TYPE=1
   get_scanners                  2   EXTRA=2
-  get_settings                  2   EXTRA=2
   modify_target                 2   MISSING=1  EXTRA=1
   create_target                 1   EXTRA=1
   create_task                   1   MISSING=1
@@ -101,7 +100,8 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_nvts                      1   EXTRA=1
   get_overrides                 1   EXTRA=1
   get_report_configs            1   MISSING=1
-  ... and 5 more with fewer
+  get_resource_names            1   TYPE=1
+  ... and 4 more with fewer
 
 ### Confirmed by both oracles
 
@@ -780,12 +780,8 @@ EXTRA=3  OMITEMPTY=2  SCHEMA-DEFECT=12
 
 ### get_resource_names  (command_get_resource_names.xml)
 
-OMITEMPTY=2  TYPE=1  SCHEMA-DEFECT=1
+TYPE=1  SCHEMA-DEFECT=1
 
-  OMITEMPTY     response /get_resource_names_response/resource/@id
-                schema says optional, ID string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_resource_names_response/type
-                schema says required, Type is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
   TYPE          response /get_resource_names_response/resource/@id
                 schema type integer, Go ID is string (want int)
   SCHEMA-DEFECT response /get_resource_names_response/type
@@ -926,34 +922,12 @@ SCHEMA-DEFECT=1
 
 ### get_settings  (command_get_settings.xml)
 
-EXTRA=2  OMITEMPTY=11
+EXTRA=2
 
   EXTRA         response /get_settings_response/setting/@id
-                Go field ID string has no counterpart in the schema
+                Go field ID string has no counterpart in the schema  [suppressed: T-9 settings review: command_get_settings.xml's formal <setting> pattern declares only name/comment/value, no id attribute, but internal/gmptest/testdata/live/get_settings/{001,002,003}_response.xml all show every <setting id="..."> carrying a real UUID — the schema's own baked <example> agrees a setting has an id, it just nests <setting> inside <settings> in a way no live capture ever confirms]
   EXTRA         response /get_settings_response/settings/setting
-                Go field Setting []commands.Setting has no counterpart in the schema
-  OMITEMPTY     response /get_settings_response/filters
-                schema says required, Filters is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_settings_response/filters/term
-                schema says required, Term is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_settings_response/setting/comment
-                schema says required, Comment is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_settings_response/setting/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_settings_response/setting/value
-                schema says required, Value is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_settings_response/setting_count
-                schema says required, SettingCount is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_settings_response/setting_count/filtered
-                schema says required, Filtered is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_settings_response/setting_count/page
-                schema says required, Page is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_settings_response/settings
-                schema says required, Settings is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_settings_response/settings/@max
-                schema says required, Max is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_settings_response/settings/@start
-                schema says required, Start is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
+                Go field Setting []commands.SettingsSetting has no counterpart in the schema  [suppressed: T-9 settings review: command_get_settings.xml's <settings> pattern declares only the start/max pagination attributes, but the command's own <example> — reproduced verbatim in testdata/upstream/get_settings/001_response.xml — nests a real <setting id="..."> inside <settings>, the same pattern-vs-example disagreement as verify_scanner's version; without this field the round trip silently drops that nested setting (confirmed by the upstream fixture's DROPPED settings/setting finding). No live capture against current gvmd ever produces this nested shape — every live fixture uses the flat top-level <setting> siblings already modelled by GetSettingsResponse.Setting — so this is an alternate/legacy wire form kept alongside the flat one, not a replacement for it]
 
 ### get_system_reports  (command_get_system_reports.xml)
 
