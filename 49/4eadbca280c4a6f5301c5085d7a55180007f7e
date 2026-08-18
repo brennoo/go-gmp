@@ -1,0 +1,37 @@
+commands/get_vulns.go
+  s_cb404a6661f94a::t_c377fa32fceb61 1-2,5,7,15,17-24,32-37,40-42,45-46,52-55,58-59,63-66,69,74-98
+docs/review-2026-08.md
+  s_cb404a6661f94a::t_93ffd835506ad8 2812,3933-3985
+internal/codegen/manifest.json
+  s_cb404a6661f94a::t_606aaecea55298 282-287
+internal/codegen/manifest_test.go
+  s_cb404a6661f94a::t_6fde8b206942d0 50,112,132,166,176,195,205
+internal/codegen/overrides.go
+  s_cb404a6661f94a::t_5b022943b06a95 311-318
+internal/codegen/testdata/golden/get_vulns.go
+  s_cb404a6661f94a::t_525c6d33b4c0cb 1-98
+internal/codegen/testdata/schema/get_vulns.json
+  s_cb404a6661f94a::t_64f25c7b93e9b7 1-415
+internal/codegen/validate.go
+  s_cb404a6661f94a::t_cfb310b7ad8c52 571-574
+internal/gmptest/registry_test.go
+  s_cb404a6661f94a::t_cdf8156d49d576 82-84
+internal/schema/testdata/CONFORMANCE.md
+  s_cb404a6661f94a::t_04898f4b6aae19 37-40,48-49,52,103-104,1015,1018
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "494eadbca280c4a6f5301c5085d7a55180007f7e",
+  "prompts": {},
+  "sessions": {
+    "s_cb404a6661f94a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_cb404a6661f94a",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
