@@ -34,22 +34,22 @@ optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             95
-with actionable findings:     27
-actionable findings:          100  (request 50, response 50)
-suppressed findings:          136
-confirmed by fidelity corpus: 9
+fully conformant:             96
+with actionable findings:     26
+actionable findings:          88  (request 47, response 41)
+suppressed findings:          113
+confirmed by fidelity corpus: 8
 in the schema, not in Go:     0
 in Go, not in the schema:     0
 
 ### Findings by category
 
                  actionable suppressed
-  MISSING                19          0
-  EXTRA                  68          7
-  CARDINALITY             4          2
+  MISSING                14          0
+  EXTRA                  63         14
+  CARDINALITY             2          2
   KIND                    0          0
-  OMITEMPTY               0        127
+  OMITEMPTY               0         97
   TYPE                    9          0
   SCHEMA-DEFECT         128          0
 
@@ -83,7 +83,6 @@ taken against upstream main (155 commands). Two reasons, both expected:
 
   delete_agents                18   EXTRA=18
   modify_agents                18   EXTRA=18
-  get_aggregates               12   MISSING=5  EXTRA=5  CARDINALITY=2
   get_agents                    9   MISSING=7  TYPE=2
   get_results                   7   MISSING=1  EXTRA=4  CARDINALITY=2
   get_vulns                     4   MISSING=1  EXTRA=3
@@ -101,7 +100,8 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_license                   1   TYPE=1
   get_notes                     1   EXTRA=1
   get_nvts                      1   EXTRA=1
-  ... and 7 more with fewer
+  get_overrides                 1   EXTRA=1
+  ... and 6 more with fewer
 
 ### Confirmed by both oracles
 
@@ -118,7 +118,6 @@ attributes, and one of its own captured request fixtures uses three of them.
   get_agents               /get_agents_response/agents
   get_agents               /get_agents_response/filters
   get_agents               /get_agents_response/sort
-  get_aggregates           /get_aggregates_response/filters
   get_report_configs       /get_report_configs_response/report_config/param/value/@using_default
   get_results              /get_results_response/result/nvt/severities/severity
   get_tasks                /get_tasks_response/task/hosts_ordering
@@ -541,92 +540,22 @@ MISSING=7  OMITEMPTY=17  TYPE=2  SCHEMA-DEFECT=23
 
 ### get_aggregates  (command_get_aggregates.xml)
 
-MISSING=5  EXTRA=5  CARDINALITY=2  OMITEMPTY=30
+EXTRA=7
 
-  MISSING       request  /get_aggregates/data_column
-                repeated elem data_column is not modelled
-  MISSING       request  /get_aggregates/sort
-                repeated elem sort is not modelled
-  MISSING       request  /get_aggregates/text_column
-                repeated elem text_column is not modelled
-  MISSING       response /get_aggregates_response/aggregate/overall/text
-                repeated elem text is not modelled
-  MISSING       response /get_aggregates_response/filters
-                required elem filters is not modelled  [fidelity]
   EXTRA         response /get_aggregates_response/aggregate/group/c_sum
-                Go field CSum string has no counterpart in the schema
+                Go field CSum string has no counterpart in the schema  [suppressed: T-9 aggregate review: see the min entry above; same flat <c_sum> shape confirmed by the same evidence]
   EXTRA         response /get_aggregates_response/aggregate/group/max
-                Go field Max string has no counterpart in the schema
+                Go field Max string has no counterpart in the schema  [suppressed: T-9 aggregate review: see the min entry above; same flat <max> shape confirmed by the same evidence]
   EXTRA         response /get_aggregates_response/aggregate/group/mean
-                Go field Mean string has no counterpart in the schema
+                Go field Mean string has no counterpart in the schema  [suppressed: T-9 aggregate review: see the min entry above; same flat <mean> shape confirmed by the same evidence]
   EXTRA         response /get_aggregates_response/aggregate/group/min
-                Go field Min string has no counterpart in the schema
+                Go field Min string has no counterpart in the schema  [suppressed: T-9 aggregate review: command_get_aggregates.xml's <group> pattern declares only value/subgroup/count/c_count/stats/text — per-column stats wrapped in <stats column="..."> — but the command's own <example> and internal/gmptest/testdata/upstream/get_aggregates/001_response.xml both show a flat <min> directly under <group> for the single-data_column case, the same pattern-vs-example disagreement as verify_scanner's version]
   EXTRA         response /get_aggregates_response/aggregate/group/sum
-                Go field Sum string has no counterpart in the schema
-  CARDINALITY   response /get_aggregates_response/aggregate
-                schema says zero-or-more, Go has a single *commands.Aggregate (Aggregate)
-  CARDINALITY   response /get_aggregates_response/aggregate/data_column
-                schema says zero-or-more, Go has a single string (DataColumn)
-  OMITEMPTY     response /get_aggregates_response/aggregate/column_info
-                schema says required, ColumnInfo is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/column_info/aggregate_column/column
-                schema says required, Column is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/column_info/aggregate_column/data_type
-                schema says required, DataType is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/column_info/aggregate_column/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/column_info/aggregate_column/stat
-                schema says required, Stat is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/column_info/aggregate_column/type
-                schema says required, Type is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/data_type
-                schema says required, DataType is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/group/c_count
-                schema says required, CCount is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/group/count
-                schema says required, Count is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/group/stats/c_sum
-                schema says required, CSum is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/group/stats/max
-                schema says required, Max is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/group/stats/mean
-                schema says required, Mean is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/group/stats/min
-                schema says required, Min is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/group/stats/sum
-                schema says required, Sum is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/group/subgroup/c_count
-                schema says required, CCount is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/group/subgroup/count
-                schema says required, Count is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/group/subgroup/stats/c_sum
-                schema says required, CSum is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/group/subgroup/stats/max
-                schema says required, Max is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/group/subgroup/stats/mean
-                schema says required, Mean is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/group/subgroup/stats/min
-                schema says required, Min is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/group/subgroup/stats/sum
-                schema says required, Sum is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/group/subgroup/value
-                schema says required, Value is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/group/value
-                schema says required, Value is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/overall/c_count
-                schema says required, CCount is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/overall/count
-                schema says required, Count is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/overall/stats/c_sum
-                schema says required, CSum is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/overall/stats/max
-                schema says required, Max is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/overall/stats/mean
-                schema says required, Mean is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/overall/stats/min
-                schema says required, Min is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_aggregates_response/aggregate/overall/stats/sum
-                schema says required, Sum is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
+                Go field Sum string has no counterpart in the schema  [suppressed: T-9 aggregate review: see the min entry above; same flat <sum> shape confirmed by the same evidence]
+  EXTRA         response /get_aggregates_response/aggregate/group/text/@column
+                Go field Column string has no counterpart in the schema  [suppressed: T-9 aggregate review: command_get_aggregates.xml's schema declares <text>'s lone attribute as "name", but internal/gmptest/testdata/live/get_aggregates/004_response.xml sends a real gvmd 26.36.1 <text column="name"> — a second, undeclared attribute the schema never mentions at all, kept alongside the schema-declared (and seemingly unused) Name field since there is no evidence the schema's own declaration is categorically wrong rather than an alternate/legacy form. AggregateText is one structurally-deduplicated type shared by both aggregate/group/text and aggregate/overall/text, so both must carry this same entry]
+  EXTRA         response /get_aggregates_response/aggregate/overall/text/@column
+                Go field Column string has no counterpart in the schema  [suppressed: T-9 aggregate review: command_get_aggregates.xml's schema declares <text>'s lone attribute as "name", but internal/gmptest/testdata/live/get_aggregates/004_response.xml sends a real gvmd 26.36.1 <text column="name"> — a second, undeclared attribute the schema never mentions at all, kept alongside the schema-declared (and seemingly unused) Name field since there is no evidence the schema's own declaration is categorically wrong rather than an alternate/legacy form. AggregateText is one structurally-deduplicated type shared by both aggregate/group/text and aggregate/overall/text, so both must carry this same entry]
 
 ### get_alerts  (command_get_alerts.xml)
 

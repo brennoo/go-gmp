@@ -529,6 +529,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.ModifyAuth{}),
 			Response: schema.ModelOf(&commands.ModifyAuthResponse{}),
 		},
+		"get_aggregates": {
+			Request:  schema.ModelOf(&commands.GetAggregates{}),
+			Response: schema.ModelOf(&commands.GetAggregatesResponse{}),
+		},
 	}
 }
 

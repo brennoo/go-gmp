@@ -8,7 +8,7 @@
 # silently fails to ever emit).
 # Regenerate with: go test ./internal/gmptest -run TestRequestRoundTrip -update
 
-requests-compared: 343   clean: 330   with-loss: 11   decode-errors: 2   advisory: 0   skipped-no-request: 0
+requests-compared: 344   clean: 331   with-loss: 11   decode-errors: 2   advisory: 0   skipped-no-request: 0
 commands with a recorded request: 122 of 122   commands with loss: 10
 
 ## Per fixture
@@ -129,6 +129,7 @@ get_agents                   upstream  001 clean         dropped=0   truncated=0
 get_aggregates               live      001 clean         dropped=0   truncated=0   changed=0   added=0
 get_aggregates               live      002 clean         dropped=0   truncated=0   changed=0   added=0
 get_aggregates               live      003 clean         dropped=0   truncated=0   changed=0   added=0
+get_aggregates               live      004 clean         dropped=0   truncated=0   changed=0   added=0
 get_aggregates               upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 get_alerts                   live      001 clean         dropped=0   truncated=0   changed=0   added=0
 get_alerts                   live      002 clean         dropped=0   truncated=0   changed=0   added=0

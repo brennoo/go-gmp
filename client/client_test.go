@@ -1213,15 +1213,15 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp := response.(*commands.GetAggregatesResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.Aggregate = &commands.Aggregate{
+		resp.Aggregate = []commands.Aggregate{{
 			DataType:    "nvt",
-			DataColumn:  "severity",
+			DataColumn:  []string{"severity"},
 			GroupColumn: "family",
-			Groups: []commands.AggregateGroup{
+			Group: []commands.AggregateGroup{
 				{Value: "AIX Local Security Checks", Count: 1, CCount: 1, Min: "3.3", Max: "3.3", Mean: "3.3", Sum: "3.3", CSum: "3.3"},
 				{Value: "Brute force attacks", Count: 8, CCount: 9, Min: "0", Max: "7.8", Mean: "6.275", Sum: "50.2", CSum: "53.5"},
 			},
-		}
+		}}
 	}
 
 	if _, ok := command.(*commands.GetFeatures); ok {

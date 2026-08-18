@@ -383,32 +383,33 @@ func TestGetAggregates(t *testing.T) {
 	if resp.StatusText != "OK" {
 		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
 	}
-	if resp.Aggregate == nil {
-		t.Fatalf("Expected aggregate block, got nil")
+	if len(resp.Aggregate) != 1 {
+		t.Fatalf("Expected 1 aggregate block, got %d", len(resp.Aggregate))
 	}
-	if resp.Aggregate.DataType != "nvt" {
-		t.Fatalf("Unexpected data_type. Expected: nvt Got: %s", resp.Aggregate.DataType)
+	agg := resp.Aggregate[0]
+	if agg.DataType != "nvt" {
+		t.Fatalf("Unexpected data_type. Expected: nvt Got: %s", agg.DataType)
 	}
-	if resp.Aggregate.DataColumn != "severity" {
-		t.Fatalf("Unexpected data_column. Expected: severity Got: %s", resp.Aggregate.DataColumn)
+	if len(agg.DataColumn) != 1 || agg.DataColumn[0] != "severity" {
+		t.Fatalf("Unexpected data_column. Expected: [severity] Got: %v", agg.DataColumn)
 	}
-	if resp.Aggregate.GroupColumn != "family" {
-		t.Fatalf("Unexpected group_column. Expected: family Got: %s", resp.Aggregate.GroupColumn)
+	if agg.GroupColumn != "family" {
+		t.Fatalf("Unexpected group_column. Expected: family Got: %s", agg.GroupColumn)
 	}
-	if len(resp.Aggregate.Groups) != 2 {
-		t.Fatalf("Expected 2 groups, got %d", len(resp.Aggregate.Groups))
+	if len(agg.Group) != 2 {
+		t.Fatalf("Expected 2 groups, got %d", len(agg.Group))
 	}
-	if resp.Aggregate.Groups[0].Value != "AIX Local Security Checks" {
-		t.Fatalf("Unexpected group value. Expected: AIX Local Security Checks Got: %s", resp.Aggregate.Groups[0].Value)
+	if agg.Group[0].Value != "AIX Local Security Checks" {
+		t.Fatalf("Unexpected group value. Expected: AIX Local Security Checks Got: %s", agg.Group[0].Value)
 	}
-	if resp.Aggregate.Groups[0].Count != 1 {
-		t.Fatalf("Unexpected group count. Expected: 1 Got: %d", resp.Aggregate.Groups[0].Count)
+	if agg.Group[0].Count != 1 {
+		t.Fatalf("Unexpected group count. Expected: 1 Got: %d", agg.Group[0].Count)
 	}
-	if resp.Aggregate.Groups[1].Value != "Brute force attacks" {
-		t.Fatalf("Unexpected group value. Expected: Brute force attacks Got: %s", resp.Aggregate.Groups[1].Value)
+	if agg.Group[1].Value != "Brute force attacks" {
+		t.Fatalf("Unexpected group value. Expected: Brute force attacks Got: %s", agg.Group[1].Value)
 	}
-	if resp.Aggregate.Groups[1].Count != 8 {
-		t.Fatalf("Unexpected group count. Expected: 8 Got: %d", resp.Aggregate.Groups[1].Count)
+	if agg.Group[1].Count != 8 {
+		t.Fatalf("Unexpected group count. Expected: 8 Got: %d", agg.Group[1].Count)
 	}
 }
 

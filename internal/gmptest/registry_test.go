@@ -79,9 +79,9 @@ func xmlNameTags(t *testing.T) map[string]string {
 }
 
 // rootCommands applies the rule that defines a root command: a tag is one iff a
-// sibling type is tagged <tag>_response. No exception list — types like
-// VulnsFilters and AggregateText also declare XMLName and are excluded by the
-// rule itself rather than by being named here.
+// sibling type is tagged <tag>_response. No exception list — a type like
+// VulnsFilters also declares XMLName and is excluded by the rule itself
+// rather than by being named here.
 func rootCommands(tags map[string]string) map[string][2]string {
 	roots := map[string][2]string{}
 	for tag, typ := range tags {

@@ -1065,6 +1065,14 @@ func (r *captureRun) captureContainerReport(st *captureState) {
 		&commands.GetResults{TaskID: st.taskID, Details: commands.Bool(true)})
 	r.send("get_aggregates", "container task: get_aggregates over results",
 		&commands.GetAggregates{Type: "result", GroupColumn: "severity"})
+	r.send("get_aggregates", "container task: get_aggregates with sort/data_column/text_column",
+		&commands.GetAggregates{
+			Type:        "result",
+			GroupColumn: "severity",
+			Sort:        []commands.AggregateSort{{Field: "severity", Order: "descending"}},
+			DataColumn2: []string{"severity"},
+			TextColumn:  []string{"name"},
+		})
 
 	if results, ok := r.send("get_results", "container task: get_results to pick a result id",
 		&commands.GetResults{TaskID: st.taskID}); ok {

@@ -234,6 +234,12 @@
         "describe_auth",
         "modify_auth"
       ]
+    },
+    {
+      "name": "aggregate",
+      "commands": [
+        "get_aggregates"
+      ]
     }
   ]
 }

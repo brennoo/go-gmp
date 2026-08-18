@@ -6,10 +6,9 @@ namespaces-seen:
 DROPPED
   /get_aggregates_response/aggregate/column_info/truncated                 x1  (+1 descendant paths)
   /get_aggregates_response/aggregate/truncated                             x1  (+1 descendant paths)
-  /get_aggregates_response/filters                                         x1  (+11 descendant paths)
 
 TRUNCATED
-  /get_aggregates_response/aggregate/column_info/aggregate_column/column   4 -> 2
+  (none)
 
 CHANGED
   (none)

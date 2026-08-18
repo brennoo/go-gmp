@@ -211,6 +211,56 @@ var FieldOverrides = map[string][]FieldOverride{
 			"identify which group to modify — the schema's pattern and its own example disagree, and " +
 			"without this field the generated request could never target a specific group",
 	}},
+	"get_aggregates:/aggregate/group": {
+		{
+			Name: "min", GoType: "string", OmitEmpty: true,
+			Reason: "T-9 aggregate review: command_get_aggregates.xml's <group> pattern declares only " +
+				"value/subgroup/count/c_count/stats/text — per-column stats wrapped in <stats column=\"...\">" +
+				" — but the command's own <example> and internal/gmptest/testdata/upstream/get_aggregates/" +
+				"001_response.xml both show a flat <min> directly under <group> for the single-data_column " +
+				"case, the same pattern-vs-example disagreement as verify_scanner's version",
+		},
+		{
+			Name: "max", GoType: "string", OmitEmpty: true,
+			Reason: "T-9 aggregate review: see the min entry above; same flat <max> shape confirmed by the " +
+				"same evidence",
+		},
+		{
+			Name: "mean", GoType: "string", OmitEmpty: true,
+			Reason: "T-9 aggregate review: see the min entry above; same flat <mean> shape confirmed by " +
+				"the same evidence",
+		},
+		{
+			Name: "sum", GoType: "string", OmitEmpty: true,
+			Reason: "T-9 aggregate review: see the min entry above; same flat <sum> shape confirmed by the " +
+				"same evidence",
+		},
+		{
+			Name: "c_sum", GoType: "string", OmitEmpty: true,
+			Reason: "T-9 aggregate review: see the min entry above; same flat <c_sum> shape confirmed by " +
+				"the same evidence",
+		},
+	},
+	"get_aggregates:/aggregate/group/text": {{
+		Name: "column", Attr: true, GoType: "string", OmitEmpty: true,
+		Reason: "T-9 aggregate review: command_get_aggregates.xml's schema declares <text>'s lone " +
+			"attribute as \"name\", but internal/gmptest/testdata/live/get_aggregates/004_response.xml " +
+			"sends a real gvmd 26.36.1 <text column=\"name\"> — a second, undeclared attribute the schema " +
+			"never mentions at all, kept alongside the schema-declared (and seemingly unused) Name field " +
+			"since there is no evidence the schema's own declaration is categorically wrong rather than " +
+			"an alternate/legacy form. AggregateText is one structurally-deduplicated type shared by both " +
+			"aggregate/group/text and aggregate/overall/text, so both must carry this same entry",
+	}},
+	"get_aggregates:/aggregate/overall/text": {{
+		Name: "column", Attr: true, GoType: "string", OmitEmpty: true,
+		Reason: "T-9 aggregate review: command_get_aggregates.xml's schema declares <text>'s lone " +
+			"attribute as \"name\", but internal/gmptest/testdata/live/get_aggregates/004_response.xml " +
+			"sends a real gvmd 26.36.1 <text column=\"name\"> — a second, undeclared attribute the schema " +
+			"never mentions at all, kept alongside the schema-declared (and seemingly unused) Name field " +
+			"since there is no evidence the schema's own declaration is categorically wrong rather than " +
+			"an alternate/legacy form. AggregateText is one structurally-deduplicated type shared by both " +
+			"aggregate/group/text and aggregate/overall/text, so both must carry this same entry",
+	}},
 }
 
 // FieldTypeOverride corrects the Go type the mechanical mapping would assign

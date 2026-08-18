@@ -10,9 +10,9 @@
 # 'added' is elements the round trip invents (non-pointer fields without
 # omitempty, zero time.Time) and is not loss.
 
-fixtures: 343   clean: 198   with-loss: 134   decode-errors: 10   advisory: 1
+fixtures: 344   clean: 202   with-loss: 131   decode-errors: 10   advisory: 1
 commands with loss: 37 of 122
-distinct dropped paths: 166
+distinct dropped paths: 164
 
 ## Per fixture
 
@@ -129,10 +129,11 @@ empty_trashcan               live      001 clean         dropped=0   truncated=0
 empty_trashcan               upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 get_agents                   live      001 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0
 get_agents                   upstream  001 ok            dropped=6   truncated=0   changed=1   added=0
-get_aggregates               live      001 ok            dropped=2   truncated=0   changed=0   added=0
-get_aggregates               live      002 ok            dropped=2   truncated=0   changed=0   added=0
-get_aggregates               live      003 ok            dropped=1   truncated=1   changed=0   added=0
-get_aggregates               upstream  001 ok            dropped=3   truncated=1   changed=0   added=0
+get_aggregates               live      001 clean         dropped=0   truncated=0   changed=0   added=0
+get_aggregates               live      002 clean         dropped=0   truncated=0   changed=0   added=0
+get_aggregates               live      003 clean         dropped=0   truncated=0   changed=0   added=0
+get_aggregates               live      004 clean         dropped=0   truncated=0   changed=0   added=0
+get_aggregates               upstream  001 ok            dropped=2   truncated=0   changed=0   added=0
 get_alerts                   live      001 ok            dropped=2   truncated=0   changed=0   added=0
 get_alerts                   live      002 ok            dropped=2   truncated=0   changed=0   added=0
 get_alerts                   live      003 ok            dropped=2   truncated=0   changed=0   added=0

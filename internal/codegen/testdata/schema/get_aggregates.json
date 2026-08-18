@@ -1,0 +1,868 @@
+{
+  "Name": "get_aggregates",
+  "File": "",
+  "Request": {
+    "Name": "get_aggregates",
+    "Kind": 0,
+    "Card": 0,
+    "InChoice": false,
+    "Type": "",
+    "Alts": null,
+    "Children": [
+      {
+        "Name": "filter",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "filt_id",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "uuid",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "type",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "data_column",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "group_column",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "subgroup_column",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "sort_field",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "sort_order",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "sort_stat",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "first_group",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "integer",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "max_groups",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "integer",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "mode",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "usage_type",
+        "Kind": 1,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "sort",
+        "Kind": 0,
+        "Card": 2,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "field",
+            "Kind": 1,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "order",
+            "Kind": 1,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "stat",
+            "Kind": 1,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      },
+      {
+        "Name": "data_column",
+        "Kind": 0,
+        "Card": 2,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "text_column",
+        "Kind": 0,
+        "Card": 2,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      }
+    ],
+    "Chardata": false
+  },
+  "Response": {
+    "Name": "get_aggregates_response",
+    "Kind": 0,
+    "Card": 0,
+    "InChoice": false,
+    "Type": "",
+    "Alts": null,
+    "Children": [
+      {
+        "Name": "status",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "status",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "status_text",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "filters",
+        "Kind": 0,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "id",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "uuid",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "term",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "keywords",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "keyword",
+                "Kind": 0,
+                "Card": 2,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "column",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "relation",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "",
+                    "Alts": [
+                      "=",
+                      ":",
+                      "~",
+                      "\u003e",
+                      "\u003c"
+                    ],
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "value",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  }
+                ],
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          },
+          {
+            "Name": "name",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      },
+      {
+        "Name": "aggregate",
+        "Kind": 0,
+        "Card": 2,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "data_type",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "column_info",
+            "Kind": 0,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "aggregate_column",
+                "Kind": 0,
+                "Card": 2,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "name",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "stat",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "type",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "column",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "data_type",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  }
+                ],
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          },
+          {
+            "Name": "group_column",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "subgroup_column",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "subgroups",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "value",
+                "Kind": 0,
+                "Card": 2,
+                "InChoice": false,
+                "Type": "text",
+                "Alts": null,
+                "Children": null,
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          },
+          {
+            "Name": "data_column",
+            "Kind": 0,
+            "Card": 2,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "text_column",
+            "Kind": 0,
+            "Card": 2,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "overall",
+            "Kind": 0,
+            "Card": 1,
+            "InChoice": true,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "count",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "integer",
+                "Alts": null,
+                "Children": null,
+                "Chardata": false
+              },
+              {
+                "Name": "c_count",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "integer",
+                "Alts": null,
+                "Children": null,
+                "Chardata": false
+              },
+              {
+                "Name": "stats",
+                "Kind": 0,
+                "Card": 2,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "column",
+                    "Kind": 1,
+                    "Card": 1,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "min",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "max",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "mean",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "sum",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "c_sum",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  }
+                ],
+                "Chardata": false
+              },
+              {
+                "Name": "text",
+                "Kind": 0,
+                "Card": 2,
+                "InChoice": false,
+                "Type": "text",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "name",
+                    "Kind": 1,
+                    "Card": 1,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  }
+                ],
+                "Chardata": true
+              }
+            ],
+            "Chardata": false
+          },
+          {
+            "Name": "group",
+            "Kind": 0,
+            "Card": 2,
+            "InChoice": true,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "value",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "text",
+                "Alts": null,
+                "Children": null,
+                "Chardata": false
+              },
+              {
+                "Name": "count",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "integer",
+                "Alts": null,
+                "Children": null,
+                "Chardata": false
+              },
+              {
+                "Name": "c_count",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "integer",
+                "Alts": null,
+                "Children": null,
+                "Chardata": false
+              },
+              {
+                "Name": "subgroup",
+                "Kind": 0,
+                "Card": 2,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "value",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "count",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "integer",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "c_count",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "integer",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "stats",
+                    "Kind": 0,
+                    "Card": 2,
+                    "InChoice": false,
+                    "Type": "",
+                    "Alts": null,
+                    "Children": [
+                      {
+                        "Name": "column",
+                        "Kind": 1,
+                        "Card": 1,
+                        "InChoice": false,
+                        "Type": "text",
+                        "Alts": null,
+                        "Children": null,
+                        "Chardata": false
+                      },
+                      {
+                        "Name": "min",
+                        "Kind": 0,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "text",
+                        "Alts": null,
+                        "Children": null,
+                        "Chardata": false
+                      },
+                      {
+                        "Name": "max",
+                        "Kind": 0,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "text",
+                        "Alts": null,
+                        "Children": null,
+                        "Chardata": false
+                      },
+                      {
+                        "Name": "mean",
+                        "Kind": 0,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "text",
+                        "Alts": null,
+                        "Children": null,
+                        "Chardata": false
+                      },
+                      {
+                        "Name": "sum",
+                        "Kind": 0,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "text",
+                        "Alts": null,
+                        "Children": null,
+                        "Chardata": false
+                      },
+                      {
+                        "Name": "c_sum",
+                        "Kind": 0,
+                        "Card": 0,
+                        "InChoice": false,
+                        "Type": "text",
+                        "Alts": null,
+                        "Children": null,
+                        "Chardata": false
+                      }
+                    ],
+                    "Chardata": false
+                  }
+                ],
+                "Chardata": false
+              },
+              {
+                "Name": "stats",
+                "Kind": 0,
+                "Card": 2,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "column",
+                    "Kind": 1,
+                    "Card": 1,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "min",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "max",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "mean",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "sum",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "c_sum",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  }
+                ],
+                "Chardata": false
+              },
+              {
+                "Name": "text",
+                "Kind": 0,
+                "Card": 2,
+                "InChoice": false,
+                "Type": "text",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "name",
+                    "Kind": 1,
+                    "Card": 1,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  }
+                ],
+                "Chardata": true
+              }
+            ],
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      }
+    ],
+    "Chardata": false
+  },
+  "Defects": null,
+  "Provenance": {
+    "Method": "served",
+    "Source": "gvmd \u003chelp format=\"XML\" type=\"\"/\u003e response",
+    "SourceRevision": "ghcr.io/brennoo/gvm-mirror/gvmd@sha256:cb82c501ca93809405a8d0ed4c21846703466802ce6462536e985625f102b497",
+    "SourceSHA256": "7f5511852d5e904066c431fb34052ce68b17f026f72423ab2a770d564d42774f",
+    "ParsedSHA256": "7f5511852d5e904066c431fb34052ce68b17f026f72423ab2a770d564d42774f",
+    "DeclaredVersion": "22.7",
+    "ExtractedAt": "2026-08-18T17:24:44.134231Z"
+  }
+}

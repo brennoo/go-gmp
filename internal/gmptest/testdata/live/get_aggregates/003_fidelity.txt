@@ -4,10 +4,10 @@ decode: ok
 namespaces-seen:
 
 DROPPED
-  /get_aggregates_response/filters                                         x1  (+11 descendant paths)
+  (none)
 
 TRUNCATED
-  /get_aggregates_response/aggregate/column_info/aggregate_column/column   3 -> 1
+  (none)
 
 CHANGED
   (none)
