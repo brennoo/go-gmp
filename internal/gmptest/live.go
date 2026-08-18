@@ -187,7 +187,7 @@ func attemptReady(ctx context.Context, opts []connections.TLSOption) (gmp.Client
 		return nil, conn, "get_version", err
 	}
 
-	creds := &commands.AuthenticateCredentials{Username: *liveUser, Password: *livePass}
+	creds := commands.AuthCredentials{Username: *liveUser, Password: *livePass}
 	if _, err := cli.Authenticate(ctx, &commands.Authenticate{Credentials: creds}); err != nil {
 		return nil, conn, "authenticate", err
 	}

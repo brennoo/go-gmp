@@ -34,10 +34,10 @@ optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             93
-with actionable findings:     29
-actionable findings:          103  (request 51, response 52)
-suppressed findings:          135
+fully conformant:             95
+with actionable findings:     27
+actionable findings:          100  (request 50, response 50)
+suppressed findings:          136
 confirmed by fidelity corpus: 9
 in the schema, not in Go:     0
 in Go, not in the schema:     0
@@ -45,11 +45,11 @@ in Go, not in the schema:     0
 ### Findings by category
 
                  actionable suppressed
-  MISSING                20          0
-  EXTRA                  69          6
-  CARDINALITY             5          1
+  MISSING                19          0
+  EXTRA                  68          7
+  CARDINALITY             4          2
   KIND                    0          0
-  OMITEMPTY               0        128
+  OMITEMPTY               0        127
   TYPE                    9          0
   SCHEMA-DEFECT         128          0
 
@@ -90,7 +90,6 @@ taken against upstream main (155 commands). Two reasons, both expected:
   create_report                 3   EXTRA=3
   get_feeds                     3   TYPE=3
   get_reports                   3   EXTRA=3
-  describe_auth                 2   MISSING=1  CARDINALITY=1
   get_credentials               2   EXTRA=2
   get_info                      2   EXTRA=1  TYPE=1
   get_scanners                  2   EXTRA=2
@@ -101,7 +100,8 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_features                  1   TYPE=1
   get_license                   1   TYPE=1
   get_notes                     1   EXTRA=1
-  ... and 9 more with fewer
+  get_nvts                      1   EXTRA=1
+  ... and 7 more with fewer
 
 ### Confirmed by both oracles
 
@@ -128,12 +128,7 @@ attributes, and one of its own captured request fixtures uses three of them.
 
 ### authenticate  (command_authenticate.xml)
 
-OMITEMPTY=2
-
-  OMITEMPTY     response /authenticate_response/role
-                schema says required, Role is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /authenticate_response/timezone
-                schema says required, Timezone is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
+conformant
 
 ### create_alert  (command_create_alert.xml)
 
@@ -425,14 +420,14 @@ OMITEMPTY=4
 
 ### describe_auth  (command_describe_auth.xml)
 
-MISSING=1  CARDINALITY=1  SCHEMA-DEFECT=1
+CARDINALITY=1  OMITEMPTY=1  SCHEMA-DEFECT=1
 
   SCHEMA-DEFECT request  /describe_auth
                 empty-pattern: pattern declares no content
-  MISSING       response /describe_auth_response/group/auth_conf_setting/certificate_info
-                optional elem certificate_info is not modelled
   CARDINALITY   response /describe_auth_response/group
-                schema says required, Go has a slice []commands.AuthGroup (Groups)
+                schema says required, Go has a slice []commands.AuthGroup (Group)  [suppressed: T-9 auth review: command_describe_auth.xml's response <pattern> declares <e>group</e> (exactly one), but internal/gmptest/testdata/live/describe_auth/001_response.xml confirms gvmd returns three sibling <group> elements (method:file, method:ldap_connect, method:radius_connect) in one unfiltered describe_auth_response]
+  OMITEMPTY     response /describe_auth_response/group
+                schema says required, Group is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
 
 ### empty_trashcan  (command_empty_trashcan.xml)
 
@@ -1248,7 +1243,7 @@ conformant
 EXTRA=1
 
   EXTRA         request  /modify_auth/group/@name
-                Go field Name string has no counterpart in the schema
+                Go field Name string has no counterpart in the schema  [suppressed: T-9 auth review: command_modify_auth.xml's request <pattern> for <group> declares no name attrib at all, but the command's own <example> requires <group name="Foo"> to identify which group to modify — the schema's pattern and its own example disagree, and without this field the generated request could never target a specific group]
 
 ### modify_config  (command_modify_config.xml)
 

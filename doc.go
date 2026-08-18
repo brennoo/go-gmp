@@ -40,7 +40,7 @@
 //	cli := client.New(conn)
 //
 //	_, err = cli.Authenticate(ctx, &commands.Authenticate{
-//		Credentials: &commands.AuthenticateCredentials{
+//		Credentials: commands.AuthCredentials{
 //			Username: "admin",
 //			Password: "secret",
 //		},

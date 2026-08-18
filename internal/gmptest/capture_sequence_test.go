@@ -108,7 +108,7 @@ func (r *captureRun) capturePreAuth() {
 		// password. Its redaction spec is the reason the whole redactor exists.
 		r.sendOn(conn, "authenticate",
 			"pre-auth: authenticate with the harness credentials, password redacted",
-			&commands.Authenticate{Credentials: &commands.AuthenticateCredentials{
+			&commands.Authenticate{Credentials: commands.AuthCredentials{
 				Username: *liveUser, Password: *livePass,
 			}})
 	}
@@ -116,7 +116,7 @@ func (r *captureRun) capturePreAuth() {
 	if conn, ok := r.dial("authenticate", "pre-auth: authenticate failure"); ok {
 		defer conn.Close()
 		r.sendOn(conn, "authenticate", "pre-auth: authenticate with a deliberately wrong password",
-			&commands.Authenticate{Credentials: &commands.AuthenticateCredentials{
+			&commands.Authenticate{Credentials: commands.AuthCredentials{
 				Username: *liveUser, Password: wrongPassword,
 			}})
 	}
@@ -261,6 +261,7 @@ func (r *captureRun) captureLifecycle(st *captureState) {
 	r.lifecycleScanner(st)
 	r.lifecycleTask(st)
 	r.lifecycleSetting()
+	r.lifecycleAuth()
 }
 
 // makeKeypair generates the throwaway certificate and private key used by the
@@ -883,6 +884,116 @@ func (r *captureRun) lifecycleSetting() {
 	r.sendWithFallbacks("modify_setting", "lifecycle: modify_setting Rows Per Page",
 		&commands.ModifySetting{SettingID: rowsPerPageSetting, Value: value},
 		[]rawAttempt{{desc: "lifecycle: modify_setting with no empty <name> element", xml: raw}})
+}
+
+// lifecycleAuth captures modify_auth without touching gvmd's auth
+// configuration: it reads method:file's current auth_conf_setting values via
+// describe_auth and writes the exact same values straight back, then reads
+// describe_auth a second time and fails the run hard if the stored values
+// changed at all. Byte-identical request/response XML only proves this
+// library didn't lose data in transit — it says nothing about what gvmd did
+// with the write, so the no-op claim needs this second read to be real.
+func (r *captureRun) lifecycleAuth() {
+	before, ok := r.describeAuthFileSettings("lifecycle: describe_auth before modify_auth")
+	if !ok {
+		return
+	}
+	settings := make([]commands.AuthGroupAuthConfSetting, len(before))
+	for i, s := range before {
+		settings[i] = commands.AuthGroupAuthConfSetting{Key: s.Key, Value: s.Value}
+	}
+	if _, ok := r.send("modify_auth", "lifecycle: modify_auth, writes method:file's own current settings back unchanged",
+		&commands.ModifyAuth{Group: commands.ModifyAuthGroup{Name: "method:file", AuthConfSetting: settings}}); !ok {
+		return
+	}
+	after, ok := r.describeAuthFileSettings("lifecycle: describe_auth after modify_auth, verifying the no-op")
+	if !ok {
+		return
+	}
+	if changed := diffAuthSettingKeys(before, after); len(changed) > 0 {
+		// Values are security-sensitive and must never reach a test log; only
+		// the differing keys are reported.
+		r.t.Fatalf("modify_auth changed method:file's stored settings instead of writing them back unchanged "+
+			"(keys with a different value or presence: %v) — gvmd's auth config may now be in a bad state", changed)
+	}
+}
+
+// describeAuthFileSettings calls describe_auth and returns method:file's
+// auth_conf_setting list.
+func (r *captureRun) describeAuthFileSettings(desc string) ([]commands.AuthConfSetting, bool) {
+	resp, ok := r.send("describe_auth", desc, &commands.DescribeAuth{})
+	if !ok {
+		r.missingDep("modify_auth", "lifecycle: modify_auth", "describe_auth")
+		return nil, false
+	}
+	var parsed commands.DescribeAuthResponse
+	if err := xml.Unmarshal([]byte(resp), &parsed); err != nil {
+		r.fail("modify_auth", "lifecycle: modify_auth", "parsing describe_auth response: "+err.Error())
+		return nil, false
+	}
+	for i := range parsed.Group {
+		if parsed.Group[i].Name == "method:file" {
+			return parsed.Group[i].AuthConfSetting, true
+		}
+	}
+	r.missingDep("modify_auth", "lifecycle: modify_auth", "method:file group in describe_auth")
+	return nil, false
+}
+
+// diffAuthSettingKeys compares two method:file auth_conf_setting lists and
+// returns the keys whose set of values differs. Order is not significant:
+// gvmd is not documented to preserve setting order across a write. Repeated
+// keys are, deliberately: a plain map[string]string would collapse
+// before=[enable=true, enable=false] and after=[enable=false] into an
+// equal-looking single value each, hiding a real change. Comparing the full
+// multiset of values per key (order-normalized, duplicates kept) catches that
+// case, matching this check's job of failing closed on anything ambiguous.
+func diffAuthSettingKeys(before, after []commands.AuthConfSetting) []string {
+	beforeVals := authSettingMultimap(before)
+	afterVals := authSettingMultimap(after)
+
+	keys := make(map[string]struct{}, len(beforeVals)+len(afterVals))
+	for k := range beforeVals {
+		keys[k] = struct{}{}
+	}
+	for k := range afterVals {
+		keys[k] = struct{}{}
+	}
+
+	var changed []string
+	for k := range keys {
+		if !equalValueMultisets(beforeVals[k], afterVals[k]) {
+			changed = append(changed, k)
+		}
+	}
+	sort.Strings(changed)
+	return changed
+}
+
+// authSettingMultimap groups setting values by key, preserving duplicates.
+func authSettingMultimap(settings []commands.AuthConfSetting) map[string][]string {
+	m := make(map[string][]string, len(settings))
+	for _, s := range settings {
+		m[s.Key] = append(m[s.Key], s.Value)
+	}
+	return m
+}
+
+// equalValueMultisets reports whether a and b hold the same values the same
+// number of times each, ignoring order.
+func equalValueMultisets(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	as, bs := append([]string(nil), a...), append([]string(nil), b...)
+	sort.Strings(as)
+	sort.Strings(bs)
+	for i := range as {
+		if as[i] != bs[i] {
+			return false
+		}
+	}
+	return true
 }
 
 // --- 4. The container-task trick ---------------------------------------------

@@ -204,6 +204,13 @@ var FieldOverrides = map[string][]FieldOverride{
 			"times (\"OpenVAS 23.50.0\", \"GVM/26.36.1\") — real, populated wire data, so dropping it " +
 			"would be a behavior regression rather than a defect fix",
 	}},
+	"modify_auth:/group": {{
+		Name: "name", Attr: true, GoType: "string",
+		Reason: "T-9 auth review: command_modify_auth.xml's request <pattern> for <group> declares no " +
+			"name attrib at all, but the command's own <example> requires <group name=\"Foo\"> to " +
+			"identify which group to modify — the schema's pattern and its own example disagree, and " +
+			"without this field the generated request could never target a specific group",
+	}},
 }
 
 // FieldTypeOverride corrects the Go type the mechanical mapping would assign
@@ -598,6 +605,12 @@ var CardinalityOverrides = map[string]CardinalityOverride{
 			"(two sibling <nvt> elements in one get_nvts_response with no nvt_oid filter, lines " +
 			"4121-4159) — internal/gmptest/testdata/upstream/get_nvts/001_response.xml confirms it live, " +
 			"returning three sibling <nvt> elements for one unfiltered request",
+	},
+	"describe_auth.group": {
+		Reason: "T-9 auth review: command_describe_auth.xml's response <pattern> declares <e>group</e> " +
+			"(exactly one), but internal/gmptest/testdata/live/describe_auth/001_response.xml confirms " +
+			"gvmd returns three sibling <group> elements (method:file, method:ldap_connect, " +
+			"method:radius_connect) in one unfiltered describe_auth_response",
 	},
 }
 
@@ -1004,5 +1017,9 @@ var DefectAllowlist = map[DefectKey]DefectAllowlistEntry{
 		Reason: "T-9; docs/review-2026-08.md `nvt` — <node> nests itself recursively, a self-reference " +
 			"the schema cannot express as a named type; FieldTypeOverrides retypes it back to its own " +
 			"generated struct, which Go allows through a slice field",
+	},
+	{Command: "describe_auth", Class: "empty-pattern", Path: "/describe_auth"}: {
+		Reason: "T-9; docs/review-2026-08.md `auth` — the request pattern declares no content, same " +
+			"generic upstream-schema class already carried by note/override/create_group/empty_trashcan",
 	},
 }

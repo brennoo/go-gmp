@@ -34,6 +34,9 @@ func TestCommittedManifest(t *testing.T) {
 	// schema never declared one. trash has neither: empty_trashcan/restore
 	// are its only two commands. commands/*.go are all the generator's
 	// output for these families.
+	assertFamily(t, m, "authenticate", "auth")
+	assertFamily(t, m, "describe_auth", "auth")
+	assertFamily(t, m, "modify_auth", "auth")
 	assertFamily(t, m, "empty_trashcan", "trash")
 	assertFamily(t, m, "restore", "trash")
 	assertFamily(t, m, "get_notes", "note")
@@ -83,19 +86,19 @@ func TestCommittedManifest(t *testing.T) {
 	assertFamily(t, m, "delete_user", "user")
 
 	wantAdopted := []string{
-		"create_alert", "create_asset", "create_config", "create_credential", "create_filter", "create_group",
+		"authenticate", "create_alert", "create_asset", "create_config", "create_credential", "create_filter", "create_group",
 		"create_note", "create_override", "create_permission", "create_port_list", "create_port_range", "create_report", "create_report_config",
 		"create_report_format", "create_role", "create_scanner", "create_schedule", "create_tag", "create_target",
 		"create_task", "create_ticket", "create_tls_certificate", "create_user", "delete_alert", "delete_asset", "delete_config",
 		"delete_credential", "delete_filter", "delete_group", "delete_note", "delete_override",
 		"delete_permission", "delete_port_list", "delete_port_range", "delete_report", "delete_report_config", "delete_report_format", "delete_role",
 		"delete_scanner", "delete_schedule", "delete_tag", "delete_target", "delete_task", "delete_ticket",
-		"delete_user", "empty_trashcan", "get_alerts", "get_assets",
+		"delete_user", "describe_auth", "empty_trashcan", "get_alerts", "get_assets",
 		"get_configs", "get_credentials", "get_filters", "get_groups", "get_info", "get_notes",
 		"get_nvt_families", "get_nvts", "get_overrides",
 		"get_permissions", "get_port_lists", "get_preferences", "get_report_configs", "get_report_formats", "get_reports", "get_roles",
 		"get_scanners", "get_schedules", "get_tags", "get_targets", "get_tasks", "get_tickets",
-		"get_tls_certificates", "get_users", "modify_alert", "modify_asset", "modify_config", "modify_credential",
+		"get_tls_certificates", "get_users", "modify_alert", "modify_asset", "modify_auth", "modify_config", "modify_credential",
 		"modify_filter", "modify_group", "modify_note", "modify_override", "modify_permission", "modify_port_list",
 		"modify_report_config", "modify_report_format", "modify_role", "modify_scanner", "modify_schedule",
 		"modify_tag", "modify_target", "modify_task", "modify_ticket", "modify_tls_certificate", "modify_user",
@@ -103,19 +106,19 @@ func TestCommittedManifest(t *testing.T) {
 		"sync_config", "test_alert", "verify_report_format", "verify_scanner",
 	}
 	want := []string{
-		"create_alert", "create_asset", "create_config", "create_credential", "create_filter", "create_group",
+		"authenticate", "create_alert", "create_asset", "create_config", "create_credential", "create_filter", "create_group",
 		"create_note", "create_override", "create_permission", "create_port_list", "create_port_range", "create_report", "create_report_config",
 		"create_report_format", "create_role", "create_scanner", "create_schedule", "create_tag", "create_target",
 		"create_task", "create_ticket", "create_tls_certificate", "create_user", "delete_alert", "delete_asset", "delete_config",
 		"delete_credential", "delete_filter", "delete_group", "delete_note", "delete_override",
 		"delete_permission", "delete_port_list", "delete_port_range", "delete_report", "delete_report_config", "delete_report_format", "delete_role",
 		"delete_scanner", "delete_schedule", "delete_tag", "delete_target", "delete_task", "delete_ticket",
-		"delete_user", "empty_trashcan", "get_alerts", "get_assets",
+		"delete_user", "describe_auth", "empty_trashcan", "get_alerts", "get_assets",
 		"get_configs", "get_credentials", "get_filters", "get_groups", "get_info", "get_notes",
 		"get_nvt_families", "get_nvts", "get_overrides",
 		"get_permissions", "get_port_lists", "get_preferences", "get_report_configs", "get_report_formats", "get_reports", "get_roles",
 		"get_scanners", "get_schedules", "get_tags", "get_targets", "get_tasks", "get_tickets",
-		"get_tls_certificates", "get_users", "modify_alert", "modify_asset", "modify_config", "modify_credential",
+		"get_tls_certificates", "get_users", "modify_alert", "modify_asset", "modify_auth", "modify_config", "modify_credential",
 		"modify_filter", "modify_group", "modify_note", "modify_override", "modify_permission", "modify_port_list",
 		"modify_report_config", "modify_report_format", "modify_role", "modify_scanner", "modify_schedule",
 		"modify_tag", "modify_target", "modify_task", "modify_ticket", "modify_tls_certificate", "modify_user",
@@ -133,7 +136,7 @@ func TestCommittedManifest(t *testing.T) {
 	}
 
 	assertFiles(t, "ExpectedOutputFiles", m.ExpectedOutputFiles("commands"), []string{
-		"alert_shared.go", "asset_shared.go", "config_shared.go", "create_alert.go", "create_asset.go",
+		"alert_shared.go", "asset_shared.go", "auth_shared.go", "authenticate.go", "config_shared.go", "create_alert.go", "create_asset.go",
 		"create_config.go", "create_credential.go", "create_filter.go", "create_group.go", "create_note.go",
 		"create_override.go", "create_permission.go", "create_port_list.go", "create_port_range.go", "create_report.go", "create_report_config.go",
 		"create_report_format.go", "create_role.go", "create_scanner.go", "create_schedule.go", "create_tag.go",
@@ -143,13 +146,13 @@ func TestCommittedManifest(t *testing.T) {
 		"delete_group.go", "delete_note.go", "delete_override.go", "delete_permission.go", "delete_port_list.go",
 		"delete_port_range.go", "delete_report.go", "delete_report_config.go", "delete_report_format.go", "delete_role.go", "delete_scanner.go",
 		"delete_schedule.go", "delete_tag.go", "delete_target.go", "delete_task.go", "delete_ticket.go",
-		"delete_user.go", "empty_trashcan.go", "filter_shared.go", "get_alerts.go",
+		"delete_user.go", "describe_auth.go", "empty_trashcan.go", "filter_shared.go", "get_alerts.go",
 		"get_assets.go", "get_configs.go", "get_credentials.go", "get_filters.go", "get_groups.go", "get_info.go", "get_notes.go",
 		"get_nvt_families.go", "get_nvts.go",
 		"get_overrides.go", "get_permissions.go", "get_port_lists.go", "get_preferences.go", "get_report_configs.go",
 		"get_report_formats.go", "get_reports.go", "get_roles.go", "get_scanners.go", "get_schedules.go", "get_tags.go",
 		"get_targets.go", "get_tasks.go", "get_tickets.go", "get_tls_certificates.go", "get_users.go",
-		"group_shared.go", "modify_alert.go", "modify_asset.go", "modify_config.go", "modify_credential.go",
+		"group_shared.go", "modify_alert.go", "modify_asset.go", "modify_auth.go", "modify_config.go", "modify_credential.go",
 		"modify_filter.go", "modify_group.go", "modify_note.go", "modify_override.go", "modify_permission.go",
 		"modify_port_list.go", "modify_report_config.go", "modify_report_format.go", "modify_role.go",
 		"modify_scanner.go", "modify_schedule.go", "modify_tag.go", "modify_target.go", "modify_task.go",
@@ -161,7 +164,7 @@ func TestCommittedManifest(t *testing.T) {
 		"trash_shared.go", "user_shared.go", "verify_report_format.go", "verify_scanner.go",
 	})
 	assertFiles(t, "Adopted().ExpectedOutputFiles", m.Adopted().ExpectedOutputFiles("commands"), []string{
-		"alert_shared.go", "asset_shared.go", "config_shared.go", "create_alert.go", "create_asset.go",
+		"alert_shared.go", "asset_shared.go", "auth_shared.go", "authenticate.go", "config_shared.go", "create_alert.go", "create_asset.go",
 		"create_config.go", "create_credential.go", "create_filter.go", "create_group.go", "create_note.go",
 		"create_override.go", "create_permission.go", "create_port_list.go", "create_port_range.go", "create_report.go", "create_report_config.go",
 		"create_report_format.go", "create_role.go", "create_scanner.go", "create_schedule.go", "create_tag.go",
@@ -171,13 +174,13 @@ func TestCommittedManifest(t *testing.T) {
 		"delete_group.go", "delete_note.go", "delete_override.go", "delete_permission.go", "delete_port_list.go",
 		"delete_port_range.go", "delete_report.go", "delete_report_config.go", "delete_report_format.go", "delete_role.go", "delete_scanner.go",
 		"delete_schedule.go", "delete_tag.go", "delete_target.go", "delete_task.go", "delete_ticket.go",
-		"delete_user.go", "empty_trashcan.go", "filter_shared.go", "get_alerts.go",
+		"delete_user.go", "describe_auth.go", "empty_trashcan.go", "filter_shared.go", "get_alerts.go",
 		"get_assets.go", "get_configs.go", "get_credentials.go", "get_filters.go", "get_groups.go", "get_info.go", "get_notes.go",
 		"get_nvt_families.go", "get_nvts.go",
 		"get_overrides.go", "get_permissions.go", "get_port_lists.go", "get_preferences.go", "get_report_configs.go",
 		"get_report_formats.go", "get_reports.go", "get_roles.go", "get_scanners.go", "get_schedules.go", "get_tags.go",
 		"get_targets.go", "get_tasks.go", "get_tickets.go", "get_tls_certificates.go", "get_users.go",
-		"group_shared.go", "modify_alert.go", "modify_asset.go", "modify_config.go", "modify_credential.go",
+		"group_shared.go", "modify_alert.go", "modify_asset.go", "modify_auth.go", "modify_config.go", "modify_credential.go",
 		"modify_filter.go", "modify_group.go", "modify_note.go", "modify_override.go", "modify_permission.go",
 		"modify_port_list.go", "modify_report_config.go", "modify_report_format.go", "modify_role.go",
 		"modify_scanner.go", "modify_schedule.go", "modify_tag.go", "modify_target.go", "modify_task.go",

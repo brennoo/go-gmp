@@ -64,7 +64,7 @@ func (g *GMPClient) Close() error {
 func (g *GMPClient) Authenticate(ctx context.Context, username, password string) error {
 	log.Printf("Authenticating as user: %s", username)
 
-	auth := &commands.Authenticate{Credentials: &commands.AuthenticateCredentials{Username: username, Password: password}}
+	auth := &commands.Authenticate{Credentials: commands.AuthCredentials{Username: username, Password: password}}
 
 	resp, err := g.client.Authenticate(ctx, auth)
 	if err != nil {

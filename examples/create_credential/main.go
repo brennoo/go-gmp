@@ -27,7 +27,7 @@ func main() {
 	cli := client.New(gmpConn)
 
 	// Authenticate as admin:admin
-	auth := &commands.Authenticate{Credentials: &commands.AuthenticateCredentials{Username: "admin", Password: "admin"}}
+	auth := &commands.Authenticate{Credentials: commands.AuthCredentials{Username: "admin", Password: "admin"}}
 	respAuth, err := cli.Authenticate(ctx, auth)
 	if err != nil {
 		log.Fatalf("Authentication failed: %v", err)

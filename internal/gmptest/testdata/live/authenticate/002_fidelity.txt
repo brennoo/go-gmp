@@ -13,7 +13,8 @@ CHANGED
   (none)
 
 ADDED
-  (none)
+  /authenticate_response/role                                              x1
+  /authenticate_response/timezone                                          x1
 
 DUPLICATED
   (none)

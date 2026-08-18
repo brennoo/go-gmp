@@ -82,7 +82,7 @@ func dialLive(ctx context.Context) (gmp.Connection, error) {
 	}
 
 	cli := client.New(conn)
-	creds := &commands.AuthenticateCredentials{Username: *liveUser, Password: *livePass}
+	creds := commands.AuthCredentials{Username: *liveUser, Password: *livePass}
 	if _, err := cli.Authenticate(ctx, &commands.Authenticate{Credentials: creds}); err != nil {
 		_ = conn.Close()
 		return nil, fmt.Errorf("authenticating: %w", err)

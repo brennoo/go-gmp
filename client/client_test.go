@@ -879,10 +879,10 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp := response.(*commands.DescribeAuthResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.Groups = []commands.AuthGroup{
+		resp.Group = []commands.AuthGroup{
 			{
 				Name: "method:file",
-				Settings: []commands.AuthSetting{
+				AuthConfSetting: []commands.AuthConfSetting{
 					{Key: "enable", Value: "true"},
 					{Key: "order", Value: "1"},
 				},
@@ -977,7 +977,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.ModifyAuth); ok {
-		if cmd.Group.Name == "method:file" && len(cmd.Group.Settings) > 0 && cmd.Group.Settings[0].Key == "enable" {
+		if cmd.Group.Name == "method:file" && len(cmd.Group.AuthConfSetting) > 0 && cmd.Group.AuthConfSetting[0].Key == "enable" {
 			(*response.(*commands.ModifyAuthResponse)).Status = "200"
 			(*response.(*commands.ModifyAuthResponse)).StatusText = "OK"
 		} else {

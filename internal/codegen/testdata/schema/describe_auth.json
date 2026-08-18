@@ -1,0 +1,209 @@
+{
+  "Name": "describe_auth",
+  "File": "",
+  "Request": {
+    "Name": "describe_auth",
+    "Kind": 0,
+    "Card": 0,
+    "InChoice": false,
+    "Type": "",
+    "Alts": null,
+    "Children": null,
+    "Chardata": false
+  },
+  "Response": {
+    "Name": "describe_auth_response",
+    "Kind": 0,
+    "Card": 0,
+    "InChoice": false,
+    "Type": "",
+    "Alts": null,
+    "Children": [
+      {
+        "Name": "status",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "status",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "status_text",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "group",
+        "Kind": 0,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": [
+          {
+            "Name": "name",
+            "Kind": 1,
+            "Card": 0,
+            "InChoice": false,
+            "Type": "text",
+            "Alts": null,
+            "Children": null,
+            "Chardata": false
+          },
+          {
+            "Name": "auth_conf_setting",
+            "Kind": 0,
+            "Card": 2,
+            "InChoice": false,
+            "Type": "",
+            "Alts": null,
+            "Children": [
+              {
+                "Name": "key",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "text",
+                "Alts": null,
+                "Children": null,
+                "Chardata": false
+              },
+              {
+                "Name": "value",
+                "Kind": 0,
+                "Card": 0,
+                "InChoice": false,
+                "Type": "text",
+                "Alts": null,
+                "Children": null,
+                "Chardata": false
+              },
+              {
+                "Name": "certificate_info",
+                "Kind": 0,
+                "Card": 1,
+                "InChoice": false,
+                "Type": "",
+                "Alts": null,
+                "Children": [
+                  {
+                    "Name": "time_status",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "",
+                    "Alts": [
+                      "expired",
+                      "inactive",
+                      "unknown",
+                      "valid"
+                    ],
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "activation_time",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "expiration_time",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "issuer",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "md5_fingerprint",
+                    "Kind": 0,
+                    "Card": 0,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "sha256_fingerprint",
+                    "Kind": 0,
+                    "Card": 1,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "subject",
+                    "Kind": 0,
+                    "Card": 1,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  },
+                  {
+                    "Name": "serial",
+                    "Kind": 0,
+                    "Card": 1,
+                    "InChoice": false,
+                    "Type": "text",
+                    "Alts": null,
+                    "Children": null,
+                    "Chardata": false
+                  }
+                ],
+                "Chardata": false
+              }
+            ],
+            "Chardata": false
+          }
+        ],
+        "Chardata": false
+      }
+    ],
+    "Chardata": false
+  },
+  "Defects": [
+    {
+      "Class": "empty-pattern",
+      "Path": "/describe_auth",
+      "Detail": "pattern declares no content"
+    }
+  ],
+  "Provenance": {
+    "Method": "served",
+    "Source": "gvmd \u003chelp format=\"XML\" type=\"\"/\u003e response",
+    "SourceRevision": "ghcr.io/brennoo/gvm-mirror/gvmd@sha256:cb82c501ca93809405a8d0ed4c21846703466802ce6462536e985625f102b497",
+    "SourceSHA256": "7f5511852d5e904066c431fb34052ce68b17f026f72423ab2a770d564d42774f",
+    "ParsedSHA256": "7f5511852d5e904066c431fb34052ce68b17f026f72423ab2a770d564d42774f",
+    "DeclaredVersion": "22.7",
+    "ExtractedAt": "2026-08-18T15:12:45.559105Z"
+  }
+}

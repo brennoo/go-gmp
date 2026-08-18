@@ -1,0 +1,19 @@
+# fidelity: describe_auth / live / 002
+# provenance: lifecycle: describe_auth before modify_auth
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

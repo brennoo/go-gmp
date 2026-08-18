@@ -226,6 +226,14 @@
         "get_nvts",
         "get_preferences"
       ]
+    },
+    {
+      "name": "auth",
+      "commands": [
+        "authenticate",
+        "describe_auth",
+        "modify_auth"
+      ]
     }
   ]
 }

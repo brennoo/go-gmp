@@ -517,6 +517,18 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.GetInfo{}),
 			Response: schema.ModelOf(&commands.GetInfoResponse{}),
 		},
+		"authenticate": {
+			Request:  schema.ModelOf(&commands.Authenticate{}),
+			Response: schema.ModelOf(&commands.AuthenticateResponse{}),
+		},
+		"describe_auth": {
+			Request:  schema.ModelOf(&commands.DescribeAuth{}),
+			Response: schema.ModelOf(&commands.DescribeAuthResponse{}),
+		},
+		"modify_auth": {
+			Request:  schema.ModelOf(&commands.ModifyAuth{}),
+			Response: schema.ModelOf(&commands.ModifyAuthResponse{}),
+		},
 	}
 }
 

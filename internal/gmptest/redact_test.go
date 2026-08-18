@@ -349,7 +349,7 @@ func TestCommittedSpecsRedactRealRequests(t *testing.T) {
 		{
 			command: "authenticate",
 			req: &commands.Authenticate{
-				Credentials: &commands.AuthenticateCredentials{Username: "admin", Password: "PW-AUTH"},
+				Credentials: commands.AuthCredentials{Username: "admin", Password: "PW-AUTH"},
 			},
 			secrets: []string{"PW-AUTH"},
 			keep:    []string{"admin"},
@@ -442,7 +442,7 @@ func TestSweepBacksUpTheSpecs(t *testing.T) {
 	r.AddSecret("-gmp.pass", "PW-AUTH")
 
 	doc, err := xml.Marshal(&commands.Authenticate{
-		Credentials: &commands.AuthenticateCredentials{Username: "admin", Password: "PW-AUTH"},
+		Credentials: commands.AuthCredentials{Username: "admin", Password: "PW-AUTH"},
 	})
 	if err != nil {
 		t.Fatalf("Failed to marshal: %v", err)

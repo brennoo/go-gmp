@@ -385,7 +385,7 @@ func (r *captureRun) reconnect() error {
 	if err != nil {
 		return fmt.Errorf("dial: %w", err)
 	}
-	creds := &commands.AuthenticateCredentials{Username: *liveUser, Password: *livePass}
+	creds := commands.AuthCredentials{Username: *liveUser, Password: *livePass}
 	if _, err := client.New(conn).Authenticate(r.ctx, &commands.Authenticate{Credentials: creds}); err != nil {
 		_ = conn.Close()
 		return fmt.Errorf("authenticate: %w", err)
