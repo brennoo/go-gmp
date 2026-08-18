@@ -34,10 +34,10 @@ optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             98
-with actionable findings:     24
-actionable findings:          85  (request 47, response 38)
-suppressed findings:          99
+fully conformant:             99
+with actionable findings:     23
+actionable findings:          82  (request 47, response 35)
+suppressed findings:          92
 confirmed by fidelity corpus: 8
 in the schema, not in Go:     0
 in Go, not in the schema:     0
@@ -49,8 +49,8 @@ in Go, not in the schema:     0
   EXTRA                  61         16
   CARDINALITY             2          2
   KIND                    0          0
-  OMITEMPTY               0         81
-  TYPE                    8          0
+  OMITEMPTY               0         74
+  TYPE                    5          0
   SCHEMA-DEFECT         128          0
 
 ### Schema defects by class
@@ -87,7 +87,6 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_results                   7   MISSING=1  EXTRA=4  CARDINALITY=2
   get_vulns                     4   MISSING=1  EXTRA=3
   create_report                 3   EXTRA=3
-  get_feeds                     3   TYPE=3
   get_reports                   3   EXTRA=3
   get_credentials               2   EXTRA=2
   get_info                      2   EXTRA=1  TYPE=1
@@ -101,7 +100,8 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_overrides                 1   EXTRA=1
   get_report_configs            1   MISSING=1
   get_resource_names            1   TYPE=1
-  ... and 4 more with fewer
+  get_system_reports            1   EXTRA=1
+  ... and 3 more with fewer
 
 ### Confirmed by both oracles
 
@@ -604,28 +604,8 @@ TYPE=1  SCHEMA-DEFECT=1
 
 ### get_feeds  (command_get_feeds.xml)
 
-OMITEMPTY=7  TYPE=3  SCHEMA-DEFECT=1
+SCHEMA-DEFECT=1
 
-  OMITEMPTY     response /get_feeds_response/feed/description
-                schema says required, Description is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_feeds_response/feed/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_feeds_response/feed/type
-                schema says required, Type is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_feeds_response/feed/version
-                schema says required, Version is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_feeds_response/feed_owner_set
-                schema says required, FeedOwnerSet is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_feeds_response/feed_resources_access
-                schema says required, FeedResourcesAccess is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_feeds_response/feed_roles_set
-                schema says required, FeedRolesSet is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  TYPE          response /get_feeds_response/feed_owner_set
-                schema type boolean is text ("" is true), Go FeedOwnerSet is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_feeds_response/feed_resources_access
-                schema type boolean is text ("" is true), Go FeedResourcesAccess is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_feeds_response/feed_roles_set
-                schema type boolean is text ("" is true), Go FeedRolesSet is bool: '7' fails to decode and '1' re-emits as 'true'
   SCHEMA-DEFECT response /get_feeds_response/feed/sync_not_available/error
                 no-pattern: <ele> has neither <pattern> nor <type>
 

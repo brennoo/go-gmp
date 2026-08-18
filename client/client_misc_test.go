@@ -184,17 +184,17 @@ func TestGetFeeds(t *testing.T) {
 	if resp.FeedResourcesAccess != true {
 		t.Fatalf("Unexpected feed_resources_access. Expected: true Got: %t", resp.FeedResourcesAccess)
 	}
-	if len(resp.Feeds) != 3 {
-		t.Fatalf("Expected 3 feeds, got %d", len(resp.Feeds))
+	if len(resp.Feed) != 3 {
+		t.Fatalf("Expected 3 feeds, got %d", len(resp.Feed))
 	}
-	if resp.Feeds[0].Type != "NVT" || resp.Feeds[0].Name != "Greenbone Security Feed" {
-		t.Fatalf("Unexpected first feed: %+v", resp.Feeds[0])
+	if resp.Feed[0].Type != "NVT" || resp.Feed[0].Name != "Greenbone Security Feed" {
+		t.Fatalf("Unexpected first feed: %+v", resp.Feed[0])
 	}
-	if resp.Feeds[1].Type != "CERT" || resp.Feeds[1].Name != "Greenbone CERT Feed" {
-		t.Fatalf("Unexpected second feed: %+v", resp.Feeds[1])
+	if resp.Feed[1].Type != "CERT" || resp.Feed[1].Name != "Greenbone CERT Feed" {
+		t.Fatalf("Unexpected second feed: %+v", resp.Feed[1])
 	}
-	if resp.Feeds[2].Type != "SCAP" || resp.Feeds[2].Name != "Greenbone SCAP Feed" {
-		t.Fatalf("Unexpected third feed: %+v", resp.Feeds[2])
+	if resp.Feed[2].Type != "SCAP" || resp.Feed[2].Name != "Greenbone SCAP Feed" {
+		t.Fatalf("Unexpected third feed: %+v", resp.Feed[2])
 	}
 }
 

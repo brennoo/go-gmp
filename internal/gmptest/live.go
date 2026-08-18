@@ -209,10 +209,10 @@ func attemptReady(ctx context.Context, opts []connections.TLSOption) (gmp.Client
 // means gvmd has not yet populated its feed table, which is itself early in
 // the boot sequence.
 func feedsReady(resp *commands.GetFeedsResponse) error {
-	if resp == nil || len(resp.Feeds) == 0 {
+	if resp == nil || len(resp.Feed) == 0 {
 		return errors.New("get_feeds returned no feeds yet")
 	}
-	for _, f := range resp.Feeds {
+	for _, f := range resp.Feed {
 		if f.CurrentlySyncing != nil {
 			return fmt.Errorf("feed %q is still syncing", f.Name)
 		}

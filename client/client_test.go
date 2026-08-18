@@ -1090,7 +1090,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp.FeedOwnerSet = true
 		resp.FeedRolesSet = true
 		resp.FeedResourcesAccess = true
-		resp.Feeds = []commands.Feed{
+		resp.Feed = []commands.Feed{
 			{
 				Type:        "NVT",
 				Name:        "Greenbone Security Feed",

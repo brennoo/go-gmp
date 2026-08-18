@@ -10,9 +10,7 @@ TRUNCATED
   (none)
 
 CHANGED
-  /get_feeds_response/feed_owner_set/#text                                 "1" -> "true"
-  /get_feeds_response/feed_resources_access/#text                          "1" -> "true"
-  /get_feeds_response/feed_roles_set/#text                                 "1" -> "true"
+  (none)
 
 ADDED
   (none)

@@ -38,6 +38,7 @@ func TestCommittedManifest(t *testing.T) {
 	assertFamily(t, m, "describe_auth", "auth")
 	assertFamily(t, m, "modify_auth", "auth")
 	assertFamily(t, m, "get_aggregates", "aggregate")
+	assertFamily(t, m, "get_feeds", "feed")
 	assertFamily(t, m, "get_license", "license")
 	assertFamily(t, m, "modify_license", "license")
 	assertFamily(t, m, "get_resource_names", "settings")
@@ -101,7 +102,7 @@ func TestCommittedManifest(t *testing.T) {
 		"delete_permission", "delete_port_list", "delete_port_range", "delete_report", "delete_report_config", "delete_report_format", "delete_role",
 		"delete_scanner", "delete_schedule", "delete_tag", "delete_target", "delete_task", "delete_ticket",
 		"delete_user", "describe_auth", "empty_trashcan", "get_aggregates", "get_alerts", "get_assets",
-		"get_configs", "get_credentials", "get_filters", "get_groups", "get_info", "get_license", "get_notes",
+		"get_configs", "get_credentials", "get_feeds", "get_filters", "get_groups", "get_info", "get_license", "get_notes",
 		"get_nvt_families", "get_nvts", "get_overrides",
 		"get_permissions", "get_port_lists", "get_preferences", "get_report_configs", "get_report_formats", "get_reports", "get_resource_names", "get_roles",
 		"get_scanners", "get_schedules", "get_settings", "get_tags", "get_targets", "get_tasks", "get_tickets",
@@ -121,7 +122,7 @@ func TestCommittedManifest(t *testing.T) {
 		"delete_permission", "delete_port_list", "delete_port_range", "delete_report", "delete_report_config", "delete_report_format", "delete_role",
 		"delete_scanner", "delete_schedule", "delete_tag", "delete_target", "delete_task", "delete_ticket",
 		"delete_user", "describe_auth", "empty_trashcan", "get_aggregates", "get_alerts", "get_assets",
-		"get_configs", "get_credentials", "get_filters", "get_groups", "get_info", "get_license", "get_notes",
+		"get_configs", "get_credentials", "get_feeds", "get_filters", "get_groups", "get_info", "get_license", "get_notes",
 		"get_nvt_families", "get_nvts", "get_overrides",
 		"get_permissions", "get_port_lists", "get_preferences", "get_report_configs", "get_report_formats", "get_reports", "get_resource_names", "get_roles",
 		"get_scanners", "get_schedules", "get_settings", "get_tags", "get_targets", "get_tasks", "get_tickets",
@@ -153,8 +154,8 @@ func TestCommittedManifest(t *testing.T) {
 		"delete_group.go", "delete_note.go", "delete_override.go", "delete_permission.go", "delete_port_list.go",
 		"delete_port_range.go", "delete_report.go", "delete_report_config.go", "delete_report_format.go", "delete_role.go", "delete_scanner.go",
 		"delete_schedule.go", "delete_tag.go", "delete_target.go", "delete_task.go", "delete_ticket.go",
-		"delete_user.go", "describe_auth.go", "empty_trashcan.go", "filter_shared.go", "get_aggregates.go", "get_alerts.go",
-		"get_assets.go", "get_configs.go", "get_credentials.go", "get_filters.go", "get_groups.go", "get_info.go", "get_license.go", "get_notes.go",
+		"delete_user.go", "describe_auth.go", "empty_trashcan.go", "feed_shared.go", "filter_shared.go", "get_aggregates.go", "get_alerts.go",
+		"get_assets.go", "get_configs.go", "get_credentials.go", "get_feeds.go", "get_filters.go", "get_groups.go", "get_info.go", "get_license.go", "get_notes.go",
 		"get_nvt_families.go", "get_nvts.go",
 		"get_overrides.go", "get_permissions.go", "get_port_lists.go", "get_preferences.go", "get_report_configs.go",
 		"get_report_formats.go", "get_reports.go", "get_resource_names.go", "get_roles.go", "get_scanners.go", "get_schedules.go", "get_settings.go", "get_tags.go",
@@ -181,8 +182,8 @@ func TestCommittedManifest(t *testing.T) {
 		"delete_group.go", "delete_note.go", "delete_override.go", "delete_permission.go", "delete_port_list.go",
 		"delete_port_range.go", "delete_report.go", "delete_report_config.go", "delete_report_format.go", "delete_role.go", "delete_scanner.go",
 		"delete_schedule.go", "delete_tag.go", "delete_target.go", "delete_task.go", "delete_ticket.go",
-		"delete_user.go", "describe_auth.go", "empty_trashcan.go", "filter_shared.go", "get_aggregates.go", "get_alerts.go",
-		"get_assets.go", "get_configs.go", "get_credentials.go", "get_filters.go", "get_groups.go", "get_info.go", "get_license.go", "get_notes.go",
+		"delete_user.go", "describe_auth.go", "empty_trashcan.go", "feed_shared.go", "filter_shared.go", "get_aggregates.go", "get_alerts.go",
+		"get_assets.go", "get_configs.go", "get_credentials.go", "get_feeds.go", "get_filters.go", "get_groups.go", "get_info.go", "get_license.go", "get_notes.go",
 		"get_nvt_families.go", "get_nvts.go",
 		"get_overrides.go", "get_permissions.go", "get_port_lists.go", "get_preferences.go", "get_report_configs.go",
 		"get_report_formats.go", "get_reports.go", "get_resource_names.go", "get_roles.go", "get_scanners.go", "get_schedules.go", "get_settings.go", "get_tags.go",

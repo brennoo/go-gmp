@@ -261,6 +261,12 @@
       "commands": [
         "get_version"
       ]
+    },
+    {
+      "name": "feed",
+      "commands": [
+        "get_feeds"
+      ]
     }
   ]
 }
