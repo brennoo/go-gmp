@@ -1,0 +1,105 @@
+client/client_auth_test.go
+  s_76388fdf2e5422::t_a59b61dcfecd3a 17,39-40,42,46-47,49-50,52-53,64,66
+client/client_test.go
+  s_76388fdf2e5422::t_080255926e2f70 882,885,980
+commands/authenticate.go
+  s_76388fdf2e5422::t_474dd7debf53d9 1-2,7,9-10,13,18-19,27-28
+commands/describe_auth.go
+  s_76388fdf2e5422::t_36f396bdeaddfd 1-2,7,12,17,25,27-35,38-47
+commands/modify_auth.go
+  s_76388fdf2e5422::t_3133f14ddcf289 1-2,7,9-10,13,24-35
+doc.go
+  s_76388fdf2e5422::t_70042c1b231167 43
+docs/review-2026-08.md
+  s_76388fdf2e5422::t_be8654fe91a24e 2812,3529-3598
+examples/basic_usage/main.go
+  s_76388fdf2e5422::t_b97eb42c6fedeb 67
+examples/create_credential/main.go
+  s_76388fdf2e5422::t_8b5d8b2eb6610b 30
+internal/cmd/schemadrift/schemadrift.go
+  s_76388fdf2e5422::t_118ccab382d918 60
+internal/codegen/manifest.json
+  s_76388fdf2e5422::t_1826f1a1eeec4b 229-236
+internal/codegen/manifest_test.go
+  s_76388fdf2e5422::t_ba34077b8cdfd4 37-39,89,96,101,109,116,121,139,149,155,167,177,183
+internal/codegen/overrides.go
+  s_76388fdf2e5422::t_0f2b32a58fd950 207-213,609-614,1021-1024
+internal/codegen/snapshot_live_test.go
+  s_76388fdf2e5422::t_f2b97d66dc1857 85
+internal/codegen/testdata/golden/authenticate.go
+  s_76388fdf2e5422::t_e2ba61bab67f76 1-31
+internal/codegen/testdata/golden/describe_auth.go
+  s_76388fdf2e5422::t_c6e80d4e4a5b9e 1-48
+internal/codegen/testdata/golden/modify_auth.go
+  s_76388fdf2e5422::t_a9a4863d19a5bc 1-35
+internal/codegen/testdata/schema/authenticate.json
+  s_76388fdf2e5422::t_933b881c576212 1-112
+internal/codegen/testdata/schema/describe_auth.json
+  s_76388fdf2e5422::t_e8ddce1e048db6 1-209
+internal/codegen/testdata/schema/modify_auth.json
+  s_76388fdf2e5422::t_89b29e9ed90f92 1-98
+internal/codegen/validate.go
+  s_76388fdf2e5422::t_33accb838e0190 519-530
+internal/gmptest/capture_sequence_auth_test.go
+  s_76388fdf2e5422::t_562e92c35b5129 1-75
+internal/gmptest/capture_sequence_test.go
+  s_76388fdf2e5422::t_65fb984d07b258 111,119,264,889-998
+internal/gmptest/capture_test.go
+  s_76388fdf2e5422::t_e602d1dddab489 388
+internal/gmptest/cases_auth.go
+  s_76388fdf2e5422::t_482fe031e4c653 7
+internal/gmptest/live.go
+  s_76388fdf2e5422::t_6406b807dbf91d 190
+internal/gmptest/redact_test.go
+  s_76388fdf2e5422::t_959d3bebc8aa63 352,445
+internal/gmptest/testdata/FIDELITY-SUMMARY.txt
+  s_76388fdf2e5422::t_3c9d964944b029 13,20,22,125-126,295
+internal/gmptest/testdata/REQUEST-FIDELITY.txt
+  s_76388fdf2e5422::t_8f20c4f4a3124c 11,122-123,292
+internal/gmptest/testdata/live/authenticate/002_fidelity.txt
+  s_76388fdf2e5422::t_9e4731e5c2f09e 16-17
+internal/gmptest/testdata/live/describe_auth/002_fidelity.txt
+  s_76388fdf2e5422::t_3340e81bd278aa 1-19
+internal/gmptest/testdata/live/describe_auth/002_meta.json
+  s_76388fdf2e5422::t_66837eb583d2d0 1-14
+internal/gmptest/testdata/live/describe_auth/002_request.xml
+  s_76388fdf2e5422::t_638620a7de4c2b 1
+internal/gmptest/testdata/live/describe_auth/002_response.xml
+  s_76388fdf2e5422::t_d38370cc2ec74f 1
+internal/gmptest/testdata/live/describe_auth/003_fidelity.txt
+  s_76388fdf2e5422::t_6fb4a1dfd8da66 1-19
+internal/gmptest/testdata/live/describe_auth/003_meta.json
+  s_76388fdf2e5422::t_89287c8d484f9b 1-14
+internal/gmptest/testdata/live/describe_auth/003_request.xml
+  s_76388fdf2e5422::t_070ae709024275 1
+internal/gmptest/testdata/live/describe_auth/003_response.xml
+  s_76388fdf2e5422::t_cac2181941f2af 1
+internal/gmptest/testdata/live/modify_auth/001_fidelity.txt
+  s_76388fdf2e5422::t_db3964fd004571 1-19
+internal/gmptest/testdata/live/modify_auth/001_meta.json
+  s_76388fdf2e5422::t_0d17955841fe60 1-14
+internal/gmptest/testdata/live/modify_auth/001_request.xml
+  s_76388fdf2e5422::t_c161ddd08b19f7 1
+internal/gmptest/testdata/live/modify_auth/001_response.xml
+  s_76388fdf2e5422::t_1c5cba1bad9305 1
+internal/gmptest/testdata/upstream/authenticate/002_fidelity.txt
+  s_76388fdf2e5422::t_40ab1f1698220c 16-17
+internal/schema/testdata/CONFORMANCE.md
+  s_76388fdf2e5422::t_d1c3b30e7abb8f 37-40,48-50,52,103-104,131,423,428-430,1246
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "49dd44b73aaf3509063989c599ec36a82f928190",
+  "prompts": {},
+  "sessions": {
+    "s_76388fdf2e5422": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_76388fdf2e5422",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
