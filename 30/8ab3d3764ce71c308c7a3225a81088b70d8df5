@@ -1,0 +1,63 @@
+client/client_misc_test.go
+  s_eb88893f8485bf::t_cf3873d361b8e1 386-387,389-391,393-394,396-397,399-400,402-403,405-406,408-409,411-412
+client/client_test.go
+  s_eb88893f8485bf::t_d1f52cddd462c5 1216,1218,1220,1224
+commands/get_aggregates.go
+  s_eb88893f8485bf::t_79f096f96bb4fe 1-2,7,9-28,30-34,42-69,71-79,82,84,87,89-93,96-104,106,109,112-116,119,121-123,126-138,141-146
+docs/review-2026-08.md
+  s_eb88893f8485bf::t_bfb86f1b467506 2812,2895-2897,3601-3691
+internal/codegen/manifest.json
+  s_eb88893f8485bf::t_068e4a4def1083 237-242
+internal/codegen/manifest_test.go
+  s_eb88893f8485bf::t_0b12bf027397bd 40,97,117,140,150,168,178
+internal/codegen/overrides.go
+  s_eb88893f8485bf::t_044154f9bccbc6 214-263
+internal/codegen/testdata/golden/get_aggregates.go
+  s_eb88893f8485bf::t_a226c1469e23f9 1-147
+internal/codegen/testdata/schema/get_aggregates.json
+  s_eb88893f8485bf::t_4b3a182a9d8aa8 1-868
+internal/codegen/validate.go
+  s_eb88893f8485bf::t_cac94d7d8e6c9c 531-534
+internal/gmptest/capture_sequence_test.go
+  s_eb88893f8485bf::t_9cf3d17bee3473 1068-1075
+internal/gmptest/registry_test.go
+  s_eb88893f8485bf::t_d99b51bc4a1242 82-84
+internal/gmptest/testdata/FIDELITY-SUMMARY.txt
+  s_eb88893f8485bf::t_c364660758ce89 13,15,132-136
+internal/gmptest/testdata/REQUEST-FIDELITY.txt
+  s_eb88893f8485bf::t_f9093de412fae3 11,132
+internal/gmptest/testdata/live/get_aggregates/001_fidelity.txt
+  s_eb88893f8485bf::t_5b9488f271d511 7
+internal/gmptest/testdata/live/get_aggregates/002_fidelity.txt
+  s_eb88893f8485bf::t_bb39583427eab2 7
+internal/gmptest/testdata/live/get_aggregates/003_fidelity.txt
+  s_eb88893f8485bf::t_22b019b03ccdb5 7,10
+internal/gmptest/testdata/live/get_aggregates/004_fidelity.txt
+  s_eb88893f8485bf::t_f19d1fa94bc342 1-19
+internal/gmptest/testdata/live/get_aggregates/004_meta.json
+  s_eb88893f8485bf::t_22be6dde054d34 1-11
+internal/gmptest/testdata/live/get_aggregates/004_request.xml
+  s_eb88893f8485bf::t_ad11df333368c5 1
+internal/gmptest/testdata/live/get_aggregates/004_response.xml
+  s_eb88893f8485bf::t_7ac254a6de09a7 1
+internal/gmptest/testdata/upstream/get_aggregates/001_fidelity.txt
+  s_eb88893f8485bf::t_bb7288a24affed 11
+internal/schema/testdata/CONFORMANCE.md
+  s_eb88893f8485bf::t_3aaf1193d95425 37-41,48-50,52,103-104,543-544,546,548,550,552,554-558
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "308ab3d3764ce71c308c7a3225a81088b70d8df5",
+  "prompts": {},
+  "sessions": {
+    "s_eb88893f8485bf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_eb88893f8485bf",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
