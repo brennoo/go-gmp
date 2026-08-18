@@ -47,6 +47,7 @@ func TestCommittedManifest(t *testing.T) {
 	assertFamily(t, m, "get_settings", "settings")
 	assertFamily(t, m, "modify_setting", "settings")
 	assertFamily(t, m, "get_version", "version")
+	assertFamily(t, m, "get_vulns", "vuln")
 	assertFamily(t, m, "empty_trashcan", "trash")
 	assertFamily(t, m, "restore", "trash")
 	assertFamily(t, m, "get_notes", "note")
@@ -108,7 +109,7 @@ func TestCommittedManifest(t *testing.T) {
 		"get_nvt_families", "get_nvts", "get_overrides",
 		"get_permissions", "get_port_lists", "get_preferences", "get_report_configs", "get_report_formats", "get_reports", "get_resource_names", "get_roles",
 		"get_scanners", "get_schedules", "get_settings", "get_system_reports", "get_tags", "get_targets", "get_tasks", "get_tickets",
-		"get_tls_certificates", "get_users", "get_version", "modify_alert", "modify_asset", "modify_auth", "modify_config", "modify_credential",
+		"get_tls_certificates", "get_users", "get_version", "get_vulns", "modify_alert", "modify_asset", "modify_auth", "modify_config", "modify_credential",
 		"modify_filter", "modify_group", "modify_license", "modify_note", "modify_override", "modify_permission", "modify_port_list",
 		"modify_report_config", "modify_report_format", "modify_role", "modify_scanner", "modify_schedule", "modify_setting",
 		"modify_tag", "modify_target", "modify_task", "modify_ticket", "modify_tls_certificate", "modify_user",
@@ -128,7 +129,7 @@ func TestCommittedManifest(t *testing.T) {
 		"get_nvt_families", "get_nvts", "get_overrides",
 		"get_permissions", "get_port_lists", "get_preferences", "get_report_configs", "get_report_formats", "get_reports", "get_resource_names", "get_roles",
 		"get_scanners", "get_schedules", "get_settings", "get_system_reports", "get_tags", "get_targets", "get_tasks", "get_tickets",
-		"get_tls_certificates", "get_users", "get_version", "modify_alert", "modify_asset", "modify_auth", "modify_config", "modify_credential",
+		"get_tls_certificates", "get_users", "get_version", "get_vulns", "modify_alert", "modify_asset", "modify_auth", "modify_config", "modify_credential",
 		"modify_filter", "modify_group", "modify_license", "modify_note", "modify_override", "modify_permission", "modify_port_list",
 		"modify_report_config", "modify_report_format", "modify_role", "modify_scanner", "modify_schedule", "modify_setting",
 		"modify_tag", "modify_target", "modify_task", "modify_ticket", "modify_tls_certificate", "modify_user",
@@ -162,7 +163,7 @@ func TestCommittedManifest(t *testing.T) {
 		"get_overrides.go", "get_permissions.go", "get_port_lists.go", "get_preferences.go", "get_report_configs.go",
 		"get_report_formats.go", "get_reports.go", "get_resource_names.go", "get_roles.go", "get_scanners.go", "get_schedules.go", "get_settings.go",
 		"get_system_reports.go", "get_tags.go",
-		"get_targets.go", "get_tasks.go", "get_tickets.go", "get_tls_certificates.go", "get_users.go", "get_version.go",
+		"get_targets.go", "get_tasks.go", "get_tickets.go", "get_tls_certificates.go", "get_users.go", "get_version.go", "get_vulns.go",
 		"group_shared.go", "license_shared.go", "modify_alert.go", "modify_asset.go", "modify_auth.go", "modify_config.go", "modify_credential.go",
 		"modify_filter.go", "modify_group.go", "modify_license.go", "modify_note.go", "modify_override.go", "modify_permission.go",
 		"modify_port_list.go", "modify_report_config.go", "modify_report_format.go", "modify_role.go",
@@ -172,7 +173,7 @@ func TestCommittedManifest(t *testing.T) {
 		"restore.go", "resume_task.go", "role_shared.go", "scanner_shared.go", "schedule_shared.go", "settings_shared.go", "start_task.go", "stop_task.go",
 		"sync_config.go", "system_report_shared.go", "tag_shared.go",
 		"target_shared.go", "task_shared.go", "test_alert.go", "ticket_shared.go", "tls_certificate_shared.go",
-		"trash_shared.go", "user_shared.go", "verify_report_format.go", "verify_scanner.go", "version_shared.go",
+		"trash_shared.go", "user_shared.go", "verify_report_format.go", "verify_scanner.go", "version_shared.go", "vuln_shared.go",
 	})
 	assertFiles(t, "Adopted().ExpectedOutputFiles", m.Adopted().ExpectedOutputFiles("commands"), []string{
 		"aggregate_shared.go", "alert_shared.go", "asset_shared.go", "auth_shared.go", "authenticate.go", "config_shared.go", "create_alert.go", "create_asset.go",
@@ -191,7 +192,7 @@ func TestCommittedManifest(t *testing.T) {
 		"get_overrides.go", "get_permissions.go", "get_port_lists.go", "get_preferences.go", "get_report_configs.go",
 		"get_report_formats.go", "get_reports.go", "get_resource_names.go", "get_roles.go", "get_scanners.go", "get_schedules.go", "get_settings.go",
 		"get_system_reports.go", "get_tags.go",
-		"get_targets.go", "get_tasks.go", "get_tickets.go", "get_tls_certificates.go", "get_users.go", "get_version.go",
+		"get_targets.go", "get_tasks.go", "get_tickets.go", "get_tls_certificates.go", "get_users.go", "get_version.go", "get_vulns.go",
 		"group_shared.go", "license_shared.go", "modify_alert.go", "modify_asset.go", "modify_auth.go", "modify_config.go", "modify_credential.go",
 		"modify_filter.go", "modify_group.go", "modify_license.go", "modify_note.go", "modify_override.go", "modify_permission.go",
 		"modify_port_list.go", "modify_report_config.go", "modify_report_format.go", "modify_role.go",
@@ -201,7 +202,7 @@ func TestCommittedManifest(t *testing.T) {
 		"restore.go", "resume_task.go", "role_shared.go", "scanner_shared.go", "schedule_shared.go", "settings_shared.go", "start_task.go", "stop_task.go",
 		"sync_config.go", "system_report_shared.go", "tag_shared.go",
 		"target_shared.go", "task_shared.go", "test_alert.go", "ticket_shared.go", "tls_certificate_shared.go",
-		"trash_shared.go", "user_shared.go", "verify_report_format.go", "verify_scanner.go", "version_shared.go",
+		"trash_shared.go", "user_shared.go", "verify_report_format.go", "verify_scanner.go", "version_shared.go", "vuln_shared.go",
 	})
 
 	if got, want := m.SnapshotPath("d", "get_notes"), SnapshotPath("d", "get_notes"); got != want {

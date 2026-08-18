@@ -34,10 +34,10 @@ optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             99
-with actionable findings:     23
-actionable findings:          82  (request 47, response 35)
-suppressed findings:          95
+fully conformant:             100
+with actionable findings:     22
+actionable findings:          78  (request 46, response 32)
+suppressed findings:          88
 confirmed by fidelity corpus: 8
 in the schema, not in Go:     0
 in Go, not in the schema:     0
@@ -45,11 +45,11 @@ in Go, not in the schema:     0
 ### Findings by category
 
                  actionable suppressed
-  MISSING                14          0
-  EXTRA                  61         19
+  MISSING                13          0
+  EXTRA                  58         20
   CARDINALITY             2          2
   KIND                    0          0
-  OMITEMPTY               0         74
+  OMITEMPTY               0         66
   TYPE                    5          0
   SCHEMA-DEFECT         128          0
 
@@ -85,7 +85,6 @@ taken against upstream main (155 commands). Two reasons, both expected:
   modify_agents                18   EXTRA=18
   get_agents                    9   MISSING=7  TYPE=2
   get_results                   7   MISSING=1  EXTRA=4  CARDINALITY=2
-  get_vulns                     4   MISSING=1  EXTRA=3
   create_report                 3   EXTRA=3
   get_reports                   3   EXTRA=3
   get_credentials               2   EXTRA=2
@@ -101,7 +100,8 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_report_configs            1   MISSING=1
   get_resource_names            1   TYPE=1
   get_system_reports            1   TYPE=1
-  ... and 3 more with fewer
+  get_targets                   1   EXTRA=1
+  ... and 2 more with fewer
 
 ### Confirmed by both oracles
 
@@ -1012,32 +1012,10 @@ SCHEMA-DEFECT=1
 
 ### get_vulns  (command_get_vulns.xml)
 
-MISSING=1  EXTRA=3  OMITEMPTY=8
+EXTRA=1
 
-  EXTRA         request  /get_vulns/@trash
-                Go field Trash *commands.GMPBool has no counterpart in the schema
-  MISSING       response /get_vulns_response/sort/#text
-                schema also declares character data (text) here; Go *commands.VulnsSort has no `,chardata` field
-  EXTRA         response /get_vulns_response/truncated
-                Go field Truncated string has no counterpart in the schema
   EXTRA         response /get_vulns_response/vuln/type
-                Go field Type string has no counterpart in the schema
-  OMITEMPTY     response /get_vulns_response/filters
-                schema says required, Filters is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_vulns_response/filters/keywords
-                schema says required, Keywords is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_vulns_response/sort
-                schema says required, Sort is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_vulns_response/sort/field
-                schema says required, Field is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_vulns_response/vuln/hosts
-                schema says required, Hosts is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_vulns_response/vuln/results
-                schema says required, Results is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_vulns_response/vuln_count
-                schema says required, VulnCount is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_vulns_response/vulns
-                schema says required, VulnsMeta is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
+                Go field Type string has no counterpart in the schema  [suppressed: T-9 vuln review: command_get_vulns.xml's vuln <pattern> list omits <e>type</e>, but the command still declares a full <ele><name>type</name></ele> body for it a few lines down (alts nvt/cve) — a dangling definition the pattern forgot to reference, not evidence the field doesn't exist; every fixture (live and upstream) sends a real <type>nvt</type>, the same pattern-omits-a-fully-defined-element class as verify_scanner's version]
 
 ### help  (command_help.xml)
 

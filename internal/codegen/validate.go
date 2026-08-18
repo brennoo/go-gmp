@@ -569,6 +569,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.GetSystemReports{}),
 			Response: schema.ModelOf(&commands.GetSystemReportsResponse{}),
 		},
+		"get_vulns": {
+			Request:  schema.ModelOf(&commands.GetVulns{}),
+			Response: schema.ModelOf(&commands.GetVulnsResponse{}),
+		},
 	}
 }
 

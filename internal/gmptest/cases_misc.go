@@ -39,20 +39,8 @@ func init() {
 		Duration: commands.Int(0),
 	})
 
-	// GetVulns.Trash is *bool: unset, true, and an explicit false all
-	// round-trip distinctly.
-	RegisterRequestCase("get_vulns", "trash_true", &commands.GetVulns{
-		Filter: "rows=-1",
-		Trash:  commands.Bool(true),
-	})
-
 	RegisterRequestCase("get_vulns", "by_id", &commands.GetVulns{
 		VulnID: "1234abcd-0000-1111-2222-333344445555",
-	})
-
-	RegisterRequestCase("get_vulns", "trash_false", &commands.GetVulns{
-		Filter: "rows=-1",
-		Trash:  commands.Bool(false),
 	})
 
 	// RunWizard.ReadOnly is *bool: unset, true, and an explicit false all

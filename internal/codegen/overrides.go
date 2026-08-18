@@ -308,6 +308,14 @@ var FieldOverrides = map[string][]FieldOverride{
 		Reason: "T-9 system_report review: same undeclared-but-real, genuinely optional attribute as " +
 			"start_time above, same evidence and same pointer-typing rationale",
 	}},
+	"get_vulns:/vuln": {{
+		Name: "type", GoType: "string",
+		Reason: "T-9 vuln review: command_get_vulns.xml's vuln <pattern> list omits <e>type</e>, but the " +
+			"command still declares a full <ele><name>type</name></ele> body for it a few lines down (alts " +
+			"nvt/cve) — a dangling definition the pattern forgot to reference, not evidence the field " +
+			"doesn't exist; every fixture (live and upstream) sends a real <type>nvt</type>, the same " +
+			"pattern-omits-a-fully-defined-element class as verify_scanner's version",
+	}},
 }
 
 // FieldTypeOverride corrects the Go type the mechanical mapping would assign
