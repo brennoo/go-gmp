@@ -1,0 +1,51 @@
+client/client_misc_test.go
+  s_82578dafb9f632::t_4b06db82aef8e7 237-238,264,268
+client/client_test.go
+  s_82578dafb9f632::t_ab21df720afa76 1129,1131-1132,1142,1147-1148,1150-1151
+commands/get_license.go
+  s_82578dafb9f632::t_b4625c350d3deb 1-2,5,7,12,17,25,27-28,31,33-36,39,51,53-55,58,60,63,66,69,71,74,77
+commands/modify_license.go
+  s_82578dafb9f632::t_0d46f2a8e4c4f9 1-2,7,14
+docs/review-2026-08.md
+  s_82578dafb9f632::t_afdc183408faf7 2812,2898-2900,3695-3741
+internal/codegen/manifest.json
+  s_82578dafb9f632::t_0fe64fe886eae5 243-249
+internal/codegen/manifest_test.go
+  s_82578dafb9f632::t_f3242fbd3b631c 41-42,100,105,120,125,153,158-159,181,186-187
+internal/codegen/overrides.go
+  s_82578dafb9f632::t_dd3a57a2c31e1c 1075-1078
+internal/codegen/testdata/golden/get_license.go
+  s_82578dafb9f632::t_a83e1f930d0817 1-78
+internal/codegen/testdata/golden/modify_license.go
+  s_82578dafb9f632::t_5e75c57227ae9b 1-24
+internal/codegen/testdata/schema/get_license.json
+  s_82578dafb9f632::t_f2aab8888e624e 1-289
+internal/codegen/testdata/schema/modify_license.json
+  s_82578dafb9f632::t_1167039284d51a 1-76
+internal/codegen/validate.go
+  s_82578dafb9f632::t_064cf60c67de47 535-542
+internal/gmptest/cases_misc.go
+  s_82578dafb9f632::t_c03f0b519af286 83
+internal/gmptest/testdata/FIDELITY-SUMMARY.txt
+  s_82578dafb9f632::t_991456d725fd2c 13-14,177
+internal/gmptest/testdata/upstream/get_license/001_fidelity.txt
+  s_82578dafb9f632::t_9d1d345aa14685 13
+internal/schema/testdata/CONFORMANCE.md
+  s_82578dafb9f632::t_46e4879898b71b 37-40,52-53,103-104,656
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "88c1f28eae271d19bee6889bf757171a6e9a5bc2",
+  "prompts": {},
+  "sessions": {
+    "s_82578dafb9f632": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_82578dafb9f632",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
