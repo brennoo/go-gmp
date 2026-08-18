@@ -8,7 +8,7 @@
 # silently fails to ever emit).
 # Regenerate with: go test ./internal/gmptest -run TestRequestRoundTrip -update
 
-requests-compared: 338   clean: 325   with-loss: 11   decode-errors: 2   advisory: 0   skipped-no-request: 0
+requests-compared: 340   clean: 327   with-loss: 11   decode-errors: 2   advisory: 0   skipped-no-request: 0
 commands with a recorded request: 122 of 122   commands with loss: 10
 
 ## Per fixture
@@ -163,7 +163,8 @@ get_groups                   live      002 clean         dropped=0   truncated=0
 get_groups                   live      003 clean         dropped=0   truncated=0   changed=0   added=0
 get_groups                   upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 get_info                     live      001 clean         dropped=0   truncated=0   changed=0   added=0
-get_info                     live      002 clean         dropped=0   truncated=0   changed=0   added=1
+get_info                     live      002 clean         dropped=0   truncated=0   changed=0   added=0
+get_info                     live      003 clean         dropped=0   truncated=0   changed=0   added=1
 get_info                     upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 get_info                     upstream  002 clean         dropped=0   truncated=0   changed=0   added=0
 get_license                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
@@ -209,6 +210,7 @@ get_report_formats           upstream  001 clean         dropped=0   truncated=0
 get_report_formats           upstream  002 clean         dropped=0   truncated=0   changed=0   added=0
 get_reports                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
 get_reports                  live      002 clean         dropped=0   truncated=0   changed=0   added=0
+get_reports                  live      003 clean         dropped=0   truncated=0   changed=0   added=0
 get_reports                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 get_reports                  upstream  002 clean         dropped=0   truncated=0   changed=0   added=0
 get_resource_names           live      001 clean         dropped=0   truncated=0   changed=0   added=0

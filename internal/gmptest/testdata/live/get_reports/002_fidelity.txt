@@ -1,17 +1,17 @@
 # fidelity: get_reports / live / 002
-# provenance: container task: get_reports for the imported report
+# provenance: read-only: get_reports with filter="rows=2 first=1"
 decode: ok
 namespaces-seen:
 
 DROPPED
-  /get_reports_response/report/report/filters/@id                          x1
-  /get_reports_response/report/report/filters/keywords                     x1  (+7 descendant paths)
-  /get_reports_response/report/report/ports/count                          x1  (+1 descendant paths)
-  /get_reports_response/report/report/result_count/false_positive          x1  (+4 descendant paths)
-  /get_reports_response/report/report/result_count/hole/@deprecated        x1
-  /get_reports_response/report/report/result_count/info/@deprecated        x1
-  /get_reports_response/report/report/result_count/warning/@deprecated     x1
-  /get_reports_response/report/report/task/target/@id                      x1
+  /get_reports_response/report/report/filters/@id                          x5
+  /get_reports_response/report/report/filters/keywords                     x5  (+7 descendant paths)
+  /get_reports_response/report/report/ports/count                          x5  (+1 descendant paths)
+  /get_reports_response/report/report/result_count/false_positive          x5  (+4 descendant paths)
+  /get_reports_response/report/report/result_count/hole/@deprecated        x5
+  /get_reports_response/report/report/result_count/info/@deprecated        x5
+  /get_reports_response/report/report/result_count/warning/@deprecated     x5
+  /get_reports_response/report/report/task/target/@id                      x5
   /get_reports_response/report_count/#text                                 x1
   /get_reports_response/sort/field/#text                                   x1
 
@@ -19,22 +19,21 @@ TRUNCATED
   (none)
 
 CHANGED
-  /get_reports_response/report/report/severity/filtered/#text              "-99.0" -> "-99"
-  /get_reports_response/report/report/severity/full/#text                  "-99.0" -> "-99"
+  (none)
 
 ADDED
-  /get_reports_response/report/report/filters/apply_overrides              x1
-  /get_reports_response/report/report/filters/min_qod                      x1
-  /get_reports_response/report/report/filters/notes                        x1
-  /get_reports_response/report/report/filters/overrides                    x1
-  /get_reports_response/report/report/filters/phrase                       x1
-  /get_reports_response/report/report/filters/result_hosts_only            x1
-  /get_reports_response/report/report/ports/@max                           x1
-  /get_reports_response/report/report/ports/@start                         x1
-  /get_reports_response/report/report/report_format                        x1
-  /get_reports_response/report/report/report_format/param                  x1
-  /get_reports_response/report/report/report_format/param/name             x1
-  /get_reports_response/report/report/report_format/param/value            x1
+  /get_reports_response/report/report/filters/apply_overrides              x5
+  /get_reports_response/report/report/filters/min_qod                      x5
+  /get_reports_response/report/report/filters/notes                        x5
+  /get_reports_response/report/report/filters/overrides                    x5
+  /get_reports_response/report/report/filters/phrase                       x5
+  /get_reports_response/report/report/filters/result_hosts_only            x5
+  /get_reports_response/report/report/ports/@max                           x5
+  /get_reports_response/report/report/ports/@start                         x5
+  /get_reports_response/report/report/report_format                        x5
+  /get_reports_response/report/report/report_format/param                  x5
+  /get_reports_response/report/report/report_format/param/name             x5
+  /get_reports_response/report/report/report_format/param/value            x5
 
 DUPLICATED
   (none)

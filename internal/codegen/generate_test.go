@@ -1043,9 +1043,9 @@ func TestCredentialGeneratedResponseRoundTrips(t *testing.T) {
 		"upstream-package-roundtrip: credentials=1 filtered=0 page=0\n" +
 		"  credential id=\"8e305b0b-260d-450d-91a8-dadf0b144e15\" type=\"up\" target.id=\"1f28d970-17ef-4c69-ba8a-13827059f2b9\" package.format=\"deb\" package.len=29 allow_insecure=false writable=true in_use=true\n" +
 		"live-decode: credentials=1 filtered=1 page=1\n" +
-		"  credential id=\"e2d95d93-57fd-4016-8283-421b9b38fd0f\" type=\"cc\" formats=[pem] allow_insecure=false writable=true in_use=false\n" +
+		"  credential id=\"5dc56522-0c70-44b8-bc51-dfab1ab6ffe0\" type=\"cc\" formats=[pem] allow_insecure=false writable=true in_use=false\n" +
 		"live-roundtrip: credentials=1 filtered=1 page=1\n" +
-		"  credential id=\"e2d95d93-57fd-4016-8283-421b9b38fd0f\" type=\"cc\" formats=[pem] allow_insecure=false writable=true in_use=false\n" +
+		"  credential id=\"5dc56522-0c70-44b8-bc51-dfab1ab6ffe0\" type=\"cc\" formats=[pem] allow_insecure=false writable=true in_use=false\n" +
 		"synthetic-decode: credentials=1 filtered=1 page=1\n" +
 		"  credential id=\"cred-syn-1\" type=\"krb5\" formats=[key] kdcs=[kdc1.example.com kdc2.example.com] scanner.id=\"scanner-1\" privacy.algorithm=\"aes\" cert_info.time_status=\"valid\" cert_info.activation_time=\"2020-01-01T00:00:00Z\" cert_info.expiration_time=\"2030-01-01T00:00:00Z\" cert_info.issuer=\"CN=test\" cert_info.md5=\"aa:bb\" cert_info.sha256=\"cc:dd\" cert_info.subject=\"CN=subject\" cert_info.serial=\"01\" allow_insecure=false writable=true in_use=false\n" +
 		"synthetic-roundtrip: credentials=1 filtered=1 page=1\n" +
