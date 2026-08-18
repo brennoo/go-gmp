@@ -565,6 +565,10 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.GetFeatures{}),
 			Response: schema.ModelOf(&commands.GetFeaturesResponse{}),
 		},
+		"get_system_reports": {
+			Request:  schema.ModelOf(&commands.GetSystemReports{}),
+			Response: schema.ModelOf(&commands.GetSystemReportsResponse{}),
+		},
 	}
 }
 

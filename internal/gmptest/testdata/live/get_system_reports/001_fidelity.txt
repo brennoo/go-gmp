@@ -4,14 +4,13 @@ decode: ok
 namespaces-seen:
 
 DROPPED
-  /get_system_reports_response/system_report/report/@end_time              x1
-  /get_system_reports_response/system_report/report/@start_time            x1
+  (none)
 
 TRUNCATED
   (none)
 
 CHANGED
-  /get_system_reports_response/system_report/report/@duration              "" -> "0"
+  (none)
 
 ADDED
   (none)

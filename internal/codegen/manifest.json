@@ -273,6 +273,12 @@
       "commands": [
         "get_features"
       ]
+    },
+    {
+      "name": "system_report",
+      "commands": [
+        "get_system_reports"
+      ]
     }
   ]
 }

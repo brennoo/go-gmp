@@ -678,13 +678,13 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		if cmd.Name == "proc" {
 			(*response.(*commands.GetSystemReportsResponse)).Status = "200"
 			(*response.(*commands.GetSystemReportsResponse)).StatusText = "OK"
-			(*response.(*commands.GetSystemReportsResponse)).SystemReports = []commands.SystemReport{
+			(*response.(*commands.GetSystemReportsResponse)).SystemReport = []commands.SystemReport{
 				{
 					Name:  "proc",
 					Title: "Processes",
 					Report: &commands.SystemReportReport{
 						Format:   "png",
-						Duration: 86400,
+						Duration: "86400",
 						Value:    "iVBORw0KGgoAAAANSUhEUgAAArkAAAE...2bEdAAAAAElFTkSuQmCC",
 					},
 				},
@@ -692,7 +692,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		} else if cmd.Brief != nil && bool(*cmd.Brief) {
 			(*response.(*commands.GetSystemReportsResponse)).Status = "200"
 			(*response.(*commands.GetSystemReportsResponse)).StatusText = "OK"
-			(*response.(*commands.GetSystemReportsResponse)).SystemReports = []commands.SystemReport{
+			(*response.(*commands.GetSystemReportsResponse)).SystemReport = []commands.SystemReport{
 				{Name: "proc", Title: "Processes"},
 				{Name: "load", Title: "System Load"},
 			}

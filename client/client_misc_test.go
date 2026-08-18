@@ -50,14 +50,14 @@ func TestGetSystemReports(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GetSystemReports failed: %v", err)
 	}
-	if resp.Status != "200" || resp.StatusText != "OK" || len(resp.SystemReports) != 1 {
+	if resp.Status != "200" || resp.StatusText != "OK" || len(resp.SystemReport) != 1 {
 		t.Errorf("unexpected response: %+v", resp)
 	}
-	if resp.SystemReports[0].Name != "proc" || resp.SystemReports[0].Title != "Processes" {
-		t.Errorf("unexpected system report: %+v", resp.SystemReports[0])
+	if resp.SystemReport[0].Name != "proc" || resp.SystemReport[0].Title != "Processes" {
+		t.Errorf("unexpected system report: %+v", resp.SystemReport[0])
 	}
-	if resp.SystemReports[0].Report == nil || resp.SystemReports[0].Report.Format != "png" {
-		t.Errorf("unexpected report content: %+v", resp.SystemReports[0].Report)
+	if resp.SystemReport[0].Report == nil || resp.SystemReport[0].Report.Format != "png" {
+		t.Errorf("unexpected report content: %+v", resp.SystemReport[0].Report)
 	}
 
 	// Success case: get brief listing
@@ -68,7 +68,7 @@ func TestGetSystemReports(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GetSystemReports failed: %v", err)
 	}
-	if resp.Status != "200" || resp.StatusText != "OK" || len(resp.SystemReports) < 2 {
+	if resp.Status != "200" || resp.StatusText != "OK" || len(resp.SystemReport) < 2 {
 		t.Errorf("unexpected response: %+v", resp)
 	}
 

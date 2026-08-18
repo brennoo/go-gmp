@@ -37,7 +37,7 @@ commands compared:            122
 fully conformant:             99
 with actionable findings:     23
 actionable findings:          82  (request 47, response 35)
-suppressed findings:          92
+suppressed findings:          95
 confirmed by fidelity corpus: 8
 in the schema, not in Go:     0
 in Go, not in the schema:     0
@@ -46,11 +46,11 @@ in Go, not in the schema:     0
 
                  actionable suppressed
   MISSING                14          0
-  EXTRA                  62         16
+  EXTRA                  61         19
   CARDINALITY             2          2
   KIND                    0          0
   OMITEMPTY               0         74
-  TYPE                    4          0
+  TYPE                    5          0
   SCHEMA-DEFECT         128          0
 
 ### Schema defects by class
@@ -100,7 +100,7 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_overrides                 1   EXTRA=1
   get_report_configs            1   MISSING=1
   get_resource_names            1   TYPE=1
-  get_system_reports            1   EXTRA=1
+  get_system_reports            1   TYPE=1
   ... and 3 more with fewer
 
 ### Confirmed by both oracles
@@ -911,10 +911,16 @@ EXTRA=2
 
 ### get_system_reports  (command_get_system_reports.xml)
 
-EXTRA=1
+EXTRA=3  TYPE=1
 
+  EXTRA         response /get_system_reports_response/system_report/report/@end_time
+                Go field EndTime *commands.GMPTime has no counterpart in the schema  [suppressed: T-9 system_report review: same undeclared-but-real, genuinely optional attribute as start_time above, same evidence and same pointer-typing rationale]
+  EXTRA         response /get_system_reports_response/system_report/report/@start_time
+                Go field StartTime *commands.GMPTime has no counterpart in the schema  [suppressed: T-9 system_report review: command_get_system_reports.xml's <report> pattern never declares start_time, but internal/gmptest/testdata/live/get_system_reports/001_response.xml sends a real start_time="0001-01-01T00:00:00Z" attribute — undeclared but genuine wire data, confirmed dropped by that fixture's own pre-adoption fidelity report; testdata/upstream/get_system_reports/002_response.xml proves the attribute is also genuinely absent on other reports, so it is pointer-typed (unlike this codebase's usual non-pointer GMPTime convention) to actually honor omitempty on re-encode rather than fabricate a zero timestamp for a report that never had one]
   EXTRA         response /get_system_reports_response/truncated
-                Go field Truncated string has no counterpart in the schema
+                Go field Truncated string has no counterpart in the schema  [suppressed: T-9 system_report review: command_get_system_reports.xml's response <pattern> never declares <truncated>, but the command's own <example> — reproduced verbatim in testdata/upstream/get_system_reports/001_response.xml — shows a real <truncated>...</truncated> sibling of <system_report>, the same pattern-vs-example disagreement as get_settings' nested setting; no live capture against current gvmd ever populates it (truncation only occurs on long-running reports the pinned stack's fixtures never triggered), so this is weaker evidence than most restored fields here, but it follows the same precedent of trusting the schema's own baked example over a formal pattern that has already been shown to omit real fields elsewhere in this command]
+  TYPE          response /get_system_reports_response/system_report/report/@duration
+                schema type integer, Go Duration is string (want int)
 
 ### get_tags  (command_get_tags.xml)
 

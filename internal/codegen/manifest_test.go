@@ -40,6 +40,7 @@ func TestCommittedManifest(t *testing.T) {
 	assertFamily(t, m, "get_aggregates", "aggregate")
 	assertFamily(t, m, "get_feeds", "feed")
 	assertFamily(t, m, "get_features", "feature")
+	assertFamily(t, m, "get_system_reports", "system_report")
 	assertFamily(t, m, "get_license", "license")
 	assertFamily(t, m, "modify_license", "license")
 	assertFamily(t, m, "get_resource_names", "settings")
@@ -106,7 +107,7 @@ func TestCommittedManifest(t *testing.T) {
 		"get_configs", "get_credentials", "get_features", "get_feeds", "get_filters", "get_groups", "get_info", "get_license", "get_notes",
 		"get_nvt_families", "get_nvts", "get_overrides",
 		"get_permissions", "get_port_lists", "get_preferences", "get_report_configs", "get_report_formats", "get_reports", "get_resource_names", "get_roles",
-		"get_scanners", "get_schedules", "get_settings", "get_tags", "get_targets", "get_tasks", "get_tickets",
+		"get_scanners", "get_schedules", "get_settings", "get_system_reports", "get_tags", "get_targets", "get_tasks", "get_tickets",
 		"get_tls_certificates", "get_users", "get_version", "modify_alert", "modify_asset", "modify_auth", "modify_config", "modify_credential",
 		"modify_filter", "modify_group", "modify_license", "modify_note", "modify_override", "modify_permission", "modify_port_list",
 		"modify_report_config", "modify_report_format", "modify_role", "modify_scanner", "modify_schedule", "modify_setting",
@@ -126,7 +127,7 @@ func TestCommittedManifest(t *testing.T) {
 		"get_configs", "get_credentials", "get_features", "get_feeds", "get_filters", "get_groups", "get_info", "get_license", "get_notes",
 		"get_nvt_families", "get_nvts", "get_overrides",
 		"get_permissions", "get_port_lists", "get_preferences", "get_report_configs", "get_report_formats", "get_reports", "get_resource_names", "get_roles",
-		"get_scanners", "get_schedules", "get_settings", "get_tags", "get_targets", "get_tasks", "get_tickets",
+		"get_scanners", "get_schedules", "get_settings", "get_system_reports", "get_tags", "get_targets", "get_tasks", "get_tickets",
 		"get_tls_certificates", "get_users", "get_version", "modify_alert", "modify_asset", "modify_auth", "modify_config", "modify_credential",
 		"modify_filter", "modify_group", "modify_license", "modify_note", "modify_override", "modify_permission", "modify_port_list",
 		"modify_report_config", "modify_report_format", "modify_role", "modify_scanner", "modify_schedule", "modify_setting",
@@ -159,7 +160,8 @@ func TestCommittedManifest(t *testing.T) {
 		"get_assets.go", "get_configs.go", "get_credentials.go", "get_features.go", "get_feeds.go", "get_filters.go", "get_groups.go", "get_info.go", "get_license.go", "get_notes.go",
 		"get_nvt_families.go", "get_nvts.go",
 		"get_overrides.go", "get_permissions.go", "get_port_lists.go", "get_preferences.go", "get_report_configs.go",
-		"get_report_formats.go", "get_reports.go", "get_resource_names.go", "get_roles.go", "get_scanners.go", "get_schedules.go", "get_settings.go", "get_tags.go",
+		"get_report_formats.go", "get_reports.go", "get_resource_names.go", "get_roles.go", "get_scanners.go", "get_schedules.go", "get_settings.go",
+		"get_system_reports.go", "get_tags.go",
 		"get_targets.go", "get_tasks.go", "get_tickets.go", "get_tls_certificates.go", "get_users.go", "get_version.go",
 		"group_shared.go", "license_shared.go", "modify_alert.go", "modify_asset.go", "modify_auth.go", "modify_config.go", "modify_credential.go",
 		"modify_filter.go", "modify_group.go", "modify_license.go", "modify_note.go", "modify_override.go", "modify_permission.go",
@@ -168,7 +170,7 @@ func TestCommittedManifest(t *testing.T) {
 		"modify_ticket.go", "modify_tls_certificate.go", "modify_user.go", "move_task.go", "note_shared.go", "nvt_shared.go", "override_shared.go",
 		"permission_shared.go", "port_list_shared.go", "port_range_shared.go", "report_config_shared.go", "report_format_shared.go", "report_shared.go",
 		"restore.go", "resume_task.go", "role_shared.go", "scanner_shared.go", "schedule_shared.go", "settings_shared.go", "start_task.go", "stop_task.go",
-		"sync_config.go", "tag_shared.go",
+		"sync_config.go", "system_report_shared.go", "tag_shared.go",
 		"target_shared.go", "task_shared.go", "test_alert.go", "ticket_shared.go", "tls_certificate_shared.go",
 		"trash_shared.go", "user_shared.go", "verify_report_format.go", "verify_scanner.go", "version_shared.go",
 	})
@@ -187,7 +189,8 @@ func TestCommittedManifest(t *testing.T) {
 		"get_assets.go", "get_configs.go", "get_credentials.go", "get_features.go", "get_feeds.go", "get_filters.go", "get_groups.go", "get_info.go", "get_license.go", "get_notes.go",
 		"get_nvt_families.go", "get_nvts.go",
 		"get_overrides.go", "get_permissions.go", "get_port_lists.go", "get_preferences.go", "get_report_configs.go",
-		"get_report_formats.go", "get_reports.go", "get_resource_names.go", "get_roles.go", "get_scanners.go", "get_schedules.go", "get_settings.go", "get_tags.go",
+		"get_report_formats.go", "get_reports.go", "get_resource_names.go", "get_roles.go", "get_scanners.go", "get_schedules.go", "get_settings.go",
+		"get_system_reports.go", "get_tags.go",
 		"get_targets.go", "get_tasks.go", "get_tickets.go", "get_tls_certificates.go", "get_users.go", "get_version.go",
 		"group_shared.go", "license_shared.go", "modify_alert.go", "modify_asset.go", "modify_auth.go", "modify_config.go", "modify_credential.go",
 		"modify_filter.go", "modify_group.go", "modify_license.go", "modify_note.go", "modify_override.go", "modify_permission.go",
@@ -196,7 +199,7 @@ func TestCommittedManifest(t *testing.T) {
 		"modify_ticket.go", "modify_tls_certificate.go", "modify_user.go", "move_task.go", "note_shared.go", "nvt_shared.go", "override_shared.go",
 		"permission_shared.go", "port_list_shared.go", "port_range_shared.go", "report_config_shared.go", "report_format_shared.go", "report_shared.go",
 		"restore.go", "resume_task.go", "role_shared.go", "scanner_shared.go", "schedule_shared.go", "settings_shared.go", "start_task.go", "stop_task.go",
-		"sync_config.go", "tag_shared.go",
+		"sync_config.go", "system_report_shared.go", "tag_shared.go",
 		"target_shared.go", "task_shared.go", "test_alert.go", "ticket_shared.go", "tls_certificate_shared.go",
 		"trash_shared.go", "user_shared.go", "verify_report_format.go", "verify_scanner.go", "version_shared.go",
 	})
