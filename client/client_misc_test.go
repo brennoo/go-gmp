@@ -428,14 +428,14 @@ func TestGetFeatures(t *testing.T) {
 	if resp.StatusText != "OK" {
 		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
 	}
-	if len(resp.Features) != 1 {
-		t.Fatalf("Expected 1 feature, got %d", len(resp.Features))
+	if len(resp.Feature) != 1 {
+		t.Fatalf("Expected 1 feature, got %d", len(resp.Feature))
 	}
-	if resp.Features[0].Enabled != false {
-		t.Fatalf("Unexpected feature enabled. Expected: false Got: %t", resp.Features[0].Enabled)
+	if resp.Feature[0].Enabled != false {
+		t.Fatalf("Unexpected feature enabled. Expected: false Got: %t", resp.Feature[0].Enabled)
 	}
-	if resp.Features[0].Name != "OPENVASD" {
-		t.Fatalf("Unexpected feature name. Expected: OPENVASD Got: %s", resp.Features[0].Name)
+	if resp.Feature[0].Name != "OPENVASD" {
+		t.Fatalf("Unexpected feature name. Expected: OPENVASD Got: %s", resp.Feature[0].Name)
 	}
 }
 

@@ -46,11 +46,11 @@ in Go, not in the schema:     0
 
                  actionable suppressed
   MISSING                14          0
-  EXTRA                  61         16
+  EXTRA                  62         16
   CARDINALITY             2          2
   KIND                    0          0
   OMITEMPTY               0         74
-  TYPE                    5          0
+  TYPE                    4          0
   SCHEMA-DEFECT         128          0
 
 ### Schema defects by class
@@ -94,7 +94,7 @@ taken against upstream main (155 commands). Two reasons, both expected:
   modify_target                 2   MISSING=1  EXTRA=1
   create_target                 1   EXTRA=1
   create_task                   1   MISSING=1
-  get_features                  1   TYPE=1
+  get_features                  1   EXTRA=1
   get_notes                     1   EXTRA=1
   get_nvts                      1   EXTRA=1
   get_overrides                 1   EXTRA=1
@@ -595,12 +595,12 @@ EXTRA=2  SCHEMA-DEFECT=2
 
 ### get_features  (command_get_features.xml)
 
-TYPE=1  SCHEMA-DEFECT=1
+EXTRA=1  SCHEMA-DEFECT=1
 
   SCHEMA-DEFECT request  /get_features
                 empty-pattern: pattern declares no content
-  TYPE          response /get_features_response/feature/@enabled
-                schema type boolean is text ("" is true), Go Enabled is bool: '7' fails to decode and '1' re-emits as 'true'
+  EXTRA         response /get_features_response/feature/@compiled_in
+                Go field CompiledIn commands.GMPBool has no counterpart in the schema
 
 ### get_feeds  (command_get_feeds.xml)
 

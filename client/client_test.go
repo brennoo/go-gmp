@@ -1226,9 +1226,10 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp := response.(*commands.GetFeaturesResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.Features = []commands.Feature{{
-			Enabled: false,
-			Name:    "OPENVASD",
+		resp.Feature = []commands.Feature{{
+			CompiledIn: false,
+			Enabled:    false,
+			Name:       "OPENVASD",
 		}}
 	}
 

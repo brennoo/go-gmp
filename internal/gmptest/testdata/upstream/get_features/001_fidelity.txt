@@ -10,10 +10,10 @@ TRUNCATED
   (none)
 
 CHANGED
-  /get_features_response/feature/@enabled                                  "0" -> "false"
+  (none)
 
 ADDED
-  (none)
+  /get_features_response/feature/@compiled_in                              x1
 
 DUPLICATED
   (none)

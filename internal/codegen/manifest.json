@@ -267,6 +267,12 @@
       "commands": [
         "get_feeds"
       ]
+    },
+    {
+      "name": "feature",
+      "commands": [
+        "get_features"
+      ]
     }
   ]
 }

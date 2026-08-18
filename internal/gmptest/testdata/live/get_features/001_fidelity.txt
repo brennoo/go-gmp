@@ -4,7 +4,7 @@ decode: ok
 namespaces-seen:
 
 DROPPED
-  /get_features_response/feature/@compiled_in                              x8
+  (none)
 
 TRUNCATED
   (none)
