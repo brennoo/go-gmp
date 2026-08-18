@@ -240,6 +240,13 @@
       "commands": [
         "get_aggregates"
       ]
+    },
+    {
+      "name": "license",
+      "commands": [
+        "get_license",
+        "modify_license"
+      ]
     }
   ]
 }

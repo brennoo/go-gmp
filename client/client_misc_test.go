@@ -234,10 +234,8 @@ func TestGetLicense(t *testing.T) {
 	}
 
 	hasErr := false
-	if resp == nil || resp.License == nil || resp.License.Content == nil || resp.License.Content.Meta == nil ||
-		resp.License.Content.Appliance == nil || resp.License.Content.Keys == nil || resp.License.Content.Signatures == nil {
-		t.Error("Missing required license fields")
-		hasErr = true
+	if resp == nil {
+		t.Fatal("Missing response")
 	}
 	if resp.Status != "200" {
 		t.Error("Unexpected status:", resp.Status)
@@ -263,11 +261,11 @@ func TestGetLicense(t *testing.T) {
 		t.Error("Unexpected appliance model:", resp.License.Content.Appliance.Model)
 		hasErr = true
 	}
-	if len(resp.License.Content.Keys.Keys) != 1 || resp.License.Content.Keys.Keys[0].Name != "feed" {
+	if len(resp.License.Content.Keys.Key) != 1 || resp.License.Content.Keys.Key[0].Name != "feed" {
 		t.Error("Unexpected keys:", resp.License.Content.Keys)
 		hasErr = true
 	}
-	if len(resp.License.Content.Signatures.Signatures) != 1 || resp.License.Content.Signatures.Signatures[0].Name != "license" {
+	if len(resp.License.Content.Signatures.Signature) != 1 || resp.License.Content.Signatures.Signature[0].Name != "license" {
 		t.Error("Unexpected signatures:", resp.License.Content.Signatures)
 		hasErr = true
 	}

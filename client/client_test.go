@@ -1126,10 +1126,10 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp := response.(*commands.GetLicenseResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.License = &commands.License{
+		resp.License = commands.License{
 			Status: "active",
-			Content: &commands.LicenseContent{
-				Meta: &commands.LicenseMeta{
+			Content: commands.LicenseContent{
+				Meta: commands.LicenseMeta{
 					ID:           "4711",
 					Version:      "1.0.0",
 					Comment:      "Test License",
@@ -1139,16 +1139,16 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 					Begins:       commands.GMPTime{Time: time.Date(2021, 8, 27, 7, 5, 21, 0, time.UTC)},
 					Expires:      commands.GMPTime{Time: time.Date(2021, 9, 4, 7, 5, 21, 0, time.UTC)},
 				},
-				Appliance: &commands.LicenseAppliance{
+				Appliance: commands.LicenseAppliance{
 					Model:     "trial",
 					ModelType: "virtual",
 					Sensor:    false,
 				},
-				Keys: &commands.LicenseKeys{
-					Keys: []commands.LicenseKey{{Name: "feed", Value: "*base64 GSF key*"}},
+				Keys: commands.LicenseKeys{
+					Key: []commands.LicenseKey{{Name: "feed", Value: "*base64 GSF key*"}},
 				},
-				Signatures: &commands.LicenseSignatures{
-					Signatures: []commands.LicenseSignature{{Name: "license", Value: "*base64 signature*"}},
+				Signatures: commands.LicenseSignatures{
+					Signature: []commands.LicenseSignature{{Name: "license", Value: "*base64 signature*"}},
 				},
 			},
 		}

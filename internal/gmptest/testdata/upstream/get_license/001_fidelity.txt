@@ -10,7 +10,7 @@ TRUNCATED
   (none)
 
 CHANGED
-  /get_license_response/license/content/appliance/sensor/#text             "0" -> "false"
+  (none)
 
 ADDED
   (none)

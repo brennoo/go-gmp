@@ -533,6 +533,14 @@ func BeforeGoRoots() map[string]CommandRoots {
 			Request:  schema.ModelOf(&commands.GetAggregates{}),
 			Response: schema.ModelOf(&commands.GetAggregatesResponse{}),
 		},
+		"get_license": {
+			Request:  schema.ModelOf(&commands.GetLicense{}),
+			Response: schema.ModelOf(&commands.GetLicenseResponse{}),
+		},
+		"modify_license": {
+			Request:  schema.ModelOf(&commands.ModifyLicense{}),
+			Response: schema.ModelOf(&commands.ModifyLicenseResponse{}),
+		},
 	}
 }
 

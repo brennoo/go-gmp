@@ -1072,4 +1072,8 @@ var DefectAllowlist = map[DefectKey]DefectAllowlistEntry{
 		Reason: "T-9; docs/review-2026-08.md `auth` — the request pattern declares no content, same " +
 			"generic upstream-schema class already carried by note/override/create_group/empty_trashcan",
 	},
+	{Command: "get_license", Class: "empty-pattern", Path: "/get_license"}: {
+		Reason: "T-9; docs/review-2026-08.md `license` — the request pattern declares no content, same " +
+			"generic upstream-schema class already carried by describe_auth/empty_trashcan",
+	},
 }

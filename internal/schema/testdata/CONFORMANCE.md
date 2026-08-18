@@ -34,10 +34,10 @@ optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            122
-fully conformant:             96
-with actionable findings:     26
-actionable findings:          88  (request 47, response 41)
-suppressed findings:          113
+fully conformant:             97
+with actionable findings:     25
+actionable findings:          87  (request 47, response 40)
+suppressed findings:          110
 confirmed by fidelity corpus: 8
 in the schema, not in Go:     0
 in Go, not in the schema:     0
@@ -49,8 +49,8 @@ in Go, not in the schema:     0
   EXTRA                  63         14
   CARDINALITY             2          2
   KIND                    0          0
-  OMITEMPTY               0         97
-  TYPE                    9          0
+  OMITEMPTY               0         94
+  TYPE                    8          0
   SCHEMA-DEFECT         128          0
 
 ### Schema defects by class
@@ -97,11 +97,11 @@ taken against upstream main (155 commands). Two reasons, both expected:
   create_target                 1   EXTRA=1
   create_task                   1   MISSING=1
   get_features                  1   TYPE=1
-  get_license                   1   TYPE=1
   get_notes                     1   EXTRA=1
   get_nvts                      1   EXTRA=1
   get_overrides                 1   EXTRA=1
-  ... and 6 more with fewer
+  get_report_configs            1   MISSING=1
+  ... and 5 more with fewer
 
 ### Confirmed by both oracles
 
@@ -653,18 +653,10 @@ EXTRA=1  TYPE=1  SCHEMA-DEFECT=1
 
 ### get_license  (command_get_license.xml)
 
-OMITEMPTY=3  TYPE=1  SCHEMA-DEFECT=1
+SCHEMA-DEFECT=1
 
   SCHEMA-DEFECT request  /get_license
                 empty-pattern: pattern declares no content
-  OMITEMPTY     response /get_license_response/license
-                schema says required, License is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_license_response/license/content/keys/key/@name
-                schema says optional, Name string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_license_response/license/content/signatures/signature/@name
-                schema says optional, Name string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  TYPE          response /get_license_response/license/content/appliance/sensor
-                schema type boolean is text ("" is true), Go Sensor is bool: '7' fails to decode and '1' re-emits as 'true'
 
 ### get_notes  (command_get_notes.xml)
 

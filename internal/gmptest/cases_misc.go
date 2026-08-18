@@ -80,7 +80,7 @@ func init() {
 		ReadOnly: commands.Bool(false),
 	})
 
-	// ModifyLicense.AllowEmpty is *bool: unset, true, and an explicit false
+	// ModifyLicense.AllowEmpty is *GMPBool: unset, true, and an explicit false
 	// all round-trip distinctly.
 	RegisterRequestCase("modify_license", "allow_empty_true", &commands.ModifyLicense{
 		AllowEmpty: commands.Bool(true),
