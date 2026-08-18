@@ -1,0 +1,41 @@
+commands/empty_trashcan.go
+  s_9fe14e7648036e::t_ab72e437bc7777 1-2,7,12
+commands/restore.go
+  s_9fe14e7648036e::t_d151d2eecb1056 1-2,7,13
+docs/review-2026-08.md
+  s_9fe14e7648036e::t_282541aaf68b4f 2812,3344-3370
+internal/codegen/manifest.json
+  s_9fe14e7648036e::t_83425e4bec3495 213-219
+internal/codegen/manifest_test.go
+  s_9fe14e7648036e::t_8cc4a14aa75862 30-38,93,101,112,120,144,155,158,171,182,185
+internal/codegen/overrides.go
+  s_9fe14e7648036e::t_720aadc2dbf79b 953-956
+internal/codegen/testdata/golden/empty_trashcan.go
+  s_9fe14e7648036e::t_f1526c8de26d70 1-22
+internal/codegen/testdata/golden/restore.go
+  s_9fe14e7648036e::t_65d8df5582d5d8 1-23
+internal/codegen/testdata/schema/empty_trashcan.json
+  s_9fe14e7648036e::t_da545024d09e31 1-61
+internal/codegen/testdata/schema/restore.json
+  s_9fe14e7648036e::t_198a59270e5c0c 1-66
+internal/codegen/validate.go
+  s_9fe14e7648036e::t_6799c3e6817aa7 496-503
+internal/codegen/validate_test.go
+  s_9fe14e7648036e::t_d87a9337731176 4247-4280
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "dc3751b350f562957abf5c65260a3770d67d5f4f",
+  "prompts": {},
+  "sessions": {
+    "s_9fe14e7648036e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_9fe14e7648036e",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
