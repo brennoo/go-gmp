@@ -204,7 +204,7 @@ type OverrideResultNVT struct {
 	CPE        string             `xml:"cpe"`
 	Tags       string             `xml:"tags"`
 	Refs       OverrideRefs       `xml:"refs"`
-	Epss       *OverrideEpss      `xml:"epss,omitempty"`
+	EPSS       *OverrideEPSS      `xml:"epss,omitempty"`
 }
 
 // OverrideSeverities is the <severities> element of get_overrides. See the GMP protocol docs for details.
@@ -233,10 +233,10 @@ type OverrideRef struct {
 	Type string `xml:"type,attr,omitempty"`
 }
 
-// OverrideEpss is the <epss> element of get_overrides. See the GMP protocol docs for details.
-type OverrideEpss struct {
+// OverrideEPSS is the <epss> element of get_overrides. See the GMP protocol docs for details.
+type OverrideEPSS struct {
 	MaxSeverity OverrideMaxSeverity `xml:"max_severity"`
-	MaxEpss     OverrideMaxEpss     `xml:"max_epss"`
+	MaxEPSS     OverrideMaxEPSS     `xml:"max_epss"`
 }
 
 // OverrideMaxSeverity is the <max_severity> element of get_overrides. See the GMP protocol docs for details.
@@ -252,8 +252,8 @@ type OverrideCVE struct {
 	Severity *float64 `xml:"severity,omitempty"`
 }
 
-// OverrideMaxEpss is the <max_epss> element of get_overrides. See the GMP protocol docs for details.
-type OverrideMaxEpss struct {
+// OverrideMaxEPSS is the <max_epss> element of get_overrides. See the GMP protocol docs for details.
+type OverrideMaxEPSS struct {
 	Score      float64     `xml:"score"`
 	Percentile float64     `xml:"percentile"`
 	CVE        OverrideCVE `xml:"cve"`

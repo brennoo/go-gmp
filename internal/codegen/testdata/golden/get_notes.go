@@ -201,7 +201,7 @@ type NoteResultNVT struct {
 	CPE        string         `xml:"cpe"`
 	Tags       string         `xml:"tags"`
 	Refs       NoteRefs       `xml:"refs"`
-	Epss       *NoteEpss      `xml:"epss,omitempty"`
+	EPSS       *NoteEPSS      `xml:"epss,omitempty"`
 }
 
 // NoteSeverities is the <severities> element of get_notes. See the GMP protocol docs for details.
@@ -230,10 +230,10 @@ type NoteRef struct {
 	Type string `xml:"type,attr,omitempty"`
 }
 
-// NoteEpss is the <epss> element of get_notes. See the GMP protocol docs for details.
-type NoteEpss struct {
+// NoteEPSS is the <epss> element of get_notes. See the GMP protocol docs for details.
+type NoteEPSS struct {
 	MaxSeverity NoteMaxSeverity `xml:"max_severity"`
-	MaxEpss     NoteMaxEpss     `xml:"max_epss"`
+	MaxEPSS     NoteMaxEPSS     `xml:"max_epss"`
 }
 
 // NoteMaxSeverity is the <max_severity> element of get_notes. See the GMP protocol docs for details.
@@ -249,8 +249,8 @@ type NoteCVE struct {
 	Severity *float64 `xml:"severity,omitempty"`
 }
 
-// NoteMaxEpss is the <max_epss> element of get_notes. See the GMP protocol docs for details.
-type NoteMaxEpss struct {
+// NoteMaxEPSS is the <max_epss> element of get_notes. See the GMP protocol docs for details.
+type NoteMaxEPSS struct {
 	Score      float64 `xml:"score"`
 	Percentile float64 `xml:"percentile"`
 	CVE        NoteCVE `xml:"cve"`

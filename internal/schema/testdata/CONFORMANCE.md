@@ -36,21 +36,21 @@ optionality is trusted and request-side is not.
 commands compared:            122
 fully conformant:             93
 with actionable findings:     29
-actionable findings:          140  (request 53, response 87)
-suppressed findings:          156
-confirmed by fidelity corpus: 11
+actionable findings:          103  (request 51, response 52)
+suppressed findings:          135
+confirmed by fidelity corpus: 9
 in the schema, not in Go:     0
 in Go, not in the schema:     0
 
 ### Findings by category
 
                  actionable suppressed
-  MISSING                38          0
-  EXTRA                  75          6
-  CARDINALITY            12          0
+  MISSING                20          0
+  EXTRA                  69          6
+  CARDINALITY             5          1
   KIND                    0          0
-  OMITEMPTY               0        150
-  TYPE                   15          0
+  OMITEMPTY               0        128
+  TYPE                    9          0
   SCHEMA-DEFECT         128          0
 
 ### Schema defects by class
@@ -81,9 +81,7 @@ taken against upstream main (155 commands). Two reasons, both expected:
 
 ### Commands by actionable findings
 
-  get_info                     22   MISSING=12  EXTRA=7  TYPE=3
   delete_agents                18   EXTRA=18
-  get_nvts                     18   MISSING=6  EXTRA=1  CARDINALITY=7  TYPE=4
   modify_agents                18   EXTRA=18
   get_aggregates               12   MISSING=5  EXTRA=5  CARDINALITY=2
   get_agents                    9   MISSING=7  TYPE=2
@@ -94,6 +92,7 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_reports                   3   EXTRA=3
   describe_auth                 2   MISSING=1  CARDINALITY=1
   get_credentials               2   EXTRA=2
+  get_info                      2   EXTRA=1  TYPE=1
   get_scanners                  2   EXTRA=2
   get_settings                  2   EXTRA=2
   modify_target                 2   MISSING=1  EXTRA=1
@@ -101,6 +100,7 @@ taken against upstream main (155 commands). Two reasons, both expected:
   create_task                   1   MISSING=1
   get_features                  1   TYPE=1
   get_license                   1   TYPE=1
+  get_notes                     1   EXTRA=1
   ... and 9 more with fewer
 
 ### Confirmed by both oracles
@@ -119,8 +119,6 @@ attributes, and one of its own captured request fixtures uses three of them.
   get_agents               /get_agents_response/filters
   get_agents               /get_agents_response/sort
   get_aggregates           /get_aggregates_response/filters
-  get_info                 /get_info_response/info/cve/severity
-  get_nvts                 /get_nvts_response/nvt/refs/*
   get_report_configs       /get_report_configs_response/report_config/param/value/@using_default
   get_results              /get_results_response/result/nvt/severities/severity
   get_tasks                /get_tasks_response/task/hosts_ordering
@@ -195,7 +193,7 @@ conformant
 EXTRA=3  OMITEMPTY=2  SCHEMA-DEFECT=12
 
   EXTRA         request  /create_report/report/report/cves
-                Go field Cves *commands.ReportCves has no counterpart in the schema
+                Go field CVEs *commands.ReportCVEs has no counterpart in the schema
   EXTRA         request  /create_report/report/report/result_count/#text
                 Go *commands.ReportResultCount has a `,chardata` field; schema declares no character data here
   EXTRA         request  /create_report/report/report/results/result/oci_image
@@ -720,62 +718,12 @@ conformant
 
 ### get_info  (command_get_info.xml)
 
-MISSING=12  EXTRA=7  OMITEMPTY=5  TYPE=3  SCHEMA-DEFECT=1
+EXTRA=1  TYPE=1  SCHEMA-DEFECT=1
 
-  MISSING       request  /get_info/@filt_id
-                optional attr filt_id is not modelled
-  MISSING       request  /get_info/@filter
-                optional attr filter is not modelled
-  MISSING       response /get_info_response/info/cpe/cpe_name_id
-                required elem cpe_name_id is not modelled
-  MISSING       response /get_info_response/info/cpe/severity
-                required elem severity is not modelled
-  MISSING       response /get_info_response/info/cve/cert/*
-                schema declares 2 children; Go models this as scalar *commands.InfoCERT
-  MISSING       response /get_info_response/info/cve/configuration_nodes/*
-                schema declares 1 children; Go models this as scalar *commands.InfoConfigurationNodes
-  MISSING       response /get_info_response/info/cve/epss/*
-                schema declares 2 children; Go models this as scalar *commands.InfoEPSS
-  MISSING       response /get_info_response/info/cve/nvts/nvt/*
-                schema declares 2 children; Go models this as scalar []string
-  MISSING       response /get_info_response/info/cve/references/reference/tags
-                required elem tags is not modelled
-  MISSING       response /get_info_response/info/cve/references/reference/url
-                required elem url is not modelled
-  MISSING       response /get_info_response/info/cve/severity
-                required elem severity is not modelled  [fidelity]
-  MISSING       response /get_info_response/info/dfn_cert_adv
-                optional elem dfn_cert_adv is not modelled
-  EXTRA         response /get_info_response/info/cpe/score
-                Go field Score string has no counterpart in the schema
-  EXTRA         response /get_info_response/info/cpe/status
-                Go field Status string has no counterpart in the schema
-  EXTRA         response /get_info_response/info/cve/references/reference/#text
-                Go []commands.InfoReference has a `,chardata` field; schema declares no character data here
-  EXTRA         response /get_info_response/info/cve/references/reference/@href
-                Go field HREF string has no counterpart in the schema
-  EXTRA         response /get_info_response/info/cve/score
-                Go field Score string has no counterpart in the schema
-  EXTRA         response /get_info_response/info/in_use
-                Go field InUse bool has no counterpart in the schema
-  EXTRA         response /get_info_response/info/writable
-                Go field Writable bool has no counterpart in the schema
-  OMITEMPTY     response /get_info_response/filters/name
-                schema says optional, Name string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_info_response/info/@id
-                schema says optional, ID string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_info_response/info/cpe/title
-                schema says optional, Title string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_info_response/info/owner
-                schema says required, Owner is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_info_response/info/permissions
-                schema says required, Permissions is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  TYPE          response /get_info_response/details
-                schema type boolean is text ("" is true), Go Details is bool: '7' fails to decode and '1' re-emits as 'true'
+  EXTRA         response /get_info_response/info/web_application_vt
+                Go field WebApplicationVT *commands.NVTWebApplicationVT has no counterpart in the schema
   TYPE          response /get_info_response/info/@id
                 schema type integer, Go ID is string (want int)
-  TYPE          response /get_info_response/info/cpe/deprecated
-                schema type boolean is text ("" is true), Go Deprecated is bool: '7' fails to decode and '1' re-emits as 'true'
   SCHEMA-DEFECT response /get_info_response/info/cve/configuration_nodes/node/node
                 undefined-type: node is undefined and has no alias
 
@@ -813,82 +761,16 @@ conformant
 
 ### get_nvts  (command_get_nvts.xml)
 
-MISSING=6  EXTRA=1  CARDINALITY=7  OMITEMPTY=19  TYPE=4
+EXTRA=1  CARDINALITY=1  OMITEMPTY=2
 
   OMITEMPTY     request  /get_nvts/@nvt_oid
-                schema says required, NvtOID is tagged omitempty  [suppressed: request-side over-constraint]
-  MISSING       response /get_nvts_response/nvt/epss/*
-                schema declares 2 children; Go models this as scalar string
-  MISSING       response /get_nvts_response/nvt/preferences/#text
-                schema also declares character data (text) here; Go *commands.NVTPreferences has no `,chardata` field
-  MISSING       response /get_nvts_response/nvt/qod/*
-                schema declares 2 children; Go models this as scalar string
-  MISSING       response /get_nvts_response/nvt/refs/*
-                schema declares 2 children; Go models this as scalar string  [fidelity]
-  MISSING       response /get_nvts_response/nvt/solution/*
-                schema declares 2 children; Go models this as scalar string
-  MISSING       response /get_nvts_response/nvt/user_tags/*
-                schema declares 2 children; Go models this as scalar string
-  EXTRA         response /get_nvts_response/nvt/description
-                Go field Description string has no counterpart in the schema
+                schema says required, NVTOID is tagged omitempty  [suppressed: request-side over-constraint]
+  EXTRA         response /get_nvts_response/nvt/discovery
+                Go field Discovery *int has no counterpart in the schema
   CARDINALITY   response /get_nvts_response/nvt
-                schema says required, Go has a slice []commands.NVT (NVTs)
-  CARDINALITY   response /get_nvts_response/nvt/category
-                schema says optional; Category int cannot express absence (zero is a legal value)
-  CARDINALITY   response /get_nvts_response/nvt/cvss_base
-                schema says optional; CvssBase int cannot express absence (zero is a legal value)
-  CARDINALITY   response /get_nvts_response/nvt/default_timeout
-                schema says optional; DefaultTimeout int cannot express absence (zero is a legal value)
-  CARDINALITY   response /get_nvts_response/nvt/preference_count
-                schema says optional; PreferenceCount int cannot express absence (zero is a legal value)
-  CARDINALITY   response /get_nvts_response/nvt/preferences/preference/alt
-                schema says zero-or-more, Go has a single string (Alt)
-  CARDINALITY   response /get_nvts_response/nvt/timeout
-                schema says optional; Timeout int cannot express absence (zero is a legal value)
+                schema says required, Go has a slice []commands.GetNVTsNVT (NVT)  [suppressed: T-9 nvt review: command_get_nvts.xml's response <pattern> declares <e>nvt</e> (exactly one), contradicting its own <summary>Get one or many NVTs</summary> and its own <example> (two sibling <nvt> elements in one get_nvts_response with no nvt_oid filter, lines 4121-4159) — internal/gmptest/testdata/upstream/get_nvts/001_response.xml confirms it live, returning three sibling <nvt> elements for one unfiltered request]
   OMITEMPTY     response /get_nvts_response/nvt
-                schema says required, NVTs is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_nvts_response/nvt/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_nvts_response/nvt/preferences/default_timeout
-                schema says required, DefaultTimeout is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_nvts_response/nvt/preferences/preference/default
-                schema says required, Default is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_nvts_response/nvt/preferences/preference/hr_name
-                schema says required, HRName is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_nvts_response/nvt/preferences/preference/id
-                schema says required, ID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_nvts_response/nvt/preferences/preference/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_nvts_response/nvt/preferences/preference/nvt
                 schema says required, NVT is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_nvts_response/nvt/preferences/preference/nvt/name
-                schema says required, Name is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_nvts_response/nvt/preferences/preference/type
-                schema says required, Type is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_nvts_response/nvt/preferences/preference/value
-                schema says required, Value is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_nvts_response/nvt/preferences/timeout
-                schema says required, Timeout is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_nvts_response/nvt/severities/@score
-                schema says required, Score is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_nvts_response/nvt/severities/severity/@type
-                schema says required, Type is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_nvts_response/nvt/severities/severity/date
-                schema says required, Date is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_nvts_response/nvt/severities/severity/origin
-                schema says required, Origin is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_nvts_response/nvt/severities/severity/score
-                schema says required, Score is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_nvts_response/nvt/severities/severity/value
-                schema says required, Value is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  TYPE          response /get_nvts_response/nvt/cvss_base
-                schema type text is text, Go CvssBase is int
-  TYPE          response /get_nvts_response/nvt/default_timeout
-                schema type text is text, Go DefaultTimeout is int
-  TYPE          response /get_nvts_response/nvt/preference_count
-                schema type text is text, Go PreferenceCount is int
-  TYPE          response /get_nvts_response/nvt/timeout
-                schema type text is text, Go Timeout is int
 
 ### get_overrides  (command_get_overrides.xml)
 
@@ -946,7 +828,7 @@ EXTRA=1
 EXTRA=3  OMITEMPTY=2  SCHEMA-DEFECT=12
 
   EXTRA         response /get_reports_response/report/report/cves
-                Go field Cves *commands.ReportCves has no counterpart in the schema
+                Go field CVEs *commands.ReportCVEs has no counterpart in the schema
   EXTRA         response /get_reports_response/report/report/result_count/#text
                 Go *commands.ReportResultCount has a `,chardata` field; schema declares no character data here
   EXTRA         response /get_reports_response/report/report/results/result/oci_image

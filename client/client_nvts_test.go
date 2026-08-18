@@ -14,7 +14,7 @@ func TestGetNVTsWithDetails(t *testing.T) {
 	}
 
 	cmd := &commands.GetNVTs{
-		Details: "1",
+		Details: commands.Bool(true),
 	}
 	resp, err := cli.GetNVTs(context.Background(), cmd)
 	if err != nil {
@@ -26,14 +26,14 @@ func TestGetNVTsWithDetails(t *testing.T) {
 	if resp.StatusText != "OK" {
 		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
 	}
-	if len(resp.NVTs) == 0 {
-		t.Fatalf("Expected at least one NVT, got %d", len(resp.NVTs))
+	if len(resp.NVT) == 0 {
+		t.Fatalf("Expected at least one NVT, got %d", len(resp.NVT))
 	}
-	if resp.NVTs[0].OID != "1.3.6.1.4.1.25623.1.7.13005" {
-		t.Fatalf("Unexpected first NVT OID. Expected: 1.3.6.1.4.1.25623.1.7.13005 Got: %s", resp.NVTs[0].OID)
+	if resp.NVT[0].OID != "1.3.6.1.4.1.25623.1.7.13005" {
+		t.Fatalf("Unexpected first NVT OID. Expected: 1.3.6.1.4.1.25623.1.7.13005 Got: %s", resp.NVT[0].OID)
 	}
-	if resp.NVTs[0].Name != "Services" {
-		t.Fatalf("Unexpected first NVT name. Expected: Services Got: %s", resp.NVTs[0].Name)
+	if resp.NVT[0].Name != "Services" {
+		t.Fatalf("Unexpected first NVT name. Expected: Services Got: %s", resp.NVT[0].Name)
 	}
 }
 
@@ -44,7 +44,7 @@ func TestGetNVTsSingle(t *testing.T) {
 	}
 
 	cmd := &commands.GetNVTs{
-		NvtOID: "1.3.6.1.4.1.25623.1.0.10330",
+		NVTOID: "1.3.6.1.4.1.25623.1.0.10330",
 	}
 	resp, err := cli.GetNVTs(context.Background(), cmd)
 	if err != nil {
@@ -56,14 +56,14 @@ func TestGetNVTsSingle(t *testing.T) {
 	if resp.StatusText != "OK" {
 		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
 	}
-	if len(resp.NVTs) != 1 {
-		t.Fatalf("Expected exactly one NVT, got %d", len(resp.NVTs))
+	if len(resp.NVT) != 1 {
+		t.Fatalf("Expected exactly one NVT, got %d", len(resp.NVT))
 	}
-	if resp.NVTs[0].OID != "1.3.6.1.4.1.25623.1.0.10330" {
-		t.Fatalf("Unexpected NVT OID. Expected: 1.3.6.1.4.1.25623.1.0.10330 Got: %s", resp.NVTs[0].OID)
+	if resp.NVT[0].OID != "1.3.6.1.4.1.25623.1.0.10330" {
+		t.Fatalf("Unexpected NVT OID. Expected: 1.3.6.1.4.1.25623.1.0.10330 Got: %s", resp.NVT[0].OID)
 	}
-	if resp.NVTs[0].Name != "Services" {
-		t.Fatalf("Unexpected NVT name. Expected: Services Got: %s", resp.NVTs[0].Name)
+	if resp.NVT[0].Name != "Services" {
+		t.Fatalf("Unexpected NVT name. Expected: Services Got: %s", resp.NVT[0].Name)
 	}
 }
 
@@ -84,19 +84,19 @@ func TestGetNVTFamilies(t *testing.T) {
 	if resp.StatusText != "OK" {
 		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
 	}
-	if len(resp.Families) == 0 {
-		t.Fatalf("Expected at least one family, got %d", len(resp.Families))
+	if len(resp.Families.Family) == 0 {
+		t.Fatalf("Expected at least one family, got %d", len(resp.Families.Family))
 	}
-	if resp.Families[0].Name != "Credentials" {
-		t.Fatalf("Unexpected first family name. Expected: Credentials Got: %s", resp.Families[0].Name)
+	if resp.Families.Family[0].Name != "Credentials" {
+		t.Fatalf("Unexpected first family name. Expected: Credentials Got: %s", resp.Families.Family[0].Name)
 	}
-	if resp.Families[0].MaxNVTCount != 8 {
-		t.Fatalf("Unexpected first family NVT count. Expected: 8 Got: %d", resp.Families[0].MaxNVTCount)
+	if resp.Families.Family[0].MaxNVTCount != 8 {
+		t.Fatalf("Unexpected first family NVT count. Expected: 8 Got: %d", resp.Families.Family[0].MaxNVTCount)
 	}
-	if resp.Families[1].Name != "Port scanners" {
-		t.Fatalf("Unexpected second family name. Expected: Port scanners Got: %s", resp.Families[1].Name)
+	if resp.Families.Family[1].Name != "Port scanners" {
+		t.Fatalf("Unexpected second family name. Expected: Port scanners Got: %s", resp.Families.Family[1].Name)
 	}
-	if resp.Families[1].MaxNVTCount != 12 {
-		t.Fatalf("Unexpected second family NVT count. Expected: 12 Got: %d", resp.Families[1].MaxNVTCount)
+	if resp.Families.Family[1].MaxNVTCount != 12 {
+		t.Fatalf("Unexpected second family NVT count. Expected: 12 Got: %d", resp.Families.Family[1].MaxNVTCount)
 	}
 }

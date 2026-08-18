@@ -33,12 +33,24 @@ const sharedFileSuffix = "_shared.go"
 // of (cmds, ov, pf, ro): no clock, no filesystem, no map iteration order leaks
 // into it, and nothing here reads vendor/XML. That is what lets the golden
 // test in generate_test.go run in CI with only the committed JSON snapshot.
-func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, ro map[string]RequiredOverride, fo map[string][]FieldOverride, fs map[string][]FieldSuppression, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry, no map[string]NameOverride, tov map[string][]FieldTypeOverride) (map[string]string, error) {
+//
+// family is the manifest's declared family name (e.g. "nvt"), authoritative
+// over the family noun this package would otherwise infer from the commands'
+// own names: that inference assumes every command in the family shares one
+// noun stem ("create_note"/"get_notes" -> "note"), which fails for a family
+// like get_nvts/get_nvt_families/get_preferences/get_info whose commands
+// share no common stem at all. An empty family falls back to the inferred
+// noun, which every caller that has no manifest in scope (this package's own
+// tests) passes.
+//
+// co is CardinalityOverrides, RequiredOverride's mirror image for schema Card
+// rather than requiredness.
+func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, ro map[string]RequiredOverride, fo map[string][]FieldOverride, fs map[string][]FieldSuppression, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry, no map[string]NameOverride, tov map[string][]FieldTypeOverride, family string, co map[string]CardinalityOverride) (map[string]string, error) {
 	if len(cmds) == 0 {
 		return nil, fmt.Errorf("codegen: no commands to generate")
 	}
 	g := &gen{
-		ov: ov, pf: pf, ro: ro, fo: fo, fs: fs, cw: cw, da: da, no: no, tov: tov,
+		ov: ov, pf: pf, ro: ro, fo: fo, fs: fs, cw: cw, da: da, no: no, tov: tov, co: co,
 		byHash:      map[string]*structType{},
 		taken:       map[string]bool{},
 		needsErrors: map[*strings.Builder]bool{},
@@ -49,6 +61,7 @@ func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]Point
 		roConsumed:  map[string]bool{},
 		noConsumed:  map[string]bool{},
 		tovConsumed: map[string]bool{},
+		coConsumed:  map[string]bool{},
 	}
 
 	// Sorting decouples the output from the caller's slice order, so a
@@ -74,8 +87,18 @@ func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]Point
 		return nil, err
 	}
 
-	g.family = familyPrefix(g.cmds)
+	// familyNoun(g.cmds) is authoritative: it is what mergeFamilyFiles'
+	// naming-convention check assumes Generate derives, so a caller-supplied
+	// family can only fill in where derivation fails (a heterogeneous group
+	// like nvt's get_info/get_nvt_families/get_nvts/get_preferences, whose
+	// commands share no single trailing noun) — never override a name it did
+	// derive, or a family declared under the wrong name would silently adopt
+	// it instead of being caught.
 	g.familyNoun = familyNoun(g.cmds)
+	if g.familyNoun == "" {
+		g.familyNoun = family
+	}
+	g.family = goName(g.familyNoun)
 	g.collect()
 	if err := g.validateOverrideTables(); err != nil {
 		return nil, err
@@ -113,7 +136,10 @@ func (g *gen) validateOverrideTables() error {
 	if err := g.validateFieldTypeOverrides(); err != nil {
 		return err
 	}
-	return g.validateRequiredOverrides()
+	if err := g.validateRequiredOverrides(); err != nil {
+		return err
+	}
+	return g.validateCardinalityOverrides()
 }
 
 // checkTablesConsumed fails the build on any stale override-table entry left
@@ -134,6 +160,9 @@ func (g *gen) checkTablesConsumed() error {
 		return err
 	}
 	if err := g.checkRequiredOverridesConsumed(); err != nil {
+		return err
+	}
+	if err := g.checkCardinalityOverridesConsumed(); err != nil {
 		return err
 	}
 	if err := g.checkNameOverridesConsumed(); err != nil {
@@ -379,14 +408,22 @@ func (g *gen) validateRequiredOverrides() error {
 // checkFieldOverridesConsumed, for the same GenerateAll/CheckOutput
 // per-family reason.
 func (g *gen) checkRequiredOverridesConsumed() error {
-	present := make(map[string]bool, len(g.cmds))
-	for i := range g.cmds {
-		present[g.cmds[i].Name] = true
+	return checkOverridesConsumed(g.cmds, g.ro, g.roConsumed, "RequiredOverrides", "required field")
+}
+
+// checkOverridesConsumed is the shared staleness check behind
+// checkRequiredOverridesConsumed and checkCardinalityOverridesConsumed: an
+// override table entry whose command is in scope but was never consumed is a
+// typo, a misaimed entry, or a schema correction that outdated it.
+func checkOverridesConsumed[V any](cmds []schema.Command, table map[string]V, consumed map[string]bool, tableName, kind string) error {
+	present := make(map[string]bool, len(cmds))
+	for i := range cmds {
+		present[cmds[i].Name] = true
 	}
 	var stale []string
-	for key := range g.ro {
+	for key := range table {
 		command, _, _ := strings.Cut(key, ".")
-		if present[command] && !g.roConsumed[key] {
+		if present[command] && !consumed[key] {
 			stale = append(stale, key)
 		}
 	}
@@ -394,7 +431,37 @@ func (g *gen) checkRequiredOverridesConsumed() error {
 		return nil
 	}
 	sort.Strings(stale)
-	return fmt.Errorf("codegen: RequiredOverrides entry(ies) never matched a generated required field: %s", strings.Join(stale, ", "))
+	return fmt.Errorf("codegen: %s entry(ies) never matched a generated %s: %s", tableName, kind, strings.Join(stale, ", "))
+}
+
+// validateCardinalityOverrides checks the shape of every CardinalityOverrides
+// entry in g.co, mirroring validateRequiredOverrides: these are defects in
+// the table itself, independent of which command is in scope for this call.
+func (g *gen) validateCardinalityOverrides() error {
+	keys := make([]string, 0, len(g.co))
+	for k := range g.co {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, key := range keys {
+		command, field, ok := strings.Cut(key, ".")
+		if !ok || command == "" || field == "" {
+			return fmt.Errorf(`codegen: CardinalityOverrides[%q]: key must be "<command>.<field>"`, key)
+		}
+		if g.co[key].Reason == "" {
+			return fmt.Errorf("codegen: CardinalityOverrides[%q]: Reason is empty", key)
+		}
+	}
+	return nil
+}
+
+// checkCardinalityOverridesConsumed fails the build on a stale or mistyped
+// CardinalityOverrides entry: one whose command is among g.cmds but which
+// never matched a generated schema-singular top-level field. Mirrors
+// checkRequiredOverridesConsumed.
+func (g *gen) checkCardinalityOverridesConsumed() error {
+	return checkOverridesConsumed(g.cmds, g.co, g.coConsumed, "CardinalityOverrides", "schema-singular field")
 }
 
 // validateFieldOverrides checks the shape of every FieldOverrides entry in
@@ -717,7 +784,7 @@ func staleTableKeys[V any](cmds []schema.Command, table map[string]V, consumed m
 // cmds may contain commands in any order and must cover every command the
 // manifest names; a command not claimed by any family is an error, since it
 // would otherwise be silently dropped.
-func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, ro map[string]RequiredOverride, fo map[string][]FieldOverride, fs map[string][]FieldSuppression, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry, no map[string]NameOverride, tov map[string][]FieldTypeOverride) (map[string]string, error) {
+func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, ro map[string]RequiredOverride, fo map[string][]FieldOverride, fs map[string][]FieldSuppression, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry, no map[string]NameOverride, tov map[string][]FieldTypeOverride, co map[string]CardinalityOverride) (map[string]string, error) {
 	byName := make(map[string]schema.Command, len(cmds))
 	for _, c := range cmds {
 		byName[c.Name] = c
@@ -734,7 +801,7 @@ func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf m
 			}
 			fam = append(fam, c)
 		}
-		files, err := Generate(fam, ov, pf, ro, fo, fs, cw, da, no, tov)
+		files, err := Generate(fam, ov, pf, ro, fo, fs, cw, da, no, tov, f.Name, co)
 		if err != nil {
 			return nil, fmt.Errorf("codegen: family %q: %w", f.Name, err)
 		}
@@ -801,6 +868,7 @@ type gen struct {
 	da     map[DefectKey]DefectAllowlistEntry
 	no     map[string]NameOverride
 	tov    map[string][]FieldTypeOverride
+	co     map[string]CardinalityOverride
 	family string
 	// familyNoun is family's pre-goName snake_case form, used only by fileFor
 	// for the shared-file basename (see familyNoun's doc comment).
@@ -845,6 +913,11 @@ type gen struct {
 	// tovConsumed records which FieldTypeOverrides keys matched a node during
 	// this run, so checkFieldTypeOverridesConsumed can flag a stale one.
 	tovConsumed map[string]bool
+
+	// coConsumed records which CardinalityOverrides keys matched a
+	// schema-singular top-level field during this run, so
+	// checkCardinalityOverridesConsumed can flag a stale or mistyped one.
+	coConsumed map[string]bool
 }
 
 // fieldOverrideKey builds a FieldOverrides key from a structType's use: the
@@ -923,19 +996,14 @@ func writeHash(b *strings.Builder, n *schema.Node) {
 
 // --- naming -----------------------------------------------------------------
 
-// familyPrefix derives the noun the commands are about: create_note,
-// modify_note and get_notes are all about a "note". Dropping the leading verb
-// and the plural is enough for GMP, whose command names are uniformly
-// <verb>_<noun>. If the commands disagree there is no family, and every nested
-// type falls back to being named after its own command.
-func familyPrefix(cmds []schema.Command) string {
-	return goName(familyNoun(cmds))
-}
-
-// familyNoun is familyPrefix's input before goName Go-cases it: the schema's
-// own snake_case spelling (e.g. "report_config"). fileFor needs this form,
-// not the Go-cased one — lowercasing a multi-word Go name back down
-// (strings.ToLower(g.family)) loses the word boundary goName introduced,
+// familyNoun derives the noun the commands are about: create_note, modify_note
+// and get_notes are all about a "note". Dropping the leading verb and the
+// plural is enough for GMP, whose command names are uniformly <verb>_<noun>.
+// If the commands disagree there is no family, and every nested type falls
+// back to being named after its own command. Returned in the schema's own
+// snake_case spelling (e.g. "report_config") rather than goName's Go-cased
+// form — fileFor needs this form, and lowercasing a multi-word Go name back
+// down (strings.ToLower(g.family)) loses the word boundary goName introduced,
 // turning "ReportConfig" into "reportconfig" instead of "report_config".
 func familyNoun(cmds []schema.Command) string {
 	noun := ""
@@ -1177,6 +1245,7 @@ func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool, type
 		base = t
 	}
 	goType, opts := base, ""
+	var overrideReason string
 
 	switch {
 	case n.Card == schema.CardRepeated:
@@ -1212,6 +1281,17 @@ func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool, type
 			g.roConsumed[key] = true
 			opts = ",omitempty"
 		}
+		// CardinalityOverrides names this field as one the schema declares
+		// exactly-one but live evidence proves repeats on the wire (see
+		// get_nvts.nvt): unlike RequiredOverrides, this is not restricted to
+		// string leaves, since the whole point is forcing a structured shape
+		// into a slice.
+		if ov, ok := g.co[key]; ok {
+			goType = "[]" + base
+			opts = ",omitempty"
+			overrideReason = ov.Reason
+			g.coConsumed[key] = true
+		}
 	}
 
 	tag := n.Name
@@ -1220,7 +1300,7 @@ func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool, type
 	}
 	tag += opts
 
-	return field{name: uniqueName(goName(n.Name), used), goType: goType, tag: tag, node: n}, nil
+	return field{name: uniqueName(goName(n.Name), used), goType: goType, tag: tag, node: n, overrideReason: overrideReason}, nil
 }
 
 // emitChardata declares the field for a mixed-content node's bare text, if it
@@ -2088,10 +2168,13 @@ func encodeStmt(fieldExpr string, f field) string {
 
 // initialisms are the acronyms and other fixed-casing exceptions the
 // hand-written commands/ package already spells this way — most are full-caps
-// acronyms, but "icalendar" (RFC 5545's own spelling, not an acronym) and
-// "ips" (the plural of "ip", not a word of its own) are mixed-case
-// exceptions. Keeping the generator's spelling identical is what lets
-// generated types drop in beside them without renaming every call site.
+// acronyms, but "icalendar" (RFC 5545's own spelling, not an acronym) is a
+// mixed-case exception. Keeping the generator's spelling identical is what
+// lets generated types drop in beside them without renaming every call site.
+//
+// Plurals of these (e.g. "nvts", "cves") are handled generically by goWord,
+// not listed here — only add an entry for a word that isn't itself just
+// initialism+"s".
 var initialisms = map[string]string{
 	"api":       "API",
 	"ca":        "CA",
@@ -2100,6 +2183,7 @@ var initialisms = map[string]string{
 	"cvss":      "CVSS",
 	"dn":        "DN",
 	"dns":       "DNS",
+	"epss":      "EPSS",
 	"esxi":      "ESXI",
 	"hr":        "HR",
 	"http":      "HTTP",
@@ -2107,7 +2191,6 @@ var initialisms = map[string]string{
 	"icmp":      "ICMP",
 	"id":        "ID",
 	"ip":        "IP",
-	"ips":       "IPs",
 	"lsc":       "LSC",
 	"md5":       "MD5",
 	"nvt":       "NVT",
@@ -2124,6 +2207,7 @@ var initialisms = map[string]string{
 	"udp":       "UDP",
 	"url":       "URL",
 	"uuid":      "UUID",
+	"vt":        "VT",
 	"xml":       "XML",
 }
 
@@ -2134,15 +2218,28 @@ func goName(s string) string {
 	for _, part := range strings.FieldsFunc(s, func(r rune) bool {
 		return r == '_' || r == '-' || r == '.' || r == ':' || r == ' '
 	}) {
-		lower := strings.ToLower(part)
-		if up, ok := initialisms[lower]; ok {
-			b.WriteString(up)
-			continue
-		}
-		b.WriteString(strings.ToUpper(lower[:1]) + lower[1:])
+		b.WriteString(goWord(part))
 	}
 	if b.Len() == 0 {
 		return "Field"
 	}
 	return b.String()
+}
+
+// goWord capitalises a single already-split word, expanding it via
+// initialisms if it's a known acronym or the plural of one — GMP schema
+// tokens routinely pluralize an initialism without a separator ("nvts",
+// "cves", "cpes"), and goName's caller has already split on underscores, so
+// this is the only place that can still see "nvt" hiding inside "nvts".
+func goWord(part string) string {
+	lower := strings.ToLower(part)
+	if up, ok := initialisms[lower]; ok {
+		return up
+	}
+	if base, ok := strings.CutSuffix(lower, "s"); ok {
+		if up, ok := initialisms[base]; ok {
+			return up + "s"
+		}
+	}
+	return strings.ToUpper(lower[:1]) + lower[1:]
 }

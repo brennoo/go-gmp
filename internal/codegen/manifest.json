@@ -217,6 +217,15 @@
         "empty_trashcan",
         "restore"
       ]
+    },
+    {
+      "name": "nvt",
+      "commands": [
+        "get_info",
+        "get_nvt_families",
+        "get_nvts",
+        "get_preferences"
+      ]
     }
   ]
 }

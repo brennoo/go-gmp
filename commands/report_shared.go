@@ -52,8 +52,8 @@ type ReportReport struct {
 	Ports           *ReportPorts             `xml:"ports,omitempty"`
 	Results         *ReportResults           `xml:"results,omitempty"`
 	Hosts           *ReportHosts             `xml:"hosts,omitempty"`
-	ClosedCves      *ReportClosedCves        `xml:"closed_cves,omitempty"`
-	Cves            *ReportCves              `xml:"cves,omitempty"`
+	ClosedCVEs      *ReportClosedCVEs        `xml:"closed_cves,omitempty"`
+	CVEs            *ReportCVEs              `xml:"cves,omitempty"`
 	Vulns           *ReportVulns             `xml:"vulns,omitempty"`
 	OS              *ReportOS                `xml:"os,omitempty"`
 	Apps            *ReportApps              `xml:"apps,omitempty"`
@@ -254,7 +254,7 @@ type ReportNVT struct {
 	CPE        string           `xml:"cpe"`
 	Tags       string           `xml:"tags"`
 	Refs       ReportRefs       `xml:"refs"`
-	Epss       *ReportEpss      `xml:"epss,omitempty"`
+	EPSS       *ReportEPSS      `xml:"epss,omitempty"`
 }
 
 // ReportSeverities is the <severities> element of create_report and get_reports. See the GMP protocol docs for details.
@@ -283,10 +283,10 @@ type ReportRef struct {
 	Type string `xml:"type,attr,omitempty"`
 }
 
-// ReportEpss is the <epss> element of create_report and get_reports. See the GMP protocol docs for details.
-type ReportEpss struct {
+// ReportEPSS is the <epss> element of create_report and get_reports. See the GMP protocol docs for details.
+type ReportEPSS struct {
 	MaxSeverity ReportMaxSeverity `xml:"max_severity"`
-	MaxEpss     ReportMaxEpss     `xml:"max_epss"`
+	MaxEPSS     ReportMaxEPSS     `xml:"max_epss"`
 }
 
 // ReportMaxSeverity is the <max_severity> element of create_report and get_reports. See the GMP protocol docs for details.
@@ -302,8 +302,8 @@ type ReportCVE struct {
 	Severity *float64 `xml:"severity,omitempty"`
 }
 
-// ReportMaxEpss is the <max_epss> element of create_report and get_reports. See the GMP protocol docs for details.
-type ReportMaxEpss struct {
+// ReportMaxEPSS is the <max_epss> element of create_report and get_reports. See the GMP protocol docs for details.
+type ReportMaxEPSS struct {
 	Score      float64   `xml:"score"`
 	Percentile float64   `xml:"percentile"`
 	CVE        ReportCVE `xml:"cve"`
@@ -460,13 +460,13 @@ type ReportHosts struct {
 	Max   *int   `xml:"max,attr,omitempty"`
 }
 
-// ReportClosedCves is the <closed_cves> element of create_report and get_reports. See the GMP protocol docs for details.
-type ReportClosedCves struct {
+// ReportClosedCVEs is the <closed_cves> element of create_report and get_reports. See the GMP protocol docs for details.
+type ReportClosedCVEs struct {
 	Count string `xml:"count"`
 }
 
-// ReportCves is the <cves> element of create_report and get_reports. See the GMP protocol docs for details.
-type ReportCves struct {
+// ReportCVEs is the <cves> element of create_report and get_reports. See the GMP protocol docs for details.
+type ReportCVEs struct {
 	Count string `xml:"count"`
 }
 

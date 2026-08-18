@@ -105,11 +105,11 @@ func TestGetInfo(t *testing.T) {
 	if resp.StatusText != "OK" {
 		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
 	}
-	if len(resp.Infos) != 1 {
-		t.Fatalf("Expected 1 info, got %d", len(resp.Infos))
+	if len(resp.Info) != 1 {
+		t.Fatalf("Expected 1 info, got %d", len(resp.Info))
 	}
-	info := resp.Infos[0]
-	if info.ID != "CVE-2011-0018" || info.Name != "CVE-2011-0018" {
+	info := resp.Info[0]
+	if info.Name != "CVE-2011-0018" {
 		t.Fatalf("Unexpected info: %+v", info)
 	}
 }

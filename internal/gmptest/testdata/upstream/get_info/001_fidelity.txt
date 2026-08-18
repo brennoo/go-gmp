@@ -10,31 +10,35 @@ DROPPED
   /get_info_response/info/@start                                           x1
   /get_info_response/info/cpe/cves/cve/{http://scap.nist.gov/schema/feed/vulnerability/2.0}entry x5  (+5 descendant paths)
   /get_info_response/info/cpe/raw_data/{http://cpe.mitre.org/dictionary/2.0}cpe-item x1  (+8 descendant paths)
+  /get_info_response/info/cpe/score                                        x1  (+1 descendant paths)
+  /get_info_response/info/cpe/status                                       x1  (+1 descendant paths)
+  /get_info_response/info/in_use                                           x1  (+1 descendant paths)
+  /get_info_response/info/writable                                         x1  (+1 descendant paths)
   /get_info_response/sort/field/#text                                      x1
 
 TRUNCATED
   (none)
 
 CHANGED
-  /get_info_response/details/#text                                         "1" -> "true"
+  (none)
 
 ADDED
   /get_info_response/filters/keywords                                      x1
-  /get_info_response/filters/name                                          x1
+  /get_info_response/info/cpe/cpe_name_id                                  x1
   /get_info_response/info/cpe/deprecated                                   x1
   /get_info_response/info/cpe/deprecated/#text                             x1
+  /get_info_response/info/cpe/severity                                     x1
+  /get_info_response/info/cpe/severity/#text                               x1
+  /get_info_response/info/owner                                            x2
+  /get_info_response/info/owner/name                                       x2
+  /get_info_response/info/permissions                                      x2
 
 DUPLICATED
-  /get_info_response/info/@id                                              1 -> 2
   /get_info_response/info/comment                                          1 -> 2
   /get_info_response/info/creation_time                                    1 -> 2
   /get_info_response/info/creation_time/#text                              1 -> 2
-  /get_info_response/info/in_use                                           1 -> 2
-  /get_info_response/info/in_use/#text                                     1 -> 2
   /get_info_response/info/modification_time                                1 -> 2
   /get_info_response/info/modification_time/#text                          1 -> 2
   /get_info_response/info/name                                             1 -> 2
   /get_info_response/info/update_time                                      1 -> 2
   /get_info_response/info/update_time/#text                                1 -> 2
-  /get_info_response/info/writable                                         1 -> 2
-  /get_info_response/info/writable/#text                                   1 -> 2

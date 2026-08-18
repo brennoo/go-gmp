@@ -18,7 +18,6 @@ ADDED
   /get_info_response/filters                                               x1
   /get_info_response/filters/@id                                           x1
   /get_info_response/filters/keywords                                      x1
-  /get_info_response/filters/name                                          x1
   /get_info_response/filters/term                                          x1
   /get_info_response/info_count                                            x1
   /get_info_response/info_count/filtered                                   x1

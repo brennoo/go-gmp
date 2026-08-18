@@ -909,18 +909,18 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 			resp := response.(*commands.GetInfoResponse)
 			resp.Status = "200"
 			resp.StatusText = "OK"
-			resp.Infos = []commands.Info{{ID: "CVE-2011-0018", Name: "CVE-2011-0018"}}
-			resp.Filters = commands.InfoFilters{ID: "(null)", Term: ""}
-			resp.Sort = commands.InfoSort{Value: "", Field: commands.InfoSortField{Order: "ascending"}}
-			resp.InfoCount = commands.InfoCount{Filtered: 1, Page: 1}
+			resp.Info = []commands.NVTInfo{{Name: "CVE-2011-0018"}}
+			resp.Filters = commands.NVTFilters{ID: "(null)", Term: ""}
+			resp.Sort = commands.NVTSort{Value: "", Field: commands.NVTField{Order: "ascending"}}
+			resp.InfoCount = commands.NVTInfoCount{Filtered: 1, Page: 1}
 			resp.Details = false
 		} else {
 			resp := response.(*commands.GetInfoResponse)
 			resp.Status = "404"
 			resp.StatusText = "Not found"
-			resp.Filters = commands.InfoFilters{ID: "(null)", Term: ""}
-			resp.Sort = commands.InfoSort{Value: "", Field: commands.InfoSortField{Order: "ascending"}}
-			resp.InfoCount = commands.InfoCount{Filtered: 0, Page: 0}
+			resp.Filters = commands.NVTFilters{ID: "(null)", Term: ""}
+			resp.Sort = commands.NVTSort{Value: "", Field: commands.NVTField{Order: "ascending"}}
+			resp.InfoCount = commands.NVTInfoCount{Filtered: 0, Page: 0}
 			resp.Details = false
 		}
 	}
@@ -1313,37 +1313,36 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.GetNVTs); ok {
-		if cmd.Details == "1" {
+		if cmd.Details != nil && bool(*cmd.Details) {
 			(*response.(*commands.GetNVTsResponse)).Status = "200"
 			(*response.(*commands.GetNVTsResponse)).StatusText = "OK"
-			(*response.(*commands.GetNVTsResponse)).NVTs = []commands.NVT{
+			(*response.(*commands.GetNVTsResponse)).NVT = []commands.GetNVTsNVT{
 				{
 					OID:              "1.3.6.1.4.1.25623.1.7.13005",
 					Name:             "Services",
 					CreationTime:     commands.GMPTime{Time: time.Date(2011, 1, 14, 10, 12, 23, 0, time.FixedZone("+01:00", 3600))},
 					ModificationTime: commands.GMPTime{Time: time.Date(2012, 9, 19, 20, 56, 15, 0, time.FixedZone("+02:00", 7200))},
-					Category:         3,
+					Category:         "3",
 					Family:           "Service detection",
-					CvssBase:         0,
+					CVSSBase:         "0",
 					Severities:       &commands.NVTSeverities{Score: 0.0},
-					Refs:             "",
 					Tags:             "NOTAG",
-					PreferenceCount:  -1,
-					Timeout:          0,
+					PreferenceCount:  "-1",
+					Timeout:          "0",
 				},
 				{
 					OID:              "1.3.6.1.4.1.25623.1.7.13006",
 					Name:             "FooBar 21",
 					CreationTime:     commands.GMPTime{Time: time.Date(2011, 1, 14, 10, 12, 23, 0, time.FixedZone("+01:00", 3600))},
 					ModificationTime: commands.GMPTime{Time: time.Date(2012, 9, 19, 20, 56, 15, 0, time.FixedZone("+02:00", 7200))},
-					Category:         3,
+					Category:         "3",
 					Family:           "Service detection",
 				},
 			}
-		} else if cmd.NvtOID == "1.3.6.1.4.1.25623.1.0.10330" {
+		} else if cmd.NVTOID == "1.3.6.1.4.1.25623.1.0.10330" {
 			(*response.(*commands.GetNVTsResponse)).Status = "200"
 			(*response.(*commands.GetNVTsResponse)).StatusText = "OK"
-			(*response.(*commands.GetNVTsResponse)).NVTs = []commands.NVT{
+			(*response.(*commands.GetNVTsResponse)).NVT = []commands.GetNVTsNVT{
 				{
 					OID:  "1.3.6.1.4.1.25623.1.0.10330",
 					Name: "Services",
@@ -1358,14 +1357,16 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	if _, ok := command.(*commands.GetNVTFamilies); ok {
 		(*response.(*commands.GetNVTFamiliesResponse)).Status = "200"
 		(*response.(*commands.GetNVTFamiliesResponse)).StatusText = "OK"
-		(*response.(*commands.GetNVTFamiliesResponse)).Families = []commands.NVTFamily{
-			{
-				Name:        "Credentials",
-				MaxNVTCount: 8,
-			},
-			{
-				Name:        "Port scanners",
-				MaxNVTCount: 12,
+		(*response.(*commands.GetNVTFamiliesResponse)).Families = commands.NVTFamilies{
+			Family: []commands.NVTFamily{
+				{
+					Name:        "Credentials",
+					MaxNVTCount: 8,
+				},
+				{
+					Name:        "Port scanners",
+					MaxNVTCount: 12,
+				},
 			},
 		}
 	}

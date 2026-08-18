@@ -6,6 +6,9 @@ namespaces-seen:
 DROPPED
   /get_info_response/info/@max                                             x1
   /get_info_response/info/@start                                           x1
+  /get_info_response/info/cve/score                                        x1  (+1 descendant paths)
+  /get_info_response/info/in_use                                           x1  (+1 descendant paths)
+  /get_info_response/info/writable                                         x1  (+1 descendant paths)
   /get_info_response/sort/field/#text                                      x1
 
 TRUNCATED
@@ -18,17 +21,16 @@ ADDED
   /get_info_response/details                                               x1
   /get_info_response/details/#text                                         x1
   /get_info_response/filters/keywords                                      x1
-  /get_info_response/filters/name                                          x1
+  /get_info_response/info/cve/severity                                     x1
+  /get_info_response/info/cve/severity/#text                               x1
+  /get_info_response/info/owner                                            x2
+  /get_info_response/info/owner/name                                       x2
+  /get_info_response/info/permissions                                      x2
 
 DUPLICATED
-  /get_info_response/info/@id                                              1 -> 2
   /get_info_response/info/comment                                          1 -> 2
   /get_info_response/info/creation_time                                    1 -> 2
   /get_info_response/info/creation_time/#text                              1 -> 2
-  /get_info_response/info/in_use                                           1 -> 2
-  /get_info_response/info/in_use/#text                                     1 -> 2
   /get_info_response/info/modification_time                                1 -> 2
   /get_info_response/info/modification_time/#text                          1 -> 2
   /get_info_response/info/name                                             1 -> 2
-  /get_info_response/info/writable                                         1 -> 2
-  /get_info_response/info/writable/#text                                   1 -> 2

@@ -273,8 +273,13 @@ func (c *Comparer) checkCardinality(res *Result, cmd Command, side string, s *No
 		res.add(cmd, side, CatCardinality, path, fmt.Sprintf(
 			"schema says zero-or-more, Go has a single %s (%s)", g.GoType, g.GoName))
 	case s.Card != CardRepeated && g.Slice:
-		res.add(cmd, side, CatCardinality, path, fmt.Sprintf(
-			"schema says %s, Go has a slice %s (%s)", s.Card, g.GoType, g.GoName))
+		f := Finding{Command: cmd.Name, Side: side, Category: CatCardinality, Path: path, Detail: fmt.Sprintf(
+			"schema says %s, Go has a slice %s (%s)", s.Card, g.GoType, g.GoName)}
+		if g.OverrideReason != "" {
+			f.Suppressed = true
+			f.Reason = g.OverrideReason
+		}
+		res.Findings = append(res.Findings, f)
 	case s.Card == CardOptional && g.ZeroIsMeaningful():
 		// The T-5 case. A bool or an int cannot distinguish "absent" from
 		// "present and zero", and with omitempty it cannot even send zero.

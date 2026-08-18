@@ -243,6 +243,21 @@ var FieldTypeOverrides = map[string][]FieldTypeOverride{
 			"internal/gmptest/testdata/upstream/get_reports/002_response.xml sends the same decimal " +
 			"cvss_base shape at this path",
 	}},
+	"get_info:/info/cve/configuration_nodes/node": {{
+		Name: "node", GoType: "NVTNode",
+		Reason: "T-9 nvt review: node/node is a genuine self-reference (see DefectAllowlist's " +
+			"undefined-type entry for this path) that the mechanical mapping falls back to string for; " +
+			"Go structs may reference themselves through a slice field, so retyping it back to its own " +
+			"generated struct name is a correct closed-form fix, not a hand patch",
+	}},
+	"get_info:/info": {{
+		Name: "id", Attr: true, GoType: "string",
+		Reason: "T-9 nvt review: command_get_info.xml declares info/@id as type integer, and the " +
+			"live-captured schema snapshot agrees, but " +
+			"internal/gmptest/testdata/live/get_info/001_response.xml's type=cve lookups return the CVE " +
+			"name itself (\"CVE-1999-0001\") as @id, not a numeric ID — real wire data the generated *int " +
+			"can't even decode",
+	}},
 }
 
 // FieldSuppression removes a schema-declared attribute/element from the
@@ -556,6 +571,33 @@ var RequiredOverrides = map[string]RequiredOverride{
 			"report_id required, but internal/gmptest/testdata/live/start_task/001_response.xml " +
 			"(a genuine 500 \"Internal error\") omits it entirely — status-dependent presence, not " +
 			"unconditional requiredness",
+	},
+	"get_nvts.nvt_oid": {
+		Reason: "T-9 nvt review: command_get_nvts.xml's own <summary>Get one or many NVTs</summary> and " +
+			"request <pattern> disagree with each other — nvt_oid is marked required, but " +
+			"internal/gmptest/testdata/upstream/get_nvts/001_request.xml omits it entirely and gets back " +
+			"three NVTs, the many-NVTs case the summary promises",
+	},
+}
+
+// CardinalityOverride keeps a schema-singular field Go-slice-typed despite
+// that, because live protocol evidence contradicts the schema's declared
+// cardinality for that specific field. The mirror image of RequiredOverride:
+// that one distrusts the schema's requiredness, this one distrusts its Card.
+type CardinalityOverride struct {
+	Reason string
+}
+
+// CardinalityOverrides is keyed exactly like RequiredOverrides:
+// "<command>.<element or attribute name>", a command's own top-level
+// request/response fields only.
+var CardinalityOverrides = map[string]CardinalityOverride{
+	"get_nvts.nvt": {
+		Reason: "T-9 nvt review: command_get_nvts.xml's response <pattern> declares <e>nvt</e> (exactly " +
+			"one), contradicting its own <summary>Get one or many NVTs</summary> and its own <example> " +
+			"(two sibling <nvt> elements in one get_nvts_response with no nvt_oid filter, lines " +
+			"4121-4159) — internal/gmptest/testdata/upstream/get_nvts/001_response.xml confirms it live, " +
+			"returning three sibling <nvt> elements for one unfiltered request",
 	},
 }
 
@@ -953,5 +995,14 @@ var DefectAllowlist = map[DefectKey]DefectAllowlistEntry{
 	{Command: "empty_trashcan", Class: "empty-pattern", Path: "/empty_trashcan"}: {
 		Reason: "T-9; docs/review-2026-08.md `trash` — the request pattern declares no content, " +
 			"same generic upstream-schema class already carried by note/override/create_group",
+	},
+	{Command: "get_info", Class: "no-pattern", Path: "/get_info_response/info/web_application_vt/refs/ref"}: {
+		Reason: "T-9; docs/review-2026-08.md `nvt` — <ref> under web_application_vt/refs declares " +
+			"neither <pattern> nor <type>, same generic upstream-schema class as get_scanners' params/param",
+	},
+	{Command: "get_info", Class: "undefined-type", Path: "/get_info_response/info/cve/configuration_nodes/node/node"}: {
+		Reason: "T-9; docs/review-2026-08.md `nvt` — <node> nests itself recursively, a self-reference " +
+			"the schema cannot express as a named type; FieldTypeOverrides retypes it back to its own " +
+			"generated struct, which Go allows through a slice field",
 	},
 }
