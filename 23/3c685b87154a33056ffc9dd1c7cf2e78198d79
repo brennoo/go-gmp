@@ -1,0 +1,89 @@
+client/client_test.go
+  s_e3849c47e6a5f2::t_f4d2ff8d0e7207 1322-1323,1335-1336,1500-1501
+commands/get_agents.go
+  s_e3849c47e6a5f2::t_fe74fb74b48bca 31-32,42
+commands/get_nvts.go
+  s_e3849c47e6a5f2::t_0454c7666a971c 44-45
+commands/get_system_reports.go
+  s_e3849c47e6a5f2::t_3f324890734877 12-13
+commands/get_system_reports_test.go
+  s_e3849c47e6a5f2::t_099aa95c967c48 65-80
+commands/get_tags.go
+  s_e3849c47e6a5f2::t_a5eaccff0ee446 84-85
+commands/get_tasks.go
+  s_e3849c47e6a5f2::t_ed71a5a3de7e8e 87-88,181-185
+commands/get_tickets.go
+  s_e3849c47e6a5f2::t_3be9baa6272054 101,103,105
+commands/report_shared.go
+  s_e3849c47e6a5f2::t_624569973547b3 62-64
+docs/review-2026-08.md
+  s_e3849c47e6a5f2::t_b14cacc18d09c1 4095-4152
+internal/codegen/generate.go
+  s_e3849c47e6a5f2::t_20810a8d68530b 1192-1199
+internal/codegen/generate_test.go
+  s_e3849c47e6a5f2::t_1adb868e40a68b 2052-2110
+internal/codegen/testdata/golden/get_nvts.go
+  s_e3849c47e6a5f2::t_e9b325cea7315c 44-45
+internal/codegen/testdata/golden/get_system_reports.go
+  s_e3849c47e6a5f2::t_e7c0d24ee65db5 12-13
+internal/codegen/testdata/golden/get_tags.go
+  s_e3849c47e6a5f2::t_7c42d783148a39 84-85
+internal/codegen/testdata/golden/get_tasks.go
+  s_e3849c47e6a5f2::t_0232d7644263cb 87-88,181-185
+internal/codegen/testdata/golden/get_tickets.go
+  s_e3849c47e6a5f2::t_5aeed2cb924410 101,103,105
+internal/codegen/testdata/golden/report_shared.go
+  s_e3849c47e6a5f2::t_28db5be139f28e 62-64
+internal/gmptest/testdata/FIDELITY-SUMMARY.txt
+  s_e3849c47e6a5f2::t_e02dfad29b7711 186,220,259-261,265-267,270-271
+internal/gmptest/testdata/REQUEST-FIDELITY.txt
+  s_e3849c47e6a5f2::t_c7afb38980dbe0 48-49,75,245-246,289
+internal/gmptest/testdata/live/get_tasks/001_fidelity.txt
+  s_e3849c47e6a5f2::t_e1b32377ecf0b0 23
+internal/gmptest/testdata/live/get_tasks/002_fidelity.txt
+  s_e3849c47e6a5f2::t_11c244002dd2c6 23
+internal/gmptest/testdata/live/get_tasks/003_fidelity.txt
+  s_e3849c47e6a5f2::t_58cfd492c4b453 19
+internal/gmptest/testdata/live/get_tickets/003_fidelity.txt
+  s_e3849c47e6a5f2::t_b3104a3a5d6ff0 21
+internal/gmptest/testdata/requests/get_system_reports/brief_false.xml
+  s_e3849c47e6a5f2::t_d6223064dc0252 1
+internal/gmptest/testdata/requests/get_system_reports/brief_true.xml
+  s_e3849c47e6a5f2::t_46047f2f12d9d4 1
+internal/gmptest/testdata/requests/get_system_reports/brief_unset.xml
+  s_e3849c47e6a5f2::t_dfaeef1c5ff8a4 1
+internal/gmptest/testdata/requests/get_system_reports/duration_set.xml
+  s_e3849c47e6a5f2::t_c15ec0642fd680 1
+internal/gmptest/testdata/requests/get_system_reports/duration_zero.xml
+  s_e3849c47e6a5f2::t_8b40cac6dd640c 1
+internal/gmptest/testdata/requests/modify_agents/fields_set.xml
+  s_e3849c47e6a5f2::t_7277cd4661591a 1
+internal/gmptest/testdata/requests/modify_agents/fields_zero.xml
+  s_e3849c47e6a5f2::t_aad6a254972165 1
+internal/gmptest/testdata/requests/modify_agents/unset.xml
+  s_e3849c47e6a5f2::t_e8666445ea6acf 1
+internal/gmptest/testdata/upstream/get_nvts/002_fidelity.txt
+  s_e3849c47e6a5f2::t_1ad5143ff26cca 16
+internal/gmptest/testdata/upstream/get_tasks/001_fidelity.txt
+  s_e3849c47e6a5f2::t_31e8b299fbdaf5 45
+internal/gmptest/testdata/upstream/get_tasks/003_fidelity.txt
+  s_e3849c47e6a5f2::t_2e6825c29d35d9 24
+internal/schema/testdata/CONFORMANCE.md
+  s_e3849c47e6a5f2::t_30df36752ea564 289,299,303,987,997,1001
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "233c685b87154a33056ffc9dd1c7cf2e78198d79",
+  "prompts": {},
+  "sessions": {
+    "s_e3849c47e6a5f2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_e3849c47e6a5f2",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
