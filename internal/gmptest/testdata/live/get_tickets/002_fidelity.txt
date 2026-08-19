@@ -4,7 +4,6 @@ decode: ok
 namespaces-seen:
 
 DROPPED
-  /get_tickets_response/sort/field/#text                                   x1
   /get_tickets_response/ticket_count/#text                                 x1
 
 TRUNCATED

@@ -7,7 +7,6 @@ DROPPED
   /get_results_response/filters/keywords/truncated                         x1  (+1 descendant paths)
   /get_results_response/result/nvt/severities/severity/#text               x1
   /get_results_response/result_count/#text                                 x1
-  /get_results_response/sort/field/#text                                   x1
 
 TRUNCATED
   (none)

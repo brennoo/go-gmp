@@ -23,7 +23,7 @@ type GetAssetsResponse struct {
 	Status     string           `xml:"status,attr"`
 	StatusText string           `xml:"status_text,attr"`
 	Filters    AssetFilters     `xml:"filters"`
-	Sort       AssetSort        `xml:"sort"`
+	Sort       AssetSort        `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Assets     Assets           `xml:"assets"`
 	AssetCount AssetCount       `xml:"asset_count"`
 	Asset      []GetAssetsAsset `xml:"asset,omitempty"`
@@ -56,12 +56,12 @@ type AssetKeyword struct {
 
 // AssetSort is the <sort> element of get_assets. See the GMP protocol docs for details.
 type AssetSort struct {
-	Value string     `xml:",chardata"`
 	Field AssetField `xml:"field"`
 }
 
 // AssetField is the <field> element of get_assets. See the GMP protocol docs for details.
 type AssetField struct {
+	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Order string `xml:"order"`
 }
 

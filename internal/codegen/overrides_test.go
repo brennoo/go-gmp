@@ -301,6 +301,66 @@ func TestValidateFieldSuppressionsAcceptsCommittedTable(t *testing.T) {
 	}
 }
 
+// TestValidateFieldSuppressionsRejectsBadEntries is
+// TestValidateFieldOverridesRejectsBadEntries's counterpart for
+// FieldSuppressions' own chardata shape checks, exercised directly through
+// validateFieldRelocations the same way TestFieldRelocationsRejectMissingCounterpart is.
+func TestValidateFieldSuppressionsRejectsBadEntries(t *testing.T) {
+	tests := []struct {
+		name    string
+		fo      map[string][]FieldOverride
+		fs      map[string][]FieldSuppression
+		wantSub string
+	}{
+		{
+			name: "Chardata combined with Name",
+			fs: map[string][]FieldSuppression{
+				"test_cmd:/x": {{Chardata: true, Name: "n", RelocatedTo: "test_cmd:/x/y", Reason: "r"}},
+			},
+			wantSub: "mutually exclusive",
+		},
+		{
+			name: "Chardata combined with Attr",
+			fs: map[string][]FieldSuppression{
+				"test_cmd:/x": {{Chardata: true, Attr: true, RelocatedTo: "test_cmd:/x/y", Reason: "r"}},
+			},
+			wantSub: "mutually exclusive",
+		},
+		{
+			name: "two chardata suppressions for one key",
+			fo: map[string][]FieldOverride{
+				"test_cmd:/x/y": {{Chardata: true, GoType: "string", RelocatedFrom: "test_cmd:/x", Reason: "r1"}},
+			},
+			fs: map[string][]FieldSuppression{
+				"test_cmd:/x": {
+					{Chardata: true, RelocatedTo: "test_cmd:/x/y", Reason: "r1"},
+					{Chardata: true, RelocatedTo: "test_cmd:/x/z", Reason: "r2"},
+				},
+			},
+			wantSub: "more than one chardata suppression",
+		},
+		{
+			name: "chardata suppression with no FieldOverrides counterpart",
+			fs: map[string][]FieldSuppression{
+				"test_cmd:/x": {{Chardata: true, RelocatedTo: "test_cmd:/x/y", Reason: "r"}},
+			},
+			wantSub: "no FieldOverrides entry",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := validateFieldRelocations(tt.fo, tt.fs)
+			if err == nil {
+				t.Fatalf("validateFieldRelocations succeeded; want an error containing %q", tt.wantSub)
+			}
+			if !strings.Contains(err.Error(), tt.wantSub) {
+				t.Fatalf("validateFieldRelocations error = %q, want it to contain %q", err.Error(), tt.wantSub)
+			}
+		})
+	}
+}
+
 // TestFieldRelocationsRejectMissingCounterpart proves validateFieldRelocations
 // fails closed in both directions: a FieldSuppressions entry with no matching
 // FieldOverrides.RelocatedFrom back-reference, and a FieldOverride.RelocatedFrom
@@ -337,6 +397,18 @@ func TestFieldRelocationsRejectMissingCounterpart(t *testing.T) {
 		}
 		if err := validateFieldRelocations(fo, fs); err != nil {
 			t.Fatalf("validateFieldRelocations failed on a correctly-paired relocation: %v", err)
+		}
+	})
+
+	t.Run("matching chardata pair passes", func(t *testing.T) {
+		fo := map[string][]FieldOverride{
+			"test_cmd:/x/y": {{Chardata: true, GoType: "string", RelocatedFrom: "test_cmd:/x", Reason: "r"}},
+		}
+		fs := map[string][]FieldSuppression{
+			"test_cmd:/x": {{Chardata: true, RelocatedTo: "test_cmd:/x/y", Reason: "r"}},
+		}
+		if err := validateFieldRelocations(fo, fs); err != nil {
+			t.Fatalf("validateFieldRelocations failed on a correctly-paired chardata relocation: %v", err)
 		}
 	})
 }

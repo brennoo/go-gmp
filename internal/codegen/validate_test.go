@@ -95,7 +95,7 @@ func TestValidateBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_notes": {
 			actionable: map[string]int{schema.CatDefect: 3},
-			suppressed: map[string]int{},
+			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
 		},
 		"delete_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -160,7 +160,7 @@ func TestValidateGeneratedMatchesOrImproves(t *testing.T) {
 	wantAfter := map[string]counts{
 		"create_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_notes":   {actionable: map[string]int{schema.CatDefect: 3}, suppressed: map[string]int{}},
+		"get_notes":   {actionable: map[string]int{schema.CatDefect: 3}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
 		"delete_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 
@@ -190,7 +190,7 @@ func TestValidateOverrideBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_overrides": {
 			actionable: map[string]int{schema.CatDefect: 3},
-			suppressed: map[string]int{},
+			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
 		},
 		"delete_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -237,7 +237,7 @@ func TestValidateOverrideGeneratedMatchesOrImproves(t *testing.T) {
 	wantAfter := map[string]counts{
 		"create_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_overrides":   {actionable: map[string]int{schema.CatDefect: 3}, suppressed: map[string]int{}},
+		"get_overrides":   {actionable: map[string]int{schema.CatDefect: 3}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
 		"delete_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
@@ -267,7 +267,7 @@ func TestValidateRoleBeforeMatchesKnownConformance(t *testing.T) {
 	want := map[string]counts{
 		"create_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_roles":   {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_roles":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
 		"delete_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
@@ -313,7 +313,7 @@ func TestValidateRoleGeneratedMatchesOrImproves(t *testing.T) {
 	wantAfter := map[string]counts{
 		"create_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_roles":   {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_roles":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
 		"delete_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
@@ -460,7 +460,7 @@ func TestValidateGroupBeforeMatchesKnownConformance(t *testing.T) {
 			suppressed: map[string]int{},
 		},
 		"modify_group": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_groups":   {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_groups":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
 		"delete_group": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
@@ -488,20 +488,22 @@ func TestValidateGroupBeforeMatchesKnownConformance(t *testing.T) {
 // One loss the comparer cannot see, recorded here because it is the same
 // class already documented for role: the schema's declared <pattern> for
 // group_count is only <e>filtered</e><e>page</e>, no text token anywhere,
-// and <field> (inside <sort>) is likewise <e>order</e> with no text token —
 // yet both command_get_groups.xml's own bundled example and a live capture
-// send a bare total/name ahead of those children. See
-// TestGroupCountBareTotalIsAnAcceptedLoss and
-// TestGroupSortFieldNameIsAnAcceptedLoss below for both halves, each pinned
-// against real fixture bytes the same way TestRoleCountBareTotalIsAnAcceptedLoss
-// pins role's.
+// send a bare total ahead of those children. See
+// TestGroupCountBareTotalIsAnAcceptedLoss below, pinned against real fixture
+// bytes the same way TestRoleCountBareTotalIsAnAcceptedLoss pins role's.
+//
+// The sort field-name MISSING/EXTRA pair on get_groups below is not a new
+// regression: it is T-18a's relocation of GroupSort's schema-declared
+// chardata onto GroupField, where the wire actually puts it — see
+// FieldSuppressions["get_groups:/sort"].
 func TestValidateGroupGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_group")
 
 	wantAfter := map[string]counts{
 		"create_group": {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{}},
 		"modify_group": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_groups":   {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_groups":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
 		"delete_group": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
@@ -612,115 +614,6 @@ func TestGroupCountBareTotalIsAnAcceptedLoss(t *testing.T) {
 	}
 }
 
-// groupSortFieldProbe mirrors testdata/golden/get_groups.go's GroupSort/
-// GroupField fields, byte for byte — keep the two in sync. Same rationale as
-// groupCountProbe: decode real fixtures with the exact shape the generator
-// emits today, without the out-of-process GeneratedGoRoots machinery.
-type groupSortFieldProbe struct {
-	XMLName xml.Name `xml:"get_groups_response"`
-	Sort    struct {
-		Field struct {
-			Order string `xml:"order"`
-		} `xml:"field"`
-	} `xml:"sort"`
-}
-
-// groupSortFieldEvidence is groupSortFieldProbe plus a ",chardata" field on
-// Field that the generated GroupField does not have, proving what the
-// fixture actually contains independent of what the generated shape can
-// retain.
-type groupSortFieldEvidence struct {
-	XMLName xml.Name `xml:"get_groups_response"`
-	Sort    struct {
-		Field struct {
-			Value string `xml:",chardata"`
-			Order string `xml:"order"`
-		} `xml:"field"`
-	} `xml:"sort"`
-}
-
-// TestGroupSortFieldNameIsAnAcceptedLoss is TestGroupCountBareTotalIsAnAcceptedLoss's
-// counterpart for the other half of the same contradiction: command_get_groups.xml's
-// own bundled example, and a live gvmd capture, both send the sort field's name
-// as bare text ahead of <order> ("name" in both fixtures here), but the
-// schema's declared <pattern> for <field> (inside <sort>) is only
-// <e>order</e>, with no text token anywhere in it — unlike <sort> itself,
-// whose pattern does contain the bareword text and is why GroupSort.Value
-// exists. There is nothing for the schema-side parser to see: the pattern
-// the generator draws from simply never declares this content, so
-// generation cannot recover it, and schema.Comparer — which only compares
-// against what the pattern declares — correctly reports no finding for it
-// either.
-//
-// This is the same class of gap as group_count's bare total above and
-// role_count's identical shape (docs/review-2026-08.md's "Accepted evidence"
-// note): the schema's own declared structure and its own examples disagree,
-// and per the generate-only-what-the-schema-declares principle, the fix is
-// to document the loss, not to add a field the schema never asked for.
-//
-// Each fixture is decoded twice, into two structurally identical types that
-// differ only in one field, so the test proves both halves of the claim
-// against the actual wire bytes rather than assuming either:
-// groupSortFieldEvidence (which has a ,chardata field on Field) proves the
-// bare field name is really there; groupSortFieldProbe (an exact mirror of
-// the generated GroupSort/GroupField) proves that, with only Order to decode
-// into, that same name has nowhere to go.
-func TestGroupSortFieldNameIsAnAcceptedLoss(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	cases := []struct {
-		provenance string
-		path       string
-		wantName   string
-		wantOrder  string
-	}{
-		{"upstream", filepath.Join(gmptestDir, "upstream", "get_groups", "001_response.xml"), "name", "ascending"},
-		{"live", filepath.Join(gmptestDir, "live", "get_groups", "003_response.xml"), "name", "ascending"},
-	}
-	for _, tc := range cases {
-		t.Run(tc.provenance, func(t *testing.T) {
-			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", tc.path, err)
-			}
-
-			// First, prove the wire actually carries the bare field name:
-			// decode with a ,chardata field the generated shape lacks.
-			var evidence groupSortFieldEvidence
-			if err := xml.Unmarshal(data, &evidence); err != nil {
-				t.Fatalf("decoding %s into groupSortFieldEvidence: %v", tc.path, err)
-			}
-			if got := strings.TrimSpace(evidence.Sort.Field.Value); got != tc.wantName {
-				t.Fatalf("%s: sort/field bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
-					tc.path, got, tc.wantName)
-			}
-			if evidence.Sort.Field.Order != tc.wantOrder {
-				t.Fatalf("%s: groupSortFieldEvidence order = %q, want %q",
-					tc.path, evidence.Sort.Field.Order, tc.wantOrder)
-			}
-
-			// Second, prove the exact generated shape retains Order but has
-			// nowhere to put the field name.
-			var got groupSortFieldProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into groupSortFieldProbe: %v", tc.path, err)
-			}
-			if got.Sort.Field.Order != tc.wantOrder {
-				t.Errorf("groupSortFieldProbe order = %q, want %q (the generated shape changed unexpectedly)",
-					got.Sort.Field.Order, tc.wantOrder)
-			}
-			// groupSortFieldProbe has no field that could have captured
-			// evidence.Sort.Field.Value — that silent drop, now proven
-			// against the actual fixture bytes rather than assumed, is the
-			// accepted loss this test exists to pin.
-		})
-	}
-}
-
 // TestValidateTagBeforeMatchesKnownConformance is the tag family's
 // counterpart to TestValidateBeforeMatchesKnownConformance.
 //
@@ -742,7 +635,7 @@ func TestValidateTagBeforeMatchesKnownConformance(t *testing.T) {
 
 	want := map[string]counts{
 		"create_tag": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_tags":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{}},
+		"get_tags":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
 		"modify_tag": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"delete_tag": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -802,7 +695,7 @@ func TestValidateTagGeneratedMatchesOrImproves(t *testing.T) {
 
 	wantAfter := map[string]counts{
 		"create_tag": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_tags":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{}},
+		"get_tags":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
 		"modify_tag": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"delete_tag": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -911,98 +804,6 @@ func TestTagCountBareTotalIsAnAcceptedLoss(t *testing.T) {
 	}
 }
 
-// tagSortFieldProbe mirrors testdata/golden/get_tags.go's TagSort/TagField
-// fields, byte for byte — keep the two in sync. Same rationale as
-// groupSortFieldProbe: decode real fixtures with the exact shape the
-// generator emits today, without the out-of-process GeneratedGoRoots
-// machinery.
-type tagSortFieldProbe struct {
-	XMLName xml.Name `xml:"get_tags_response"`
-	Sort    struct {
-		Field struct {
-			Order string `xml:"order"`
-		} `xml:"field"`
-	} `xml:"sort"`
-}
-
-// tagSortFieldEvidence is tagSortFieldProbe plus a ",chardata" field on Field
-// that the generated TagField does not have, proving what the fixture
-// actually contains independent of what the generated shape can retain.
-type tagSortFieldEvidence struct {
-	XMLName xml.Name `xml:"get_tags_response"`
-	Sort    struct {
-		Field struct {
-			Value string `xml:",chardata"`
-			Order string `xml:"order"`
-		} `xml:"field"`
-	} `xml:"sort"`
-}
-
-// TestTagSortFieldNameIsAnAcceptedLoss is TestTagCountBareTotalIsAnAcceptedLoss's
-// counterpart for the other half of the same contradiction: all three live
-// gvmd captures under internal/gmptest/testdata/live/get_tags send the sort
-// field's name as bare text ahead of <order>, but the schema's declared
-// <pattern> for <field> (inside <sort>) is only <e>order</e>, with no text
-// token anywhere in it — unlike <sort> itself, whose pattern does contain
-// the bareword text and is why TagSort.Value exists on the golden struct
-// already. There is nothing for the schema-side parser to see: the pattern
-// the generator draws from simply never declares this content, so
-// generation cannot recover it, and schema.Comparer — which only compares
-// against what the pattern declares — correctly reports no finding for it
-// either.
-func TestTagSortFieldNameIsAnAcceptedLoss(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	cases := []struct {
-		provenance string
-		path       string
-		wantName   string
-		wantOrder  string
-	}{
-		{"live_001", filepath.Join(gmptestDir, "live", "get_tags", "001_response.xml"), "name", "ascending"},
-		{"live_002", filepath.Join(gmptestDir, "live", "get_tags", "002_response.xml"), "name", "ascending"},
-		{"live_003", filepath.Join(gmptestDir, "live", "get_tags", "003_response.xml"), "name", "ascending"},
-	}
-	for _, tc := range cases {
-		t.Run(tc.provenance, func(t *testing.T) {
-			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", tc.path, err)
-			}
-
-			var evidence tagSortFieldEvidence
-			if err := xml.Unmarshal(data, &evidence); err != nil {
-				t.Fatalf("decoding %s into tagSortFieldEvidence: %v", tc.path, err)
-			}
-			if got := strings.TrimSpace(evidence.Sort.Field.Value); got != tc.wantName {
-				t.Fatalf("%s: sort/field bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
-					tc.path, got, tc.wantName)
-			}
-			if evidence.Sort.Field.Order != tc.wantOrder {
-				t.Fatalf("%s: tagSortFieldEvidence order = %q, want %q",
-					tc.path, evidence.Sort.Field.Order, tc.wantOrder)
-			}
-
-			var got tagSortFieldProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into tagSortFieldProbe: %v", tc.path, err)
-			}
-			if got.Sort.Field.Order != tc.wantOrder {
-				t.Errorf("tagSortFieldProbe order = %q, want %q (the generated shape changed unexpectedly)",
-					got.Sort.Field.Order, tc.wantOrder)
-			}
-			// tagSortFieldProbe has no field that could have captured
-			// evidence.Sort.Field.Value — that silent drop, now proven
-			// against the actual fixture bytes rather than assumed, is the
-			// accepted loss this test exists to pin.
-		})
-	}
-}
-
 // TestValidateScheduleBeforeMatchesKnownConformance is the schedule family's
 // counterpart to TestValidateBeforeMatchesKnownConformance. schedule is
 // adopted, so commands/{create_schedule,modify_schedule,get_schedules}.go are
@@ -1015,7 +816,7 @@ func TestValidateScheduleBeforeMatchesKnownConformance(t *testing.T) {
 	want := map[string]counts{
 		"create_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_schedules":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{}},
+		"get_schedules":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
 		"delete_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
@@ -1045,17 +846,16 @@ func TestValidateScheduleBeforeMatchesKnownConformance(t *testing.T) {
 // generated output can move them — the same reasoning already on record for
 // every prior family.
 //
-// Two losses the comparer cannot see, recorded here for the same reason
-// role's and group's were:
+// One loss the comparer cannot see, recorded here for the same reason
+// role's and group's were: the schema's declared <pattern> for
+// schedule_count is only <e>filtered</e><e>page</e>, no text token anywhere,
+// yet a live capture sends a bare total ahead of those children. See
+// TestScheduleCountBareTotalIsAnAcceptedLoss below.
 //
-//   - ScheduleCount: the schema's declared <pattern> for schedule_count is
-//     only <e>filtered</e><e>page</e>, no text token anywhere, yet a live
-//     capture sends a bare total ahead of those children. See
-//     TestScheduleCountBareTotalIsAnAcceptedLoss below.
-//   - ScheduleField: the schema's declared <pattern> for <field> (inside
-//     <sort>) is likewise <e>order</e> with no text token, yet the same live
-//     captures send the sort field's name as bare text ahead of <order>. See
-//     TestScheduleSortFieldNameIsAnAcceptedLoss below.
+// The sort field-name MISSING/EXTRA pair on get_schedules below is not a new
+// regression: it is T-18a's relocation of ScheduleSort's schema-declared
+// chardata onto ScheduleField, where the wire actually puts it — see
+// FieldSuppressions["get_schedules:/sort"].
 //
 // A third gap worth naming even though it closed no finding and needed no
 // test: get_schedules's request-side Trash/Tasks attrs are schema-declared
@@ -1071,7 +871,7 @@ func TestValidateScheduleGeneratedMatchesOrImproves(t *testing.T) {
 	wantAfter := map[string]counts{
 		"create_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_schedules":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{}},
+		"get_schedules":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
 		"delete_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
@@ -1185,113 +985,6 @@ func TestScheduleCountBareTotalIsAnAcceptedLoss(t *testing.T) {
 	}
 }
 
-// scheduleSortFieldProbe mirrors testdata/golden/get_schedules.go's
-// ScheduleSort/ScheduleField fields, byte for byte — keep the two in sync.
-// Same rationale as scheduleCountProbe: decode real fixtures with the exact
-// shape the generator emits today, without the out-of-process
-// GeneratedGoRoots machinery.
-type scheduleSortFieldProbe struct {
-	XMLName xml.Name `xml:"get_schedules_response"`
-	Sort    struct {
-		Field struct {
-			Order string `xml:"order"`
-		} `xml:"field"`
-	} `xml:"sort"`
-}
-
-// scheduleSortFieldEvidence is scheduleSortFieldProbe plus a ",chardata"
-// field on Field that the generated ScheduleField does not have, proving
-// what the fixture actually contains independent of what the generated
-// shape can retain.
-type scheduleSortFieldEvidence struct {
-	XMLName xml.Name `xml:"get_schedules_response"`
-	Sort    struct {
-		Field struct {
-			Value string `xml:",chardata"`
-			Order string `xml:"order"`
-		} `xml:"field"`
-	} `xml:"sort"`
-}
-
-// TestScheduleSortFieldNameIsAnAcceptedLoss is
-// TestScheduleCountBareTotalIsAnAcceptedLoss's counterpart for the other
-// half of the same contradiction: live gvmd captures under
-// internal/gmptest/testdata/live/get_schedules send the sort field's name as
-// bare text ahead of <order> ("name" in each fixture here), but the schema's
-// declared <pattern> for <field> (inside <sort>) is only <e>order</e>, with
-// no text token anywhere in it. There is nothing for the schema-side parser
-// to see: the pattern the generator draws from simply never declares this
-// content, so generation cannot recover it, and schema.Comparer — which only
-// compares against what the pattern declares — correctly reports no finding
-// for it either.
-//
-// This is the same class of gap as schedule_count's bare total above and
-// role/group/tag's identical shape (docs/review-2026-08.md's "Accepted
-// evidence" note): the schema's own declared structure and its own examples
-// disagree, and per the generate-only-what-the-schema-declares principle,
-// the fix is to document the loss, not to add a field the schema never
-// asked for.
-//
-// Each fixture is decoded twice, into two structurally identical types that
-// differ only in one field, so the test proves both halves of the claim
-// against the actual wire bytes rather than assuming either:
-// scheduleSortFieldEvidence (which has a ,chardata field on Field) proves
-// the bare field name is really there; scheduleSortFieldProbe (an exact
-// mirror of the generated ScheduleSort/ScheduleField) proves that, with only
-// Order to decode into, that same name has nowhere to go.
-func TestScheduleSortFieldNameIsAnAcceptedLoss(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	cases := []struct {
-		provenance string
-		path       string
-		wantName   string
-		wantOrder  string
-	}{
-		{"live_001", filepath.Join(gmptestDir, "live", "get_schedules", "001_response.xml"), "name", "ascending"},
-		{"live_002", filepath.Join(gmptestDir, "live", "get_schedules", "002_response.xml"), "name", "ascending"},
-		{"live_003", filepath.Join(gmptestDir, "live", "get_schedules", "003_response.xml"), "name", "ascending"},
-	}
-	for _, tc := range cases {
-		t.Run(tc.provenance, func(t *testing.T) {
-			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", tc.path, err)
-			}
-
-			var evidence scheduleSortFieldEvidence
-			if err := xml.Unmarshal(data, &evidence); err != nil {
-				t.Fatalf("decoding %s into scheduleSortFieldEvidence: %v", tc.path, err)
-			}
-			if got := strings.TrimSpace(evidence.Sort.Field.Value); got != tc.wantName {
-				t.Fatalf("%s: sort/field bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
-					tc.path, got, tc.wantName)
-			}
-			if evidence.Sort.Field.Order != tc.wantOrder {
-				t.Fatalf("%s: scheduleSortFieldEvidence order = %q, want %q",
-					tc.path, evidence.Sort.Field.Order, tc.wantOrder)
-			}
-
-			var got scheduleSortFieldProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into scheduleSortFieldProbe: %v", tc.path, err)
-			}
-			if got.Sort.Field.Order != tc.wantOrder {
-				t.Errorf("scheduleSortFieldProbe order = %q, want %q (the generated shape changed unexpectedly)",
-					got.Sort.Field.Order, tc.wantOrder)
-			}
-			// scheduleSortFieldProbe has no field that could have captured
-			// evidence.Sort.Field.Value — that silent drop, now proven
-			// against the actual fixture bytes rather than assumed, is the
-			// accepted loss this test exists to pin.
-		})
-	}
-}
-
 // TestValidateAlertBeforeMatchesKnownConformance is the alert family's
 // counterpart to TestValidateBeforeMatchesKnownConformance. alert is adopted,
 // so commands/{create_alert,modify_alert,get_alerts}.go are already the
@@ -1304,7 +997,7 @@ func TestValidateAlertBeforeMatchesKnownConformance(t *testing.T) {
 	want := map[string]counts{
 		"create_alert": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_alert": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_alerts":   {actionable: map[string]int{schema.CatDefect: 2}, suppressed: map[string]int{}},
+		"get_alerts":   {actionable: map[string]int{schema.CatDefect: 2}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
 		"delete_alert": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"test_alert":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{}},
 	}
@@ -1341,24 +1034,23 @@ func TestValidateAlertBeforeMatchesKnownConformance(t *testing.T) {
 // comparison ever runs, so no generated output can move them — the same
 // reasoning already on record for every prior family.
 //
-// Two losses the comparer cannot see, recorded here for the same reason
-// role's, group's, tag's, and schedule's were:
+// One loss the comparer cannot see, recorded here for the same reason
+// role's, group's, tag's, and schedule's were: the schema's declared
+// <pattern> for alert_count is only <e>filtered</e><e>page</e>, no text
+// token anywhere, yet live captures send a bare total ahead of those
+// children. See TestAlertCountBareTotalIsAnAcceptedLoss below.
 //
-//   - AlertCount: the schema's declared <pattern> for alert_count is only
-//     <e>filtered</e><e>page</e>, no text token anywhere, yet live captures
-//     send a bare total ahead of those children. See
-//     TestAlertCountBareTotalIsAnAcceptedLoss below.
-//   - AlertField: the schema's declared <pattern> for <field> (inside <sort>)
-//     is likewise <e>order</e> with no text token, yet the same live captures
-//     send the sort field's name as bare text ahead of <order>. See
-//     TestAlertSortFieldNameIsAnAcceptedLoss below.
+// The sort field-name MISSING/EXTRA pair on get_alerts below is not a new
+// regression: it is T-18a's relocation of AlertSort's schema-declared
+// chardata onto AlertField, where the wire actually puts it — see
+// FieldSuppressions["get_alerts:/sort"].
 func TestValidateAlertGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_alert")
 
 	wantAfter := map[string]counts{
 		"create_alert": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_alert": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_alerts":   {actionable: map[string]int{schema.CatDefect: 2}, suppressed: map[string]int{}},
+		"get_alerts":   {actionable: map[string]int{schema.CatDefect: 2}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
 		"delete_alert": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"test_alert":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{}},
 	}
@@ -1470,113 +1162,6 @@ func TestAlertCountBareTotalIsAnAcceptedLoss(t *testing.T) {
 	}
 }
 
-// alertSortFieldProbe mirrors testdata/golden/get_alerts.go's
-// AlertSort/AlertField fields, byte for byte — keep the two in sync. Same
-// rationale as alertCountProbe: decode real fixtures with the exact shape
-// the generator emits today, without the out-of-process GeneratedGoRoots
-// machinery.
-type alertSortFieldProbe struct {
-	XMLName xml.Name `xml:"get_alerts_response"`
-	Sort    struct {
-		Field struct {
-			Order string `xml:"order"`
-		} `xml:"field"`
-	} `xml:"sort"`
-}
-
-// alertSortFieldEvidence is alertSortFieldProbe plus a ",chardata" field on
-// Field that the generated AlertField does not have, proving what the
-// fixture actually contains independent of what the generated shape can
-// retain.
-type alertSortFieldEvidence struct {
-	XMLName xml.Name `xml:"get_alerts_response"`
-	Sort    struct {
-		Field struct {
-			Value string `xml:",chardata"`
-			Order string `xml:"order"`
-		} `xml:"field"`
-	} `xml:"sort"`
-}
-
-// TestAlertSortFieldNameIsAnAcceptedLoss is
-// TestAlertCountBareTotalIsAnAcceptedLoss's counterpart for the other half of
-// the same contradiction: live gvmd captures under
-// internal/gmptest/testdata/live/get_alerts send the sort field's name as
-// bare text ahead of <order> ("name" in each fixture here), but the schema's
-// declared <pattern> for <field> (inside <sort>) is only <e>order</e>, with
-// no text token anywhere in it. There is nothing for the schema-side parser
-// to see: the pattern the generator draws from simply never declares this
-// content, so generation cannot recover it, and schema.Comparer — which only
-// compares against what the pattern declares — correctly reports no finding
-// for it either.
-//
-// This is the same class of gap as alert_count's bare total above and
-// role/group/tag/schedule's identical shape (docs/review-2026-08.md's
-// "Accepted evidence" note): the schema's own declared structure and its own
-// examples disagree, and per the generate-only-what-the-schema-declares
-// principle, the fix is to document the loss, not to add a field the schema
-// never asked for.
-//
-// Each fixture is decoded twice, into two structurally identical types that
-// differ only in one field, so the test proves both halves of the claim
-// against the actual wire bytes rather than assuming either:
-// alertSortFieldEvidence (which has a ,chardata field on Field) proves the
-// bare field name is really there; alertSortFieldProbe (an exact mirror of
-// the generated AlertSort/AlertField) proves that, with only Order to decode
-// into, that same name has nowhere to go.
-func TestAlertSortFieldNameIsAnAcceptedLoss(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	cases := []struct {
-		provenance string
-		path       string
-		wantName   string
-		wantOrder  string
-	}{
-		{"live_001", filepath.Join(gmptestDir, "live", "get_alerts", "001_response.xml"), "name", "ascending"},
-		{"live_002", filepath.Join(gmptestDir, "live", "get_alerts", "002_response.xml"), "name", "ascending"},
-		{"live_003", filepath.Join(gmptestDir, "live", "get_alerts", "003_response.xml"), "name", "ascending"},
-	}
-	for _, tc := range cases {
-		t.Run(tc.provenance, func(t *testing.T) {
-			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", tc.path, err)
-			}
-
-			var evidence alertSortFieldEvidence
-			if err := xml.Unmarshal(data, &evidence); err != nil {
-				t.Fatalf("decoding %s into alertSortFieldEvidence: %v", tc.path, err)
-			}
-			if got := strings.TrimSpace(evidence.Sort.Field.Value); got != tc.wantName {
-				t.Fatalf("%s: sort/field bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
-					tc.path, got, tc.wantName)
-			}
-			if evidence.Sort.Field.Order != tc.wantOrder {
-				t.Fatalf("%s: alertSortFieldEvidence order = %q, want %q",
-					tc.path, evidence.Sort.Field.Order, tc.wantOrder)
-			}
-
-			var got alertSortFieldProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into alertSortFieldProbe: %v", tc.path, err)
-			}
-			if got.Sort.Field.Order != tc.wantOrder {
-				t.Errorf("alertSortFieldProbe order = %q, want %q (the generated shape changed unexpectedly)",
-					got.Sort.Field.Order, tc.wantOrder)
-			}
-			// alertSortFieldProbe has no field that could have captured
-			// evidence.Sort.Field.Value — that silent drop, now proven against
-			// the actual fixture bytes rather than assumed, is the accepted
-			// loss this test exists to pin.
-		})
-	}
-}
-
 // TestValidateFilterBeforeMatchesKnownConformance is the filter family's
 // counterpart to TestValidateBeforeMatchesKnownConformance. filter is
 // adopted, so commands/{create_filter,modify_filter,get_filters}.go are
@@ -1596,10 +1181,8 @@ func TestValidateFilterBeforeMatchesKnownConformance(t *testing.T) {
 		"create_filter": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_filter": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_filters": {
-			actionable: map[string]int{
-				schema.CatDefect: 1,
-			},
-			suppressed: map[string]int{},
+			actionable: map[string]int{schema.CatDefect: 1},
+			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
 		},
 		"delete_filter": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -1645,10 +1228,8 @@ func TestValidateFilterGeneratedMatchesOrImproves(t *testing.T) {
 		"create_filter": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_filter": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_filters": {
-			actionable: map[string]int{
-				schema.CatDefect: 1,
-			},
-			suppressed: map[string]int{},
+			actionable: map[string]int{schema.CatDefect: 1},
+			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
 		},
 		"delete_filter": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -1759,113 +1340,6 @@ func TestFilterCountBareTotalIsAnAcceptedLoss(t *testing.T) {
 	}
 }
 
-// filterSortFieldProbe mirrors testdata/golden/get_filters.go's
-// FilterSort/FilterField fields, byte for byte — keep the two in sync. Same
-// rationale as filterCountProbe: decode real fixtures with the exact shape
-// the generator emits today, without the out-of-process GeneratedGoRoots
-// machinery.
-type filterSortFieldProbe struct {
-	XMLName xml.Name `xml:"get_filters_response"`
-	Sort    struct {
-		Field struct {
-			Order string `xml:"order"`
-		} `xml:"field"`
-	} `xml:"sort"`
-}
-
-// filterSortFieldEvidence is filterSortFieldProbe plus a ",chardata" field
-// on Field that the generated FilterField does not have, proving what the
-// fixture actually contains independent of what the generated shape can
-// retain.
-type filterSortFieldEvidence struct {
-	XMLName xml.Name `xml:"get_filters_response"`
-	Sort    struct {
-		Field struct {
-			Value string `xml:",chardata"`
-			Order string `xml:"order"`
-		} `xml:"field"`
-	} `xml:"sort"`
-}
-
-// TestFilterSortFieldNameIsAnAcceptedLoss is
-// TestFilterCountBareTotalIsAnAcceptedLoss's counterpart for the other half
-// of the same contradiction: live gvmd captures under
-// internal/gmptest/testdata/live/get_filters send the sort field's name as
-// bare text ahead of <order> ("name" in each fixture here), but the schema's
-// declared <pattern> for <field> (inside <sort>) is only <e>order</e>, with
-// no text token anywhere in it. There is nothing for the schema-side parser
-// to see: the pattern the generator draws from simply never declares this
-// content, so generation cannot recover it, and schema.Comparer — which only
-// compares against what the pattern declares — correctly reports no finding
-// for it either.
-//
-// This is the same class of gap as filter_count's bare total above and
-// role/group/tag/schedule/alert's identical shape (docs/review-2026-08.md's
-// "Accepted evidence" note): the schema's own declared structure and its own
-// examples disagree, and per the generate-only-what-the-schema-declares
-// principle, the fix is to document the loss, not to add a field the schema
-// never asked for.
-//
-// Each fixture is decoded twice, into two structurally identical types that
-// differ only in one field, so the test proves both halves of the claim
-// against the actual wire bytes rather than assuming either:
-// filterSortFieldEvidence (which has a ,chardata field on Field) proves the
-// bare field name is really there; filterSortFieldProbe (an exact mirror of
-// the generated FilterSort/FilterField) proves that, with only Order to
-// decode into, that same name has nowhere to go.
-func TestFilterSortFieldNameIsAnAcceptedLoss(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	cases := []struct {
-		provenance string
-		path       string
-		wantName   string
-		wantOrder  string
-	}{
-		{"live_001", filepath.Join(gmptestDir, "live", "get_filters", "001_response.xml"), "name", "ascending"},
-		{"live_002", filepath.Join(gmptestDir, "live", "get_filters", "002_response.xml"), "name", "ascending"},
-		{"live_003", filepath.Join(gmptestDir, "live", "get_filters", "003_response.xml"), "name", "ascending"},
-	}
-	for _, tc := range cases {
-		t.Run(tc.provenance, func(t *testing.T) {
-			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", tc.path, err)
-			}
-
-			var evidence filterSortFieldEvidence
-			if err := xml.Unmarshal(data, &evidence); err != nil {
-				t.Fatalf("decoding %s into filterSortFieldEvidence: %v", tc.path, err)
-			}
-			if got := strings.TrimSpace(evidence.Sort.Field.Value); got != tc.wantName {
-				t.Fatalf("%s: sort/field bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
-					tc.path, got, tc.wantName)
-			}
-			if evidence.Sort.Field.Order != tc.wantOrder {
-				t.Fatalf("%s: filterSortFieldEvidence order = %q, want %q",
-					tc.path, evidence.Sort.Field.Order, tc.wantOrder)
-			}
-
-			var got filterSortFieldProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into filterSortFieldProbe: %v", tc.path, err)
-			}
-			if got.Sort.Field.Order != tc.wantOrder {
-				t.Errorf("filterSortFieldProbe order = %q, want %q (the generated shape changed unexpectedly)",
-					got.Sort.Field.Order, tc.wantOrder)
-			}
-			// filterSortFieldProbe has no field that could have captured
-			// evidence.Sort.Field.Value — that silent drop, now proven
-			// against the actual fixture bytes rather than assumed, is the
-			// accepted loss this test exists to pin.
-		})
-	}
-}
-
 // TestValidateTLSCertificateBeforeMatchesKnownConformance is the
 // tls_certificate family's counterpart to
 // TestValidateBeforeMatchesKnownConformance. tls_certificate is adopted, so
@@ -1885,7 +1359,7 @@ func TestValidateTLSCertificateBeforeMatchesKnownConformance(t *testing.T) {
 	want := map[string]counts{
 		"create_tls_certificate": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_tls_certificate": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_tls_certificates":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 2}},
+		"get_tls_certificates":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 3, schema.CatMissing: 1}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -1965,7 +1439,7 @@ func TestValidateTLSCertificateGeneratedMatchesOrImproves(t *testing.T) {
 	wantAfter := map[string]counts{
 		"create_tls_certificate": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_tls_certificate": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_tls_certificates":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 2}},
+		"get_tls_certificates":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 3, schema.CatMissing: 1}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
 }
@@ -2067,114 +1541,6 @@ func TestTLSCertificateCountBareTotalIsAnAcceptedLoss(t *testing.T) {
 			}
 			// tlsCertificateCountProbe has no field that could have captured
 			// evidence.TLSCertificateCount.Value — that silent drop, now
-			// proven against the actual fixture bytes rather than assumed,
-			// is the accepted loss this test exists to pin.
-		})
-	}
-}
-
-// tlsCertificateSortFieldProbe mirrors testdata/golden/get_tls_certificates.
-// go's TLSCertificateSort/TLSCertificateField fields, byte for byte — keep
-// the two in sync. Same rationale as filterSortFieldProbe: decode real
-// fixtures with the exact shape the generator emits today, without the
-// out-of-process GeneratedGoRoots machinery.
-type tlsCertificateSortFieldProbe struct {
-	XMLName xml.Name `xml:"get_tls_certificates_response"`
-	Sort    struct {
-		Field struct {
-			Order string `xml:"order"`
-		} `xml:"field"`
-	} `xml:"sort"`
-}
-
-// tlsCertificateSortFieldEvidence is tlsCertificateSortFieldProbe plus a
-// ",chardata" field on Field that the generated TLSCertificateField does not
-// have, proving what the fixture actually contains independent of what the
-// generated shape can retain.
-type tlsCertificateSortFieldEvidence struct {
-	XMLName xml.Name `xml:"get_tls_certificates_response"`
-	Sort    struct {
-		Field struct {
-			Value string `xml:",chardata"`
-			Order string `xml:"order"`
-		} `xml:"field"`
-	} `xml:"sort"`
-}
-
-// TestTLSCertificateSortFieldNameIsAnAcceptedLoss is
-// TestTLSCertificateCountBareTotalIsAnAcceptedLoss's counterpart for the
-// other half of the same contradiction: live gvmd captures under
-// internal/gmptest/testdata/live/get_tls_certificates send the sort field's
-// name as bare text ahead of <order> ("name" in each fixture here), but the
-// schema's declared <pattern> for <field> (inside <sort>) is only
-// <e>order</e>, with no text token anywhere in it. There is nothing for the
-// schema-side parser to see: the pattern the generator draws from simply
-// never declares this content, so generation cannot recover it, and
-// schema.Comparer — which only compares against what the pattern declares —
-// correctly reports no finding for it either.
-//
-// This is the same class of gap as tls_certificate_count's bare total above
-// and role/group/tag/schedule/alert/filter's identical shape
-// (docs/review-2026-08.md's "Accepted evidence" note): the schema's own
-// declared structure and its own examples disagree, and per the
-// generate-only-what-the-schema-declares principle, the fix is to document
-// the loss, not to add a field the schema never asked for.
-//
-// Each fixture is decoded twice, into two structurally identical types that
-// differ only in one field, so the test proves both halves of the claim
-// against the actual wire bytes rather than assuming either:
-// tlsCertificateSortFieldEvidence (which has a ,chardata field on Field)
-// proves the bare field name is really there; tlsCertificateSortFieldProbe
-// (an exact mirror of the generated TLSCertificateSort/TLSCertificateField)
-// proves that, with only Order to decode into, that same name has nowhere
-// to go.
-func TestTLSCertificateSortFieldNameIsAnAcceptedLoss(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	cases := []struct {
-		provenance string
-		path       string
-		wantName   string
-		wantOrder  string
-	}{
-		{"live_001", filepath.Join(gmptestDir, "live", "get_tls_certificates", "001_response.xml"), "name", "ascending"},
-		{"live_002", filepath.Join(gmptestDir, "live", "get_tls_certificates", "002_response.xml"), "name", "ascending"},
-		{"live_003", filepath.Join(gmptestDir, "live", "get_tls_certificates", "003_response.xml"), "name", "ascending"},
-	}
-	for _, tc := range cases {
-		t.Run(tc.provenance, func(t *testing.T) {
-			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", tc.path, err)
-			}
-
-			var evidence tlsCertificateSortFieldEvidence
-			if err := xml.Unmarshal(data, &evidence); err != nil {
-				t.Fatalf("decoding %s into tlsCertificateSortFieldEvidence: %v", tc.path, err)
-			}
-			if got := strings.TrimSpace(evidence.Sort.Field.Value); got != tc.wantName {
-				t.Fatalf("%s: sort/field bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
-					tc.path, got, tc.wantName)
-			}
-			if evidence.Sort.Field.Order != tc.wantOrder {
-				t.Fatalf("%s: tlsCertificateSortFieldEvidence order = %q, want %q",
-					tc.path, evidence.Sort.Field.Order, tc.wantOrder)
-			}
-
-			var got tlsCertificateSortFieldProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into tlsCertificateSortFieldProbe: %v", tc.path, err)
-			}
-			if got.Sort.Field.Order != tc.wantOrder {
-				t.Errorf("tlsCertificateSortFieldProbe order = %q, want %q (the generated shape changed unexpectedly)",
-					got.Sort.Field.Order, tc.wantOrder)
-			}
-			// tlsCertificateSortFieldProbe has no field that could have
-			// captured evidence.Sort.Field.Value — that silent drop, now
 			// proven against the actual fixture bytes rather than assumed,
 			// is the accepted loss this test exists to pin.
 		})
@@ -2284,10 +1650,8 @@ func TestValidatePermissionBeforeMatchesKnownConformance(t *testing.T) {
 		"create_permission": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_permission": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_permissions": {
-			actionable: map[string]int{
-				schema.CatDefect: 2,
-			},
-			suppressed: map[string]int{},
+			actionable: map[string]int{schema.CatDefect: 2},
+			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
 		},
 		"delete_permission": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -2314,11 +1678,12 @@ func TestValidatePermissionBeforeMatchesKnownConformance(t *testing.T) {
 // and their Type fields lose the omitempty the hand-written struct added
 // despite the schema marking it required — closing every OMITEMPTY finding
 // on both commands too. On get_permissions, PermissionSort gains a
-// `,chardata` field (closing the MISSING sort/#text finding, since unlike
-// every prior family's <sort>, get_permissions's own schema pattern declares
-// "text" directly alongside <field> — see
-// TestPermissionSortFieldNameIsAnAcceptedLoss below for the field-level gap
-// that does NOT close), GetPermissionsSubject drops the schema-absent
+// `,chardata` field (closing the MISSING sort/#text finding, since
+// get_permissions's own schema pattern declares "text" directly alongside
+// <field> — the same schema-declared-but-misplaced text T-18a later
+// relocates onto PermissionField; see
+// FieldSuppressions["get_permissions:/sort"]), GetPermissionsSubject drops
+// the schema-absent
 // Deleted field (closing the one EXTRA finding), every response field's
 // omitempty tag now matches the schema's own required/optional split
 // (closing all 29 suppressed OMITEMPTY findings), and in_use/resource.
@@ -2334,10 +1699,8 @@ func TestValidatePermissionGeneratedMatchesOrImproves(t *testing.T) {
 		"create_permission": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_permission": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_permissions": {
-			actionable: map[string]int{
-				schema.CatDefect: 2,
-			},
-			suppressed: map[string]int{},
+			actionable: map[string]int{schema.CatDefect: 2},
+			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
 		},
 		"delete_permission": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -2449,179 +1812,6 @@ func TestPermissionCountBareTotalIsAnAcceptedLoss(t *testing.T) {
 	}
 }
 
-// permissionSortFieldProbe mirrors testdata/golden/get_permissions.go's
-// PermissionSort/PermissionField fields, byte for byte, including the
-// schema-derived Value chardata field on Sort itself — keep the two in
-// sync. Same rationale as permissionCountProbe.
-type permissionSortFieldProbe struct {
-	XMLName xml.Name `xml:"get_permissions_response"`
-	Sort    struct {
-		Value string `xml:",chardata"`
-		Field struct {
-			Order string `xml:"order"`
-		} `xml:"field"`
-	} `xml:"sort"`
-}
-
-// permissionSortFieldEvidence is permissionSortFieldProbe plus a ",chardata"
-// field on Field that the generated PermissionField does not have, proving
-// what the fixture actually contains independent of what the generated
-// shape can retain.
-type permissionSortFieldEvidence struct {
-	XMLName xml.Name `xml:"get_permissions_response"`
-	Sort    struct {
-		Field struct {
-			Value string `xml:",chardata"`
-			Order string `xml:"order"`
-		} `xml:"field"`
-	} `xml:"sort"`
-}
-
-// TestPermissionSortFieldNameIsAnAcceptedLoss is
-// TestPermissionCountBareTotalIsAnAcceptedLoss's counterpart for the other
-// half of the same contradiction: live gvmd captures under
-// internal/gmptest/testdata/live/get_permissions, and gvmd's own
-// bundled/upstream example, send the sort field's name as bare text inside
-// <field> ("name" in every fixture here), but the schema's declared
-// <pattern> for <field> (inside <sort>) is only <e>order</e>, with no text
-// token anywhere in it. There is nothing for the schema-side parser to see:
-// the pattern the generator draws from simply never declares this content,
-// so generation cannot recover it, and schema.Comparer — which only
-// compares against what the pattern declares — correctly reports no
-// finding for it either.
-//
-// get_permissions's schema does declare a text token one level up, directly
-// on <sort> itself (<pattern>text<e>field</e></pattern> in
-// command_get_permissions.xml), so PermissionSort does get a real,
-// schema-derived Value field, closing the MISSING sort/#text finding. But
-// that field and the field-name loss pinned here are not the same thing:
-// Go's encoding/xml assigns a ",chardata" field only the text nodes that
-// are direct children of that element, and in every fixture on record the
-// only direct-child text of <sort> is indentation whitespace (or nothing at
-// all in the live fixtures' compact XML) — "name" is a child of <field>,
-// one level down, not of <sort>. TestPermissionSortValueIsWhitespaceOnly
-// below proves PermissionSort.Value never holds anything but that
-// whitespace; do not read the MISSING finding closing as evidence that
-// PermissionSort.Value captures the observed sort field name.
-//
-// This is the same class of gap as permission_count's bare total above and
-// role/group/tag/schedule/alert/filter/tls_certificate's identical shape
-// (docs/review-2026-08.md's "Accepted evidence" note): the schema's own
-// declared structure and its own examples disagree, and per the
-// generate-only-what-the-schema-declares principle, the fix is to document
-// the loss, not to add a field the schema never asked for.
-//
-// Each fixture is decoded twice, into two structurally identical types that
-// differ only in one field, so the test proves both halves of the claim
-// against the actual wire bytes rather than assuming either:
-// permissionSortFieldEvidence (which has a ,chardata field on Field) proves
-// the bare field name is really there; permissionSortFieldProbe (an exact
-// mirror of the generated PermissionSort/PermissionField) proves that, with
-// only Order to decode into, that same name has nowhere to go.
-func TestPermissionSortFieldNameIsAnAcceptedLoss(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	cases := []struct {
-		provenance string
-		path       string
-		wantName   string
-		wantOrder  string
-	}{
-		{"live_001", filepath.Join(gmptestDir, "live", "get_permissions", "001_response.xml"), "name", "ascending"},
-		{"live_002", filepath.Join(gmptestDir, "live", "get_permissions", "002_response.xml"), "name", "ascending"},
-		{"live_003", filepath.Join(gmptestDir, "live", "get_permissions", "003_response.xml"), "name", "ascending"},
-		{"upstream_001", filepath.Join(gmptestDir, "upstream", "get_permissions", "001_response.xml"), "name", "ascending"},
-	}
-	for _, tc := range cases {
-		t.Run(tc.provenance, func(t *testing.T) {
-			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", tc.path, err)
-			}
-
-			var evidence permissionSortFieldEvidence
-			if err := xml.Unmarshal(data, &evidence); err != nil {
-				t.Fatalf("decoding %s into permissionSortFieldEvidence: %v", tc.path, err)
-			}
-			if got := strings.TrimSpace(evidence.Sort.Field.Value); got != tc.wantName {
-				t.Fatalf("%s: sort/field bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
-					tc.path, got, tc.wantName)
-			}
-			if evidence.Sort.Field.Order != tc.wantOrder {
-				t.Fatalf("%s: permissionSortFieldEvidence order = %q, want %q",
-					tc.path, evidence.Sort.Field.Order, tc.wantOrder)
-			}
-
-			var got permissionSortFieldProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into permissionSortFieldProbe: %v", tc.path, err)
-			}
-			if got.Sort.Field.Order != tc.wantOrder {
-				t.Errorf("permissionSortFieldProbe order = %q, want %q (the generated shape changed unexpectedly)",
-					got.Sort.Field.Order, tc.wantOrder)
-			}
-			// permissionSortFieldProbe.Sort.Field has no field that could
-			// have captured evidence.Sort.Field.Value — that silent drop,
-			// now proven against the actual fixture bytes rather than
-			// assumed, is the accepted loss this test exists to pin.
-			if got := strings.TrimSpace(got.Sort.Value); got != "" {
-				t.Errorf("permissionSortFieldProbe.Sort.Value = %q, want empty — PermissionSort.Value was expected to hold only indentation whitespace, not %q",
-					got, got)
-			}
-		})
-	}
-}
-
-// TestPermissionSortValueIsWhitespaceOnly guards against the same
-// misreading TestPermissionSortFieldNameIsAnAcceptedLoss's doc comment
-// warns about: generation closes the MISSING sort/#text finding by giving
-// PermissionSort a real ",chardata" field, because get_permissions's schema
-// — uniquely among every family reviewed so far — declares a text token
-// directly on <sort>'s own pattern. That closure is schema-accurate, but it
-// is not evidence PermissionSort.Value carries the sort field's name: in
-// every fixture on record, the only text that is a direct child of <sort>
-// (as opposed to a child of the nested <field>) is XML indentation
-// whitespace, or nothing at all in the live fixtures' compact encoding. The
-// meaningful "name" text lives one level down, inside <field>, which is
-// exactly the accepted loss TestPermissionSortFieldNameIsAnAcceptedLoss
-// pins — PermissionSort.Value and that loss are not the same field and
-// closing the former says nothing about the latter.
-func TestPermissionSortValueIsWhitespaceOnly(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	paths := []string{
-		filepath.Join(gmptestDir, "live", "get_permissions", "001_response.xml"),
-		filepath.Join(gmptestDir, "live", "get_permissions", "002_response.xml"),
-		filepath.Join(gmptestDir, "live", "get_permissions", "003_response.xml"),
-		filepath.Join(gmptestDir, "upstream", "get_permissions", "001_response.xml"),
-	}
-	for _, path := range paths {
-		t.Run(filepath.Base(filepath.Dir(path))+"/"+filepath.Base(path), func(t *testing.T) {
-			data, err := os.ReadFile(path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", path, err)
-			}
-
-			var got permissionSortFieldProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into permissionSortFieldProbe: %v", path, err)
-			}
-			if v := strings.TrimSpace(got.Sort.Value); v != "" {
-				t.Fatalf("%s: PermissionSort.Value = %q after trimming, want empty — fixture no longer demonstrates that this field captures only formatting whitespace, not the sort field name",
-					path, v)
-			}
-		})
-	}
-}
-
 // TestValidateTicketBeforeMatchesKnownConformance is the ticket family's
 // counterpart to TestValidatePermissionBeforeMatchesKnownConformance. ticket
 // is adopted, so commands/{create_ticket,get_tickets,modify_ticket}.go are
@@ -2638,7 +1828,7 @@ func TestValidateTicketBeforeMatchesKnownConformance(t *testing.T) {
 	want := map[string]counts{
 		"create_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_tickets":   {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_tickets":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
 		"delete_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
@@ -2660,7 +1850,7 @@ func TestValidateTicketGeneratedMatchesOrImproves(t *testing.T) {
 	wantAfter := map[string]counts{
 		"create_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_tickets":   {actionable: map[string]int{}, suppressed: map[string]int{}},
+		"get_tickets":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
 		"delete_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
@@ -2744,130 +1934,6 @@ func TestTicketCountBareTotalIsAnAcceptedLoss(t *testing.T) {
 	}
 }
 
-// ticketSortFieldProbe mirrors TicketSort/TicketField in
-// testdata/golden/get_tickets.go.
-type ticketSortFieldProbe struct {
-	XMLName xml.Name `xml:"get_tickets_response"`
-	Sort    struct {
-		Value string `xml:",chardata"`
-		Field struct {
-			Order string `xml:"order"`
-		} `xml:"field"`
-	} `xml:"sort"`
-}
-
-// ticketSortFieldEvidence is ticketSortFieldProbe plus a ",chardata" field
-// on Field to prove the bare sort field name the generated shape can't
-// retain.
-type ticketSortFieldEvidence struct {
-	XMLName xml.Name `xml:"get_tickets_response"`
-	Sort    struct {
-		Field struct {
-			Value string `xml:",chardata"`
-			Order string `xml:"order"`
-		} `xml:"field"`
-	} `xml:"sort"`
-}
-
-// TestTicketSortFieldNameIsAnAcceptedLoss mirrors
-// TestPermissionSortFieldNameIsAnAcceptedLoss: fixtures send the sort
-// field's name as bare text inside <field>, but <field>'s schema pattern
-// declares only <order>, so generation can't recover it. This is distinct
-// from TicketSort.Value (see TestTicketSortValueIsWhitespaceOnly), which
-// closes the schema-level sort/#text finding but never holds this name. See
-// docs/review-2026-08.md.
-func TestTicketSortFieldNameIsAnAcceptedLoss(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	cases := []struct {
-		provenance string
-		path       string
-		wantName   string
-		wantOrder  string
-	}{
-		{"live_001", filepath.Join(gmptestDir, "live", "get_tickets", "001_response.xml"), "name", "ascending"},
-		{"live_002", filepath.Join(gmptestDir, "live", "get_tickets", "002_response.xml"), "name", "ascending"},
-		{"upstream_001", filepath.Join(gmptestDir, "upstream", "get_tickets", "001_response.xml"), "name", "ascending"},
-	}
-	for _, tc := range cases {
-		t.Run(tc.provenance, func(t *testing.T) {
-			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", tc.path, err)
-			}
-
-			var evidence ticketSortFieldEvidence
-			if err := xml.Unmarshal(data, &evidence); err != nil {
-				t.Fatalf("decoding %s into ticketSortFieldEvidence: %v", tc.path, err)
-			}
-			if got := strings.TrimSpace(evidence.Sort.Field.Value); got != tc.wantName {
-				t.Fatalf("%s: sort/field bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
-					tc.path, got, tc.wantName)
-			}
-			if evidence.Sort.Field.Order != tc.wantOrder {
-				t.Fatalf("%s: ticketSortFieldEvidence order = %q, want %q",
-					tc.path, evidence.Sort.Field.Order, tc.wantOrder)
-			}
-
-			var got ticketSortFieldProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into ticketSortFieldProbe: %v", tc.path, err)
-			}
-			if got.Sort.Field.Order != tc.wantOrder {
-				t.Errorf("ticketSortFieldProbe order = %q, want %q (the generated shape changed unexpectedly)",
-					got.Sort.Field.Order, tc.wantOrder)
-			}
-			// ticketSortFieldProbe.Sort.Field has no field that could have
-			// captured evidence.Sort.Field.Value — that silent drop, now
-			// proven against the actual fixture bytes rather than assumed,
-			// is the accepted loss this test exists to pin.
-			if got := strings.TrimSpace(got.Sort.Value); got != "" {
-				t.Errorf("ticketSortFieldProbe.Sort.Value = %q, want empty — TicketSort.Value was expected to hold only indentation whitespace, not %q",
-					got, got)
-			}
-		})
-	}
-}
-
-// TestTicketSortValueIsWhitespaceOnly proves TicketSort.Value (the field
-// that closes the schema-level sort/#text finding) only ever holds
-// formatting whitespace, not the sort field name pinned by
-// TestTicketSortFieldNameIsAnAcceptedLoss.
-func TestTicketSortValueIsWhitespaceOnly(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	paths := []string{
-		filepath.Join(gmptestDir, "live", "get_tickets", "001_response.xml"),
-		filepath.Join(gmptestDir, "live", "get_tickets", "002_response.xml"),
-		filepath.Join(gmptestDir, "upstream", "get_tickets", "001_response.xml"),
-	}
-	for _, path := range paths {
-		t.Run(filepath.Base(filepath.Dir(path))+"/"+filepath.Base(path), func(t *testing.T) {
-			data, err := os.ReadFile(path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", path, err)
-			}
-
-			var got ticketSortFieldProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into ticketSortFieldProbe: %v", path, err)
-			}
-			if v := strings.TrimSpace(got.Sort.Value); v != "" {
-				t.Fatalf("%s: TicketSort.Value = %q after trimming, want empty — fixture no longer demonstrates that this field captures only formatting whitespace, not the sort field name",
-					path, v)
-			}
-		})
-	}
-}
-
 // TestValidateCredentialBeforeMatchesKnownConformance is the credential
 // family's counterpart to TestValidatePermissionBeforeMatchesKnownConformance.
 // credential is adopted, so commands/{create_credential,get_credentials,
@@ -2889,7 +1955,7 @@ func TestValidateCredentialBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_credential": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_credentials": {
 			actionable: map[string]int{schema.CatDefect: 2},
-			suppressed: map[string]int{},
+			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
 		},
 		"delete_credential": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -2929,7 +1995,7 @@ func TestValidateCredentialGeneratedMatchesOrImproves(t *testing.T) {
 		"modify_credential": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_credentials": {
 			actionable: map[string]int{schema.CatDefect: 2},
-			suppressed: map[string]int{},
+			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
 		},
 		"delete_credential": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -3015,129 +2081,6 @@ func TestCredentialCountBareTotalIsAnAcceptedLoss(t *testing.T) {
 	}
 }
 
-// credentialSortFieldProbe mirrors CredentialSort/CredentialField in
-// testdata/golden/get_credentials.go.
-type credentialSortFieldProbe struct {
-	XMLName xml.Name `xml:"get_credentials_response"`
-	Sort    struct {
-		Value string `xml:",chardata"`
-		Field struct {
-			Order string `xml:"order"`
-		} `xml:"field"`
-	} `xml:"sort"`
-}
-
-// credentialSortFieldEvidence is credentialSortFieldProbe plus a ",chardata"
-// field on Field to prove the bare sort field name the generated shape can't
-// retain.
-type credentialSortFieldEvidence struct {
-	XMLName xml.Name `xml:"get_credentials_response"`
-	Sort    struct {
-		Field struct {
-			Value string `xml:",chardata"`
-			Order string `xml:"order"`
-		} `xml:"field"`
-	} `xml:"sort"`
-}
-
-// TestCredentialSortFieldNameIsAnAcceptedLoss mirrors
-// TestTicketSortFieldNameIsAnAcceptedLoss: fixtures send the sort field's
-// name as bare text inside <field>, but <field>'s schema pattern declares
-// only <order>, so generation can't recover it. This is distinct from
-// CredentialSort.Value (see TestCredentialSortValueIsWhitespaceOnly), which
-// closes the schema-level sort/#text finding but never holds this name.
-func TestCredentialSortFieldNameIsAnAcceptedLoss(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	cases := []struct {
-		provenance string
-		path       string
-		wantName   string
-		wantOrder  string
-	}{
-		{"live_001", filepath.Join(gmptestDir, "live", "get_credentials", "001_response.xml"), "name", "ascending"},
-		{"live_002", filepath.Join(gmptestDir, "live", "get_credentials", "002_response.xml"), "name", "ascending"},
-		{"live_003", filepath.Join(gmptestDir, "live", "get_credentials", "003_response.xml"), "name", "ascending"},
-	}
-	for _, tc := range cases {
-		t.Run(tc.provenance, func(t *testing.T) {
-			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", tc.path, err)
-			}
-
-			var evidence credentialSortFieldEvidence
-			if err := xml.Unmarshal(data, &evidence); err != nil {
-				t.Fatalf("decoding %s into credentialSortFieldEvidence: %v", tc.path, err)
-			}
-			if got := strings.TrimSpace(evidence.Sort.Field.Value); got != tc.wantName {
-				t.Fatalf("%s: sort/field bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
-					tc.path, got, tc.wantName)
-			}
-			if evidence.Sort.Field.Order != tc.wantOrder {
-				t.Fatalf("%s: credentialSortFieldEvidence order = %q, want %q",
-					tc.path, evidence.Sort.Field.Order, tc.wantOrder)
-			}
-
-			var got credentialSortFieldProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into credentialSortFieldProbe: %v", tc.path, err)
-			}
-			if got.Sort.Field.Order != tc.wantOrder {
-				t.Errorf("credentialSortFieldProbe order = %q, want %q (the generated shape changed unexpectedly)",
-					got.Sort.Field.Order, tc.wantOrder)
-			}
-			// credentialSortFieldProbe.Sort.Field has no field that could
-			// have captured evidence.Sort.Field.Value — that silent drop,
-			// now proven against the actual fixture bytes rather than
-			// assumed, is the accepted loss this test exists to pin.
-			if got := strings.TrimSpace(got.Sort.Value); got != "" {
-				t.Errorf("credentialSortFieldProbe.Sort.Value = %q, want empty — CredentialSort.Value was expected to hold only indentation whitespace, not %q",
-					got, got)
-			}
-		})
-	}
-}
-
-// TestCredentialSortValueIsWhitespaceOnly proves CredentialSort.Value (the
-// field that closes the schema-level sort/#text finding) only ever holds
-// formatting whitespace, not the sort field name pinned by
-// TestCredentialSortFieldNameIsAnAcceptedLoss.
-func TestCredentialSortValueIsWhitespaceOnly(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	paths := []string{
-		filepath.Join(gmptestDir, "live", "get_credentials", "001_response.xml"),
-		filepath.Join(gmptestDir, "live", "get_credentials", "002_response.xml"),
-		filepath.Join(gmptestDir, "live", "get_credentials", "003_response.xml"),
-	}
-	for _, path := range paths {
-		t.Run(filepath.Base(filepath.Dir(path))+"/"+filepath.Base(path), func(t *testing.T) {
-			data, err := os.ReadFile(path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", path, err)
-			}
-
-			var got credentialSortFieldProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into credentialSortFieldProbe: %v", path, err)
-			}
-			if v := strings.TrimSpace(got.Sort.Value); v != "" {
-				t.Fatalf("%s: CredentialSort.Value = %q after trimming, want empty — fixture no longer demonstrates that this field captures only formatting whitespace, not the sort field name",
-					path, v)
-			}
-		})
-	}
-}
-
 // TestValidatePortListBeforeMatchesKnownConformance is the port_list family's
 // counterpart to TestValidateCredentialBeforeMatchesKnownConformance.
 // port_list is adopted, so this is a drift detector on the committed
@@ -3154,7 +2097,7 @@ func TestValidatePortListBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_port_list": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_port_lists": {
 			actionable: map[string]int{schema.CatDefect: 1},
-			suppressed: map[string]int{},
+			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
 		},
 		"delete_port_list": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -3184,7 +2127,7 @@ func TestValidatePortListGeneratedMatchesOrImproves(t *testing.T) {
 		"modify_port_list": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_port_lists": {
 			actionable: map[string]int{schema.CatDefect: 1},
-			suppressed: map[string]int{},
+			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
 		},
 		"delete_port_list": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -3203,7 +2146,7 @@ func TestValidateAssetBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_asset": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_assets": {
 			actionable: map[string]int{schema.CatDefect: 1},
-			suppressed: map[string]int{},
+			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
 		},
 		"delete_asset": {actionable: map[string]int{}, suppressed: map[string]int{schema.CatOmitEmpty: 2}},
 	}
@@ -3229,7 +2172,7 @@ func TestValidateAssetGeneratedMatchesOrImproves(t *testing.T) {
 		"modify_asset": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_assets": {
 			actionable: map[string]int{schema.CatDefect: 1},
-			suppressed: map[string]int{},
+			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
 		},
 		"delete_asset": {actionable: map[string]int{}, suppressed: map[string]int{schema.CatOmitEmpty: 2}},
 	}
@@ -3251,7 +2194,7 @@ func TestValidateReportFormatBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_report_format": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_report_formats": {
 			actionable: map[string]int{},
-			suppressed: map[string]int{schema.CatExtra: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1},
 		},
 		"delete_report_format": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"verify_report_format": {actionable: map[string]int{}, suppressed: map[string]int{}},
@@ -3292,7 +2235,7 @@ func TestValidateReportFormatGeneratedMatchesOrImproves(t *testing.T) {
 		"modify_report_format": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_report_formats": {
 			actionable: map[string]int{},
-			suppressed: map[string]int{schema.CatExtra: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1},
 		},
 		"delete_report_format": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"verify_report_format": {actionable: map[string]int{}, suppressed: map[string]int{}},
@@ -3442,130 +2385,6 @@ func TestPortListCountBareTotalIsAnAcceptedLoss(t *testing.T) {
 	}
 }
 
-// portListSortFieldProbe mirrors PortListSort/PortListField in
-// testdata/golden/get_port_lists.go.
-type portListSortFieldProbe struct {
-	XMLName xml.Name `xml:"get_port_lists_response"`
-	Sort    struct {
-		Value string `xml:",chardata"`
-		Field struct {
-			Order string `xml:"order"`
-		} `xml:"field"`
-	} `xml:"sort"`
-}
-
-// portListSortFieldEvidence is portListSortFieldProbe plus a ",chardata"
-// field on Field to prove the bare sort field name the generated shape
-// can't retain.
-type portListSortFieldEvidence struct {
-	XMLName xml.Name `xml:"get_port_lists_response"`
-	Sort    struct {
-		Field struct {
-			Value string `xml:",chardata"`
-			Order string `xml:"order"`
-		} `xml:"field"`
-	} `xml:"sort"`
-}
-
-// TestPortListSortFieldNameIsAnAcceptedLoss mirrors
-// TestTicketSortFieldNameIsAnAcceptedLoss: fixtures send the sort field's
-// name as bare text inside <field>, but <field>'s schema pattern declares
-// only <order>, so generation can't recover it. This is distinct from
-// PortListSort.Value (see TestPortListSortValueIsWhitespaceOnly), which
-// closes the schema-level sort/#text finding but never holds this name. See
-// docs/review-2026-08.md.
-func TestPortListSortFieldNameIsAnAcceptedLoss(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	cases := []struct {
-		provenance string
-		path       string
-		wantName   string
-		wantOrder  string
-	}{
-		{"live_001", filepath.Join(gmptestDir, "live", "get_port_lists", "001_response.xml"), "name", "ascending"},
-		{"live_002", filepath.Join(gmptestDir, "live", "get_port_lists", "002_response.xml"), "name", "ascending"},
-		{"live_003", filepath.Join(gmptestDir, "live", "get_port_lists", "003_response.xml"), "name", "ascending"},
-	}
-	for _, tc := range cases {
-		t.Run(tc.provenance, func(t *testing.T) {
-			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", tc.path, err)
-			}
-
-			var evidence portListSortFieldEvidence
-			if err := xml.Unmarshal(data, &evidence); err != nil {
-				t.Fatalf("decoding %s into portListSortFieldEvidence: %v", tc.path, err)
-			}
-			if got := strings.TrimSpace(evidence.Sort.Field.Value); got != tc.wantName {
-				t.Fatalf("%s: sort/field bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
-					tc.path, got, tc.wantName)
-			}
-			if evidence.Sort.Field.Order != tc.wantOrder {
-				t.Fatalf("%s: portListSortFieldEvidence order = %q, want %q",
-					tc.path, evidence.Sort.Field.Order, tc.wantOrder)
-			}
-
-			var got portListSortFieldProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into portListSortFieldProbe: %v", tc.path, err)
-			}
-			if got.Sort.Field.Order != tc.wantOrder {
-				t.Errorf("portListSortFieldProbe order = %q, want %q (the generated shape changed unexpectedly)",
-					got.Sort.Field.Order, tc.wantOrder)
-			}
-			// portListSortFieldProbe.Sort.Field has no field that could have
-			// captured evidence.Sort.Field.Value — that silent drop, now
-			// proven against the actual fixture bytes rather than assumed,
-			// is the accepted loss this test exists to pin.
-			if got := strings.TrimSpace(got.Sort.Value); got != "" {
-				t.Errorf("portListSortFieldProbe.Sort.Value = %q, want empty — PortListSort.Value was expected to hold only indentation whitespace, not %q",
-					got, got)
-			}
-		})
-	}
-}
-
-// TestPortListSortValueIsWhitespaceOnly proves PortListSort.Value (the field
-// that closes the schema-level sort/#text finding) only ever holds
-// formatting whitespace, not the sort field name pinned by
-// TestPortListSortFieldNameIsAnAcceptedLoss.
-func TestPortListSortValueIsWhitespaceOnly(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	paths := []string{
-		filepath.Join(gmptestDir, "live", "get_port_lists", "001_response.xml"),
-		filepath.Join(gmptestDir, "live", "get_port_lists", "002_response.xml"),
-		filepath.Join(gmptestDir, "live", "get_port_lists", "003_response.xml"),
-	}
-	for _, path := range paths {
-		t.Run(filepath.Base(filepath.Dir(path))+"/"+filepath.Base(path), func(t *testing.T) {
-			data, err := os.ReadFile(path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", path, err)
-			}
-
-			var got portListSortFieldProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into portListSortFieldProbe: %v", path, err)
-			}
-			if v := strings.TrimSpace(got.Sort.Value); v != "" {
-				t.Fatalf("%s: PortListSort.Value = %q after trimming, want empty — fixture no longer demonstrates that this field captures only formatting whitespace, not the sort field name",
-					path, v)
-			}
-		})
-	}
-}
-
 // TestValidateReportConfigBeforeMatchesKnownConformance is report_config's
 // counterpart to TestValidateReportFormatBeforeMatchesKnownConformance.
 // report_config is adopted, so this is a drift detector on the committed
@@ -3582,7 +2401,7 @@ func TestValidateReportConfigBeforeMatchesKnownConformance(t *testing.T) {
 		},
 		"get_report_configs": {
 			actionable: map[string]int{schema.CatDefect: 1, schema.CatMissing: 1},
-			suppressed: map[string]int{schema.CatExtra: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1},
 		},
 		"delete_report_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -3629,7 +2448,7 @@ func TestValidateReportConfigGeneratedMatchesOrImproves(t *testing.T) {
 		},
 		"get_report_configs": {
 			actionable: map[string]int{schema.CatDefect: 1, schema.CatMissing: 1},
-			suppressed: map[string]int{schema.CatExtra: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1},
 		},
 		"delete_report_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -3801,7 +2620,7 @@ func TestValidateUserBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_user": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_users": {
 			actionable: map[string]int{schema.CatDefect: 2},
-			suppressed: map[string]int{},
+			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
 		},
 		"delete_user": {actionable: map[string]int{}, suppressed: map[string]int{schema.CatOmitEmpty: 4}},
 	}
@@ -3834,7 +2653,7 @@ func TestValidateUserGeneratedMatchesOrImproves(t *testing.T) {
 		"modify_user": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_users": {
 			actionable: map[string]int{schema.CatDefect: 2},
-			suppressed: map[string]int{},
+			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
 		},
 		"delete_user": {actionable: map[string]int{}, suppressed: map[string]int{schema.CatOmitEmpty: 4}},
 	}
@@ -3963,7 +2782,7 @@ func TestValidateTargetBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_target": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_targets": {
 			actionable: map[string]int{schema.CatDefect: 9},
-			suppressed: map[string]int{},
+			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
 		},
 		"delete_target": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -3999,7 +2818,7 @@ func TestValidateTargetGeneratedMatchesOrImproves(t *testing.T) {
 		"modify_target": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_targets": {
 			actionable: map[string]int{schema.CatDefect: 9},
-			suppressed: map[string]int{},
+			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
 		},
 		"delete_target": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -4018,7 +2837,7 @@ func TestValidateTaskBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_task": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_tasks": {
 			actionable: map[string]int{schema.CatDefect: 7},
-			suppressed: map[string]int{},
+			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
 		},
 		"delete_task": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"move_task":   {actionable: map[string]int{}, suppressed: map[string]int{}},
@@ -4065,7 +2884,7 @@ func TestValidateTaskGeneratedMatchesOrImproves(t *testing.T) {
 		"modify_task": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_tasks": {
 			actionable: map[string]int{schema.CatDefect: 7},
-			suppressed: map[string]int{},
+			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
 		},
 		"delete_task": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"move_task":   {actionable: map[string]int{}, suppressed: map[string]int{}},
@@ -4094,7 +2913,7 @@ func TestValidateScannerBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_scanner": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_scanners": {
 			actionable: map[string]int{schema.CatDefect: 10},
-			suppressed: map[string]int{},
+			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
 		},
 		"delete_scanner": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"verify_scanner": {
@@ -4131,7 +2950,7 @@ func TestValidateScannerGeneratedMatchesOrImproves(t *testing.T) {
 		"modify_scanner": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_scanners": {
 			actionable: map[string]int{schema.CatDefect: 10},
-			suppressed: map[string]int{},
+			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
 		},
 		"delete_scanner": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"verify_scanner": {
@@ -4156,7 +2975,7 @@ func TestValidateConfigBeforeMatchesKnownConformance(t *testing.T) {
 		},
 		"get_configs": {
 			actionable: map[string]int{schema.CatDefect: 1},
-			suppressed: map[string]int{},
+			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
 		},
 		"modify_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"delete_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
@@ -4199,7 +3018,7 @@ func TestValidateConfigGeneratedMatchesOrImproves(t *testing.T) {
 		},
 		"get_configs": {
 			actionable: map[string]int{schema.CatDefect: 1},
-			suppressed: map[string]int{},
+			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
 		},
 		"modify_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"delete_config": {actionable: map[string]int{}, suppressed: map[string]int{}},

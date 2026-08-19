@@ -23,7 +23,7 @@ type GetFiltersResponse struct {
 	Status      string            `xml:"status,attr"`
 	StatusText  string            `xml:"status_text,attr"`
 	Filters     Filters           `xml:"filters"`
-	Sort        FilterSort        `xml:"sort"`
+	Sort        FilterSort        `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Filters2    GetFiltersFilters `xml:"-" gmpwire:"filters"`
 	FilterCount FilterCount       `xml:"filter_count"`
 	Filter      []Filter          `xml:"filter,omitempty"`
@@ -188,12 +188,12 @@ type FilterKeyword struct {
 
 // FilterSort is the <sort> element of get_filters. See the GMP protocol docs for details.
 type FilterSort struct {
-	Value string      `xml:",chardata"`
 	Field FilterField `xml:"field"`
 }
 
 // FilterField is the <field> element of get_filters. See the GMP protocol docs for details.
 type FilterField struct {
+	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Order string `xml:"order"`
 }
 

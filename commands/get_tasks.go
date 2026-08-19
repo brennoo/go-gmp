@@ -24,7 +24,7 @@ type GetTasksResponse struct {
 	StatusText     string      `xml:"status_text,attr"`
 	ApplyOverrides string      `xml:"apply_overrides"`
 	Filters        TaskFilters `xml:"filters"`
-	Sort           TaskSort    `xml:"sort"`
+	Sort           TaskSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Tasks          Tasks       `xml:"tasks"`
 	TaskCount      TaskCount   `xml:"task_count"`
 	Task           []Task      `xml:"task,omitempty"`
@@ -57,12 +57,12 @@ type TaskKeyword struct {
 
 // TaskSort is the <sort> element of get_tasks. See the GMP protocol docs for details.
 type TaskSort struct {
-	Value string    `xml:",chardata"`
 	Field TaskField `xml:"field"`
 }
 
 // TaskField is the <field> element of get_tasks. See the GMP protocol docs for details.
 type TaskField struct {
+	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Order string `xml:"order"`
 }
 

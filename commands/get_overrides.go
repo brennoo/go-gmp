@@ -22,7 +22,7 @@ type GetOverridesResponse struct {
 	Status        string          `xml:"status,attr"`
 	StatusText    string          `xml:"status_text,attr"`
 	Filters       OverrideFilters `xml:"filters"`
-	Sort          OverrideSort    `xml:"sort"`
+	Sort          OverrideSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Overrides     Overrides       `xml:"overrides"`
 	OverrideCount OverrideCount   `xml:"override_count"`
 	Override      []Override      `xml:"override,omitempty"`
@@ -55,12 +55,12 @@ type OverrideKeyword struct {
 
 // OverrideSort is the <sort> element of get_overrides. See the GMP protocol docs for details.
 type OverrideSort struct {
-	Value string        `xml:",chardata"`
 	Field OverrideField `xml:"field"`
 }
 
 // OverrideField is the <field> element of get_overrides. See the GMP protocol docs for details.
 type OverrideField struct {
+	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Order string `xml:"order"`
 }
 

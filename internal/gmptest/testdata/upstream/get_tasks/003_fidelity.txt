@@ -5,7 +5,6 @@ namespaces-seen:
 
 DROPPED
   /get_tasks_response/filters/keywords/truncated                           x1  (+1 descendant paths)
-  /get_tasks_response/sort/field/#text                                     x1
   /get_tasks_response/task/config/type                                     x1  (+1 descendant paths)
   /get_tasks_response/task/hosts_ordering                                  x1
   /get_tasks_response/task/last_report/report/scan_start                   x1  (+1 descendant paths)

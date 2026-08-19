@@ -4,7 +4,6 @@ decode: ok
 namespaces-seen:
 
 DROPPED
-  /get_tickets_response/sort/field/#text                                   x1
   /get_tickets_response/ticket/assigned_to/user/name                       x1  (+1 descendant paths)
   /get_tickets_response/ticket/report/timestamp                            x1  (+1 descendant paths)
   /get_tickets_response/ticket/task/name                                   x1  (+1 descendant paths)

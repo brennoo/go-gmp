@@ -23,7 +23,7 @@ type GetCredentialsResponse struct {
 	Status          string            `xml:"status,attr"`
 	StatusText      string            `xml:"status_text,attr"`
 	Filters         CredentialFilters `xml:"filters"`
-	Sort            CredentialSort    `xml:"sort"`
+	Sort            CredentialSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Credentials     Credentials       `xml:"credentials"`
 	CredentialCount CredentialCount   `xml:"credential_count"`
 	Credential      []Credential      `xml:"credential,omitempty"`
@@ -56,12 +56,12 @@ type CredentialKeyword struct {
 
 // CredentialSort is the <sort> element of get_credentials. See the GMP protocol docs for details.
 type CredentialSort struct {
-	Value string          `xml:",chardata"`
 	Field CredentialField `xml:"field"`
 }
 
 // CredentialField is the <field> element of get_credentials. See the GMP protocol docs for details.
 type CredentialField struct {
+	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Order string `xml:"order"`
 }
 

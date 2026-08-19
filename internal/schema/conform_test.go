@@ -143,6 +143,104 @@ func TestChardataWithOverrideReasonIsSuppressed(t *testing.T) {
 	}
 }
 
+// T-18a's shape: the schema wrongly declares an element's chardata on the
+// wrapper (e.g. <sort>) when the wire actually carries it one level deeper,
+// on a child (e.g. <sort><field>). internal/codegen's FieldSuppressions
+// relocates it by suppressing the wrapper's chardata and adding an override
+// one on the child; the wrapper field itself carries the relocation's
+// gmpoverride tag, since the wrapper struct has no chardata field left of
+// its own to carry it. checkChardata must suppress both halves: the
+// wrapper's now-missing chardata (via g.OverrideReason) and the child's now-
+// extra chardata (via g.ChardataOverrideReason), the same way
+// TestChardataWithOverrideReasonIsSuppressed does for a lone addition.
+func TestChardataRelocationSuppressesBothHalves(t *testing.T) {
+	body := `
+    <name>x</name>
+    <pattern><e>a</e></pattern>
+    <ele>
+      <name>a</name>
+      <pattern>
+        <t>text</t>
+        <e>field</e>
+      </pattern>
+      <ele>
+        <name>field</name>
+        <pattern><e>order</e></pattern>
+        <ele><name>order</name><pattern><t>text</t></pattern></ele>
+      </ele>
+    </ele>
+    <response><pattern><attrib><name>status</name><type>status</type><required>1</required></attrib></pattern></response>`
+	type req struct {
+		XMLName xml.Name `xml:"x"`
+		A       struct {
+			Field struct {
+				Value string `xml:",chardata" gmpoverride:"relocated from a"`
+				Order string `xml:"order"`
+			} `xml:"field"`
+		} `xml:"a" gmpoverride:"relocated to a/field"`
+	}
+	r := diff(t, body, &req{}, &respOK{})
+	if got := only(r, CatMissing); len(got) != 0 {
+		t.Errorf("A suppressed MISSING must not show up in the actionable count, got %v", render(got))
+	}
+	if got := only(r, CatExtra); len(got) != 0 {
+		t.Errorf("A suppressed EXTRA must not show up in the actionable count, got %v", render(got))
+	}
+
+	wantSuppressed := map[string]struct{ cat, reason string }{
+		"/x/a/#text":       {CatMissing, "relocated to a/field"},
+		"/x/a/field/#text": {CatExtra, "relocated from a"},
+	}
+	for _, f := range r.Findings {
+		want, ok := wantSuppressed[f.Path]
+		if !ok {
+			continue
+		}
+		delete(wantSuppressed, f.Path)
+		if f.Category != want.cat || !f.Suppressed || f.Reason != want.reason {
+			t.Errorf("At %s: got category %s suppressed=%v reason=%q, want %s suppressed=true reason=%q",
+				f.Path, f.Category, f.Suppressed, f.Reason, want.cat, want.reason)
+		}
+	}
+	for path := range wantSuppressed {
+		t.Errorf("Expected a suppressed finding at %s, got none: %v", path, render(r.Findings))
+	}
+}
+
+// The counterpart to TestChardataRelocationSuppressesBothHalves: a relocation
+// missing its source-side gmpoverride tag is not a validated relocation at
+// all, just a struct that lost its chardata field, and must fail closed as an
+// ordinary actionable MISSING rather than being silently accepted.
+func TestUnpairedChardataMoveStaysActionable(t *testing.T) {
+	body := `
+    <name>x</name>
+    <pattern><e>a</e></pattern>
+    <ele>
+      <name>a</name>
+      <pattern>
+        <t>text</t>
+        <e>field</e>
+      </pattern>
+      <ele>
+        <name>field</name>
+        <pattern><e>order</e></pattern>
+        <ele><name>order</name><pattern><t>text</t></pattern></ele>
+      </ele>
+    </ele>
+    <response><pattern/></response>`
+	type req struct {
+		XMLName xml.Name `xml:"x"`
+		A       struct {
+			Field struct {
+				Value string `xml:",chardata" gmpoverride:"relocated from a"`
+				Order string `xml:"order"`
+			} `xml:"field"`
+		} `xml:"a"` // no gmpoverride: the source half of the move is undocumented
+	}
+	r := diff(t, body, &req{}, &respOK{})
+	wantOne(t, r, CatMissing, "/x/a/#text")
+}
+
 func TestConformantPairHasNoFindings(t *testing.T) {
 	type req struct {
 		XMLName xml.Name `xml:"x"`

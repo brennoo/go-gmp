@@ -21,7 +21,7 @@ type GetPortListsResponse struct {
 	Status        string          `xml:"status,attr"`
 	StatusText    string          `xml:"status_text,attr"`
 	Filters       PortListFilters `xml:"filters"`
-	Sort          PortListSort    `xml:"sort"`
+	Sort          PortListSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	PortLists     PortLists       `xml:"port_lists"`
 	PortListCount PortListCount   `xml:"port_list_count"`
 	PortList      []PortList      `xml:"port_list,omitempty"`
@@ -54,12 +54,12 @@ type PortListKeyword struct {
 
 // PortListSort is the <sort> element of get_port_lists. See the GMP protocol docs for details.
 type PortListSort struct {
-	Value string        `xml:",chardata"`
 	Field PortListField `xml:"field"`
 }
 
 // PortListField is the <field> element of get_port_lists. See the GMP protocol docs for details.
 type PortListField struct {
+	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Order string `xml:"order"`
 }
 

@@ -7,7 +7,6 @@ DROPPED
   /get_permissions_response/filters/keywords/truncated                     x1  (+1 descendant paths)
   /get_permissions_response/permission/users                               x1  (+1 descendant paths)
   /get_permissions_response/permission_count/#text                         x1
-  /get_permissions_response/sort/field/#text                               x1
   /get_permissions_response/truncated                                      x1  (+1 descendant paths)
 
 TRUNCATED

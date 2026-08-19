@@ -76,19 +76,23 @@ func TestChardataRoundTripHost(t *testing.T) {
 	})
 }
 
-// TestChardataRoundTripSort covers the third recurring shape: an element with
-// bare text and a child but no attributes of its own — <sort>text<field>
-// <order>...</order></field></sort>, shared by ~40 get_* commands' response.
+// TestChardataRoundTripSort covers the third recurring shape: a wrapper
+// element with a child that itself carries bare text and another child —
+// <sort><field>text<order>...</order></field></sort>, shared by ~25 get_*
+// commands' response. The schema declares the chardata directly on <sort>,
+// but live wire data actually places it one level deeper on <sort>'s own
+// <field> child; T-18a's FieldSuppressions/FieldOverrides relocation moves
+// NoteSort's chardata onto NoteField to match.
 func TestChardataRoundTripSort(t *testing.T) {
 	type wrapper struct {
 		XMLName xml.Name `xml:"get_notes_response"`
 		Sort    NoteSort `xml:"sort"`
 	}
-	const in = `<get_notes_response><sort>text<field><order>ascending</order></field></sort></get_notes_response>`
+	const in = `<get_notes_response><sort><field>text<order>ascending</order></field></sort></get_notes_response>`
 
 	chardataRoundTrip(t, in, func(t *testing.T, got *wrapper) {
-		if got.Sort.Value != "text" {
-			t.Errorf("Value = %q, want %q", got.Sort.Value, "text")
+		if got.Sort.Field.Value != "text" {
+			t.Errorf("Field.Value = %q, want %q", got.Sort.Field.Value, "text")
 		}
 		if got.Sort.Field.Order != "ascending" {
 			t.Errorf("Field.Order = %q, want %q", got.Sort.Field.Order, "ascending")

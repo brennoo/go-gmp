@@ -1305,10 +1305,7 @@ func main() {
 `
 
 // TestPortListGeneratedResponseRoundTrips adds a synthetic document to cover
-// deprecated/user_tags, which no committed fixture exercises. The schema
-// declares chardata on sort, not sort/field, so Value captures formatting
-// whitespace rather than the observed field name (see
-// TestPortListSortFieldNameIsAnAcceptedLoss).
+// deprecated/user_tags, which no committed fixture exercises.
 func TestPortListGeneratedResponseRoundTrips(t *testing.T) {
 	dir := t.TempDir()
 	goBin := portListScratchModule(t, dir)
@@ -1341,21 +1338,21 @@ func TestPortListGeneratedResponseRoundTrips(t *testing.T) {
 	}
 
 	want := "" +
-		"upstream-decode: port_lists=1 filtered=0 page=0 sort_value=\"\" sort_field_order=\"\"\n" +
+		"upstream-decode: port_lists=1 filtered=0 page=0 sort_field_value=\"\" sort_field_order=\"\"\n" +
 		"  port_list id=\"b993b6f5-f9fb-4e6e-9c94-dd46c00e058d\" name=\"All TCP\" writable=false in_use=true predefined=false deprecated=false port_ranges=[TCP:1-65535] targets=[1f28d970-17ef-4c69-ba8a-13827059f2b9]\n" +
-		"upstream-roundtrip: port_lists=1 filtered=0 page=0 sort_value=\"\" sort_field_order=\"\"\n" +
+		"upstream-roundtrip: port_lists=1 filtered=0 page=0 sort_field_value=\"\" sort_field_order=\"\"\n" +
 		"  port_list id=\"b993b6f5-f9fb-4e6e-9c94-dd46c00e058d\" name=\"All TCP\" writable=false in_use=true predefined=false deprecated=false port_ranges=[TCP:1-65535] targets=[1f28d970-17ef-4c69-ba8a-13827059f2b9]\n" +
-		"live-decode: port_lists=3 filtered=3 page=3 sort_value=\"\" sort_field_order=\"ascending\" keywords=[first=1 rows=11 sort=name]\n" +
+		"live-decode: port_lists=3 filtered=3 page=3 sort_field_value=\"name\" sort_field_order=\"ascending\" keywords=[first=1 rows=11 sort=name]\n" +
 		"  port_list id=\"33d0cd82-57c6-11e1-8ed1-406186ea4fc5\" name=\"All IANA assigned TCP\" writable=true in_use=false predefined=true deprecated=false\n" +
 		"  port_list id=\"4a4717fe-57d2-11e1-9a26-406186ea4fc5\" name=\"All IANA assigned TCP and UDP\" writable=true in_use=false predefined=true deprecated=false\n" +
 		"  port_list id=\"730ef368-57e2-11e1-a90f-406186ea4fc5\" name=\"All TCP and Nmap top 100 UDP\" writable=true in_use=false predefined=true deprecated=false\n" +
-		"live-roundtrip: port_lists=3 filtered=3 page=3 sort_value=\"\" sort_field_order=\"ascending\" keywords=[first=1 rows=11 sort=name]\n" +
+		"live-roundtrip: port_lists=3 filtered=3 page=3 sort_field_value=\"name\" sort_field_order=\"ascending\" keywords=[first=1 rows=11 sort=name]\n" +
 		"  port_list id=\"33d0cd82-57c6-11e1-8ed1-406186ea4fc5\" name=\"All IANA assigned TCP\" writable=true in_use=false predefined=true deprecated=false\n" +
 		"  port_list id=\"4a4717fe-57d2-11e1-9a26-406186ea4fc5\" name=\"All IANA assigned TCP and UDP\" writable=true in_use=false predefined=true deprecated=false\n" +
 		"  port_list id=\"730ef368-57e2-11e1-a90f-406186ea4fc5\" name=\"All TCP and Nmap top 100 UDP\" writable=true in_use=false predefined=true deprecated=false\n" +
-		"synthetic-decode: port_lists=1 filtered=1 page=1 sort_value=\"\" sort_field_order=\"ascending\"\n" +
+		"synthetic-decode: port_lists=1 filtered=1 page=1 sort_field_value=\"name\" sort_field_order=\"ascending\"\n" +
 		"  port_list id=\"port-list-syn-1\" name=\"synthetic-port-list\" writable=true in_use=false predefined=false deprecated=true user_tags=[env:prod]\n" +
-		"synthetic-roundtrip: port_lists=1 filtered=1 page=1 sort_value=\"\" sort_field_order=\"ascending\"\n" +
+		"synthetic-roundtrip: port_lists=1 filtered=1 page=1 sort_field_value=\"name\" sort_field_order=\"ascending\"\n" +
 		"  port_list id=\"port-list-syn-1\" name=\"synthetic-port-list\" writable=true in_use=false predefined=false deprecated=true user_tags=[env:prod]\n"
 	if got := string(out); got != want {
 		t.Fatalf("Round-trip program printed:\n%s\nwant:\n%s", got, want)
@@ -1404,8 +1401,8 @@ import (
 )
 
 func report(label string, r *genproto.GetPortListsResponse) {
-	fmt.Printf("%s: port_lists=%d filtered=%d page=%d sort_value=%q sort_field_order=%q",
-		label, len(r.PortList), r.PortListCount.Filtered, r.PortListCount.Page, r.Sort.Value, r.Sort.Field.Order)
+	fmt.Printf("%s: port_lists=%d filtered=%d page=%d sort_field_value=%q sort_field_order=%q",
+		label, len(r.PortList), r.PortListCount.Filtered, r.PortListCount.Page, r.Sort.Field.Value, r.Sort.Field.Order)
 	if len(r.Filters.Keywords.Keyword) > 0 {
 		fmt.Printf(" keywords=[")
 		for i, kw := range r.Filters.Keywords.Keyword {
@@ -2196,6 +2193,89 @@ func TestFieldOverridesSchemaChildCollision(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "duplicate") {
 		t.Fatalf("Generate error = %q, want it to mention the duplicate", err.Error())
+	}
+}
+
+// --- FieldSuppressions chardata relocation ----------------------------------
+
+// twinChardataCommands is twinFieldOverrideCommands' counterpart for the
+// chardata relocation mechanism: <thing> declares schema chardata directly
+// (mirroring a real <sort>), and its <leaf> child is itself a struct (via its
+// own <order> child) so a chardata FieldOverride has somewhere to attach that
+// isn't just a scalar field.
+func twinChardataCommands() (cmdA, cmdB schema.Command) {
+	shape := func(rootName string) *schema.Node {
+		return &schema.Node{
+			Name: rootName,
+			Children: []*schema.Node{
+				{
+					Name: "thing", Kind: schema.KindElement, Card: schema.CardOptional, Chardata: true,
+					Children: []*schema.Node{
+						{
+							Name: "leaf", Kind: schema.KindElement, Card: schema.CardOptional,
+							Children: []*schema.Node{
+								{Name: "order", Kind: schema.KindElement, Card: schema.CardOptional, Type: "text"},
+							},
+						},
+					},
+				},
+			},
+		}
+	}
+	cmdA = schema.Command{Name: "cmd_a", Request: &schema.Node{Name: "cmd_a"}, Response: shape("cmd_a_response"), Provenance: testProvenance()}
+	cmdB = schema.Command{Name: "cmd_b", Request: &schema.Node{Name: "cmd_b"}, Response: shape("cmd_b_response"), Provenance: testProvenance()}
+	return cmdA, cmdB
+}
+
+// TestChardataRelocationSucceeds is T-18a's end-to-end proof: suppressing
+// <thing>'s schema-declared chardata and relocating it onto <thing>/<leaf>
+// must move the `,chardata` tag rather than duplicate or drop it.
+func TestChardataRelocationSucceeds(t *testing.T) {
+	cmdA, _ := twinChardataCommands()
+	fs := map[string][]FieldSuppression{
+		"cmd_a:/thing": {{Chardata: true, RelocatedTo: "cmd_a:/thing/leaf", Reason: "t"}},
+	}
+	fo := map[string][]FieldOverride{
+		"cmd_a:/thing/leaf": {{Chardata: true, GoType: "string", RelocatedFrom: "cmd_a:/thing", Reason: "t"}},
+	}
+	out, err := Generate([]schema.Command{cmdA}, TypeOverrides, PointerOverrides, nil, fo, fs, nil, nil, nil, nil, "", nil)
+	if err != nil {
+		t.Fatalf("Generate failed: %v", err)
+	}
+	var all strings.Builder
+	for _, src := range out {
+		all.WriteString(src)
+	}
+	if got := strings.Count(all.String(), ",chardata"); got != 1 {
+		t.Fatalf(`generated output has %d ",chardata" tags, want exactly 1 (the wrapper's schema-declared `+
+			`chardata suppressed, the relocated one on <leaf> kept):\n%s`, got, all.String())
+	}
+	if !strings.Contains(all.String(), `xml:",chardata" gmpoverride:"t"`) {
+		t.Fatalf(`generated output missing a ",chardata" field carrying the override's gmpoverride tag:\n%s`, all.String())
+	}
+}
+
+// TestChardataRelocationCrossUseMismatch is
+// TestFieldOverridesCrossUseMismatchOnDifferentEntries's counterpart for
+// chardata suppression: cmd_a and cmd_b share <thing>'s structurally
+// identical shape, but only cmd_a suppresses its chardata. Structural dedup
+// collapses both uses into one struct, so fieldSuppressionsFor must catch the
+// disagreement rather than silently apply cmd_a's suppression to cmd_b too
+// (or vice versa).
+func TestChardataRelocationCrossUseMismatch(t *testing.T) {
+	cmdA, cmdB := twinChardataCommands()
+	fs := map[string][]FieldSuppression{
+		"cmd_a:/thing": {{Chardata: true, RelocatedTo: "cmd_a:/thing/leaf", Reason: "t"}},
+	}
+	fo := map[string][]FieldOverride{
+		"cmd_a:/thing/leaf": {{Chardata: true, GoType: "string", RelocatedFrom: "cmd_a:/thing", Reason: "t"}},
+	}
+	_, err := Generate([]schema.Command{cmdA, cmdB}, TypeOverrides, PointerOverrides, nil, fo, fs, nil, nil, nil, nil, "", nil)
+	if err == nil {
+		t.Fatal("Generate succeeded; want an error: cmd_b's use of <thing> has no chardata suppression while cmd_a's does")
+	}
+	if !strings.Contains(err.Error(), "disagree") {
+		t.Fatalf("Generate error = %q, want it to mention the cross-use disagreement", err.Error())
 	}
 }
 

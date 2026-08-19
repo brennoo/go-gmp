@@ -5,7 +5,6 @@ namespaces-seen:
 
 DROPPED
   /get_report_formats_response/report_format_count/#text                   x1
-  /get_report_formats_response/sort/field/#text                            x1
 
 TRUNCATED
   (none)

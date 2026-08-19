@@ -255,6 +255,10 @@ func (c *Comparer) checkChardata(res *Result, cmd Command, side string, s *Node,
 			Detail: fmt.Sprintf("schema also declares character data (%s) here; Go %s has no `,chardata` field",
 				displayType(s), g.GoType)}
 		f.Confirmed = c.confirmed(cmd.Name, path)
+		if g.OverrideReason != "" {
+			f.Suppressed = true
+			f.Reason = g.OverrideReason
+		}
 		res.Findings = append(res.Findings, f)
 	case !s.Chardata && g.Chardata:
 		f := Finding{Command: cmd.Name, Side: side, Category: CatExtra, Path: path + "/#text", Detail: fmt.Sprintf(

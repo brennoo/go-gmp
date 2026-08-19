@@ -13,7 +13,6 @@ DROPPED
   /get_reports_response/report/report/result_count/warning/@deprecated     x5
   /get_reports_response/report/report/task/target/@id                      x5
   /get_reports_response/report_count/#text                                 x1
-  /get_reports_response/sort/field/#text                                   x1
 
 TRUNCATED
   (none)

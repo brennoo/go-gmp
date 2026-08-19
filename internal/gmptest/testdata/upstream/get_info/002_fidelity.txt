@@ -9,7 +9,6 @@ DROPPED
   /get_info_response/info/cve/score                                        x1  (+1 descendant paths)
   /get_info_response/info/in_use                                           x1  (+1 descendant paths)
   /get_info_response/info/writable                                         x1  (+1 descendant paths)
-  /get_info_response/sort/field/#text                                      x1
 
 TRUNCATED
   (none)

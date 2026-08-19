@@ -20,7 +20,7 @@ type GetTagsResponse struct {
 	Status     string     `xml:"status,attr"`
 	StatusText string     `xml:"status_text,attr"`
 	Filters    TagFilters `xml:"filters"`
-	Sort       TagSort    `xml:"sort"`
+	Sort       TagSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Tags       Tags       `xml:"tags"`
 	TagCount   TagCount   `xml:"tag_count"`
 	Tag        []Tag      `xml:"tag,omitempty"`
@@ -53,12 +53,12 @@ type TagKeyword struct {
 
 // TagSort is the <sort> element of get_tags. See the GMP protocol docs for details.
 type TagSort struct {
-	Value string   `xml:",chardata"`
 	Field TagField `xml:"field"`
 }
 
 // TagField is the <field> element of get_tags. See the GMP protocol docs for details.
 type TagField struct {
+	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Order string `xml:"order"`
 }
 

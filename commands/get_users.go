@@ -18,7 +18,7 @@ type GetUsersResponse struct {
 	Status     string      `xml:"status,attr"`
 	StatusText string      `xml:"status_text,attr"`
 	Filters    UserFilters `xml:"filters"`
-	Sort       UserSort    `xml:"sort"`
+	Sort       UserSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Users      Users       `xml:"users"`
 	UserCount  UserCount   `xml:"user_count"`
 	User       []User      `xml:"user,omitempty"`
@@ -51,12 +51,12 @@ type UserKeyword struct {
 
 // UserSort is the <sort> element of get_users. See the GMP protocol docs for details.
 type UserSort struct {
-	Value string    `xml:",chardata"`
 	Field UserField `xml:"field"`
 }
 
 // UserField is the <field> element of get_users. See the GMP protocol docs for details.
 type UserField struct {
+	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Order string `xml:"order"`
 }
 

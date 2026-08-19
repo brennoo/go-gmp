@@ -6,7 +6,6 @@ namespaces-seen:
 DROPPED
   /get_groups_response/filters/keywords/truncated                          x1  (+1 descendant paths)
   /get_groups_response/group_count/#text                                   x1
-  /get_groups_response/sort/field/#text                                    x1
   /get_groups_response/truncated                                           x1  (+1 descendant paths)
 
 TRUNCATED

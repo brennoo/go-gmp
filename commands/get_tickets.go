@@ -19,7 +19,7 @@ type GetTicketsResponse struct {
 	Status      string        `xml:"status,attr"`
 	StatusText  string        `xml:"status_text,attr"`
 	Filters     TicketFilters `xml:"filters"`
-	Sort        TicketSort    `xml:"sort"`
+	Sort        TicketSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Tickets     Tickets       `xml:"tickets"`
 	TicketCount TicketCount   `xml:"ticket_count"`
 	Ticket      []Ticket      `xml:"ticket,omitempty"`
@@ -52,12 +52,12 @@ type TicketKeyword struct {
 
 // TicketSort is the <sort> element of get_tickets. See the GMP protocol docs for details.
 type TicketSort struct {
-	Value string      `xml:",chardata"`
 	Field TicketField `xml:"field"`
 }
 
 // TicketField is the <field> element of get_tickets. See the GMP protocol docs for details.
 type TicketField struct {
+	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Order string `xml:"order"`
 }
 

@@ -5,7 +5,6 @@ namespaces-seen:
 
 DROPPED
   /get_configs_response/config_count/#text                                 x1
-  /get_configs_response/sort/field/#text                                   x1
 
 TRUNCATED
   (none)

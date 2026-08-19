@@ -20,7 +20,7 @@ type GetSchedulesResponse struct {
 	Status        string          `xml:"status,attr"`
 	StatusText    string          `xml:"status_text,attr"`
 	Filters       ScheduleFilters `xml:"filters"`
-	Sort          ScheduleSort    `xml:"sort"`
+	Sort          ScheduleSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Schedules     Schedules       `xml:"schedules"`
 	ScheduleCount ScheduleCount   `xml:"schedule_count"`
 	Schedule      []Schedule      `xml:"schedule,omitempty"`
@@ -53,12 +53,12 @@ type ScheduleKeyword struct {
 
 // ScheduleSort is the <sort> element of get_schedules. See the GMP protocol docs for details.
 type ScheduleSort struct {
-	Value string        `xml:",chardata"`
 	Field ScheduleField `xml:"field"`
 }
 
 // ScheduleField is the <field> element of get_schedules. See the GMP protocol docs for details.
 type ScheduleField struct {
+	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Order string `xml:"order"`
 }
 

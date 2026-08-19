@@ -18,7 +18,7 @@ type GetVulnsResponse struct {
 	Status     string      `xml:"status,attr"`
 	StatusText string      `xml:"status_text,attr"`
 	Filters    VulnFilters `xml:"filters"`
-	Sort       VulnSort    `xml:"sort"`
+	Sort       VulnSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Vulns      Vulns       `xml:"vulns"`
 	VulnCount  VulnCount   `xml:"vuln_count"`
 	Vuln       []Vuln      `xml:"vuln,omitempty"`
@@ -51,12 +51,12 @@ type VulnKeyword struct {
 
 // VulnSort is the <sort> element of get_vulns. See the GMP protocol docs for details.
 type VulnSort struct {
-	Value string    `xml:",chardata"`
 	Field VulnField `xml:"field"`
 }
 
 // VulnField is the <field> element of get_vulns. See the GMP protocol docs for details.
 type VulnField struct {
+	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Order string `xml:"order"`
 }
 

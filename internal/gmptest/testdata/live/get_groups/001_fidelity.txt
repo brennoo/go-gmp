@@ -5,7 +5,6 @@ namespaces-seen:
 
 DROPPED
   /get_groups_response/group_count/#text                                   x1
-  /get_groups_response/sort/field/#text                                    x1
 
 TRUNCATED
   (none)

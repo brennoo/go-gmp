@@ -19,7 +19,7 @@ type GetRolesResponse struct {
 	Status     string      `xml:"status,attr"`
 	StatusText string      `xml:"status_text,attr"`
 	Filters    RoleFilters `xml:"filters"`
-	Sort       RoleSort    `xml:"sort"`
+	Sort       RoleSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Roles      Roles       `xml:"roles"`
 	RoleCount  RoleCount   `xml:"role_count"`
 	Role       []Role      `xml:"role,omitempty"`
@@ -52,12 +52,12 @@ type RoleKeyword struct {
 
 // RoleSort is the <sort> element of get_roles. See the GMP protocol docs for details.
 type RoleSort struct {
-	Value string    `xml:",chardata"`
 	Field RoleField `xml:"field"`
 }
 
 // RoleField is the <field> element of get_roles. See the GMP protocol docs for details.
 type RoleField struct {
+	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Order string `xml:"order"`
 }
 

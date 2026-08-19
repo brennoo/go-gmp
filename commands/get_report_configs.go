@@ -20,7 +20,7 @@ type GetReportConfigsResponse struct {
 	Status            string              `xml:"status,attr"`
 	StatusText        string              `xml:"status_text,attr"`
 	Filters           ReportConfigFilters `xml:"filters"`
-	Sort              ReportConfigSort    `xml:"sort"`
+	Sort              ReportConfigSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	ReportConfigs     ReportConfigs       `xml:"report_configs"`
 	ReportConfigCount ReportConfigCount   `xml:"report_config_count"`
 	ReportConfig      []ReportConfig      `xml:"report_config,omitempty"`
@@ -53,12 +53,12 @@ type ReportConfigKeyword struct {
 
 // ReportConfigSort is the <sort> element of get_report_configs. See the GMP protocol docs for details.
 type ReportConfigSort struct {
-	Value string            `xml:",chardata"`
 	Field ReportConfigField `xml:"field"`
 }
 
 // ReportConfigField is the <field> element of get_report_configs. See the GMP protocol docs for details.
 type ReportConfigField struct {
+	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Order string `xml:"order"`
 }
 

@@ -155,6 +155,13 @@ type FieldOverride struct {
 // real, populated wire value the schema's <pattern> never declares (only its
 // <example> shows it) — dropping it would be a real behavior regression, not
 // a defect fix.
+// t18aSortFieldReason is the shared Reason for every T-18a sort-chardata
+// relocation below, in both this table and FieldSuppressions: every affected
+// get_X command, and the fidelity evidence behind each one, is already
+// listed in docs/review-2026-08.md's T-18a entry, so the table itself only
+// needs to name the defect, not repeat that evidence 25 times over.
+const t18aSortFieldReason = "T-18a: sort-field chardata is nested under <field>"
+
 var FieldOverrides = map[string][]FieldOverride{
 	"get_tls_certificates:/tls_certificate": {{
 		Name: "valid", GoType: "GMPBool",
@@ -316,6 +323,107 @@ var FieldOverrides = map[string][]FieldOverride{
 			"doesn't exist; every fixture (live and upstream) sends a real <type>nvt</type>, the same " +
 			"pattern-omits-a-fully-defined-element class as verify_scanner's version",
 	}},
+
+	"get_alerts:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_alerts:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_assets:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_assets:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_configs:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_configs:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_credentials:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_credentials:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_filters:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_filters:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_groups:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_groups:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_info:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_info:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_notes:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_notes:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_overrides:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_overrides:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_permissions:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_permissions:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_port_lists:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_port_lists:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_report_configs:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_report_configs:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_report_formats:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_report_formats:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_reports:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_reports:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_results:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_results:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_roles:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_roles:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_scanners:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_scanners:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_schedules:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_schedules:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_tags:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_tags:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_targets:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_targets:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_tasks:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_tasks:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_tickets:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_tickets:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_tls_certificates:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_tls_certificates:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_users:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_users:/sort",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_vulns:/sort/field": {{
+		Chardata: true, GoType: "string", RelocatedFrom: "get_vulns:/sort",
+		Reason: t18aSortFieldReason,
+	}},
 }
 
 // FieldTypeOverride corrects the Go type the mechanical mapping would assign
@@ -398,16 +506,18 @@ var FieldTypeOverrides = map[string][]FieldTypeOverride{
 	}},
 }
 
-// FieldSuppression removes a schema-declared attribute/element from the
-// struct its FieldSuppressions key would otherwise put it on, because live
-// wire evidence contradicts the schema's declared nesting for it — not
-// because the field doesn't exist. RelocatedTo is required and must name the
+// FieldSuppression removes a schema-declared attribute/element, or a
+// struct's own schema-declared chardata, from the struct its
+// FieldSuppressions key would otherwise put it on, because live wire
+// evidence contradicts the schema's declared nesting for it — not because
+// the field doesn't exist. RelocatedTo is required and must name the
 // FieldOverrides key holding the real position; this table exists for "the
 // schema puts this in the wrong place, here's where it really goes", not a
 // general-purpose "drop this field" escape hatch.
 type FieldSuppression struct {
-	Name string // wire element/attribute name to remove
-	Attr bool
+	Name     string // wire element/attribute name to remove; ignored when Chardata
+	Attr     bool
+	Chardata bool // this struct's own schema-declared `,chardata` field; mutually exclusive with Name/Attr
 
 	RelocatedTo string
 	Reason      string
@@ -419,13 +529,14 @@ type FieldSuppression struct {
 // emitStruct, before that struct's fields are built from the schema.
 //
 // Every entry's RelocatedTo must name a FieldOverrides entry with the same
-// (Name, Attr) whose own RelocatedFrom points back at this entry's own key —
-// validateFieldRelocations (generate.go) enforces the round trip in both
-// directions, so deleting either half without the other fails Generate for
-// every family, not just this one. This leaves schemaChildCollision's
-// ordinary-collision check untouched: a suppression and its paired addition
-// always live at two different node paths (a child and its parent), so they
-// never appear in the same schemaChildCollision call.
+// (Name, Attr, Chardata) whose own RelocatedFrom points back at this entry's
+// own key — validateFieldRelocations (generate.go) enforces the round trip
+// in both directions, so deleting either half without the other fails
+// Generate for every family, not just this one. This leaves
+// schemaChildCollision's ordinary-collision check untouched: a suppression
+// and its paired addition always live at two different node paths (a child
+// and its parent), so they never appear in the same schemaChildCollision
+// call.
 var FieldSuppressions = map[string][]FieldSuppression{
 	"get_report_configs:/report_config/param/value": {{
 		Name: "using_default", Attr: true,
@@ -435,6 +546,107 @@ var FieldSuppressions = map[string][]FieldSuppression{
 			"internal/gmptest/testdata/upstream/get_report_configs/001_{response,fidelity}.txt both place " +
 			"it on the enclosing <param> instead; decoding a real response through the schema-faithful " +
 			"nesting leaves UsingDefault permanently false",
+	}},
+
+	"get_alerts:/sort": {{
+		Chardata: true, RelocatedTo: "get_alerts:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_assets:/sort": {{
+		Chardata: true, RelocatedTo: "get_assets:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_configs:/sort": {{
+		Chardata: true, RelocatedTo: "get_configs:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_credentials:/sort": {{
+		Chardata: true, RelocatedTo: "get_credentials:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_filters:/sort": {{
+		Chardata: true, RelocatedTo: "get_filters:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_groups:/sort": {{
+		Chardata: true, RelocatedTo: "get_groups:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_info:/sort": {{
+		Chardata: true, RelocatedTo: "get_info:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_notes:/sort": {{
+		Chardata: true, RelocatedTo: "get_notes:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_overrides:/sort": {{
+		Chardata: true, RelocatedTo: "get_overrides:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_permissions:/sort": {{
+		Chardata: true, RelocatedTo: "get_permissions:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_port_lists:/sort": {{
+		Chardata: true, RelocatedTo: "get_port_lists:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_report_configs:/sort": {{
+		Chardata: true, RelocatedTo: "get_report_configs:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_report_formats:/sort": {{
+		Chardata: true, RelocatedTo: "get_report_formats:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_reports:/sort": {{
+		Chardata: true, RelocatedTo: "get_reports:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_results:/sort": {{
+		Chardata: true, RelocatedTo: "get_results:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_roles:/sort": {{
+		Chardata: true, RelocatedTo: "get_roles:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_scanners:/sort": {{
+		Chardata: true, RelocatedTo: "get_scanners:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_schedules:/sort": {{
+		Chardata: true, RelocatedTo: "get_schedules:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_tags:/sort": {{
+		Chardata: true, RelocatedTo: "get_tags:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_targets:/sort": {{
+		Chardata: true, RelocatedTo: "get_targets:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_tasks:/sort": {{
+		Chardata: true, RelocatedTo: "get_tasks:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_tickets:/sort": {{
+		Chardata: true, RelocatedTo: "get_tickets:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_tls_certificates:/sort": {{
+		Chardata: true, RelocatedTo: "get_tls_certificates:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_users:/sort": {{
+		Chardata: true, RelocatedTo: "get_users:/sort/field",
+		Reason: t18aSortFieldReason,
+	}},
+	"get_vulns:/sort": {{
+		Chardata: true, RelocatedTo: "get_vulns:/sort/field",
+		Reason: t18aSortFieldReason,
 	}},
 }
 

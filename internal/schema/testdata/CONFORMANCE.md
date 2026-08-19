@@ -37,7 +37,7 @@ commands compared:            122
 fully conformant:             100
 with actionable findings:     22
 actionable findings:          73  (request 46, response 27)
-suppressed findings:          55
+suppressed findings:          105
 confirmed by fidelity corpus: 6
 in the schema, not in Go:     0
 in Go, not in the schema:     0
@@ -45,8 +45,8 @@ in Go, not in the schema:     0
 ### Findings by category
 
                  actionable suppressed
-  MISSING                12          0
-  EXTRA                  56         20
+  MISSING                12         25
+  EXTRA                  56         45
   CARDINALITY             0          2
   KIND                    0          0
   OMITEMPTY               0         33
@@ -557,8 +557,12 @@ EXTRA=7
 
 ### get_alerts  (command_get_alerts.xml)
 
-SCHEMA-DEFECT=2
+MISSING=1  EXTRA=1  SCHEMA-DEFECT=2
 
+  MISSING       response /get_alerts_response/sort/#text
+                schema also declares character data (text) here; Go commands.AlertSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
+  EXTRA         response /get_alerts_response/sort/field/#text
+                Go commands.AlertField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   SCHEMA-DEFECT response /get_alerts_response/alert/filter/permissions
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_alerts_response/alert/tasks/task/permissions
@@ -566,26 +570,38 @@ SCHEMA-DEFECT=2
 
 ### get_assets  (command_get_assets.xml)
 
-SCHEMA-DEFECT=1
+MISSING=1  EXTRA=1  SCHEMA-DEFECT=1
 
+  MISSING       response /get_assets_response/sort/#text
+                schema also declares character data (text) here; Go commands.AssetSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
+  EXTRA         response /get_assets_response/sort/field/#text
+                Go commands.AssetField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   SCHEMA-DEFECT response /get_assets_response/asset/host/routes/route/host/@distance
                 undefined-type: number is undefined; aliased to integer
 
 ### get_configs  (command_get_configs.xml)
 
-SCHEMA-DEFECT=1
+MISSING=1  EXTRA=1  SCHEMA-DEFECT=1
 
+  MISSING       response /get_configs_response/sort/#text
+                schema also declares character data (text) here; Go commands.ConfigSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
+  EXTRA         response /get_configs_response/sort/field/#text
+                Go commands.ConfigField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   SCHEMA-DEFECT response /get_configs_response/config/tasks/task/permissions
                 empty-pattern: pattern declares no content
 
 ### get_credentials  (command_get_credentials.xml)
 
-EXTRA=2  SCHEMA-DEFECT=2
+MISSING=1  EXTRA=3  SCHEMA-DEFECT=2
 
+  MISSING       response /get_credentials_response/sort/#text
+                schema also declares character data (text) here; Go commands.CredentialSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
   EXTRA         response /get_credentials_response/credential/private_key_info
                 Go field PrivateKeyInfo *commands.CredentialPrivateKeyInfo has no counterpart in the schema
   EXTRA         response /get_credentials_response/credential/public_key_info
                 Go field PublicKeyInfo *commands.CredentialPublicKeyInfo has no counterpart in the schema
+  EXTRA         response /get_credentials_response/sort/field/#text
+                Go commands.CredentialField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   SCHEMA-DEFECT response /get_credentials_response/credential/scanners/scanner/permissions
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_credentials_response/credential/targets/target/permissions
@@ -609,21 +625,34 @@ SCHEMA-DEFECT=1
 
 ### get_filters  (command_get_filters.xml)
 
-SCHEMA-DEFECT=1
+MISSING=1  EXTRA=1  SCHEMA-DEFECT=1
 
+  MISSING       response /get_filters_response/sort/#text
+                schema also declares character data (text) here; Go commands.FilterSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
+  EXTRA         response /get_filters_response/sort/field/#text
+                Go commands.FilterField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   SCHEMA-DEFECT response /get_filters_response/filter/alerts/alert/permissions
                 empty-pattern: pattern declares no content
 
 ### get_groups  (command_get_groups.xml)
 
-conformant
+MISSING=1  EXTRA=1
+
+  MISSING       response /get_groups_response/sort/#text
+                schema also declares character data (text) here; Go commands.GroupSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
+  EXTRA         response /get_groups_response/sort/field/#text
+                Go commands.GroupField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
 
 ### get_info  (command_get_info.xml)
 
-EXTRA=1  TYPE=1  SCHEMA-DEFECT=1
+MISSING=1  EXTRA=2  TYPE=1  SCHEMA-DEFECT=1
 
+  MISSING       response /get_info_response/sort/#text
+                schema also declares character data (text) here; Go commands.NVTSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
   EXTRA         response /get_info_response/info/web_application_vt
                 Go field WebApplicationVT *commands.NVTWebApplicationVT has no counterpart in the schema
+  EXTRA         response /get_info_response/sort/field/#text
+                Go commands.NVTField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   TYPE          response /get_info_response/info/@id
                 schema type integer, Go ID is string (want int)
   SCHEMA-DEFECT response /get_info_response/info/cve/configuration_nodes/node/node
@@ -638,10 +667,14 @@ SCHEMA-DEFECT=1
 
 ### get_notes  (command_get_notes.xml)
 
-EXTRA=1  SCHEMA-DEFECT=3
+MISSING=1  EXTRA=2  SCHEMA-DEFECT=3
 
+  MISSING       response /get_notes_response/sort/#text
+                schema also declares character data (text) here; Go commands.NoteSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
   EXTRA         response /get_notes_response/note/result/oci_image
                 Go field OCIImage *commands.NoteOCIImage has no counterpart in the schema
+  EXTRA         response /get_notes_response/sort/field/#text
+                Go commands.NoteField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   SCHEMA-DEFECT response /get_notes_response/note/active
                 duplicate-ele: redefined in the same scope
   SCHEMA-DEFECT response /get_notes_response/note/result/delta/overrides/override/active
@@ -668,10 +701,14 @@ EXTRA=1  CARDINALITY=1  OMITEMPTY=2
 
 ### get_overrides  (command_get_overrides.xml)
 
-EXTRA=1  SCHEMA-DEFECT=3
+MISSING=1  EXTRA=2  SCHEMA-DEFECT=3
 
+  MISSING       response /get_overrides_response/sort/#text
+                schema also declares character data (text) here; Go commands.OverrideSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
   EXTRA         response /get_overrides_response/override/result/oci_image
                 Go field OCIImage *commands.OverrideOCIImage has no counterpart in the schema
+  EXTRA         response /get_overrides_response/sort/field/#text
+                Go commands.OverrideField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   SCHEMA-DEFECT response /get_overrides_response/override/active
                 duplicate-ele: redefined in the same scope
   SCHEMA-DEFECT response /get_overrides_response/override/result/delta/notes/note/active
@@ -681,8 +718,12 @@ EXTRA=1  SCHEMA-DEFECT=3
 
 ### get_permissions  (command_get_permissions.xml)
 
-SCHEMA-DEFECT=2
+MISSING=1  EXTRA=1  SCHEMA-DEFECT=2
 
+  MISSING       response /get_permissions_response/sort/#text
+                schema also declares character data (text) here; Go commands.PermissionSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
+  EXTRA         response /get_permissions_response/sort/field/#text
+                Go commands.PermissionField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   SCHEMA-DEFECT response /get_permissions_response/permission/resource/permissions
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_permissions_response/permission/subject/permissions
@@ -690,8 +731,12 @@ SCHEMA-DEFECT=2
 
 ### get_port_lists  (command_get_port_lists.xml)
 
-SCHEMA-DEFECT=1
+MISSING=1  EXTRA=1  SCHEMA-DEFECT=1
 
+  MISSING       response /get_port_lists_response/sort/#text
+                schema also declares character data (text) here; Go commands.PortListSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
+  EXTRA         response /get_port_lists_response/sort/field/#text
+                Go commands.PortListField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   SCHEMA-DEFECT response /get_port_lists_response/port_list/targets/target/permissions
                 empty-pattern: pattern declares no content
 
@@ -701,32 +746,44 @@ conformant
 
 ### get_report_configs  (command_get_report_configs.xml)
 
-MISSING=1  EXTRA=1  SCHEMA-DEFECT=1
+MISSING=2  EXTRA=2  SCHEMA-DEFECT=1
 
   MISSING       response /get_report_configs_response/report_config/param/value/@using_default
                 required attr using_default is not modelled  [fidelity]
+  MISSING       response /get_report_configs_response/sort/#text
+                schema also declares character data (text) here; Go commands.ReportConfigSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
   EXTRA         response /get_report_configs_response/report_config/param/@using_default
                 Go field UsingDefault commands.GMPBool has no counterpart in the schema  [suppressed: T-9 report_config review: real position of using_default that FieldSuppressions["get_report_configs:/report_config/param/value"] removes — command_get_report_configs.xml's own <example> and internal/gmptest/testdata/upstream/get_report_configs/001_{response,fidelity}.txt both place the attribute on <param>, not <value>]
+  EXTRA         response /get_report_configs_response/sort/field/#text
+                Go commands.ReportConfigField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   SCHEMA-DEFECT response /get_report_configs_response/report_config/report_format/permissions
                 empty-pattern: pattern declares no content
 
 ### get_report_formats  (command_get_report_formats.xml)
 
-EXTRA=1
+MISSING=1  EXTRA=2
 
+  MISSING       response /get_report_formats_response/sort/#text
+                schema also declares character data (text) here; Go commands.ReportFormatSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
   EXTRA         response /get_report_formats_response/report_format/comment
                 Go field Comment string has no counterpart in the schema  [suppressed: T-9 report_format review: schema's report_format pattern never declares <comment>, but gvmd emits one on every report format — x5 in internal/gmptest/testdata/live/get_report_formats/001_response.xml, x6 in 006_response.xml (after a report format copy was added to the fixture set), and x1 upstream, all recorded as DROPPED in the matching _fidelity.txt. Every captured occurrence is empty, so it is the element's presence that is evidenced, not its content; hence no omitempty, which would re-marshal to the absence gvmd never sends]
+  EXTRA         response /get_report_formats_response/sort/field/#text
+                Go commands.ReportFormatField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
 
 ### get_reports  (command_get_reports.xml)
 
-EXTRA=3  OMITEMPTY=2  SCHEMA-DEFECT=12
+MISSING=1  EXTRA=4  OMITEMPTY=2  SCHEMA-DEFECT=12
 
+  MISSING       response /get_reports_response/sort/#text
+                schema also declares character data (text) here; Go *commands.GetReportsSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
   EXTRA         response /get_reports_response/report/report/cves
                 Go field CVEs *commands.ReportCVEs has no counterpart in the schema
   EXTRA         response /get_reports_response/report/report/result_count/#text
                 Go *commands.ReportResultCount has a `,chardata` field; schema declares no character data here
   EXTRA         response /get_reports_response/report/report/results/result/oci_image
                 Go field OCIImage *commands.ReportOCIImage has no counterpart in the schema
+  EXTRA         response /get_reports_response/sort/field/#text
+                Go commands.ReportSortField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   OMITEMPTY     response /get_reports_response/report/report/hosts/@max
                 schema says required, Max is tagged omitempty  [suppressed: inside <or>; only one branch is ever present]
   OMITEMPTY     response /get_reports_response/report/report/hosts/@start
@@ -767,12 +824,16 @@ TYPE=1  SCHEMA-DEFECT=1
 
 ### get_results  (command_get_results.xml)
 
-EXTRA=2  SCHEMA-DEFECT=4
+MISSING=1  EXTRA=3  SCHEMA-DEFECT=4
 
+  MISSING       response /get_results_response/sort/#text
+                schema also declares character data (text) here; Go commands.ResultSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
   EXTRA         response /get_results_response/result/nvt/solution
                 Go field Solution *commands.ResultSolution has no counterpart in the schema
   EXTRA         response /get_results_response/result/oci_image
                 Go field OCIImage *commands.ResultOCIImage has no counterpart in the schema
+  EXTRA         response /get_results_response/sort/field/#text
+                Go commands.ResultField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   SCHEMA-DEFECT response /get_results_response/result/delta/notes/note/active
                 duplicate-ele: redefined in the same scope
   SCHEMA-DEFECT response /get_results_response/result/delta/overrides/override/active
@@ -784,16 +845,25 @@ EXTRA=2  SCHEMA-DEFECT=4
 
 ### get_roles  (command_get_roles.xml)
 
-conformant
+MISSING=1  EXTRA=1
+
+  MISSING       response /get_roles_response/sort/#text
+                schema also declares character data (text) here; Go commands.RoleSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
+  EXTRA         response /get_roles_response/sort/field/#text
+                Go commands.RoleField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
 
 ### get_scanners  (command_get_scanners.xml)
 
-EXTRA=2  SCHEMA-DEFECT=10
+MISSING=1  EXTRA=3  SCHEMA-DEFECT=10
 
+  MISSING       response /get_scanners_response/sort/#text
+                schema also declares character data (text) here; Go commands.ScannerSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
   EXTRA         response /get_scanners_response/scanner/disabled
                 Go field Disabled *commands.GMPBool has no counterpart in the schema
   EXTRA         response /get_scanners_response/scanner/tasks/task/usage_type
                 Go field UsageType string has no counterpart in the schema
+  EXTRA         response /get_scanners_response/sort/field/#text
+                Go commands.ScannerField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   SCHEMA-DEFECT response /get_scanners_response/scanner/configs/config/permissions
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_scanners_response/scanner/info/daemon/name
@@ -817,8 +887,12 @@ EXTRA=2  SCHEMA-DEFECT=10
 
 ### get_schedules  (command_get_schedules.xml)
 
-SCHEMA-DEFECT=1
+MISSING=1  EXTRA=1  SCHEMA-DEFECT=1
 
+  MISSING       response /get_schedules_response/sort/#text
+                schema also declares character data (text) here; Go commands.ScheduleSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
+  EXTRA         response /get_schedules_response/sort/field/#text
+                Go commands.ScheduleField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   SCHEMA-DEFECT response /get_schedules_response/schedule/tasks/task/permissions
                 empty-pattern: pattern declares no content
 
@@ -846,15 +920,23 @@ EXTRA=3  TYPE=1
 
 ### get_tags  (command_get_tags.xml)
 
-SCHEMA-DEFECT=1
+MISSING=1  EXTRA=1  SCHEMA-DEFECT=1
 
+  MISSING       response /get_tags_response/sort/#text
+                schema also declares character data (text) here; Go commands.TagSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
+  EXTRA         response /get_tags_response/sort/field/#text
+                Go commands.TagField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   SCHEMA-DEFECT response /get_tags_response/tag/resources/resource/permissions
                 empty-pattern: pattern declares no content
 
 ### get_targets  (command_get_targets.xml)
 
-EXTRA=1  SCHEMA-DEFECT=9
+MISSING=1  EXTRA=2  SCHEMA-DEFECT=9
 
+  MISSING       response /get_targets_response/sort/#text
+                schema also declares character data (text) here; Go commands.TargetSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
+  EXTRA         response /get_targets_response/sort/field/#text
+                Go commands.TargetField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   EXTRA         response /get_targets_response/target/alive_tests/*
                 schema declares a "alive_test" leaf; Go models 1 children
   SCHEMA-DEFECT response /get_targets_response/target/esxi_credential/permissions
@@ -878,10 +960,14 @@ EXTRA=1  SCHEMA-DEFECT=9
 
 ### get_tasks  (command_get_tasks.xml)
 
-MISSING=1  SCHEMA-DEFECT=10
+MISSING=2  EXTRA=1  SCHEMA-DEFECT=10
 
+  MISSING       response /get_tasks_response/sort/#text
+                schema also declares character data (text) here; Go commands.TaskSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
   MISSING       response /get_tasks_response/task/hosts_ordering
                 optional elem hosts_ordering is not modelled  [fidelity]
+  EXTRA         response /get_tasks_response/sort/field/#text
+                Go commands.TaskField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   SCHEMA-DEFECT response /get_tasks_response/task/alert/permissions
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_tasks_response/task/config/permissions
@@ -905,12 +991,21 @@ MISSING=1  SCHEMA-DEFECT=10
 
 ### get_tickets  (command_get_tickets.xml)
 
-conformant
+MISSING=1  EXTRA=1
+
+  MISSING       response /get_tickets_response/sort/#text
+                schema also declares character data (text) here; Go commands.TicketSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
+  EXTRA         response /get_tickets_response/sort/field/#text
+                Go commands.TicketField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
 
 ### get_tls_certificates  (command_get_tls_certificates.xml)
 
-EXTRA=2
+MISSING=1  EXTRA=3
 
+  MISSING       response /get_tls_certificates_response/sort/#text
+                schema also declares character data (text) here; Go commands.TLSCertificateSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
+  EXTRA         response /get_tls_certificates_response/sort/field/#text
+                Go commands.TLSCertificateField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   EXTRA         response /get_tls_certificates_response/tls_certificate/certificate/#text
                 Go commands.TLSCertificateCertificate has a `,chardata` field; schema declares no character data here  [suppressed: T-9 finding 2: schema's certificate pattern declares only @format, no chardata token, but internal/gmptest/testdata/upstream/get_tls_certificates/001_response.xml sends real base64 certificate bytes as this element's text (see IncludeCertificateData)]
   EXTRA         response /get_tls_certificates_response/tls_certificate/valid
@@ -918,8 +1013,12 @@ EXTRA=2
 
 ### get_users  (command_get_users.xml)
 
-SCHEMA-DEFECT=2
+MISSING=1  EXTRA=1  SCHEMA-DEFECT=2
 
+  MISSING       response /get_users_response/sort/#text
+                schema also declares character data (text) here; Go commands.UserSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
+  EXTRA         response /get_users_response/sort/field/#text
+                Go commands.UserField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   SCHEMA-DEFECT response /get_users_response/user/groups/group/permissions
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_users_response/user/role/permissions
@@ -934,8 +1033,12 @@ SCHEMA-DEFECT=1
 
 ### get_vulns  (command_get_vulns.xml)
 
-EXTRA=1
+MISSING=1  EXTRA=2
 
+  MISSING       response /get_vulns_response/sort/#text
+                schema also declares character data (text) here; Go commands.VulnSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
+  EXTRA         response /get_vulns_response/sort/field/#text
+                Go commands.VulnField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   EXTRA         response /get_vulns_response/vuln/type
                 Go field Type string has no counterpart in the schema  [suppressed: T-9 vuln review: command_get_vulns.xml's vuln <pattern> list omits <e>type</e>, but the command still declares a full <ele><name>type</name></ele> body for it a few lines down (alts nvt/cve) — a dangling definition the pattern forgot to reference, not evidence the field doesn't exist; every fixture (live and upstream) sends a real <type>nvt</type>, the same pattern-omits-a-fully-defined-element class as verify_scanner's version]
 

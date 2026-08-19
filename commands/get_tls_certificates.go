@@ -19,7 +19,7 @@ type GetTLSCertificatesResponse struct {
 	Status              string                `xml:"status,attr"`
 	StatusText          string                `xml:"status_text,attr"`
 	Filters             TLSCertificateFilters `xml:"filters"`
-	Sort                TLSCertificateSort    `xml:"sort"`
+	Sort                TLSCertificateSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	TLSCertificates     TLSCertificates       `xml:"tls_certificates"`
 	TLSCertificateCount TLSCertificateCount   `xml:"tls_certificate_count"`
 	TLSCertificate      []TLSCertificate      `xml:"tls_certificate,omitempty"`
@@ -52,12 +52,12 @@ type TLSCertificateKeyword struct {
 
 // TLSCertificateSort is the <sort> element of get_tls_certificates. See the GMP protocol docs for details.
 type TLSCertificateSort struct {
-	Value string              `xml:",chardata"`
 	Field TLSCertificateField `xml:"field"`
 }
 
 // TLSCertificateField is the <field> element of get_tls_certificates. See the GMP protocol docs for details.
 type TLSCertificateField struct {
+	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Order string `xml:"order"`
 }
 

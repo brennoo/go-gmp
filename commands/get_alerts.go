@@ -20,7 +20,7 @@ type GetAlertsResponse struct {
 	Status     string       `xml:"status,attr"`
 	StatusText string       `xml:"status_text,attr"`
 	Filters    AlertFilters `xml:"filters"`
-	Sort       AlertSort    `xml:"sort"`
+	Sort       AlertSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Alerts     Alerts       `xml:"alerts"`
 	AlertCount AlertCount   `xml:"alert_count"`
 	Alert      []Alert      `xml:"alert,omitempty"`
@@ -53,12 +53,12 @@ type AlertKeyword struct {
 
 // AlertSort is the <sort> element of get_alerts. See the GMP protocol docs for details.
 type AlertSort struct {
-	Value string     `xml:",chardata"`
 	Field AlertField `xml:"field"`
 }
 
 // AlertField is the <field> element of get_alerts. See the GMP protocol docs for details.
 type AlertField struct {
+	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Order string `xml:"order"`
 }
 

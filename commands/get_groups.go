@@ -19,7 +19,7 @@ type GetGroupsResponse struct {
 	Status     string       `xml:"status,attr"`
 	StatusText string       `xml:"status_text,attr"`
 	Filters    GroupFilters `xml:"filters"`
-	Sort       GroupSort    `xml:"sort"`
+	Sort       GroupSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Groups     Groups       `xml:"groups"`
 	GroupCount GroupCount   `xml:"group_count"`
 	Group      []Group      `xml:"group,omitempty"`
@@ -52,12 +52,12 @@ type GroupKeyword struct {
 
 // GroupSort is the <sort> element of get_groups. See the GMP protocol docs for details.
 type GroupSort struct {
-	Value string     `xml:",chardata"`
 	Field GroupField `xml:"field"`
 }
 
 // GroupField is the <field> element of get_groups. See the GMP protocol docs for details.
 type GroupField struct {
+	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Order string `xml:"order"`
 }
 

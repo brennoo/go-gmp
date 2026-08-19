@@ -4,7 +4,6 @@ decode: ok
 namespaces-seen:
 
 DROPPED
-  /get_tasks_response/sort/field/#text                                     x1
   /get_tasks_response/task/reports                                         x1  (+33 descendant paths)
   /get_tasks_response/task/trend                                           x1
   /get_tasks_response/task_count/#text                                     x1

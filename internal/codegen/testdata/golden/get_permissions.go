@@ -19,7 +19,7 @@ type GetPermissionsResponse struct {
 	Status          string            `xml:"status,attr"`
 	StatusText      string            `xml:"status_text,attr"`
 	Filters         PermissionFilters `xml:"filters"`
-	Sort            PermissionSort    `xml:"sort"`
+	Sort            PermissionSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Permissions     Permissions       `xml:"permissions"`
 	PermissionCount PermissionCount   `xml:"permission_count"`
 	Permission      []Permission      `xml:"permission,omitempty"`
@@ -52,12 +52,12 @@ type PermissionKeyword struct {
 
 // PermissionSort is the <sort> element of get_permissions. See the GMP protocol docs for details.
 type PermissionSort struct {
-	Value string          `xml:",chardata"`
 	Field PermissionField `xml:"field"`
 }
 
 // PermissionField is the <field> element of get_permissions. See the GMP protocol docs for details.
 type PermissionField struct {
+	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Order string `xml:"order"`
 }
 

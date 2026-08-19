@@ -24,7 +24,7 @@ type GetConfigsResponse struct {
 	Status      string        `xml:"status,attr"`
 	StatusText  string        `xml:"status_text,attr"`
 	Filters     ConfigFilters `xml:"filters"`
-	Sort        ConfigSort    `xml:"sort"`
+	Sort        ConfigSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Configs     Configs       `xml:"configs"`
 	ConfigCount ConfigCount   `xml:"config_count"`
 	Config      []Config      `xml:"config,omitempty"`
@@ -57,12 +57,12 @@ type ConfigKeyword struct {
 
 // ConfigSort is the <sort> element of get_configs. See the GMP protocol docs for details.
 type ConfigSort struct {
-	Value string      `xml:",chardata"`
 	Field ConfigField `xml:"field"`
 }
 
 // ConfigField is the <field> element of get_configs. See the GMP protocol docs for details.
 type ConfigField struct {
+	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Order string `xml:"order"`
 }
 

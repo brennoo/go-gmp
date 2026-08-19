@@ -534,24 +534,9 @@ func validateFieldRelocations(fo map[string][]FieldOverride, fs map[string][]Fie
 		fsKeys = append(fsKeys, k)
 	}
 	sort.Strings(fsKeys)
-
 	for _, key := range fsKeys {
-		for i, s := range fs[key] {
-			if s.Name == "" {
-				return fmt.Errorf("codegen: FieldSuppressions[%q][%d]: Name is empty", key, i)
-			}
-			if s.Reason == "" {
-				return fmt.Errorf("codegen: FieldSuppressions[%q][%d]: Reason is empty", key, i)
-			}
-			if s.RelocatedTo == "" {
-				return fmt.Errorf("codegen: FieldSuppressions[%q][%d]: RelocatedTo is empty", key, i)
-			}
-			if !hasRelocationCounterpart(fo[s.RelocatedTo], s.Name, s.Attr, key) {
-				return fmt.Errorf(
-					"codegen: FieldSuppressions[%q][%d]: RelocatedTo %q has no FieldOverrides entry with "+
-						"Name %q, Attr %v and RelocatedFrom %q",
-					key, i, s.RelocatedTo, s.Name, s.Attr, key)
-			}
+		if err := validateFieldSuppressionRelocations(key, fs[key], fo); err != nil {
+			return err
 		}
 	}
 
@@ -560,35 +545,76 @@ func validateFieldRelocations(fo map[string][]FieldOverride, fs map[string][]Fie
 		foKeys = append(foKeys, k)
 	}
 	sort.Strings(foKeys)
-
 	for _, key := range foKeys {
-		for i, e := range fo[key] {
-			if e.RelocatedFrom == "" {
-				continue
-			}
-			if !hasSuppressionCounterpart(fs[e.RelocatedFrom], e.Name, e.Attr, key) {
-				return fmt.Errorf(
-					"codegen: FieldOverrides[%q][%d]: RelocatedFrom %q has no FieldSuppressions entry with "+
-						"Name %q, Attr %v and RelocatedTo %q",
-					key, i, e.RelocatedFrom, e.Name, e.Attr, key)
-			}
+		if err := validateFieldOverrideRelocations(key, fo[key], fs); err != nil {
+			return err
 		}
 	}
 	return nil
 }
 
-func hasRelocationCounterpart(entries []FieldOverride, name string, attr bool, relocatedFrom string) bool {
+// validateFieldSuppressionRelocations checks the FieldSuppressions entries
+// under key: at most one Chardata suppression, mutually exclusive with
+// Name/Attr, and every relocation has a matching FieldOverrides counterpart.
+func validateFieldSuppressionRelocations(key string, entries []FieldSuppression, fo map[string][]FieldOverride) error {
+	hasChardata := false
+	for i, s := range entries {
+		if s.Chardata {
+			if s.Name != "" || s.Attr {
+				return fmt.Errorf("codegen: FieldSuppressions[%q][%d]: Chardata is mutually exclusive with Name and Attr", key, i)
+			}
+			if hasChardata {
+				return fmt.Errorf("codegen: FieldSuppressions[%q]: more than one chardata suppression", key)
+			}
+			hasChardata = true
+		} else if s.Name == "" {
+			return fmt.Errorf("codegen: FieldSuppressions[%q][%d]: Name is empty on a non-chardata suppression", key, i)
+		}
+		if s.Reason == "" {
+			return fmt.Errorf("codegen: FieldSuppressions[%q][%d]: Reason is empty", key, i)
+		}
+		if s.RelocatedTo == "" {
+			return fmt.Errorf("codegen: FieldSuppressions[%q][%d]: RelocatedTo is empty", key, i)
+		}
+		if !hasRelocationCounterpart(fo[s.RelocatedTo], s.Name, s.Attr, s.Chardata, key) {
+			return fmt.Errorf(
+				"codegen: FieldSuppressions[%q][%d]: RelocatedTo %q has no FieldOverrides entry with "+
+					"Name %q, Attr %v, Chardata %v and RelocatedFrom %q",
+				key, i, s.RelocatedTo, s.Name, s.Attr, s.Chardata, key)
+		}
+	}
+	return nil
+}
+
+// validateFieldOverrideRelocations checks that every FieldOverrides entry
+// under key with a RelocatedFrom has a matching FieldSuppressions counterpart.
+func validateFieldOverrideRelocations(key string, entries []FieldOverride, fs map[string][]FieldSuppression) error {
+	for i, e := range entries {
+		if e.RelocatedFrom == "" {
+			continue
+		}
+		if !hasSuppressionCounterpart(fs[e.RelocatedFrom], e.Name, e.Attr, e.Chardata, key) {
+			return fmt.Errorf(
+				"codegen: FieldOverrides[%q][%d]: RelocatedFrom %q has no FieldSuppressions entry with "+
+					"Name %q, Attr %v, Chardata %v and RelocatedTo %q",
+				key, i, e.RelocatedFrom, e.Name, e.Attr, e.Chardata, key)
+		}
+	}
+	return nil
+}
+
+func hasRelocationCounterpart(entries []FieldOverride, name string, attr, chardata bool, relocatedFrom string) bool {
 	for _, e := range entries {
-		if e.Name == name && e.Attr == attr && e.RelocatedFrom == relocatedFrom {
+		if e.Name == name && e.Attr == attr && e.Chardata == chardata && e.RelocatedFrom == relocatedFrom {
 			return true
 		}
 	}
 	return false
 }
 
-func hasSuppressionCounterpart(entries []FieldSuppression, name string, attr bool, relocatedTo string) bool {
+func hasSuppressionCounterpart(entries []FieldSuppression, name string, attr, chardata bool, relocatedTo string) bool {
 	for _, s := range entries {
-		if s.Name == name && s.Attr == attr && s.RelocatedTo == relocatedTo {
+		if s.Name == name && s.Attr == attr && s.Chardata == chardata && s.RelocatedTo == relocatedTo {
 			return true
 		}
 	}
@@ -1301,6 +1327,11 @@ func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool, type
 		}
 	}
 
+	overrideReason, err := g.withChardataRelocationReason(command, n, overrideReason)
+	if err != nil {
+		return field{}, err
+	}
+
 	tag := n.Name
 	if n.Kind == schema.KindAttribute {
 		tag += ",attr"
@@ -1308,6 +1339,35 @@ func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool, type
 	tag += opts
 
 	return field{name: uniqueName(goName(n.Name), used), goType: goType, tag: tag, node: n, overrideReason: overrideReason}, nil
+}
+
+// withChardataRelocationReason returns existing unchanged unless n's struct
+// type has its own chardata relocated away (FieldSuppressions[...].Chardata),
+// which leaves nothing on that struct to carry the fact — see emitStruct — so
+// the field pointing to it carries the suppression's Reason instead, for
+// internal/schema's comparer to recover by reflection and suppress the
+// resulting source-side MISSING.
+func (g *gen) withChardataRelocationReason(command string, n *schema.Node, existing string) (string, error) {
+	if len(n.Children) == 0 {
+		return existing, nil
+	}
+	st, ok := g.byHash[typeHash(n)]
+	if !ok {
+		return existing, nil
+	}
+	_, chardataSuppression, err := g.fieldSuppressionsFor(st)
+	if err != nil {
+		return "", err
+	}
+	if chardataSuppression == nil {
+		return existing, nil
+	}
+	if existing != "" {
+		return "", fmt.Errorf(
+			"codegen: %s.%s: has both a CardinalityOverride reason and a chardata-relocation "+
+				"suppression reason; ambiguous which gmpoverride tag to emit", command, n.Name)
+	}
+	return chardataSuppression.Reason, nil
 }
 
 // emitChardata declares the field for a mixed-content node's bare text, if it
@@ -1532,7 +1592,7 @@ func (g *gen) emitStruct(b *strings.Builder, st *structType) error {
 	if err != nil {
 		return err
 	}
-	suppressed, err := g.fieldSuppressionsFor(st)
+	suppressed, chardataSuppression, err := g.fieldSuppressionsFor(st)
 	if err != nil {
 		return err
 	}
@@ -1540,7 +1600,9 @@ func (g *gen) emitStruct(b *strings.Builder, st *structType) error {
 	if err != nil {
 		return err
 	}
-	g.emitChardataOverridable(b, st.node, used, chardataOverride)
+	if chardataSuppression == nil {
+		g.emitChardataOverridable(b, st.node, used, chardataOverride)
+	}
 	fields, collided, err := g.emitFields(st.node.Children, used, suppressed, typeOv, "")
 	if err != nil {
 		return err
@@ -1553,7 +1615,7 @@ func (g *gen) emitStruct(b *strings.Builder, st *structType) error {
 	}
 	b.WriteString("}\n\n")
 
-	chardata := st.node.Chardata || chardataOverride != nil
+	chardata := (st.node.Chardata || chardataOverride != nil) && chardataSuppression == nil
 	if collided {
 		if err := g.emitCollisionMethods(b, st.goName, false, false, chardata, fields, ""); err != nil {
 			return fmt.Errorf("codegen: %s: %w", st.goName, err)
@@ -1628,12 +1690,18 @@ func (g *gen) fieldOverridesFor(st *structType) (extra []FieldOverride, chardata
 // every use — including one with no matching g.fs entry, which resolves to
 // the empty set rather than being skipped — must resolve to the same
 // suppression set, or a suppression on one use could leak onto a
-// structurally-deduplicated sibling use that had none.
-func (g *gen) fieldSuppressionsFor(st *structType) (map[fieldKey]bool, error) {
+// structurally-deduplicated sibling use that had none. The chardata
+// suppression is tracked separately from the (name, attr)-keyed map since a
+// chardata entry has neither; its Reason is returned (rather than a bare
+// bool) so callers emitting the relocation's source-side field can carry it
+// forward as that field's own gmpoverride tag, for internal/schema's
+// comparer to recover by reflection.
+func (g *gen) fieldSuppressionsFor(st *structType) (map[fieldKey]bool, *FieldSuppression, error) {
 	seen := map[string]bool{}
 	haveFirst := false
 	var firstKey string
 	var first map[fieldKey]bool
+	var firstChardata *FieldSuppression
 
 	for _, u := range st.uses {
 		key := fieldOverrideKey(u.command, u.path, st.node.Name)
@@ -1643,25 +1711,41 @@ func (g *gen) fieldSuppressionsFor(st *structType) (map[fieldKey]bool, error) {
 		seen[key] = true
 
 		res := map[fieldKey]bool{}
+		var chardataSuppression *FieldSuppression
 		if entries, ok := g.fs[key]; ok {
 			g.fsConsumed[key] = true
 			for _, e := range entries {
+				e := e
+				if e.Chardata {
+					chardataSuppression = &e
+					continue
+				}
 				res[fieldKey{name: e.Name, attr: e.Attr}] = true
 			}
 		}
 
 		if !haveFirst {
-			haveFirst, firstKey, first = true, key, res
+			haveFirst, firstKey, first, firstChardata = true, key, res, chardataSuppression
 			continue
 		}
-		if !fieldKeySetEqual(first, res) {
-			return nil, fmt.Errorf(
+		if !fieldKeySetEqual(first, res) || !fieldSuppressionEqual(firstChardata, chardataSuppression) {
+			return nil, nil, fmt.Errorf(
 				"codegen: %s: FieldSuppressions for %q and %q disagree; a structurally-deduplicated type "+
 					"must resolve to the same suppression set from every path that reaches it",
 				st.goName, firstKey, key)
 		}
 	}
-	return first, nil
+	return first, firstChardata, nil
+}
+
+// fieldSuppressionEqual reports whether two chardata suppression results
+// from fieldSuppressionsFor agree: both absent, or both present with the
+// same relocation target and reason.
+func fieldSuppressionEqual(a, b *FieldSuppression) bool {
+	if (a == nil) != (b == nil) {
+		return false
+	}
+	return a == nil || (a.RelocatedTo == b.RelocatedTo && a.Reason == b.Reason)
 }
 
 // fieldKeySetEqual compares two fieldSuppressionsFor results for value

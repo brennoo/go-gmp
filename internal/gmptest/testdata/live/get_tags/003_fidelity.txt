@@ -4,7 +4,6 @@ decode: ok
 namespaces-seen:
 
 DROPPED
-  /get_tags_response/sort/field/#text                                      x1
   /get_tags_response/tag/resources/count                                   x1  (+2 descendant paths)
   /get_tags_response/tag_count/#text                                       x1
 

@@ -4,7 +4,6 @@ decode: ok
 namespaces-seen:
 
 DROPPED
-  /get_tasks_response/sort/field/#text                                     x1
   /get_tasks_response/task/last_report/report/result_count/hole/@deprecated x2
   /get_tasks_response/task/last_report/report/result_count/info/@deprecated x2
   /get_tasks_response/task/last_report/report/result_count/warning/@deprecated x2

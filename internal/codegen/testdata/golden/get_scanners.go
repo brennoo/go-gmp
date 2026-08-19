@@ -20,7 +20,7 @@ type GetScannersResponse struct {
 	Status       string         `xml:"status,attr"`
 	StatusText   string         `xml:"status_text,attr"`
 	Filters      ScannerFilters `xml:"filters"`
-	Sort         ScannerSort    `xml:"sort"`
+	Sort         ScannerSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Scanners     Scanners       `xml:"scanners"`
 	ScannerCount ScannerCount   `xml:"scanner_count"`
 	Scanner      []Scanner      `xml:"scanner,omitempty"`
@@ -53,12 +53,12 @@ type ScannerKeyword struct {
 
 // ScannerSort is the <sort> element of get_scanners. See the GMP protocol docs for details.
 type ScannerSort struct {
-	Value string       `xml:",chardata"`
 	Field ScannerField `xml:"field"`
 }
 
 // ScannerField is the <field> element of get_scanners. See the GMP protocol docs for details.
 type ScannerField struct {
+	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Order string `xml:"order"`
 }
 

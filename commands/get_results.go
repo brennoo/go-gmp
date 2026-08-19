@@ -23,7 +23,7 @@ type GetResultsResponse struct {
 	Status      string        `xml:"status,attr"`
 	StatusText  string        `xml:"status_text,attr"`
 	Filters     ResultFilters `xml:"filters"`
-	Sort        ResultSort    `xml:"sort"`
+	Sort        ResultSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Results     Results       `xml:"results"`
 	ResultCount *ResultCount  `xml:"result_count,omitempty"`
 	Result      []Result      `xml:"result,omitempty"`
@@ -56,12 +56,12 @@ type ResultKeyword struct {
 
 // ResultSort is the <sort> element of get_results. See the GMP protocol docs for details.
 type ResultSort struct {
-	Value string      `xml:",chardata"`
 	Field ResultField `xml:"field"`
 }
 
 // ResultField is the <field> element of get_results. See the GMP protocol docs for details.
 type ResultField struct {
+	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Order string `xml:"order"`
 }
 

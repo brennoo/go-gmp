@@ -21,7 +21,7 @@ type GetTargetsResponse struct {
 	Status      string        `xml:"status,attr"`
 	StatusText  string        `xml:"status_text,attr"`
 	Filters     TargetFilters `xml:"filters"`
-	Sort        TargetSort    `xml:"sort"`
+	Sort        TargetSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Targets     Targets       `xml:"targets"`
 	TargetCount TargetCount   `xml:"target_count"`
 	Target      []Target      `xml:"target,omitempty"`
@@ -54,12 +54,12 @@ type TargetKeyword struct {
 
 // TargetSort is the <sort> element of get_targets. See the GMP protocol docs for details.
 type TargetSort struct {
-	Value string      `xml:",chardata"`
 	Field TargetField `xml:"field"`
 }
 
 // TargetField is the <field> element of get_targets. See the GMP protocol docs for details.
 type TargetField struct {
+	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Order string `xml:"order"`
 }
 

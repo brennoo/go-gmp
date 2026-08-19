@@ -7,7 +7,6 @@ DROPPED
   /get_permissions_response/permission/resource/@id                        x2
   /get_permissions_response/permission/resource/permissions                x2
   /get_permissions_response/permission_count/#text                         x1
-  /get_permissions_response/sort/field/#text                               x1
 
 TRUNCATED
   (none)

@@ -51,9 +51,11 @@ type GoNode struct {
 	CatchAll bool
 
 	// OverrideReason is non-empty when this leaf's struct tag carries a
-	// gmpoverride tag: a real, evidence-backed protocol field the schema's own
-	// declared pattern does not produce. See internal/codegen's
-	// FieldOverrides.
+	// gmpoverride tag: either a real, evidence-backed protocol field the
+	// schema's own declared pattern does not produce (see internal/codegen's
+	// FieldOverrides), or a struct-typed field whose own chardata was
+	// relocated elsewhere (see internal/codegen's FieldSuppressions and
+	// checkChardata's missing-chardata case).
 	OverrideReason string
 	// ChardataOverrideReason is OverrideReason's chardata counterpart. A
 	// `,chardata` field sets Chardata on its *parent* node rather than

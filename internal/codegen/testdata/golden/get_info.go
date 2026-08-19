@@ -21,7 +21,7 @@ type GetInfoResponse struct {
 	Status     string       `xml:"status,attr"`
 	StatusText string       `xml:"status_text,attr"`
 	Filters    NVTFilters   `xml:"filters"`
-	Sort       NVTSort      `xml:"sort"`
+	Sort       NVTSort      `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Details    GMPBool      `xml:"details"`
 	InfoCount  NVTInfoCount `xml:"info_count"`
 	Info       []NVTInfo    `xml:"info,omitempty"`
@@ -54,12 +54,12 @@ type NVTKeyword struct {
 
 // NVTSort is the <sort> element of get_info. See the GMP protocol docs for details.
 type NVTSort struct {
-	Value string   `xml:",chardata"`
 	Field NVTField `xml:"field"`
 }
 
 // NVTField is the <field> element of get_info. See the GMP protocol docs for details.
 type NVTField struct {
+	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Order string `xml:"order"`
 }
 

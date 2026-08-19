@@ -5,7 +5,6 @@ namespaces-seen:
 
 DROPPED
   /get_filters_response/filter_count/#text                                 x1
-  /get_filters_response/sort/field/#text                                   x1
 
 TRUNCATED
   (none)

@@ -911,7 +911,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 			resp.StatusText = "OK"
 			resp.Info = []commands.NVTInfo{{Name: "CVE-2011-0018"}}
 			resp.Filters = commands.NVTFilters{ID: "(null)", Term: ""}
-			resp.Sort = commands.NVTSort{Value: "", Field: commands.NVTField{Order: "ascending"}}
+			resp.Sort = commands.NVTSort{Field: commands.NVTField{Order: "ascending"}}
 			resp.InfoCount = commands.NVTInfoCount{Filtered: 1, Page: 1}
 			resp.Details = false
 		} else {
@@ -919,7 +919,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 			resp.Status = "404"
 			resp.StatusText = "Not found"
 			resp.Filters = commands.NVTFilters{ID: "(null)", Term: ""}
-			resp.Sort = commands.NVTSort{Value: "", Field: commands.NVTField{Order: "ascending"}}
+			resp.Sort = commands.NVTSort{Field: commands.NVTField{Order: "ascending"}}
 			resp.InfoCount = commands.NVTInfoCount{Filtered: 0, Page: 0}
 			resp.Details = false
 		}

@@ -22,7 +22,7 @@ type GetNotesResponse struct {
 	Status     string      `xml:"status,attr"`
 	StatusText string      `xml:"status_text,attr"`
 	Filters    NoteFilters `xml:"filters"`
-	Sort       NoteSort    `xml:"sort"`
+	Sort       NoteSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Notes      Notes       `xml:"notes"`
 	NoteCount  NoteCount   `xml:"note_count"`
 	Note       []Note      `xml:"note,omitempty"`
@@ -55,12 +55,12 @@ type NoteKeyword struct {
 
 // NoteSort is the <sort> element of get_notes. See the GMP protocol docs for details.
 type NoteSort struct {
-	Value string    `xml:",chardata"`
 	Field NoteField `xml:"field"`
 }
 
 // NoteField is the <field> element of get_notes. See the GMP protocol docs for details.
 type NoteField struct {
+	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Order string `xml:"order"`
 }
 
