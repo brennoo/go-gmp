@@ -5,7 +5,7 @@ namespaces-seen:
 
 DROPPED
   /get_results_response/filters/keywords/truncated                         x1  (+1 descendant paths)
-  /get_results_response/result/nvt/severities/severity                     x1  (+1 descendant paths)
+  /get_results_response/result/nvt/severities/severity/#text               x1
   /get_results_response/result_count/#text                                 x1
   /get_results_response/sort/field/#text                                   x1
   /get_results_response/truncated                                          x1  (+1 descendant paths)
@@ -24,6 +24,13 @@ ADDED
   /get_results_response/result/name                                        x1
   /get_results_response/result/nvt/cpe                                     x1
   /get_results_response/result/nvt/family                                  x1
+  /get_results_response/result/nvt/severities/severity/@type               x1
+  /get_results_response/result/nvt/severities/severity/date                x1
+  /get_results_response/result/nvt/severities/severity/date/#text          x1
+  /get_results_response/result/nvt/severities/severity/origin              x1
+  /get_results_response/result/nvt/severities/severity/score               x1
+  /get_results_response/result/nvt/severities/severity/score/#text         x1
+  /get_results_response/result/nvt/severities/severity/value               x1
   /get_results_response/result/nvt/type                                    x1
   /get_results_response/result/qod                                         x1
   /get_results_response/result/qod/type                                    x1

@@ -38,8 +38,10 @@ func MarshalSnapshot(c schema.Command) ([]byte, error) {
 }
 
 // LoadSnapshots reads the committed Stage-A snapshots for the named commands,
-// in the order given. This is Stage B's only input: it never touches
-// vendor/XML.
+// in the order given, exactly as committed — no SchemaPatches applied. This is
+// what any raw-schema comparison (DetectDrift, TestVendorParity) must use:
+// patching one side of a "does the committed schema match X" comparison but
+// not the other would report a local generation fix as upstream schema drift.
 //
 // The command list is not baked in here; it comes from manifest.json (see
 // Manifest.AllCommands and Family.Commands), so there is exactly one checked-in
@@ -57,6 +59,22 @@ func LoadSnapshots(dir string, commands []string) ([]schema.Command, error) {
 			return nil, fmt.Errorf("%s: %w", path, err)
 		}
 		out = append(out, c)
+	}
+	return out, nil
+}
+
+// LoadGenerationModels is LoadSnapshots plus ApplySchemaPatches. Everything
+// that turns the schema tree into or validates generated Go — Generate,
+// GenerateAll, Validate, and gengmp's write and -check paths — must use this,
+// not LoadSnapshots directly, so a SchemaPatches entry actually lands in the
+// generated struct.
+func LoadGenerationModels(dir string, commands []string) ([]schema.Command, error) {
+	out, err := LoadSnapshots(dir, commands)
+	if err != nil {
+		return nil, err
+	}
+	if err := ApplySchemaPatches(out); err != nil {
+		return nil, err
 	}
 	return out, nil
 }

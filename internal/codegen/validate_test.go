@@ -30,7 +30,7 @@ func validateOrSkip(t *testing.T, command string) (before, after []schema.Result
 	if !ok {
 		t.Fatalf("The manifest no longer declares %s", command)
 	}
-	cmds, err := LoadSnapshots(snapshotDir, fam.Commands)
+	cmds, err := LoadGenerationModels(snapshotDir, fam.Commands)
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}

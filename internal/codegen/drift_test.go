@@ -48,6 +48,51 @@ func TestDetectDriftNoChange(t *testing.T) {
 	}
 }
 
+// TestDetectDriftIgnoresSchemaPatches is the regression the "High" review
+// finding on the get_results adoption asked for: DetectDrift's committed-side
+// load must stay raw. Before this fix, DetectDrift's LoadSnapshots(snapshotDir,
+// ...) call also applied SchemaPatches, so a field that only ever exists in
+// the generated Go (never in gvmd's live schema) permanently reported as
+// "Removed" — a local generation fix masquerading as upstream schema drift.
+func TestDetectDriftIgnoresSchemaPatches(t *testing.T) {
+	withSchemaPatches(t, map[string][]SchemaPatch{
+		"get_tasks:/get_tasks_response/nvt": {{
+			Name: "solution", Kind: schema.KindElement, Card: schema.CardOptional,
+			Type: "text", Chardata: true, Reason: "test",
+		}},
+	})
+
+	dir := t.TempDir()
+	m := Manifest{Families: []Family{{Name: "task", Commands: []string{"get_tasks"}}}}
+
+	// The committed snapshot on disk is the raw, unpatched shape — exactly
+	// like the real testdata/schema/*.json files, which never contain a
+	// patched-in node themselves.
+	committed := schema.Command{
+		Name:     "get_tasks",
+		Request:  elem("get_tasks", "", schema.CardRequired),
+		Response: elem("get_tasks_response", "", schema.CardRequired, elem("nvt", "", schema.CardOptional)),
+	}
+	writeSnapshot(t, dir, committed)
+
+	// live is the same raw shape: no gvmd has ever actually declared
+	// "solution" here either, so a fresh live extraction is never patched.
+	live := schema.Command{
+		Name:     "get_tasks",
+		Request:  elem("get_tasks", "", schema.CardRequired),
+		Response: elem("get_tasks_response", "", schema.CardRequired, elem("nvt", "", schema.CardOptional)),
+	}
+
+	report, err := DetectDrift([]schema.Command{live}, m, dir)
+	if err != nil {
+		t.Fatalf("DetectDrift: %v", err)
+	}
+	if len(report.Changed) != 0 {
+		t.Fatalf("report.Changed = %+v, want no drift: DetectDrift must compare against the raw committed "+
+			"snapshot, not one with SchemaPatches applied", report.Changed)
+	}
+}
+
 func TestDetectDriftGainedAndRemoved(t *testing.T) {
 	dir := t.TempDir()
 	m := Manifest{Families: []Family{{Name: "task", Commands: []string{"get_tasks"}}}}

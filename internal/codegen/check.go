@@ -132,8 +132,10 @@ func CheckOutput(m Manifest, schemaDir, outDir string, ov map[string]Override, p
 
 // loadFamilySnapshots reads one family's snapshots, returning a "command:
 // reason" line for each one that is absent or unparseable instead of failing
-// on the first. Reporting all of them at once is the difference between one
-// fix-and-rerun cycle and one per broken file.
+// on the first. It applies SchemaPatches like LoadGenerationModels (not
+// delegated to it: this loop must keep going past a broken command instead of
+// returning LoadSnapshots' single error) since CheckOutput compares against
+// committed generated Go, itself generated from the patched model.
 func loadFamilySnapshots(m Manifest, schemaDir string, f Family) (cmds []schema.Command, bad []string) {
 	for _, name := range f.Commands {
 		path := m.SnapshotPath(schemaDir, name)
@@ -152,6 +154,9 @@ func loadFamilySnapshots(m Manifest, schemaDir string, f Family) (cmds []schema.
 			continue
 		}
 		cmds = append(cmds, c)
+	}
+	if err := ApplySchemaPatches(cmds); err != nil {
+		bad = append(bad, err.Error())
 	}
 	return cmds, bad
 }

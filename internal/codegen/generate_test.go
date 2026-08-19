@@ -169,7 +169,7 @@ func TestGeneratedCodeCompiles(t *testing.T) {
 // none — a collision the generator cannot safely disambiguate — rather than
 // trusting that the real corpus never exercises that shape.
 func TestCollisionRequiresAttributeDiscriminators(t *testing.T) {
-	cmds, err := LoadSnapshots(snapshotDir, []string{"get_filters"})
+	cmds, err := LoadGenerationModels(snapshotDir, []string{"get_filters"})
 	if err != nil {
 		t.Fatalf("Failed to load the get_filters snapshot: %v", err)
 	}
@@ -1852,7 +1852,7 @@ func generateAdoptedOrFail(t *testing.T) map[string]string {
 
 func generateManifest(t *testing.T, m Manifest) map[string]string {
 	t.Helper()
-	cmds, err := LoadSnapshots(snapshotDir, m.AllCommands())
+	cmds, err := LoadGenerationModels(snapshotDir, m.AllCommands())
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}

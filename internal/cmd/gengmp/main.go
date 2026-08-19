@@ -132,7 +132,7 @@ func write(manifest codegen.Manifest, o options) error {
 	}
 	manifest = manifest.Adopted()
 
-	cmds, err := codegen.LoadSnapshots(o.schema, manifest.AllCommands())
+	cmds, err := codegen.LoadGenerationModels(o.schema, manifest.AllCommands())
 	if err != nil {
 		return fmt.Errorf("loading snapshots from %s: %w", o.schema, err)
 	}

@@ -489,10 +489,10 @@ func (g *GMPClient) PrintResultsWithFiltering(ctx context.Context, taskID string
 		return fmt.Errorf("get results failed with status %s: %s", resp.Status, resp.StatusText)
 	}
 
-	log.Printf("Found %d high/critical results (showing top 20)", len(resp.Results))
+	log.Printf("Found %d high/critical results (showing top 20)", len(resp.Result))
 	log.Println("=" + strings.Repeat("=", 80))
 
-	for i, result := range resp.Results {
+	for i, result := range resp.Result {
 		fmt.Printf("[%d] %s (Severity: %.1f)\n", i+1, result.Name, result.Severity)
 		if result.Description != "" {
 			fmt.Printf("     Description: %s\n", result.Description)

@@ -73,7 +73,7 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 		if cmd.Filter != "" {
 			// Check if page size is 0
 			if cmd.Filter == "first=1 rows=0" {
-				resp.Results = []commands.Result{}
+				resp.Result = []commands.Result{}
 			} else {
 				// Parse pagination parameters
 				first := 1
@@ -100,15 +100,15 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 				start := first - 1
 				end := start + rows
 				if start >= len(allResults) {
-					resp.Results = []commands.Result{}
+					resp.Result = []commands.Result{}
 				} else {
 					if end > len(allResults) {
 						end = len(allResults)
 					}
-					resp.Results = allResults[start:end]
+					resp.Result = allResults[start:end]
 				}
 			}
-			resp.Count = &commands.ResultsCount{Filtered: 3}
+			resp.ResultCount = &commands.ResultCount{Filtered: 3}
 		}
 	}
 

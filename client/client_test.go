@@ -227,7 +227,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 			resp.StatusText = "OK"
 			if cmd.Filter != "" {
 				// Return mock data for pagination
-				resp.Results = []commands.Result{
+				resp.Result = []commands.Result{
 					{
 						ID:       "result-1",
 						Name:     "Test Result 1",
@@ -239,7 +239,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 						Severity: 5.0,
 					},
 				}
-				resp.Count = &commands.ResultsCount{
+				resp.ResultCount = &commands.ResultCount{
 					Filtered: 2,
 					Page:     1,
 				}
@@ -1703,12 +1703,12 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp.StatusText = "OK"
 		if cmd.Filter != "" {
 			// Return mock data for pagination
-			resp.Results = []commands.Result{
+			resp.Result = []commands.Result{
 				{ID: "result-1", Name: "Test Result 1"},
 				{ID: "result-2", Name: "Test Result 2"},
 				{ID: "result-3", Name: "Test Result 3"},
 			}
-			resp.Count = &commands.ResultsCount{Filtered: 3}
+			resp.ResultCount = &commands.ResultCount{Filtered: 3}
 		}
 	}
 

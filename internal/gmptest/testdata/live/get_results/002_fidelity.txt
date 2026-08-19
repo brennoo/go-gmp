@@ -4,8 +4,7 @@ decode: ok
 namespaces-seen:
 
 DROPPED
-  /get_results_response/result/nvt/severities/severity                     x2  (+8 descendant paths)
-  /get_results_response/result/nvt/solution                                x2  (+1 descendant paths)
+  /get_results_response/result/nvt/solution/@type                          x2
   /get_results_response/result_count/#text                                 x1
   /get_results_response/sort/field/#text                                   x1
 

@@ -36,20 +36,20 @@ optionality is trusted and request-side is not.
 commands compared:            122
 fully conformant:             100
 with actionable findings:     22
-actionable findings:          78  (request 46, response 32)
-suppressed findings:          88
-confirmed by fidelity corpus: 8
+actionable findings:          73  (request 46, response 27)
+suppressed findings:          55
+confirmed by fidelity corpus: 7
 in the schema, not in Go:     0
 in Go, not in the schema:     0
 
 ### Findings by category
 
                  actionable suppressed
-  MISSING                13          0
-  EXTRA                  58         20
-  CARDINALITY             2          2
+  MISSING                12          0
+  EXTRA                  56         20
+  CARDINALITY             0          2
   KIND                    0          0
-  OMITEMPTY               0         66
+  OMITEMPTY               0         33
   TYPE                    5          0
   SCHEMA-DEFECT         128          0
 
@@ -84,11 +84,11 @@ taken against upstream main (155 commands). Two reasons, both expected:
   delete_agents                18   EXTRA=18
   modify_agents                18   EXTRA=18
   get_agents                    9   MISSING=7  TYPE=2
-  get_results                   7   MISSING=1  EXTRA=4  CARDINALITY=2
   create_report                 3   EXTRA=3
   get_reports                   3   EXTRA=3
   get_credentials               2   EXTRA=2
   get_info                      2   EXTRA=1  TYPE=1
+  get_results                   2   EXTRA=2
   get_scanners                  2   EXTRA=2
   modify_target                 2   MISSING=1  EXTRA=1
   create_target                 1   EXTRA=1
@@ -119,7 +119,6 @@ attributes, and one of its own captured request fixtures uses three of them.
   get_agents               /get_agents_response/filters
   get_agents               /get_agents_response/sort
   get_report_configs       /get_report_configs_response/report_config/param/value/@using_default
-  get_results              /get_results_response/result/nvt/severities/severity
   get_tasks                /get_tasks_response/task/hosts_ordering
   help                     /help_response/schema
 
@@ -769,88 +768,12 @@ TYPE=1  SCHEMA-DEFECT=1
 
 ### get_results  (command_get_results.xml)
 
-MISSING=1  EXTRA=4  CARDINALITY=2  OMITEMPTY=33  SCHEMA-DEFECT=4
+EXTRA=2  SCHEMA-DEFECT=4
 
-  MISSING       response /get_results_response/result/nvt/severities/severity
-                repeated elem severity is not modelled  [fidelity]
-  EXTRA         response /get_results_response/result/delta/notes/note/result/*
-                schema declares a "result" leaf; Go models 8 children
-  EXTRA         response /get_results_response/result/delta/overrides/override/result/*
-                schema declares a "result" leaf; Go models 8 children
-  EXTRA         response /get_results_response/result/notes/note/result/*
-                schema declares a "result" leaf; Go models 8 children
-  EXTRA         response /get_results_response/result/overrides/override/result/*
-                schema declares a "result" leaf; Go models 8 children
-  CARDINALITY   response /get_results_response/result/delta/notes/note/severity
-                schema says optional; Severity float64 cannot express absence (zero is a legal value)
-  CARDINALITY   response /get_results_response/result/notes/note/severity
-                schema says optional; Severity float64 cannot express absence (zero is a legal value)
-  OMITEMPTY     response /get_results_response/result/delta/diff
-                schema says optional, Diff string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/delta/notes
-                schema says optional, Notes commands.ResultDeltaNotes has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/delta/notes/note/end_time
-                schema says optional, EndTime string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/delta/notes/note/hosts
-                schema says optional, Hosts string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/delta/notes/note/port
-                schema says optional, Port string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/delta/notes/note/result
-                schema says optional, Result commands.ResultNoteResult has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/delta/notes/note/severity
-                schema says optional, Severity float64 has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/delta/notes/note/task
-                schema says optional, Task commands.ResultNoteTask has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/delta/notes/note/user_tags
-                schema says optional, UserTags commands.ResultNoteUserTags has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/delta/overrides
-                schema says optional, Overrides commands.ResultDeltaOverrides has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/delta/overrides/override/end_time
-                schema says optional, EndTime string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/delta/overrides/override/hosts
-                schema says optional, Hosts string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/delta/overrides/override/port
-                schema says optional, Port string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/delta/overrides/override/result
-                schema says optional, Result commands.ResultOverrideResult has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/delta/overrides/override/task
-                schema says optional, Task commands.ResultOverrideTask has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/delta/overrides/override/user_tags
-                schema says optional, UserTags commands.ResultOverrideUserTags has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/notes/note/end_time
-                schema says optional, EndTime string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/notes/note/hosts
-                schema says optional, Hosts string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/notes/note/port
-                schema says optional, Port string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/notes/note/result
-                schema says optional, Result commands.ResultNoteResult has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/notes/note/severity
-                schema says optional, Severity float64 has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/notes/note/task
-                schema says optional, Task commands.ResultNoteTask has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/notes/note/user_tags
-                schema says optional, UserTags commands.ResultNoteUserTags has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/nvt/epss/max_epss/cve/@id
-                schema says optional, ID string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/nvt/epss/max_severity/cve/@id
-                schema says optional, ID string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/nvt/refs/ref/@id
-                schema says optional, ID string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/nvt/refs/ref/@type
-                schema says optional, Type string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/overrides/override/end_time
-                schema says optional, EndTime string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/overrides/override/hosts
-                schema says optional, Hosts string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/overrides/override/port
-                schema says optional, Port string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/overrides/override/result
-                schema says optional, Result commands.ResultOverrideResult has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/overrides/override/task
-                schema says optional, Task commands.ResultOverrideTask has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_results_response/result/overrides/override/user_tags
-                schema says optional, UserTags commands.ResultOverrideUserTags has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
+  EXTRA         response /get_results_response/result/nvt/solution
+                Go field Solution *commands.ResultSolution has no counterpart in the schema
+  EXTRA         response /get_results_response/result/oci_image
+                Go field OCIImage *commands.ResultOCIImage has no counterpart in the schema
   SCHEMA-DEFECT response /get_results_response/result/delta/notes/note/active
                 duplicate-ele: redefined in the same scope
   SCHEMA-DEFECT response /get_results_response/result/delta/overrides/override/active

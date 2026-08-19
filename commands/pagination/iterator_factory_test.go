@@ -62,7 +62,7 @@ func TestNewIterator_DefaultPageSizeAndHasMore_Computed(t *testing.T) {
 
 func TestResultsIterator_TotalNilCount(t *testing.T) {
 	client := &fakeAllClient{
-		resultsResp: &commands.GetResultsResponse{Results: []commands.Result{{ID: "r1"}, {ID: "r2"}}, Count: nil},
+		resultsResp: &commands.GetResultsResponse{Result: []commands.Result{{ID: "r1"}, {ID: "r2"}}, ResultCount: nil},
 	}
 	it := NewResultIterator(client, context.Background(), PaginationOptions{Page: 1, PageSize: 3})
 	if !it.Next() {
@@ -95,7 +95,7 @@ func TestSettingsIterator_TotalZero(t *testing.T) {
 
 // Type mismatch in internal executeAndParse: call with wrong cmd type to hit assertion path.
 func TestNewIterator_TypeMismatch_Internal(t *testing.T) {
-	client := &fakeAllClient{resultsResp: &commands.GetResultsResponse{Results: []commands.Result{{ID: "r1"}}}}
+	client := &fakeAllClient{resultsResp: &commands.GetResultsResponse{Result: []commands.Result{{ID: "r1"}}}}
 	it := NewResultIterator(client, context.Background(), PaginationOptions{Page: 1, PageSize: 1})
 	// Directly call the internal closure with a wrong command type to exercise the error path.
 	_, _, _, err := it.executeAndParse(&commands.GetTasks{}, PaginationOptions{Page: 1, PageSize: 1})

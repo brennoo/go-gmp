@@ -364,6 +364,15 @@ var FieldTypeOverrides = map[string][]FieldTypeOverride{
 			"internal/gmptest/testdata/upstream/get_reports/002_response.xml sends the same decimal " +
 			"cvss_base shape at this path",
 	}},
+	"get_results:/result/nvt": {{
+		Name: "cvss_base", GoType: "float64",
+		Reason: "T-9 result review, finding 2: same schema/wire disagreement as create_report/get_reports " +
+			"above — command_get_results.xml's served schema declares result/nvt/cvss_base as type integer, " +
+			"but internal/gmptest/testdata/upstream/get_results/001_response.xml sends a real decimal value " +
+			"(\"5.0\") for it, which a plain int would truncate on round trip. Not every fixture agrees on " +
+			"shape — upstream 002 sends a whole number (\"9\") and all 4 live fixtures send \"0.0\" — but " +
+			"upstream 001's decimal alone is sufficient to rule out int",
+	}},
 	"get_info:/info/cve/configuration_nodes/node": {{
 		Name: "node", GoType: "NVTNode",
 		Reason: "T-9 nvt review: node/node is a genuine self-reference (see DefectAllowlist's " +
@@ -922,6 +931,18 @@ var DefectAllowlist = map[DefectKey]DefectAllowlistEntry{
 	},
 	{Command: "get_overrides", Class: "duplicate-ele", Path: "/get_overrides_response/override/result/notes/note/active"}: {
 		Reason: "T-21; same upstream redefinition as the delta-path note reference, docs/review-2026-08.md T-21",
+	},
+	{Command: "get_results", Class: "duplicate-ele", Path: "/get_results_response/result/delta/notes/note/active"}: {
+		Reason: "T-9 result review; same upstream `<ele>` redefined in one scope as get_notes/get_overrides, docs/review-2026-08.md T-15 defect table",
+	},
+	{Command: "get_results", Class: "duplicate-ele", Path: "/get_results_response/result/delta/overrides/override/active"}: {
+		Reason: "T-9 result review; same upstream `<ele>` redefined in one scope as get_notes/get_overrides, docs/review-2026-08.md T-15 defect table",
+	},
+	{Command: "get_results", Class: "duplicate-ele", Path: "/get_results_response/result/notes/note/active"}: {
+		Reason: "T-9 result review; same upstream `<ele>` redefined in one scope as get_notes/get_overrides, docs/review-2026-08.md T-15 defect table",
+	},
+	{Command: "get_results", Class: "duplicate-ele", Path: "/get_results_response/result/overrides/override/active"}: {
+		Reason: "T-9 result review; same upstream `<ele>` redefined in one scope as get_notes/get_overrides, docs/review-2026-08.md T-15 defect table",
 	},
 	{Command: "get_assets", Class: "undefined-type", Path: "/get_assets_response/asset/host/routes/route/host/@distance"}: {
 		Reason: "T-15; docs/review-2026-08.md `asset`",

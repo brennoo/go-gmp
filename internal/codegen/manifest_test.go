@@ -48,6 +48,7 @@ func TestCommittedManifest(t *testing.T) {
 	assertFamily(t, m, "modify_setting", "settings")
 	assertFamily(t, m, "get_version", "version")
 	assertFamily(t, m, "get_vulns", "vuln")
+	assertFamily(t, m, "get_results", "result")
 	assertFamily(t, m, "empty_trashcan", "trash")
 	assertFamily(t, m, "restore", "trash")
 	assertFamily(t, m, "get_notes", "note")
@@ -107,7 +108,7 @@ func TestCommittedManifest(t *testing.T) {
 		"delete_user", "describe_auth", "empty_trashcan", "get_aggregates", "get_alerts", "get_assets",
 		"get_configs", "get_credentials", "get_features", "get_feeds", "get_filters", "get_groups", "get_info", "get_license", "get_notes",
 		"get_nvt_families", "get_nvts", "get_overrides",
-		"get_permissions", "get_port_lists", "get_preferences", "get_report_configs", "get_report_formats", "get_reports", "get_resource_names", "get_roles",
+		"get_permissions", "get_port_lists", "get_preferences", "get_report_configs", "get_report_formats", "get_reports", "get_resource_names", "get_results", "get_roles",
 		"get_scanners", "get_schedules", "get_settings", "get_system_reports", "get_tags", "get_targets", "get_tasks", "get_tickets",
 		"get_tls_certificates", "get_users", "get_version", "get_vulns", "modify_alert", "modify_asset", "modify_auth", "modify_config", "modify_credential",
 		"modify_filter", "modify_group", "modify_license", "modify_note", "modify_override", "modify_permission", "modify_port_list",
@@ -127,7 +128,7 @@ func TestCommittedManifest(t *testing.T) {
 		"delete_user", "describe_auth", "empty_trashcan", "get_aggregates", "get_alerts", "get_assets",
 		"get_configs", "get_credentials", "get_features", "get_feeds", "get_filters", "get_groups", "get_info", "get_license", "get_notes",
 		"get_nvt_families", "get_nvts", "get_overrides",
-		"get_permissions", "get_port_lists", "get_preferences", "get_report_configs", "get_report_formats", "get_reports", "get_resource_names", "get_roles",
+		"get_permissions", "get_port_lists", "get_preferences", "get_report_configs", "get_report_formats", "get_reports", "get_resource_names", "get_results", "get_roles",
 		"get_scanners", "get_schedules", "get_settings", "get_system_reports", "get_tags", "get_targets", "get_tasks", "get_tickets",
 		"get_tls_certificates", "get_users", "get_version", "get_vulns", "modify_alert", "modify_asset", "modify_auth", "modify_config", "modify_credential",
 		"modify_filter", "modify_group", "modify_license", "modify_note", "modify_override", "modify_permission", "modify_port_list",
@@ -161,7 +162,7 @@ func TestCommittedManifest(t *testing.T) {
 		"get_assets.go", "get_configs.go", "get_credentials.go", "get_features.go", "get_feeds.go", "get_filters.go", "get_groups.go", "get_info.go", "get_license.go", "get_notes.go",
 		"get_nvt_families.go", "get_nvts.go",
 		"get_overrides.go", "get_permissions.go", "get_port_lists.go", "get_preferences.go", "get_report_configs.go",
-		"get_report_formats.go", "get_reports.go", "get_resource_names.go", "get_roles.go", "get_scanners.go", "get_schedules.go", "get_settings.go",
+		"get_report_formats.go", "get_reports.go", "get_resource_names.go", "get_results.go", "get_roles.go", "get_scanners.go", "get_schedules.go", "get_settings.go",
 		"get_system_reports.go", "get_tags.go",
 		"get_targets.go", "get_tasks.go", "get_tickets.go", "get_tls_certificates.go", "get_users.go", "get_version.go", "get_vulns.go",
 		"group_shared.go", "license_shared.go", "modify_alert.go", "modify_asset.go", "modify_auth.go", "modify_config.go", "modify_credential.go",
@@ -170,7 +171,7 @@ func TestCommittedManifest(t *testing.T) {
 		"modify_scanner.go", "modify_schedule.go", "modify_setting.go", "modify_tag.go", "modify_target.go", "modify_task.go",
 		"modify_ticket.go", "modify_tls_certificate.go", "modify_user.go", "move_task.go", "note_shared.go", "nvt_shared.go", "override_shared.go",
 		"permission_shared.go", "port_list_shared.go", "port_range_shared.go", "report_config_shared.go", "report_format_shared.go", "report_shared.go",
-		"restore.go", "resume_task.go", "role_shared.go", "scanner_shared.go", "schedule_shared.go", "settings_shared.go", "start_task.go", "stop_task.go",
+		"restore.go", "result_shared.go", "resume_task.go", "role_shared.go", "scanner_shared.go", "schedule_shared.go", "settings_shared.go", "start_task.go", "stop_task.go",
 		"sync_config.go", "system_report_shared.go", "tag_shared.go",
 		"target_shared.go", "task_shared.go", "test_alert.go", "ticket_shared.go", "tls_certificate_shared.go",
 		"trash_shared.go", "user_shared.go", "verify_report_format.go", "verify_scanner.go", "version_shared.go", "vuln_shared.go",
@@ -190,7 +191,7 @@ func TestCommittedManifest(t *testing.T) {
 		"get_assets.go", "get_configs.go", "get_credentials.go", "get_features.go", "get_feeds.go", "get_filters.go", "get_groups.go", "get_info.go", "get_license.go", "get_notes.go",
 		"get_nvt_families.go", "get_nvts.go",
 		"get_overrides.go", "get_permissions.go", "get_port_lists.go", "get_preferences.go", "get_report_configs.go",
-		"get_report_formats.go", "get_reports.go", "get_resource_names.go", "get_roles.go", "get_scanners.go", "get_schedules.go", "get_settings.go",
+		"get_report_formats.go", "get_reports.go", "get_resource_names.go", "get_results.go", "get_roles.go", "get_scanners.go", "get_schedules.go", "get_settings.go",
 		"get_system_reports.go", "get_tags.go",
 		"get_targets.go", "get_tasks.go", "get_tickets.go", "get_tls_certificates.go", "get_users.go", "get_version.go", "get_vulns.go",
 		"group_shared.go", "license_shared.go", "modify_alert.go", "modify_asset.go", "modify_auth.go", "modify_config.go", "modify_credential.go",
@@ -199,7 +200,7 @@ func TestCommittedManifest(t *testing.T) {
 		"modify_scanner.go", "modify_schedule.go", "modify_setting.go", "modify_tag.go", "modify_target.go", "modify_task.go",
 		"modify_ticket.go", "modify_tls_certificate.go", "modify_user.go", "move_task.go", "note_shared.go", "nvt_shared.go", "override_shared.go",
 		"permission_shared.go", "port_list_shared.go", "port_range_shared.go", "report_config_shared.go", "report_format_shared.go", "report_shared.go",
-		"restore.go", "resume_task.go", "role_shared.go", "scanner_shared.go", "schedule_shared.go", "settings_shared.go", "start_task.go", "stop_task.go",
+		"restore.go", "result_shared.go", "resume_task.go", "role_shared.go", "scanner_shared.go", "schedule_shared.go", "settings_shared.go", "start_task.go", "stop_task.go",
 		"sync_config.go", "system_report_shared.go", "tag_shared.go",
 		"target_shared.go", "task_shared.go", "test_alert.go", "ticket_shared.go", "tls_certificate_shared.go",
 		"trash_shared.go", "user_shared.go", "verify_report_format.go", "verify_scanner.go", "version_shared.go", "vuln_shared.go",
@@ -312,7 +313,7 @@ func TestLoadManifestMissingFile(t *testing.T) {
 // family in the manifest must not change the first family's bytes.
 func TestGenerateAllIsPerFamily(t *testing.T) {
 	m := manifestOrFail(t)
-	cmds, err := LoadSnapshots(snapshotDir, m.AllCommands())
+	cmds, err := LoadGenerationModels(snapshotDir, m.AllCommands())
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
@@ -370,7 +371,7 @@ func TestRealFamiliesGenerateIndependently(t *testing.T) {
 	if len(m.Families) < 2 {
 		t.Fatalf("The manifest declares %d family; this test needs at least two", len(m.Families))
 	}
-	cmds, err := LoadSnapshots(snapshotDir, m.AllCommands())
+	cmds, err := LoadGenerationModels(snapshotDir, m.AllCommands())
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
@@ -420,7 +421,7 @@ func TestRealFamiliesGenerateIndependently(t *testing.T) {
 // no other family's presence changes it.
 func TestScheduleICalendarNamingIsStable(t *testing.T) {
 	m := manifestOrFail(t)
-	cmds, err := LoadSnapshots(snapshotDir, m.AllCommands())
+	cmds, err := LoadGenerationModels(snapshotDir, m.AllCommands())
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
@@ -478,7 +479,7 @@ func TestScheduleICalendarNamingIsStable(t *testing.T) {
 // exact identifiers, and that no other family's presence changes them.
 func TestAlertFingerprintNamingIsStable(t *testing.T) {
 	m := manifestOrFail(t)
-	cmds, err := LoadSnapshots(snapshotDir, m.AllCommands())
+	cmds, err := LoadGenerationModels(snapshotDir, m.AllCommands())
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
@@ -538,7 +539,7 @@ func TestAlertFingerprintNamingIsStable(t *testing.T) {
 // exact identifiers, and that no other family's presence changes them.
 func TestTLSCertificateDNNamingIsStable(t *testing.T) {
 	m := manifestOrFail(t)
-	cmds, err := LoadSnapshots(snapshotDir, m.AllCommands())
+	cmds, err := LoadGenerationModels(snapshotDir, m.AllCommands())
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
@@ -598,7 +599,7 @@ func TestTLSCertificateDNNamingIsStable(t *testing.T) {
 // them.
 func TestOCIImageNamingIsStable(t *testing.T) {
 	m := manifestOrFail(t)
-	cmds, err := LoadSnapshots(snapshotDir, m.AllCommands())
+	cmds, err := LoadGenerationModels(snapshotDir, m.AllCommands())
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
@@ -672,7 +673,7 @@ func TestGenerateAllRejectsAnUnknownFamilyName(t *testing.T) {
 	// own) collide on FieldOverrides/NameOverrides before this test's actual
 	// naming-convention check ever runs.
 	noteCommands := []string{"create_note", "delete_note", "get_notes", "modify_note"}
-	cmds, err := LoadSnapshots(snapshotDir, noteCommands)
+	cmds, err := LoadGenerationModels(snapshotDir, noteCommands)
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
@@ -685,7 +686,7 @@ func TestGenerateAllRejectsAnUnknownFamilyName(t *testing.T) {
 
 func TestGenerateAllNeedsEverySnapshot(t *testing.T) {
 	m := manifestOrFail(t)
-	cmds, err := LoadSnapshots(snapshotDir, []string{"create_note"})
+	cmds, err := LoadGenerationModels(snapshotDir, []string{"create_note"})
 	if err != nil {
 		t.Fatalf("Failed to load the committed snapshots: %v", err)
 	}
