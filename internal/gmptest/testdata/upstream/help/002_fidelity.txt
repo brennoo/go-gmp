@@ -4,7 +4,7 @@ decode: ok
 namespaces-seen:
 
 DROPPED
-  /help_response/schema                                                    x1  (+28 descendant paths)
+  (none)
 
 TRUNCATED
   (none)

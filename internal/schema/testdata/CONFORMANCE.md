@@ -38,7 +38,7 @@ fully conformant:             100
 with actionable findings:     22
 actionable findings:          73  (request 46, response 27)
 suppressed findings:          55
-confirmed by fidelity corpus: 7
+confirmed by fidelity corpus: 6
 in the schema, not in Go:     0
 in Go, not in the schema:     0
 
@@ -120,7 +120,6 @@ attributes, and one of its own captured request fixtures uses three of them.
   get_agents               /get_agents_response/sort
   get_report_configs       /get_report_configs_response/report_config/param/value/@using_default
   get_tasks                /get_tasks_response/task/hosts_ordering
-  help                     /help_response/schema
 
 ## Per command
 
@@ -945,7 +944,7 @@ EXTRA=1
 MISSING=1  SCHEMA-DEFECT=12
 
   MISSING       response /help_response/schema
-                optional elem schema is not modelled  [fidelity]
+                optional elem schema is not modelled
   SCHEMA-DEFECT response /help_response/schema/protocol/command/pattern/any/g/any
                 recursion-cut: any reaches itself; the walk is cut here
   SCHEMA-DEFECT response /help_response/schema/protocol/command/pattern/any/g/o/g
