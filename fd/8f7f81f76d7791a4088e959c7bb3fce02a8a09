@@ -1,0 +1,143 @@
+client/client_test.go
+  s_6bb9964444db3f::t_e9f39759acaa61 914,922
+commands/chardata_test.go
+  s_6bb9964444db3f::t_e861c4d7e48990 79-85,91,94-95
+commands/get_alerts.go
+  s_6bb9964444db3f::t_1cd862e0e53dd2 23,61
+commands/get_assets.go
+  s_6bb9964444db3f::t_370ffee10651e4 26,64
+commands/get_configs.go
+  s_6bb9964444db3f::t_5d810de14685a4 27,65
+commands/get_credentials.go
+  s_6bb9964444db3f::t_bbae43f45d8d08 26,64
+commands/get_filters.go
+  s_6bb9964444db3f::t_0ba444050a28c5 26,196
+commands/get_groups.go
+  s_6bb9964444db3f::t_a328e0b48fb61f 22,60
+commands/get_info.go
+  s_6bb9964444db3f::t_f0c6f904384e5a 24,62
+commands/get_notes.go
+  s_6bb9964444db3f::t_bccd1e5e845671 25,63
+commands/get_overrides.go
+  s_6bb9964444db3f::t_4e2ad448659d45 25,63
+commands/get_permissions.go
+  s_6bb9964444db3f::t_4c0f6817db0e01 22,60
+commands/get_port_lists.go
+  s_6bb9964444db3f::t_7c3f7c12c4ed76 24,62
+commands/get_report_configs.go
+  s_6bb9964444db3f::t_7d0154ea2566cc 23,61
+commands/get_report_formats.go
+  s_6bb9964444db3f::t_c602b548762102 26,64
+commands/get_reports.go
+  s_6bb9964444db3f::t_140870b7cdf4a6 34,72
+commands/get_results.go
+  s_6bb9964444db3f::t_bfe5c494e24605 26,64
+commands/get_roles.go
+  s_6bb9964444db3f::t_9dbd866d8d9981 22,60
+commands/get_scanners.go
+  s_6bb9964444db3f::t_4d8d7a3550359d 23,61
+commands/get_schedules.go
+  s_6bb9964444db3f::t_5185d0a44e34e3 23,61
+commands/get_tags.go
+  s_6bb9964444db3f::t_854e76001acfaa 23,61
+commands/get_targets.go
+  s_6bb9964444db3f::t_e6c96439aaafc8 24,62
+commands/get_tasks.go
+  s_6bb9964444db3f::t_1f9d42ecdec313 27,65
+commands/get_tickets.go
+  s_6bb9964444db3f::t_c7a918662d3cc5 22,60
+commands/get_tls_certificates.go
+  s_6bb9964444db3f::t_e235d5152a1b8e 22,60
+commands/get_users.go
+  s_6bb9964444db3f::t_0a4bbdba331e38 21,59
+commands/get_vulns.go
+  s_6bb9964444db3f::t_bb74e504d9e974 21,59
+docs/review-2026-08.md
+  s_6bb9964444db3f::t_3baa2061d5d631 151-154,217-221,305-309,425-429,606-610,688-692,821-825,849-853,920-922,976-981,1071-1075,3970-3971,4024-4028,5032-5084
+internal/codegen/generate.go
+  s_6bb9964444db3f::t_9abdd33c5ce1a2 538-539,549-564,566-567,569-600,606,608,615,617,1330-1334,1344-1372,1595,1603-1605,1618,1693-1699,1704,1714,1718-1722,1728,1731-1732,1738-1748
+internal/codegen/generate_test.go
+  s_6bb9964444db3f::t_4bfe3fcbdcf7e2 1308,1341,1343,1345,1349,1353,1355,1404-1405,2199-2281
+internal/codegen/overrides.go
+  s_6bb9964444db3f::t_872240f2cd1bbe 158-164,326-426,509-513,518-520,532-539,550-650
+internal/codegen/overrides_test.go
+  s_6bb9964444db3f::t_c7eea40c114c3d 304-363,402-413
+internal/codegen/testdata/golden/get_alerts.go
+  s_6bb9964444db3f::t_3dab06c0c0b8d9 23,61
+internal/codegen/testdata/golden/get_assets.go
+  s_6bb9964444db3f::t_ce9d3369875f71 26,64
+internal/codegen/testdata/golden/get_configs.go
+  s_6bb9964444db3f::t_a1b01874a298a3 27,65
+internal/codegen/testdata/golden/get_credentials.go
+  s_6bb9964444db3f::t_c2aac9656fc5dd 26,64
+internal/codegen/testdata/golden/get_filters.go
+  s_6bb9964444db3f::t_29fdf3558dc4af 26,196
+internal/codegen/testdata/golden/get_groups.go
+  s_6bb9964444db3f::t_ebc85d5f239758 22,60
+internal/codegen/testdata/golden/get_info.go
+  s_6bb9964444db3f::t_7c4d9639f54ea8 24,62
+internal/codegen/testdata/golden/get_notes.go
+  s_6bb9964444db3f::t_dd5b1634382c7f 25,63
+internal/codegen/testdata/golden/get_overrides.go
+  s_6bb9964444db3f::t_a83de33ea0918a 25,63
+internal/codegen/testdata/golden/get_permissions.go
+  s_6bb9964444db3f::t_f935cedc5815fe 22,60
+internal/codegen/testdata/golden/get_port_lists.go
+  s_6bb9964444db3f::t_11ef89f4f82233 24,62
+internal/codegen/testdata/golden/get_report_configs.go
+  s_6bb9964444db3f::t_747fe5a96b7dce 23,61
+internal/codegen/testdata/golden/get_report_formats.go
+  s_6bb9964444db3f::t_529539c42d4d13 26,64
+internal/codegen/testdata/golden/get_reports.go
+  s_6bb9964444db3f::t_226de534befe9c 34,72
+internal/codegen/testdata/golden/get_results.go
+  s_6bb9964444db3f::t_3b5a0176a3a769 26,64
+internal/codegen/testdata/golden/get_roles.go
+  s_6bb9964444db3f::t_587486edf24f88 22,60
+internal/codegen/testdata/golden/get_scanners.go
+  s_6bb9964444db3f::t_5f7d82c47bb7cd 23,61
+internal/codegen/testdata/golden/get_schedules.go
+  s_6bb9964444db3f::t_d29ebeae5a3452 23,61
+internal/codegen/testdata/golden/get_tags.go
+  s_6bb9964444db3f::t_23d9dd8ebfdbe9 23,61
+internal/codegen/testdata/golden/get_targets.go
+  s_6bb9964444db3f::t_6af34cac7bf511 24,62
+internal/codegen/testdata/golden/get_tasks.go
+  s_6bb9964444db3f::t_89f145fd7c6631 27,65
+internal/codegen/testdata/golden/get_tickets.go
+  s_6bb9964444db3f::t_0c99226a242e8f 22,60
+internal/codegen/testdata/golden/get_tls_certificates.go
+  s_6bb9964444db3f::t_2648818ff0c50d 22,60
+internal/codegen/testdata/golden/get_users.go
+  s_6bb9964444db3f::t_66c1726a9e1879 21,59
+internal/codegen/testdata/golden/get_vulns.go
+  s_6bb9964444db3f::t_d2e9ebe10a02b6 21,59
+internal/codegen/validate_test.go
+  s_6bb9964444db3f::t_4afb914fb6164a 98,163,193,240,270,316,463,492-499,506,638,698,819,849-853,855-858,874,1000,1037-1041,1043-1046,1053,1184-1185,1231-1232,1362,1442,1539-1540,1542-1543,1653-1654,1681-1686,1702-1703,1831,1853,1958,1998,2100,2130,2149,2175,2197,2238,2404,2451,2623,2656,2785,2821,2840,2887,2916,2953,2978,3021
+internal/gmptest/testdata/FIDELITY-SUMMARY.txt
+  s_6bb9964444db3f::t_de5bca9dcd47a2 15,137-139,141-142,145-148,151-154,162-164,167-172,174-175,178-180,187-189,192-198,205-206,208-214,217-219,225-237,239-241,250-252,254-256,259-261,266-279,284-286
+internal/schema/conform.go
+  s_6bb9964444db3f::t_0137eb6e012560 258-261
+internal/schema/conform_test.go
+  s_6bb9964444db3f::t_62b7c719e073cd 146-243
+internal/schema/gomodel.go
+  s_6bb9964444db3f::t_926f9abae41ede 54-58
+internal/schema/testdata/CONFORMANCE.md
+  s_6bb9964444db3f::t_cb7ee3f4920629 40,48-49,560,562-565,573,575-578,584,586-589,595,597-598,603-604,628,630-633,639-644,648,650-651,654-655,670,672-673,676-677,704,706-707,710-711,721,723-726,734,736-739,749,753-754,757-758,764,766-767,770-771,775,777-778,785-786,827,829-830,835-836,848-853,857,859-860,865-866,890,892-895,923,925-928,934,936-939,963,965-966,969-970,994-999,1003,1005-1008,1016,1018-1021,1036,1038-1041
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "fd8f7f81f76d7791a4088e959c7bb3fce02a8a09",
+  "prompts": {},
+  "sessions": {
+    "s_6bb9964444db3f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_6bb9964444db3f",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
