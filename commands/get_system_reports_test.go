@@ -62,3 +62,19 @@ func TestGetSystemReportsReportTimestampsAbsent(t *testing.T) {
 		t.Fatalf("Marshal = %s, want no fabricated start_time/end_time", got)
 	}
 }
+
+// A request that never sets StartTime/EndTime must not fabricate a zero
+// timestamp on marshal (this is the request-side counterpart of
+// TestGetSystemReportsReportTimestampsAbsent above, catching the same
+// non-pointer-GMPTime-plus-omitempty bug on the request's own attributes).
+func TestGetSystemReportsRequestTimestampsAbsent(t *testing.T) {
+	req := GetSystemReports{Name: "load"}
+
+	out, err := xml.Marshal(&req)
+	if err != nil {
+		t.Fatalf("Marshal: %v", err)
+	}
+	if got := string(out); strings.Contains(got, "start_time") || strings.Contains(got, "end_time") {
+		t.Fatalf("Marshal = %s, want no fabricated start_time/end_time", got)
+	}
+}

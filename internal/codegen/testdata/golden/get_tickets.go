@@ -98,11 +98,11 @@ type Ticket struct {
 	Result            *TicketResult            `xml:"result,omitempty"`
 	Task              *TicketTask              `xml:"task,omitempty"`
 	Report            *TicketReport            `xml:"report,omitempty"`
-	FixedTime         GMPTime                  `xml:"fixed_time,omitempty"`
+	FixedTime         *GMPTime                 `xml:"fixed_time,omitempty"`
 	FixedNote         string                   `xml:"fixed_note,omitempty"`
-	ClosedTime        GMPTime                  `xml:"closed_time,omitempty"`
+	ClosedTime        *GMPTime                 `xml:"closed_time,omitempty"`
 	ClosedNote        string                   `xml:"closed_note,omitempty"`
-	FixVerifiedTime   GMPTime                  `xml:"fix_verified_time,omitempty"`
+	FixVerifiedTime   *GMPTime                 `xml:"fix_verified_time,omitempty"`
 	FixVerifiedReport *TicketFixVerifiedReport `xml:"fix_verified_report,omitempty"`
 }
 

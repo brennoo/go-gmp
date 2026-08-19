@@ -286,7 +286,7 @@ EXTRA=18
   EXTRA         request  /delete_agents/agents/agent/connection_status
                 Go field ConnectionStatus string has no counterpart in the schema
   EXTRA         request  /delete_agents/agents/agent/creation_time
-                Go field CreationTime commands.GMPTime has no counterpart in the schema
+                Go field CreationTime *commands.GMPTime has no counterpart in the schema
   EXTRA         request  /delete_agents/agents/agent/heartbeat_interval
                 Go field HeartbeatInterval int has no counterpart in the schema
   EXTRA         request  /delete_agents/agents/agent/hostname
@@ -296,11 +296,11 @@ EXTRA=18
   EXTRA         request  /delete_agents/agents/agent/ip
                 Go field IP []string has no counterpart in the schema
   EXTRA         request  /delete_agents/agents/agent/last_update
-                Go field LastUpdate commands.GMPTime has no counterpart in the schema
+                Go field LastUpdate *commands.GMPTime has no counterpart in the schema
   EXTRA         request  /delete_agents/agents/agent/min_interval
                 Go field MinInterval int has no counterpart in the schema
   EXTRA         request  /delete_agents/agents/agent/modification_time
-                Go field ModificationTime commands.GMPTime has no counterpart in the schema
+                Go field ModificationTime *commands.GMPTime has no counterpart in the schema
   EXTRA         request  /delete_agents/agents/agent/name
                 Go field Name string has no counterpart in the schema
   EXTRA         request  /delete_agents/agents/agent/owner
@@ -984,7 +984,7 @@ EXTRA=18
   EXTRA         request  /modify_agents/agents/agent/connection_status
                 Go field ConnectionStatus string has no counterpart in the schema
   EXTRA         request  /modify_agents/agents/agent/creation_time
-                Go field CreationTime commands.GMPTime has no counterpart in the schema
+                Go field CreationTime *commands.GMPTime has no counterpart in the schema
   EXTRA         request  /modify_agents/agents/agent/heartbeat_interval
                 Go field HeartbeatInterval int has no counterpart in the schema
   EXTRA         request  /modify_agents/agents/agent/hostname
@@ -994,11 +994,11 @@ EXTRA=18
   EXTRA         request  /modify_agents/agents/agent/ip
                 Go field IP []string has no counterpart in the schema
   EXTRA         request  /modify_agents/agents/agent/last_update
-                Go field LastUpdate commands.GMPTime has no counterpart in the schema
+                Go field LastUpdate *commands.GMPTime has no counterpart in the schema
   EXTRA         request  /modify_agents/agents/agent/min_interval
                 Go field MinInterval int has no counterpart in the schema
   EXTRA         request  /modify_agents/agents/agent/modification_time
-                Go field ModificationTime commands.GMPTime has no counterpart in the schema
+                Go field ModificationTime *commands.GMPTime has no counterpart in the schema
   EXTRA         request  /modify_agents/agents/agent/name
                 Go field Name string has no counterpart in the schema
   EXTRA         request  /modify_agents/agents/agent/owner

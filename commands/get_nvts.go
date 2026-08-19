@@ -41,8 +41,8 @@ type GetNVTsNVT struct {
 	Name             string          `xml:"name"`
 	UserTags         *NVTUserTags    `xml:"user_tags,omitempty"`
 	Discovery        *int            `xml:"discovery,omitempty"`
-	CreationTime     GMPTime         `xml:"creation_time,omitempty"`
-	ModificationTime GMPTime         `xml:"modification_time,omitempty"`
+	CreationTime     *GMPTime        `xml:"creation_time,omitempty"`
+	ModificationTime *GMPTime        `xml:"modification_time,omitempty"`
 	Category         string          `xml:"category,omitempty"`
 	Family           string          `xml:"family,omitempty"`
 	CVSSBase         string          `xml:"cvss_base,omitempty"`

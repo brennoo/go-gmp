@@ -26,8 +26,6 @@ ADDED
   /get_tasks_response/task/last_report/report/result_count/false_positive/#text x1
   /get_tasks_response/task/last_report/report/scan_end                     x1
   /get_tasks_response/task/last_report/report/scan_end/#text               x1
-  /get_tasks_response/task/schedule/icalendar                              x1
-  /get_tasks_response/task/schedule/icalendar/#text                        x1
   /get_tasks_response/task/target/trash                                    x1
   /get_tasks_response/task/target/trash/#text                              x1
 

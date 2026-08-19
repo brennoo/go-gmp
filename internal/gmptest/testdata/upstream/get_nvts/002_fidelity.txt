@@ -13,10 +13,7 @@ CHANGED
   (none)
 
 ADDED
-  /get_nvts_response/nvt/creation_time                                     x1
-  /get_nvts_response/nvt/creation_time/#text                               x1
-  /get_nvts_response/nvt/modification_time                                 x1
-  /get_nvts_response/nvt/modification_time/#text                           x1
+  (none)
 
 DUPLICATED
   (none)

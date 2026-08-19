@@ -59,9 +59,9 @@ type ReportReport struct {
 	Apps            *ReportApps              `xml:"apps,omitempty"`
 	SslCerts        *ReportSslCerts          `xml:"ssl_certs,omitempty"`
 	TLSCertificates *ReportTLSCertificates   `xml:"tls_certificates,omitempty"`
-	Timestamp       GMPTime                  `xml:"timestamp,omitempty"`
-	ScanStart       GMPTime                  `xml:"scan_start,omitempty"`
-	ScanEnd         GMPTime                  `xml:"scan_end,omitempty"`
+	Timestamp       *GMPTime                 `xml:"timestamp,omitempty"`
+	ScanStart       *GMPTime                 `xml:"scan_start,omitempty"`
+	ScanEnd         *GMPTime                 `xml:"scan_end,omitempty"`
 	Errors          *ReportErrors            `xml:"errors,omitempty"`
 	UserTags        *ReportUserTags          `xml:"user_tags,omitempty"`
 	ResultCount     *ReportResultCount       `xml:"result_count,omitempty"`

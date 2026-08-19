@@ -81,8 +81,8 @@ type Tag struct {
 	Permissions      *TagPermissions   `xml:"permissions,omitempty"`
 	Owner            *TagOwner         `xml:"owner,omitempty"`
 	Comment          string            `xml:"comment,omitempty"`
-	CreationTime     GMPTime           `xml:"creation_time,omitempty"`
-	ModificationTime GMPTime           `xml:"modification_time,omitempty"`
+	CreationTime     *GMPTime          `xml:"creation_time,omitempty"`
+	ModificationTime *GMPTime          `xml:"modification_time,omitempty"`
 	Writable         *GMPBool          `xml:"writable,omitempty"`
 	InUse            *GMPBool          `xml:"in_use,omitempty"`
 	Resources        *GetTagsResources `xml:"resources,omitempty"`

@@ -2049,6 +2049,65 @@ func TestFieldOfRequiredOverride(t *testing.T) {
 	})
 }
 
+// TestFieldOfGMPTimePointerPolicy pins pointerScalars' GMPTime entry directly
+// at the fieldOf level, the same way TestFieldOfInChoiceCardinality pins
+// InChoice handling: optional iso_time fields must generate as *GMPTime with
+// omitempty (the fabrication pointerScalars' doc comment exists to prevent),
+// required iso_time fields must stay plain GMPTime with no omitempty, and a
+// field that also carries an explicit PointerOverride must come out the same
+// way rather than double-applying the pointer.
+func TestFieldOfGMPTimePointerPolicy(t *testing.T) {
+	tests := []struct {
+		name       string
+		command    string
+		node       *schema.Node
+		pf         map[string]PointerOverride
+		wantGoType string
+		wantTag    string
+	}{
+		{
+			name:       "optional iso_time generates *GMPTime with omitempty",
+			node:       &schema.Node{Name: "creation_time", Kind: schema.KindElement, Card: schema.CardOptional, Type: "iso_time"},
+			wantGoType: "*GMPTime",
+			wantTag:    "creation_time,omitempty",
+		},
+		{
+			name:       "required iso_time stays plain GMPTime, no omitempty",
+			node:       &schema.Node{Name: "creation_time", Kind: schema.KindElement, Card: schema.CardRequired, Type: "iso_time"},
+			wantGoType: "GMPTime",
+			wantTag:    "creation_time",
+		},
+		{
+			name:       "optional iso_time with an applicable PointerOverride is unaffected: already forced by pointerScalars",
+			command:    "get_x",
+			node:       &schema.Node{Name: "some_time", Kind: schema.KindElement, Card: schema.CardOptional, Type: "iso_time"},
+			pf:         map[string]PointerOverride{"get_x.some_time": {Reason: "test"}},
+			wantGoType: "*GMPTime",
+			wantTag:    "some_time,omitempty",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			pf := tt.pf
+			if pf == nil {
+				pf = map[string]PointerOverride{}
+			}
+			g := &gen{ov: TypeOverrides, pf: pf}
+			f, err := g.fieldOf(tt.command, tt.node, map[string]bool{}, nil)
+			if err != nil {
+				t.Fatalf("fieldOf: %v", err)
+			}
+			if f.goType != tt.wantGoType {
+				t.Errorf("goType = %q, want %q", f.goType, tt.wantGoType)
+			}
+			if f.tag != tt.wantTag {
+				t.Errorf("tag = %q, want %q", f.tag, tt.wantTag)
+			}
+		})
+	}
+}
+
 // --- fieldOverridesFor cross-use consistency (bug #2 regression tests) -----
 
 // twinFieldOverrideCommands builds two commands, cmd_a and cmd_b, whose

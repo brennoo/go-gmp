@@ -20,8 +20,7 @@ CHANGED
   (none)
 
 ADDED
-  /get_tasks_response/task/schedule/icalendar                              x2
-  /get_tasks_response/task/schedule/icalendar/#text                        x2
+  (none)
 
 DUPLICATED
   (none)

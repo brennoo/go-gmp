@@ -1189,7 +1189,14 @@ var scalarTypes = map[string]string{
 // and "zero" to stay distinguishable. This is T-5's rule. A string is not one
 // of them: in this protocol an empty string and an absent element mean the
 // same thing, which is why the hand-written code uses `string` + omitempty.
-var pointerScalars = map[string]bool{"int": true, "float64": true, "GMPBool": true, "GMPAtoiBool": true}
+// GMPTime belongs here for a related but distinct reason: its zero value
+// (year 1) is a legal-looking timestamp, and encoding/xml's isEmptyValue
+// never treats a struct as empty, so omitempty on a non-pointer GMPTime is a
+// silent no-op that fabricates a zero timestamp on re-encode instead of
+// omitting the field.
+var pointerScalars = map[string]bool{
+	"int": true, "float64": true, "GMPBool": true, "GMPAtoiBool": true, "GMPTime": true,
+}
 
 // goTypeOf resolves a node's Go type name, unqualified for targetPackage.
 func (g *gen) goTypeOf(n *schema.Node) string {

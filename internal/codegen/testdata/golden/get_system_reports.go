@@ -9,8 +9,8 @@ type GetSystemReports struct {
 	XMLName   xml.Name `xml:"get_system_reports"`
 	Name      string   `xml:"name,attr,omitempty"`
 	Duration  *int     `xml:"duration,attr,omitempty"`
-	StartTime GMPTime  `xml:"start_time,attr,omitempty"`
-	EndTime   GMPTime  `xml:"end_time,attr,omitempty"`
+	StartTime *GMPTime `xml:"start_time,attr,omitempty"`
+	EndTime   *GMPTime `xml:"end_time,attr,omitempty"`
 	Brief     *GMPBool `xml:"brief,attr,omitempty"`
 	SlaveID   string   `xml:"slave_id,attr,omitempty"`
 }

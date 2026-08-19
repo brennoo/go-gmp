@@ -45,8 +45,8 @@ create_port_list             live      001 clean         dropped=0   truncated=0
 create_port_list             upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 create_port_range            live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_port_range            upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
-create_report                live      001 ok            dropped=0   truncated=0   changed=2   added=56
-create_report                upstream  001 ok            dropped=3   truncated=0   changed=1   added=70
+create_report                live      001 ok            dropped=0   truncated=0   changed=2   added=54
+create_report                upstream  001 ok            dropped=3   truncated=0   changed=1   added=66
 create_report_config         upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 create_report_format         live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_report_format         upstream  001 ok            dropped=1   truncated=0   changed=0   added=0
@@ -72,7 +72,7 @@ create_tls_certificate       upstream  001 clean         dropped=0   truncated=0
 create_user                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_user                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 delete_agents                live      001 clean         dropped=0   truncated=0   changed=0   added=0
-delete_agents                upstream  001 clean         dropped=0   truncated=0   changed=0   added=7
+delete_agents                upstream  001 clean         dropped=0   truncated=0   changed=0   added=1
 delete_alert                 live      001 clean         dropped=0   truncated=0   changed=0   added=0
 delete_alert                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=1
 delete_asset                 live      001 clean         dropped=0   truncated=0   changed=0   added=0
@@ -242,8 +242,8 @@ get_settings                 live      002 clean         dropped=0   truncated=0
 get_settings                 live      003 clean         dropped=0   truncated=0   changed=0   added=0
 get_settings                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 get_system_reports           live      001 clean         dropped=0   truncated=0   changed=0   added=0
-get_system_reports           upstream  001 clean         dropped=0   truncated=0   changed=0   added=2
-get_system_reports           upstream  002 clean         dropped=0   truncated=0   changed=0   added=2
+get_system_reports           upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
+get_system_reports           upstream  002 clean         dropped=0   truncated=0   changed=0   added=0
 get_tags                     live      001 clean         dropped=0   truncated=0   changed=0   added=0
 get_tags                     live      002 clean         dropped=0   truncated=0   changed=0   added=0
 get_tags                     live      003 clean         dropped=0   truncated=0   changed=0   added=0
@@ -286,7 +286,7 @@ help                         live      002 clean         dropped=0   truncated=0
 help                         upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 help                         upstream  002 clean         dropped=0   truncated=0   changed=0   added=0
 modify_agents                live      001 clean         dropped=0   truncated=0   changed=0   added=0
-modify_agents                upstream  001 clean         dropped=0   truncated=0   changed=0   added=7
+modify_agents                upstream  001 clean         dropped=0   truncated=0   changed=0   added=1
 modify_alert                 live      001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_alert                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_asset                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0

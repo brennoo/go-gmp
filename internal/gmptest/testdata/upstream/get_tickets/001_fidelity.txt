@@ -14,12 +14,6 @@ CHANGED
   /get_tickets_response/ticket/severity/#text                              "5.0" -> "5"
 
 ADDED
-  /get_tickets_response/ticket/closed_time                                 x1
-  /get_tickets_response/ticket/closed_time/#text                           x1
-  /get_tickets_response/ticket/fix_verified_time                           x1
-  /get_tickets_response/ticket/fix_verified_time/#text                     x1
-  /get_tickets_response/ticket/fixed_time                                  x1
-  /get_tickets_response/ticket/fixed_time/#text                            x1
   /get_tickets_response/ticket/nvt                                         x1
   /get_tickets_response/ticket/nvt/@oid                                    x1
   /get_tickets_response/ticket/orphan                                      x1

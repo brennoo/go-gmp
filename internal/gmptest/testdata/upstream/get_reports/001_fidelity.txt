@@ -40,15 +40,9 @@ ADDED
   /get_reports_response/report/report/report_format/param                  x1
   /get_reports_response/report/report/report_format/param/name             x1
   /get_reports_response/report/report/report_format/param/value            x1
-  /get_reports_response/report/report/scan_end                             x1
-  /get_reports_response/report/report/scan_end/#text                       x1
-  /get_reports_response/report/report/scan_start                           x1
-  /get_reports_response/report/report/scan_start/#text                     x1
   /get_reports_response/report/report/sort                                 x1
   /get_reports_response/report/report/sort/field                           x1
   /get_reports_response/report/report/sort/field/order                     x1
-  /get_reports_response/report/report/timestamp                            x1
-  /get_reports_response/report/report/timestamp/#text                      x1
   /get_reports_response/report/task                                        x1
   /get_reports_response/report/task/@id                                    x1
   /get_reports_response/report/task/name                                   x1

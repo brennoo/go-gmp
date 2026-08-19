@@ -84,8 +84,8 @@ type Task struct {
 	Owner            *TaskOwner           `xml:"owner,omitempty"`
 	Name             string               `xml:"name,omitempty"`
 	Comment          string               `xml:"comment,omitempty"`
-	CreationTime     GMPTime              `xml:"creation_time,omitempty"`
-	ModificationTime GMPTime              `xml:"modification_time,omitempty"`
+	CreationTime     *GMPTime             `xml:"creation_time,omitempty"`
+	ModificationTime *GMPTime             `xml:"modification_time,omitempty"`
 	Writable         *GMPBool             `xml:"writable,omitempty"`
 	InUse            *GMPBool             `xml:"in_use,omitempty"`
 	Permissions      *TaskPermissions     `xml:"permissions,omitempty"`
@@ -178,11 +178,11 @@ type TaskRole struct {
 
 // GetTasksSchedule is the <schedule> element of get_tasks. See the GMP protocol docs for details.
 type GetTasksSchedule struct {
-	ID        string  `xml:"id,attr"`
-	Name      string  `xml:"name"`
-	Trash     GMPBool `xml:"trash"`
-	ICalendar GMPTime `xml:"icalendar,omitempty"`
-	Timezone  string  `xml:"timezone,omitempty"`
+	ID        string   `xml:"id,attr"`
+	Name      string   `xml:"name"`
+	Trash     GMPBool  `xml:"trash"`
+	ICalendar *GMPTime `xml:"icalendar,omitempty"`
+	Timezone  string   `xml:"timezone,omitempty"`
 }
 
 // TaskReportCount is the <report_count> element of get_tasks. See the GMP protocol docs for details.
