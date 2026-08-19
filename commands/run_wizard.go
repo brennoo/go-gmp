@@ -71,7 +71,10 @@ type WizardResponse struct {
 	GetAggregatesResponse    *GetAggregatesResponse    `xml:"get_aggregates_response,omitempty"`
 	Status                   string                    `xml:"status,omitempty"`
 	StatusText               string                    `xml:"status_text,omitempty"`
-	InnerXML                 string                    `xml:",innerxml"` // For any unknown or extra content
+
+	// InnerXML preserves the complete polymorphic payload. Re-marshaling a
+	// decoded value duplicates content also represented by typed fields.
+	InnerXML string `xml:",innerxml"`
 }
 
 // GetStatus returns the status and status text from the response.
