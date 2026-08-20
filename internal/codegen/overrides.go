@@ -162,6 +162,12 @@ type FieldOverride struct {
 // needs to name the defect, not repeat that evidence 25 times over.
 const t18aSortFieldReason = "T-18a: sort-field chardata is nested under <field>"
 
+// t23CountTotalReason is the shared Reason for every T-23 count-wrapper
+// chardata addition below: every affected get_X command, the schema/wire
+// evidence, and the zero-total citation are recorded once in
+// docs/review-2026-08.md's T-23 entry rather than repeated 25 times over.
+const t23CountTotalReason = "T-23: count-wrapper chardata total is schema-undeclared"
+
 var FieldOverrides = map[string][]FieldOverride{
 	"get_tls_certificates:/tls_certificate": {{
 		Name: "valid", GoType: "GMPBool",
@@ -424,6 +430,48 @@ var FieldOverrides = map[string][]FieldOverride{
 		Chardata: true, GoType: "string", RelocatedFrom: "get_vulns:/sort",
 		Reason: t18aSortFieldReason,
 	}},
+
+	"get_roles:/role_count": {{
+		Chardata: true, GoType: "int",
+		Reason: "T-23: command_get_roles.xml's role_count <pattern> declares only <e>filtered</e>/" +
+			"<e>page</e>, no chardata, but the command's own baked <example> shows a bare leading total " +
+			"(\"1<filtered>1</filtered><page>1</page>\") and every live fixture agrees — " +
+			"internal/gmptest/testdata/live/get_roles/001_response.xml sends " +
+			"<role_count>6<filtered>6</filtered><page>6</page></role_count>. A zero total is equally real: " +
+			"internal/gmptest/testdata/live/get_alerts/001_response.xml's matching " +
+			"<alert_count>0<filtered>0</filtered><page>0</page></alert_count> proves the leading text can be " +
+			"\"0\", which rules out modeling this with omitempty (an int chardata field with omitempty " +
+			"added to its xml tag drops the whole element on marshal, zero or not — confirmed by a " +
+			"standalone encoding/xml experiment — so this and every entry below omits OmitEmpty entirely)",
+	}},
+	// The remaining 24 commands below share get_roles' exact defect: same
+	// pattern-declares-only-filtered/page shape, same undeclared leading
+	// total, confirmed independently by each command's own schema and
+	// fidelity/live evidence.
+	"get_alerts:/alert_count":                     {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
+	"get_assets:/asset_count":                     {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
+	"get_configs:/config_count":                   {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
+	"get_credentials:/credential_count":           {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
+	"get_filters:/filter_count":                   {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
+	"get_groups:/group_count":                     {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
+	"get_info:/info_count":                        {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
+	"get_notes:/note_count":                       {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
+	"get_overrides:/override_count":               {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
+	"get_permissions:/permission_count":           {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
+	"get_port_lists:/port_list_count":             {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
+	"get_report_configs:/report_config_count":     {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
+	"get_report_formats:/report_format_count":     {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
+	"get_reports:/report_count":                   {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
+	"get_results:/result_count":                   {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
+	"get_scanners:/scanner_count":                 {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
+	"get_schedules:/schedule_count":               {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
+	"get_tags:/tag_count":                         {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
+	"get_targets:/target_count":                   {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
+	"get_tasks:/task_count":                       {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
+	"get_tickets:/ticket_count":                   {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
+	"get_tls_certificates:/tls_certificate_count": {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
+	"get_users:/user_count":                       {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
+	"get_vulns:/vuln_count":                       {{Chardata: true, GoType: "int", Reason: t23CountTotalReason}},
 }
 
 // FieldTypeOverride corrects the Go type the mechanical mapping would assign
@@ -902,6 +950,12 @@ var PointerOverrides = map[string]PointerOverride{
 // element on re-encode. Unlike PointerOverride, which only ever adjusts the
 // pointer-vs-value choice for a field the schema already marks optional, this
 // overrides fieldOf's requiredness-derived omitempty decision itself.
+//
+// When the named field is structured (has children), fieldOf also makes it a
+// pointer — the wrapper's own zero value (e.g. a *_count summary struct with
+// Value/Filtered/Page all 0) is otherwise indistinguishable from "genuinely
+// absent," so a plain (non-pointer) struct field would fabricate the element
+// on re-encode exactly like a missing omitempty would for a scalar.
 type RequiredOverride struct {
 	Reason string
 }
@@ -928,7 +982,59 @@ var RequiredOverrides = map[string]RequiredOverride{
 			"internal/gmptest/testdata/upstream/get_nvts/001_request.xml omits it entirely and gets back " +
 			"three NVTs, the many-NVTs case the summary promises",
 	},
+
+	"get_filters.filter_count": {
+		Reason: "T-23 (review-flagged expansion): command_get_filters.xml's response <pattern> declares " +
+			"filter_count required (bare <e>filter_count</e>), but the command's own single-filter-lookup " +
+			"<example> (\"Get single filter, including alerts that use the filter\", filter_id lookup) " +
+			"omits <filter_count>, <sort> and <filters> entirely — confirmed live by " +
+			"internal/gmptest/testdata/upstream/get_filters/002_response.xml, the identical fixture. A " +
+			"plain (non-pointer) FilterCount field cannot represent that absence: its own zero value " +
+			"(Value/Filtered/Page all 0) is indistinguishable from \"the wrapper genuinely wasn't sent,\" so " +
+			"re-encoding a filter-lookup response fabricated <filter_count>0<filtered>0</filtered>" +
+			"<page>0</page></filter_count> where the wire sent nothing — the same class of defect T-23's " +
+			"chardata-total fix does not by itself solve. Scoped to count wrappers only: the identically " +
+			"required, identically sometimes-absent sibling <sort>/<filters> wrappers on this and every " +
+			"other command below share this defect too, but are deliberately left as-is for now (see " +
+			"docs/review-2026-08.md's T-23 entry) — only *_count is in scope here.",
+	},
+	// The remaining 22 commands below share get_filters' exact defect: same
+	// pattern-declares-required shape, same single-item-lookup examples/fixtures
+	// that omit the wrapper outright, confirmed independently by each command's
+	// own schema and fidelity/live evidence. get_reports and get_results are
+	// absent from this table on purpose — their schema <pattern> already wraps
+	// report_count/result_count in an <o>, so fieldOf's existing CardOptional
+	// auto-pointer logic already makes them *ReportCount/*ResultCount.
+	"get_alerts.alert_count":                     {Reason: t23CountWrapperReason},
+	"get_assets.asset_count":                     {Reason: t23CountWrapperReason},
+	"get_configs.config_count":                   {Reason: t23CountWrapperReason},
+	"get_credentials.credential_count":           {Reason: t23CountWrapperReason},
+	"get_groups.group_count":                     {Reason: t23CountWrapperReason},
+	"get_info.info_count":                        {Reason: t23CountWrapperReason},
+	"get_notes.note_count":                       {Reason: t23CountWrapperReason},
+	"get_overrides.override_count":               {Reason: t23CountWrapperReason},
+	"get_permissions.permission_count":           {Reason: t23CountWrapperReason},
+	"get_port_lists.port_list_count":             {Reason: t23CountWrapperReason},
+	"get_report_configs.report_config_count":     {Reason: t23CountWrapperReason},
+	"get_report_formats.report_format_count":     {Reason: t23CountWrapperReason},
+	"get_roles.role_count":                       {Reason: t23CountWrapperReason},
+	"get_scanners.scanner_count":                 {Reason: t23CountWrapperReason},
+	"get_schedules.schedule_count":               {Reason: t23CountWrapperReason},
+	"get_tags.tag_count":                         {Reason: t23CountWrapperReason},
+	"get_targets.target_count":                   {Reason: t23CountWrapperReason},
+	"get_tasks.task_count":                       {Reason: t23CountWrapperReason},
+	"get_tickets.ticket_count":                   {Reason: t23CountWrapperReason},
+	"get_tls_certificates.tls_certificate_count": {Reason: t23CountWrapperReason},
+	"get_users.user_count":                       {Reason: t23CountWrapperReason},
+	"get_vulns.vuln_count":                       {Reason: t23CountWrapperReason},
 }
+
+// t23CountWrapperReason is the shared Reason for every T-23 count-wrapper
+// RequiredOverrides entry above get_filters.filter_count: same schema-required
+// wire shape, same single-item-lookup absence, same pointer-for-presence fix.
+const t23CountWrapperReason = "T-23 (review-flagged expansion): same required-but-sometimes-absent " +
+	"count-wrapper defect as get_filters.filter_count above, confirmed independently by this command's own " +
+	"schema <pattern> and fidelity/live evidence"
 
 // CardinalityOverride keeps a schema-singular field Go-slice-typed despite
 // that, because live protocol evidence contradicts the schema's declared

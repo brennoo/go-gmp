@@ -21,7 +21,7 @@ type GetPermissionsResponse struct {
 	Filters         PermissionFilters `xml:"filters"`
 	Sort            PermissionSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Permissions     Permissions       `xml:"permissions"`
-	PermissionCount PermissionCount   `xml:"permission_count"`
+	PermissionCount *PermissionCount  `xml:"permission_count,omitempty"`
 	Permission      []Permission      `xml:"permission,omitempty"`
 }
 
@@ -69,6 +69,7 @@ type Permissions struct {
 
 // PermissionCount is the <permission_count> element of get_permissions. See the GMP protocol docs for details.
 type PermissionCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: count-wrapper chardata total is schema-undeclared"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

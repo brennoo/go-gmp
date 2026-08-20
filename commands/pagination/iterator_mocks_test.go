@@ -62,7 +62,7 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 					resp.Task = allTasks[start:end]
 				}
 			}
-			resp.TaskCount = commands.TaskCount{Filtered: 3}
+			resp.TaskCount = &commands.TaskCount{Filtered: 3}
 		}
 	}
 
@@ -145,7 +145,7 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 					resp.Asset = allAssets[start:end]
 				}
 			}
-			resp.AssetCount = commands.AssetCount{Filtered: 2}
+			resp.AssetCount = &commands.AssetCount{Filtered: 2}
 		}
 	}
 
@@ -191,7 +191,7 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 					resp.Target = allTargets[start:end]
 				}
 			}
-			resp.TargetCount = commands.TargetCount{Filtered: 3}
+			resp.TargetCount = &commands.TargetCount{Filtered: 3}
 		}
 	}
 
@@ -237,7 +237,7 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 					resp.Ticket = allTickets[start:end]
 				}
 			}
-			resp.TicketCount = commands.TicketCount{Filtered: 3}
+			resp.TicketCount = &commands.TicketCount{Filtered: 3}
 		}
 	}
 
@@ -283,7 +283,7 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 					resp.PortList = allPortLists[start:end]
 				}
 			}
-			resp.PortListCount = commands.PortListCount{Filtered: 3}
+			resp.PortListCount = &commands.PortListCount{Filtered: 3}
 		}
 	}
 

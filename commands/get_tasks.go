@@ -26,7 +26,7 @@ type GetTasksResponse struct {
 	Filters        TaskFilters `xml:"filters"`
 	Sort           TaskSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Tasks          Tasks       `xml:"tasks"`
-	TaskCount      TaskCount   `xml:"task_count"`
+	TaskCount      *TaskCount  `xml:"task_count,omitempty"`
 	Task           []Task      `xml:"task,omitempty"`
 }
 
@@ -74,6 +74,7 @@ type Tasks struct {
 
 // TaskCount is the <task_count> element of get_tasks. See the GMP protocol docs for details.
 type TaskCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: count-wrapper chardata total is schema-undeclared"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

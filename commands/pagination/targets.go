@@ -30,7 +30,10 @@ func NewTargetIterator(client Client, ctx context.Context, opts PaginationOption
 			return items
 		},
 		func(resp *commands.GetTargetsResponse) int {
-			return resp.TargetCount.Filtered
+			if resp.TargetCount != nil {
+				return resp.TargetCount.Filtered
+			}
+			return 0
 		},
 	)
 }

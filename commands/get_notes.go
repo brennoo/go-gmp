@@ -24,7 +24,7 @@ type GetNotesResponse struct {
 	Filters    NoteFilters `xml:"filters"`
 	Sort       NoteSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Notes      Notes       `xml:"notes"`
-	NoteCount  NoteCount   `xml:"note_count"`
+	NoteCount  *NoteCount  `xml:"note_count,omitempty"`
 	Note       []Note      `xml:"note,omitempty"`
 }
 
@@ -72,6 +72,7 @@ type Notes struct {
 
 // NoteCount is the <note_count> element of get_notes. See the GMP protocol docs for details.
 type NoteCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: count-wrapper chardata total is schema-undeclared"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

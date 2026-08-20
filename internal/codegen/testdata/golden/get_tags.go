@@ -22,7 +22,7 @@ type GetTagsResponse struct {
 	Filters    TagFilters `xml:"filters"`
 	Sort       TagSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Tags       Tags       `xml:"tags"`
-	TagCount   TagCount   `xml:"tag_count"`
+	TagCount   *TagCount  `xml:"tag_count,omitempty"`
 	Tag        []Tag      `xml:"tag,omitempty"`
 }
 
@@ -70,6 +70,7 @@ type Tags struct {
 
 // TagCount is the <tag_count> element of get_tags. See the GMP protocol docs for details.
 type TagCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: count-wrapper chardata total is schema-undeclared"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

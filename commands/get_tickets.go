@@ -21,7 +21,7 @@ type GetTicketsResponse struct {
 	Filters     TicketFilters `xml:"filters"`
 	Sort        TicketSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Tickets     Tickets       `xml:"tickets"`
-	TicketCount TicketCount   `xml:"ticket_count"`
+	TicketCount *TicketCount  `xml:"ticket_count,omitempty"`
 	Ticket      []Ticket      `xml:"ticket,omitempty"`
 }
 
@@ -69,6 +69,7 @@ type Tickets struct {
 
 // TicketCount is the <ticket_count> element of get_tickets. See the GMP protocol docs for details.
 type TicketCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: count-wrapper chardata total is schema-undeclared"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

@@ -4,7 +4,7 @@ decode: ok
 namespaces-seen:
 
 DROPPED
-  /get_tls_certificates_response/tls_certificate_count/#text               x1
+  (none)
 
 TRUNCATED
   (none)

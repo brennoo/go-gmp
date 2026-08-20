@@ -21,11 +21,6 @@ ADDED
   /get_notes_response/note/owner                                           x1
   /get_notes_response/note/owner/name                                      x1
   /get_notes_response/note/permissions                                     x1
-  /get_notes_response/note_count                                           x1
-  /get_notes_response/note_count/filtered                                  x1
-  /get_notes_response/note_count/filtered/#text                            x1
-  /get_notes_response/note_count/page                                      x1
-  /get_notes_response/note_count/page/#text                                x1
   /get_notes_response/notes                                                x1
   /get_notes_response/notes/@max                                           x1
   /get_notes_response/notes/@start                                         x1

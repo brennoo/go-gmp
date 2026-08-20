@@ -8,7 +8,6 @@ DROPPED
   /get_info_response/info/@start                                           x1
   /get_info_response/info/in_use                                           x11  (+1 descendant paths)
   /get_info_response/info/writable                                         x11  (+1 descendant paths)
-  /get_info_response/info_count/#text                                      x1
 
 TRUNCATED
   (none)

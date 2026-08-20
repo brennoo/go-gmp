@@ -25,7 +25,7 @@ type GetAssetsResponse struct {
 	Filters    AssetFilters     `xml:"filters"`
 	Sort       AssetSort        `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Assets     Assets           `xml:"assets"`
-	AssetCount AssetCount       `xml:"asset_count"`
+	AssetCount *AssetCount      `xml:"asset_count,omitempty"`
 	Asset      []GetAssetsAsset `xml:"asset,omitempty"`
 }
 
@@ -73,6 +73,7 @@ type Assets struct {
 
 // AssetCount is the <asset_count> element of get_assets. See the GMP protocol docs for details.
 type AssetCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: count-wrapper chardata total is schema-undeclared"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

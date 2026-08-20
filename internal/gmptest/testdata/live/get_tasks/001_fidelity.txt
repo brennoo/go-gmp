@@ -10,7 +10,6 @@ DROPPED
   /get_tasks_response/task/last_report/report/scan_start                   x5  (+1 descendant paths)
   /get_tasks_response/task/scanner/trash                                   x5  (+1 descendant paths)
   /get_tasks_response/task/trend                                           x5
-  /get_tasks_response/task_count/#text                                     x1
 
 TRUNCATED
   /get_tasks_response/task/comment                                         5 -> 4

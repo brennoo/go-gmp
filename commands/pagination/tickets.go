@@ -29,6 +29,11 @@ func NewTicketIterator(client Client, ctx context.Context, opts PaginationOption
 			}
 			return items
 		},
-		func(resp *commands.GetTicketsResponse) int { return resp.TicketCount.Filtered },
+		func(resp *commands.GetTicketsResponse) int {
+			if resp.TicketCount != nil {
+				return resp.TicketCount.Filtered
+			}
+			return 0
+		},
 	)
 }

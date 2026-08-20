@@ -5,7 +5,6 @@ namespaces-seen:
 
 DROPPED
   /get_results_response/result/nvt/solution/@type                          x6
-  /get_results_response/result_count/#text                                 x1
 
 TRUNCATED
   (none)

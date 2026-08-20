@@ -8,7 +8,6 @@ DROPPED
   /get_tickets_response/ticket/report/timestamp                            x1  (+1 descendant paths)
   /get_tickets_response/ticket/task/name                                   x1  (+1 descendant paths)
   /get_tickets_response/ticket/task/trash                                  x1  (+1 descendant paths)
-  /get_tickets_response/ticket_count/#text                                 x1
 
 TRUNCATED
   (none)

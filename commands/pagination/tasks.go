@@ -30,7 +30,10 @@ func NewTaskIterator(client Client, ctx context.Context, opts PaginationOptions,
 			return items
 		},
 		func(resp *commands.GetTasksResponse) int {
-			return resp.TaskCount.Filtered
+			if resp.TaskCount != nil {
+				return resp.TaskCount.Filtered
+			}
+			return 0
 		},
 	)
 }

@@ -32,11 +32,6 @@ ADDED
   /get_tasks_response/task/last_report/report/scan_end/#text               x1
   /get_tasks_response/task/target/trash                                    x1
   /get_tasks_response/task/target/trash/#text                              x1
-  /get_tasks_response/task_count                                           x1
-  /get_tasks_response/task_count/filtered                                  x1
-  /get_tasks_response/task_count/filtered/#text                            x1
-  /get_tasks_response/task_count/page                                      x1
-  /get_tasks_response/task_count/page/#text                                x1
   /get_tasks_response/tasks                                                x1
   /get_tasks_response/tasks/@max                                           x1
   /get_tasks_response/tasks/@start                                         x1

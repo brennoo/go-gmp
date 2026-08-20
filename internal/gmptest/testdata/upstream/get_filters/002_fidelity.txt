@@ -16,11 +16,6 @@ ADDED
   /get_filters_response/filter/owner                                       x1
   /get_filters_response/filter/owner/name                                  x1
   /get_filters_response/filter/permissions                                 x1
-  /get_filters_response/filter_count                                       x1
-  /get_filters_response/filter_count/filtered                              x1
-  /get_filters_response/filter_count/filtered/#text                        x1
-  /get_filters_response/filter_count/page                                  x1
-  /get_filters_response/filter_count/page/#text                            x1
   /get_filters_response/filters                                            x2
   /get_filters_response/filters/@id                                        x1
   /get_filters_response/filters/@max                                       x1

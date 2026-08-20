@@ -21,7 +21,7 @@ type GetGroupsResponse struct {
 	Filters    GroupFilters `xml:"filters"`
 	Sort       GroupSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Groups     Groups       `xml:"groups"`
-	GroupCount GroupCount   `xml:"group_count"`
+	GroupCount *GroupCount  `xml:"group_count,omitempty"`
 	Group      []Group      `xml:"group,omitempty"`
 }
 
@@ -69,6 +69,7 @@ type Groups struct {
 
 // GroupCount is the <group_count> element of get_groups. See the GMP protocol docs for details.
 type GroupCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: count-wrapper chardata total is schema-undeclared"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

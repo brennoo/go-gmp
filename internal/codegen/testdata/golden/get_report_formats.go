@@ -25,7 +25,7 @@ type GetReportFormatsResponse struct {
 	Filters           ReportFormatFilters `xml:"filters"`
 	Sort              ReportFormatSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	ReportFormats     ReportFormats       `xml:"report_formats"`
-	ReportFormatCount ReportFormatCount   `xml:"report_format_count"`
+	ReportFormatCount *ReportFormatCount  `xml:"report_format_count,omitempty"`
 	ReportFormat      []ReportFormat      `xml:"report_format,omitempty"`
 }
 
@@ -73,6 +73,7 @@ type ReportFormats struct {
 
 // ReportFormatCount is the <report_format_count> element of get_report_formats. See the GMP protocol docs for details.
 type ReportFormatCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: count-wrapper chardata total is schema-undeclared"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

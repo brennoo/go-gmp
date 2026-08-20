@@ -884,36 +884,40 @@ func TestCheckRequiredOverridesConsumedIgnoresOutOfScopeEntries(t *testing.T) {
 
 // TestRequiredOverrideRejectsUnsupportedTargets is finding 2's regression
 // test: RequiredOverrides is only evidenced for a plain required string leaf
-// (resume_task/start_task's report_id). A non-string scalar or a structured
-// field would additionally need a pointer to stay distinguishable from its
-// zero value — a bigger, unevidenced API change — so Generate must refuse
+// (resume_task/start_task's report_id) or a structured field pointer-ified
+// for presence (T-23's count wrappers). A non-string scalar leaf has no such
+// evidence — a bigger, unevidenced API change — so Generate must refuse
 // rather than silently reshaping the field into a pointer.
 func TestRequiredOverrideRejectsUnsupportedTargets(t *testing.T) {
-	tests := []struct {
-		name  string
-		child *schema.Node
-	}{
-		{
-			name:  "non-string scalar",
-			child: &schema.Node{Name: "count", Kind: schema.KindElement, Card: schema.CardRequired, Type: "integer"},
-		},
-		{
-			name: "structured field with children",
-			child: &schema.Node{
-				Name: "nested", Kind: schema.KindElement, Card: schema.CardRequired,
-				Children: []*schema.Node{{Name: "leaf", Kind: schema.KindElement, Card: schema.CardRequired, Type: "text"}},
-			},
-		},
+	child := &schema.Node{Name: "count", Kind: schema.KindElement, Card: schema.CardRequired, Type: "integer"}
+	cmd := commandWithResponseChild(child)
+	ro := map[string]RequiredOverride{"test_cmd." + child.Name: {Reason: "r"}}
+	_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, ro, nil, nil, nil, nil, nil, nil, "", nil)
+	if err == nil || !strings.Contains(err.Error(), "only evidenced for plain string or structured fields") {
+		t.Fatalf("Generate error = %v, want a plain-string-or-structured-only rejection", err)
 	}
+}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			cmd := commandWithResponseChild(tt.child)
-			ro := map[string]RequiredOverride{"test_cmd." + tt.child.Name: {Reason: "r"}}
-			_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, ro, nil, nil, nil, nil, nil, nil, "", nil)
-			if err == nil || !strings.Contains(err.Error(), "only evidenced for plain string fields") {
-				t.Fatalf("Generate error = %v, want a plain-string-only rejection", err)
-			}
-		})
+// TestRequiredOverridePointerizesStructuredField is T-23's expanded-scope
+// regression test: a RequiredOverrides entry naming a structured field makes
+// it a pointer with omitempty, so a genuinely absent wrapper round-trips as
+// absent instead of fabricating an all-zero element on re-encode.
+func TestRequiredOverridePointerizesStructuredField(t *testing.T) {
+	child := &schema.Node{
+		Name: "nested", Kind: schema.KindElement, Card: schema.CardRequired,
+		Children: []*schema.Node{{Name: "leaf", Kind: schema.KindElement, Card: schema.CardRequired, Type: "text"}},
+	}
+	cmd := commandWithResponseChild(child)
+	ro := map[string]RequiredOverride{"test_cmd." + child.Name: {Reason: "r"}}
+	got, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, ro, nil, nil, nil, nil, nil, nil, "", nil)
+	if err != nil {
+		t.Fatalf("Generate returned error: %v", err)
+	}
+	src, ok := got[CommandFile("test_cmd")]
+	if !ok {
+		t.Fatalf("test_cmd was not generated")
+	}
+	if !strings.Contains(src, "*CmdNested") || !strings.Contains(src, `xml:"nested,omitempty"`) {
+		t.Fatalf("generated source does not pointer-ify the overridden structured field:\n%s", src)
 	}
 }

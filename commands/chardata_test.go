@@ -99,3 +99,61 @@ func TestChardataRoundTripSort(t *testing.T) {
 		}
 	})
 }
+
+// TestChardataRoundTripCountZero and TestChardataRoundTripCountNonZero cover
+// T-23's count-wrapper shape: RoleCount's Value field carries no omitempty
+// (an int chardata field tagged with omitempty drops the whole element on
+// marshal, zero or not — see overrides.go's get_roles:/role_count entry), so
+// a genuine zero total must round-trip as "0", not vanish.
+func TestChardataRoundTripCountZero(t *testing.T) {
+	type wrapper struct {
+		XMLName xml.Name  `xml:"get_roles_response"`
+		Count   RoleCount `xml:"role_count"`
+	}
+	const in = `<get_roles_response><role_count>0<filtered>0</filtered><page>0</page></role_count></get_roles_response>`
+
+	chardataRoundTrip(t, in, func(t *testing.T, got *wrapper) {
+		if got.Count.Value != 0 {
+			t.Errorf("Value = %d, want 0", got.Count.Value)
+		}
+		if got.Count.Filtered != 0 || got.Count.Page != 0 {
+			t.Errorf("Filtered/Page = %d/%d, want 0/0", got.Count.Filtered, got.Count.Page)
+		}
+	})
+}
+
+func TestChardataRoundTripCountNonZero(t *testing.T) {
+	type wrapper struct {
+		XMLName xml.Name  `xml:"get_roles_response"`
+		Count   RoleCount `xml:"role_count"`
+	}
+	const in = `<get_roles_response><role_count>6<filtered>6</filtered><page>6</page></role_count></get_roles_response>`
+
+	chardataRoundTrip(t, in, func(t *testing.T, got *wrapper) {
+		if got.Count.Value != 6 {
+			t.Errorf("Value = %d, want 6", got.Count.Value)
+		}
+		if got.Count.Filtered != 6 || got.Count.Page != 6 {
+			t.Errorf("Filtered/Page = %d/%d, want 6/6", got.Count.Filtered, got.Count.Page)
+		}
+	})
+}
+
+// TestChardataRoundTripCountAbsent covers the case a non-pointer RoleCount
+// field got wrong: a response that omits <role_count> entirely (e.g.
+// get_filters's single-ID lookup example) must stay nil through decode and
+// marshal rather than fabricate the element back on re-encode — the defect
+// overrides.go's RequiredOverrides pointer-ifies the field to fix.
+func TestChardataRoundTripCountAbsent(t *testing.T) {
+	type wrapper struct {
+		XMLName xml.Name   `xml:"get_roles_response"`
+		Count   *RoleCount `xml:"role_count,omitempty"`
+	}
+	const in = `<get_roles_response></get_roles_response>`
+
+	chardataRoundTrip(t, in, func(t *testing.T, got *wrapper) {
+		if got.Count != nil {
+			t.Errorf("Count = %+v, want nil", got.Count)
+		}
+	})
+}

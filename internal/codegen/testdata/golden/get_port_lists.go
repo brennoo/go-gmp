@@ -23,7 +23,7 @@ type GetPortListsResponse struct {
 	Filters       PortListFilters `xml:"filters"`
 	Sort          PortListSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	PortLists     PortLists       `xml:"port_lists"`
-	PortListCount PortListCount   `xml:"port_list_count"`
+	PortListCount *PortListCount  `xml:"port_list_count,omitempty"`
 	PortList      []PortList      `xml:"port_list,omitempty"`
 }
 
@@ -71,6 +71,7 @@ type PortLists struct {
 
 // PortListCount is the <port_list_count> element of get_port_lists. See the GMP protocol docs for details.
 type PortListCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: count-wrapper chardata total is schema-undeclared"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

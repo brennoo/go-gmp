@@ -26,7 +26,7 @@ type GetConfigsResponse struct {
 	Filters     ConfigFilters `xml:"filters"`
 	Sort        ConfigSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Configs     Configs       `xml:"configs"`
-	ConfigCount ConfigCount   `xml:"config_count"`
+	ConfigCount *ConfigCount  `xml:"config_count,omitempty"`
 	Config      []Config      `xml:"config,omitempty"`
 }
 
@@ -74,6 +74,7 @@ type Configs struct {
 
 // ConfigCount is the <config_count> element of get_configs. See the GMP protocol docs for details.
 type ConfigCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: count-wrapper chardata total is schema-undeclared"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

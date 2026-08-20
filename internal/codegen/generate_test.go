@@ -1111,7 +1111,11 @@ import (
 )
 
 func report(label string, r *genproto.GetCredentialsResponse) {
-	fmt.Printf("%s: credentials=%d filtered=%d page=%d\n", label, len(r.Credential), r.CredentialCount.Filtered, r.CredentialCount.Page)
+	var filtered, page int
+	if r.CredentialCount != nil {
+		filtered, page = r.CredentialCount.Filtered, r.CredentialCount.Page
+	}
+	fmt.Printf("%s: credentials=%d filtered=%d page=%d\n", label, len(r.Credential), filtered, page)
 	for _, c := range r.Credential {
 		fmt.Printf("  credential id=%q type=%q", c.ID, c.Type)
 		if len(c.Formats.Format) > 0 {
@@ -1401,8 +1405,12 @@ import (
 )
 
 func report(label string, r *genproto.GetPortListsResponse) {
+	var filtered, page int
+	if r.PortListCount != nil {
+		filtered, page = r.PortListCount.Filtered, r.PortListCount.Page
+	}
 	fmt.Printf("%s: port_lists=%d filtered=%d page=%d sort_field_value=%q sort_field_order=%q",
-		label, len(r.PortList), r.PortListCount.Filtered, r.PortListCount.Page, r.Sort.Field.Value, r.Sort.Field.Order)
+		label, len(r.PortList), filtered, page, r.Sort.Field.Value, r.Sort.Field.Order)
 	if len(r.Filters.Keywords.Keyword) > 0 {
 		fmt.Printf(" keywords=[")
 		for i, kw := range r.Filters.Keywords.Keyword {
@@ -2276,6 +2284,77 @@ func TestChardataRelocationCrossUseMismatch(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "disagree") {
 		t.Fatalf("Generate error = %q, want it to mention the cross-use disagreement", err.Error())
+	}
+}
+
+// --- FieldOverrides chardata addition (T-23, non-relocation) ---------------
+
+// countWrapperCommand builds a single command whose response has a
+// <thing_count> child declaring no chardata of its own, only <filtered> and
+// <page> — the shape every T-23 get_X_response/*_count wrapper actually has.
+func countWrapperCommand() schema.Command {
+	resp := &schema.Node{
+		Name: "cmd_a_response",
+		Children: []*schema.Node{
+			{
+				Name: "thing_count", Kind: schema.KindElement, Card: schema.CardOptional,
+				Children: []*schema.Node{
+					{Name: "filtered", Kind: schema.KindElement, Card: schema.CardOptional, Type: "text"},
+					{Name: "page", Kind: schema.KindElement, Card: schema.CardOptional, Type: "text"},
+				},
+			},
+		},
+	}
+	return schema.Command{Name: "cmd_a", Request: &schema.Node{Name: "cmd_a"}, Response: resp, Provenance: testProvenance()}
+}
+
+// TestFieldOverridesChardataAdditionGeneratesLeadingValue is T-23's core
+// generation proof: a FieldOverride{Chardata: true} on a node with no
+// schema-declared chardata at all (unlike TestChardataRelocationSucceeds,
+// there is nothing to suppress) must add a `Value` field ahead of the
+// schema-declared children, not replace or reorder them.
+func TestFieldOverridesChardataAdditionGeneratesLeadingValue(t *testing.T) {
+	cmd := countWrapperCommand()
+	fo := map[string][]FieldOverride{
+		"cmd_a:/thing_count": {{Chardata: true, GoType: "int", Reason: "t"}},
+	}
+	out, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, nil, fo, nil, nil, nil, nil, nil, "", nil)
+	if err != nil {
+		t.Fatalf("Generate failed: %v", err)
+	}
+	var all strings.Builder
+	for _, src := range out {
+		all.WriteString(src)
+	}
+	src := all.String()
+	if !strings.Contains(src, `int`) || !strings.Contains(src, `xml:",chardata" gmpoverride:"t"`) {
+		t.Fatalf(`generated output missing an int chardata field with the override's gmpoverride tag:\n%s`, src)
+	}
+	valueIdx := strings.Index(src, "Value")
+	filteredIdx := strings.Index(src, "Filtered")
+	if valueIdx < 0 || filteredIdx < 0 || valueIdx > filteredIdx {
+		t.Fatalf("want Value to precede Filtered in the generated struct, got:\n%s", src)
+	}
+}
+
+// TestFieldOverridesChardataAdditionCrossUseMismatch is
+// TestFieldOverridesCrossUseMismatchOnMissingKey's counterpart for a
+// Chardata-only FieldOverride: cmd_a and cmd_b share <thing>'s structurally
+// identical shape, but only cmd_a adds a chardata override. This is the
+// plain-addition path (no FieldSuppressions involved, unlike
+// TestChardataRelocationCrossUseMismatch's relocation case) and previously
+// had no test of its own.
+func TestFieldOverridesChardataAdditionCrossUseMismatch(t *testing.T) {
+	cmdA, cmdB := twinFieldOverrideCommands()
+	fo := map[string][]FieldOverride{
+		"cmd_a:/thing": {{Chardata: true, GoType: "int", Reason: "t"}},
+	}
+	_, err := Generate([]schema.Command{cmdA, cmdB}, TypeOverrides, PointerOverrides, nil, fo, nil, nil, nil, nil, nil, "", nil)
+	if err == nil {
+		t.Fatal("Generate succeeded; want an error: cmd_b's use has no matching chardata override while cmd_a's does")
+	}
+	if !strings.Contains(err.Error(), "cmd_a:/thing") || !strings.Contains(err.Error(), "cmd_b:/thing") {
+		t.Fatalf("Generate error = %q, want it to name both cmd_a:/thing and cmd_b:/thing", err.Error())
 	}
 }
 

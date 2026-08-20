@@ -95,7 +95,7 @@ func TestValidateBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_notes": {
 			actionable: map[string]int{schema.CatDefect: 3},
-			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -154,13 +154,16 @@ func TestValidateBeforeMatchesKnownConformance(t *testing.T) {
 // the required-vs-pointer or recursion-cut deltas flagged as risks during
 // design — neither of which, it turns out, produces a schema.Comparer finding
 // at all for this family, checked directly against the printed diff above).
+// note_count's bare leading total is now recovered via overrides.go's
+// FieldOverrides["get_notes:/note_count"] (T-23), adding one suppressed
+// EXTRA below.
 func TestValidateGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_note")
 
 	wantAfter := map[string]counts{
 		"create_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_notes":   {actionable: map[string]int{schema.CatDefect: 3}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
+		"get_notes":   {actionable: map[string]int{schema.CatDefect: 3}, suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1}},
 		"delete_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 
@@ -190,7 +193,7 @@ func TestValidateOverrideBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_overrides": {
 			actionable: map[string]int{schema.CatDefect: 3},
-			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -231,13 +234,17 @@ func TestValidateOverrideBeforeMatchesKnownConformance(t *testing.T) {
 // Nothing regresses and no new category appears, so the assertion below is
 // the strongest form: after == {SCHEMA-DEFECT: 2} for get_overrides and
 // empty for the other two.
+//
+// override_count's bare leading total is now recovered via overrides.go's
+// FieldOverrides["get_overrides:/override_count"] (T-23), adding one
+// suppressed EXTRA below.
 func TestValidateOverrideGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_override")
 
 	wantAfter := map[string]counts{
 		"create_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_overrides":   {actionable: map[string]int{schema.CatDefect: 3}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
+		"get_overrides":   {actionable: map[string]int{schema.CatDefect: 3}, suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1}},
 		"delete_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
@@ -267,7 +274,7 @@ func TestValidateRoleBeforeMatchesKnownConformance(t *testing.T) {
 	want := map[string]counts{
 		"create_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_roles":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
+		"get_roles":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1}},
 		"delete_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
@@ -295,143 +302,25 @@ func TestValidateRoleBeforeMatchesKnownConformance(t *testing.T) {
 //
 // "Empty" describes what schema.Comparer can see, which is bounded by what
 // the schema's own <pattern> declares — it is not a claim that the generated
-// model is a lossless mirror of every byte gvmd sends. role_count is a
-// concrete counterexample: TestRoleCountBareTotalIsAnAcceptedLoss pins a
-// case, identical in kind to create_override's result-as-text gap (see the
-// "Accepted evidence" note in docs/review-2026-08.md), where the schema's own
-// <pattern> for role_count declares only <e>filtered</e>/<e>page</e> with no
-// text token anywhere in it, while both bundled command_get_roles.xml
-// examples and a live capture send a bare total ("1", "6") ahead of those two
-// children. Comparer has nothing to compare against for content the pattern
-// never declares, so this loss is invisible to it — and, per the same
-// generate-only-what-the-schema-declares principle that left boolean_atoi
-// without an override, it is accepted and documented rather than patched
-// into RoleCount as a field the schema itself never asked for.
+// model is a lossless mirror of every byte gvmd sends. role_count was a
+// concrete counterexample until T-23: the schema's own <pattern> for
+// role_count declares only <e>filtered</e>/<e>page</e> with no text token
+// anywhere in it, while both bundled command_get_roles.xml examples and a
+// live capture send a bare total ("1", "6") ahead of those two children.
+// FieldOverrides["get_roles:/role_count"] now adds that total back as a
+// schema-undeclared chardata field, which is why get_roles carries one more
+// suppressed CatExtra below than get_groups/get_tags/etc. do before their own
+// T-23 entries land.
 func TestValidateRoleGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_role")
 
 	wantAfter := map[string]counts{
 		"create_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_roles":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
+		"get_roles":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1}},
 		"delete_role": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
-}
-
-// roleCountProbe mirrors testdata/golden/get_roles.go's RoleCount field for
-// field, byte for byte — keep the two in sync. It exists to decode real
-// get_roles fixtures with the exact shape the generator emits today, without
-// pulling in the out-of-process GeneratedGoRoots machinery just to observe
-// one field.
-type roleCountProbe struct {
-	XMLName   xml.Name `xml:"get_roles_response"`
-	RoleCount struct {
-		Filtered int `xml:"filtered"`
-		Page     int `xml:"page"`
-	} `xml:"role_count"`
-}
-
-// roleCountEvidence is roleCountProbe plus a ",chardata" field the generated
-// shape does not have. It exists solely to prove what the fixture actually
-// contains, independent of what the generated shape can retain — decoding
-// the same bytes into roleCountProbe proves the drop; decoding them into this
-// type proves there really was something to drop.
-type roleCountEvidence struct {
-	XMLName   xml.Name `xml:"get_roles_response"`
-	RoleCount struct {
-		Value    string `xml:",chardata"`
-		Filtered int    `xml:"filtered"`
-		Page     int    `xml:"page"`
-	} `xml:"role_count"`
-}
-
-// TestRoleCountBareTotalIsAnAcceptedLoss pins a real, live-confirmed gap the
-// role family's otherwise-clean TestValidateRoleGeneratedMatchesOrImproves
-// result does not cover: command_get_roles.xml's own <role_count> pattern
-// (both its bundled examples, and a live gvmd capture under
-// internal/gmptest/testdata/live/get_roles) sends a bare total ahead of
-// <filtered>/<page> — "1" in the upstream example, "6" live — but the
-// schema's declared <pattern> for role_count is only <e>filtered</e>
-// <e>page</e>, with no text token anywhere in it (contrast <sort>, whose
-// pattern literally contains the bareword "text" next to <e>field</e>,
-// which is exactly what Node.Chardata detects and RoleSort's Value field
-// reflects). There is nothing for the schema-side parser to see here: the
-// pattern the generator draws from simply never declares this content, so
-// generation cannot recover it, and schema.Comparer — which only compares
-// against what the pattern declares — correctly reports no finding for it
-// either.
-//
-// This is the same class of gap as create_override's result-as-text loss
-// (docs/review-2026-08.md's "Accepted evidence" note): the schema's own
-// declared structure and its own examples disagree, and per the
-// generate-only-what-the-schema-declares principle, the fix is to document
-// the loss, not to add a field the schema never asked for.
-//
-// Each fixture is decoded twice, into two structurally identical types that
-// differ only in one field, so the test proves both halves of the claim
-// against the actual wire bytes rather than assuming either: roleCountEvidence
-// (which has a ,chardata field) proves the bare total is really there;
-// roleCountProbe (an exact mirror of the generated RoleCount) proves that,
-// with only Filtered/Page to decode into, that same total has nowhere to go.
-// If this test starts failing because Filtered/Page stop decoding, because
-// the bare total disappears or changes, or because testdata/golden/get_roles.go
-// grows a chardata field that recovers it, update this comment and
-// docs/review-2026-08.md together.
-func TestRoleCountBareTotalIsAnAcceptedLoss(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	cases := []struct {
-		provenance string
-		path       string
-		wantTotal  string
-		wantChild  int
-	}{
-		{"upstream", filepath.Join(gmptestDir, "upstream", "get_roles", "001_response.xml"), "1", 1},
-		{"live", filepath.Join(gmptestDir, "live", "get_roles", "001_response.xml"), "6", 6},
-	}
-	for _, tc := range cases {
-		t.Run(tc.provenance, func(t *testing.T) {
-			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", tc.path, err)
-			}
-
-			// First, prove the wire actually carries the bare total: decode
-			// with a ,chardata field the generated shape lacks.
-			var evidence roleCountEvidence
-			if err := xml.Unmarshal(data, &evidence); err != nil {
-				t.Fatalf("decoding %s into roleCountEvidence: %v", tc.path, err)
-			}
-			if got := strings.TrimSpace(evidence.RoleCount.Value); got != tc.wantTotal {
-				t.Fatalf("%s: role_count bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
-					tc.path, got, tc.wantTotal)
-			}
-			if evidence.RoleCount.Filtered != tc.wantChild || evidence.RoleCount.Page != tc.wantChild {
-				t.Fatalf("%s: roleCountEvidence children = %+v, want Filtered=Page=%d",
-					tc.path, evidence.RoleCount, tc.wantChild)
-			}
-
-			// Second, prove the exact generated shape retains the children
-			// but has nowhere to put that total.
-			var got roleCountProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into roleCountProbe: %v", tc.path, err)
-			}
-			if got.RoleCount.Filtered != tc.wantChild || got.RoleCount.Page != tc.wantChild {
-				t.Errorf("roleCountProbe = %+v, want Filtered=Page=%d (the generated shape changed unexpectedly)",
-					got.RoleCount, tc.wantChild)
-			}
-			// roleCountProbe has no field that could have captured
-			// evidence.RoleCount.Value — that silent drop, now proven against
-			// the actual fixture bytes rather than assumed, is the accepted
-			// loss this test exists to pin.
-		})
-	}
 }
 
 // TestValidateGroupBeforeMatchesKnownConformance is the group family's
@@ -460,7 +349,7 @@ func TestValidateGroupBeforeMatchesKnownConformance(t *testing.T) {
 			suppressed: map[string]int{},
 		},
 		"modify_group": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_groups":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
+		"get_groups":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1}},
 		"delete_group": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
@@ -485,13 +374,11 @@ func TestValidateGroupBeforeMatchesKnownConformance(t *testing.T) {
 // comparison ever runs, so no generated output can move them — the same
 // reasoning already on record for note, override, and role.
 //
-// One loss the comparer cannot see, recorded here because it is the same
-// class already documented for role: the schema's declared <pattern> for
-// group_count is only <e>filtered</e><e>page</e>, no text token anywhere,
-// yet both command_get_groups.xml's own bundled example and a live capture
-// send a bare total ahead of those children. See
-// TestGroupCountBareTotalIsAnAcceptedLoss below, pinned against real fixture
-// bytes the same way TestRoleCountBareTotalIsAnAcceptedLoss pins role's.
+// group_count carried the same schema-vs-wire gap already documented for
+// role (schema declares only <e>filtered</e><e>page</e>, no text token, yet
+// both command_get_groups.xml's bundled example and a live capture send a
+// bare total ahead of those children) until T-23's
+// FieldOverrides["get_groups:/group_count"] added it back.
 //
 // The sort field-name MISSING/EXTRA pair on get_groups below is not a new
 // regression: it is T-18a's relocation of GroupSort's schema-declared
@@ -503,115 +390,10 @@ func TestValidateGroupGeneratedMatchesOrImproves(t *testing.T) {
 	wantAfter := map[string]counts{
 		"create_group": {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{}},
 		"modify_group": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_groups":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
+		"get_groups":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1}},
 		"delete_group": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
-}
-
-// groupCountProbe mirrors testdata/golden/get_groups.go's GroupCount field,
-// byte for byte — keep the two in sync. It exists to decode real get_groups
-// fixtures with the exact shape the generator emits today, without pulling
-// in the out-of-process GeneratedGoRoots machinery just to observe one
-// field. See roleCountProbe above for the identical role-family precedent.
-type groupCountProbe struct {
-	XMLName    xml.Name `xml:"get_groups_response"`
-	GroupCount struct {
-		Filtered int `xml:"filtered"`
-		Page     int `xml:"page"`
-	} `xml:"group_count"`
-}
-
-// groupCountEvidence is groupCountProbe plus a ",chardata" field the
-// generated shape does not have, proving what the fixture actually contains
-// independent of what the generated shape can retain.
-type groupCountEvidence struct {
-	XMLName    xml.Name `xml:"get_groups_response"`
-	GroupCount struct {
-		Value    string `xml:",chardata"`
-		Filtered int    `xml:"filtered"`
-		Page     int    `xml:"page"`
-	} `xml:"group_count"`
-}
-
-// TestGroupCountBareTotalIsAnAcceptedLoss is the group family's counterpart
-// to TestRoleCountBareTotalIsAnAcceptedLoss: command_get_groups.xml's own
-// bundled example, and a live gvmd capture under
-// internal/gmptest/testdata/live/get_groups, both send a bare total ahead of
-// <filtered>/<page> ("1" in both cases here), but the schema's declared
-// <pattern> for group_count is only <e>filtered</e><e>page</e>, with no text
-// token anywhere in it. There is nothing for the schema-side parser to see:
-// the pattern the generator draws from simply never declares this content,
-// so generation cannot recover it, and schema.Comparer — which only
-// compares against what the pattern declares — correctly reports no finding
-// for it either.
-//
-// This is the same class of gap as create_override's result-as-text loss and
-// role_count's identical shape (docs/review-2026-08.md's "Accepted evidence"
-// note): the schema's own declared structure and its own examples disagree,
-// and per the generate-only-what-the-schema-declares principle, the fix is
-// to document the loss, not to add a field the schema never asked for.
-//
-// Each fixture is decoded twice, into two structurally identical types that
-// differ only in one field, so the test proves both halves of the claim
-// against the actual wire bytes rather than assuming either: groupCountEvidence
-// (which has a ,chardata field) proves the bare total is really there;
-// groupCountProbe (an exact mirror of the generated GroupCount) proves that,
-// with only Filtered/Page to decode into, that same total has nowhere to go.
-func TestGroupCountBareTotalIsAnAcceptedLoss(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	cases := []struct {
-		provenance string
-		path       string
-		wantTotal  string
-		wantChild  int
-	}{
-		{"upstream", filepath.Join(gmptestDir, "upstream", "get_groups", "001_response.xml"), "1", 1},
-		{"live", filepath.Join(gmptestDir, "live", "get_groups", "003_response.xml"), "1", 1},
-	}
-	for _, tc := range cases {
-		t.Run(tc.provenance, func(t *testing.T) {
-			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", tc.path, err)
-			}
-
-			// First, prove the wire actually carries the bare total: decode
-			// with a ,chardata field the generated shape lacks.
-			var evidence groupCountEvidence
-			if err := xml.Unmarshal(data, &evidence); err != nil {
-				t.Fatalf("decoding %s into groupCountEvidence: %v", tc.path, err)
-			}
-			if got := strings.TrimSpace(evidence.GroupCount.Value); got != tc.wantTotal {
-				t.Fatalf("%s: group_count bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
-					tc.path, got, tc.wantTotal)
-			}
-			if evidence.GroupCount.Filtered != tc.wantChild || evidence.GroupCount.Page != tc.wantChild {
-				t.Fatalf("%s: groupCountEvidence children = %+v, want Filtered=Page=%d",
-					tc.path, evidence.GroupCount, tc.wantChild)
-			}
-
-			// Second, prove the exact generated shape retains the children
-			// but has nowhere to put that total.
-			var got groupCountProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into groupCountProbe: %v", tc.path, err)
-			}
-			if got.GroupCount.Filtered != tc.wantChild || got.GroupCount.Page != tc.wantChild {
-				t.Errorf("groupCountProbe = %+v, want Filtered=Page=%d (the generated shape changed unexpectedly)",
-					got.GroupCount, tc.wantChild)
-			}
-			// groupCountProbe has no field that could have captured
-			// evidence.GroupCount.Value — that silent drop, now proven
-			// against the actual fixture bytes rather than assumed, is the
-			// accepted loss this test exists to pin.
-		})
-	}
 }
 
 // TestValidateTagBeforeMatchesKnownConformance is the tag family's
@@ -635,7 +417,7 @@ func TestValidateTagBeforeMatchesKnownConformance(t *testing.T) {
 
 	want := map[string]counts{
 		"create_tag": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_tags":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
+		"get_tags":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1}},
 		"modify_tag": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"delete_tag": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -695,113 +477,11 @@ func TestValidateTagGeneratedMatchesOrImproves(t *testing.T) {
 
 	wantAfter := map[string]counts{
 		"create_tag": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_tags":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
+		"get_tags":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1}},
 		"modify_tag": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"delete_tag": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
-}
-
-// tagCountProbe mirrors testdata/golden/get_tags.go's TagCount field, byte
-// for byte — keep the two in sync. Same rationale as groupCountProbe: decode
-// real get_tags fixtures with the exact shape the generator emits today,
-// without pulling in the out-of-process GeneratedGoRoots machinery.
-type tagCountProbe struct {
-	XMLName  xml.Name `xml:"get_tags_response"`
-	TagCount struct {
-		Filtered int `xml:"filtered"`
-		Page     int `xml:"page"`
-	} `xml:"tag_count"`
-}
-
-// tagCountEvidence is tagCountProbe plus a ",chardata" field the generated
-// shape does not have, proving what the fixture actually contains
-// independent of what the generated shape can retain.
-type tagCountEvidence struct {
-	XMLName  xml.Name `xml:"get_tags_response"`
-	TagCount struct {
-		Value    string `xml:",chardata"`
-		Filtered int    `xml:"filtered"`
-		Page     int    `xml:"page"`
-	} `xml:"tag_count"`
-}
-
-// TestTagCountBareTotalIsAnAcceptedLoss is the tag family's counterpart to
-// TestGroupCountBareTotalIsAnAcceptedLoss: live gvmd captures under
-// internal/gmptest/testdata/live/get_tags send a bare total ahead of
-// <filtered>/<page>, but the schema's declared <pattern> for tag_count is
-// only <e>filtered</e><e>page</e>, with no text token anywhere in it. There
-// is nothing for the schema-side parser to see: the pattern the generator
-// draws from simply never declares this content, so generation cannot
-// recover it, and schema.Comparer — which only compares against what the
-// pattern declares — correctly reports no finding for it either.
-//
-// Unlike role_count/group_count, no bundled upstream example exists for
-// get_tags (internal/gmptest/testdata/upstream/get_tags has only one
-// example and it has no tag_count at all — a filtered-empty result), so this
-// test is pinned against all three live captures instead of an
-// upstream/live pair. All three matter: 001 and 002 send a bare "0" ahead of
-// <filtered>0</filtered>/<page>0</page>, proving the loss is real evidence of
-// gvmd's own wire shape rather than an artifact of a nonzero total; 003 sends
-// "1", the nonzero case.
-//
-// Each fixture is decoded twice, into two structurally identical types that
-// differ only in one field, so the test proves both halves of the claim
-// against the actual wire bytes rather than assuming either: tagCountEvidence
-// (which has a ,chardata field) proves the bare total is really there;
-// tagCountProbe (an exact mirror of the generated TagCount) proves that,
-// with only Filtered/Page to decode into, that same total has nowhere to go.
-func TestTagCountBareTotalIsAnAcceptedLoss(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	cases := []struct {
-		provenance string
-		path       string
-		wantTotal  string
-		wantChild  int
-	}{
-		{"live_001", filepath.Join(gmptestDir, "live", "get_tags", "001_response.xml"), "0", 0},
-		{"live_002", filepath.Join(gmptestDir, "live", "get_tags", "002_response.xml"), "0", 0},
-		{"live_003", filepath.Join(gmptestDir, "live", "get_tags", "003_response.xml"), "1", 1},
-	}
-	for _, tc := range cases {
-		t.Run(tc.provenance, func(t *testing.T) {
-			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", tc.path, err)
-			}
-
-			var evidence tagCountEvidence
-			if err := xml.Unmarshal(data, &evidence); err != nil {
-				t.Fatalf("decoding %s into tagCountEvidence: %v", tc.path, err)
-			}
-			if got := strings.TrimSpace(evidence.TagCount.Value); got != tc.wantTotal {
-				t.Fatalf("%s: tag_count bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
-					tc.path, got, tc.wantTotal)
-			}
-			if evidence.TagCount.Filtered != tc.wantChild || evidence.TagCount.Page != tc.wantChild {
-				t.Fatalf("%s: tagCountEvidence children = %+v, want Filtered=Page=%d",
-					tc.path, evidence.TagCount, tc.wantChild)
-			}
-
-			var got tagCountProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into tagCountProbe: %v", tc.path, err)
-			}
-			if got.TagCount.Filtered != tc.wantChild || got.TagCount.Page != tc.wantChild {
-				t.Errorf("tagCountProbe = %+v, want Filtered=Page=%d (the generated shape changed unexpectedly)",
-					got.TagCount, tc.wantChild)
-			}
-			// tagCountProbe has no field that could have captured
-			// evidence.TagCount.Value — that silent drop, now proven against
-			// the actual fixture bytes rather than assumed, is the accepted
-			// loss this test exists to pin.
-		})
-	}
 }
 
 // TestValidateScheduleBeforeMatchesKnownConformance is the schedule family's
@@ -816,7 +496,7 @@ func TestValidateScheduleBeforeMatchesKnownConformance(t *testing.T) {
 	want := map[string]counts{
 		"create_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_schedules":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
+		"get_schedules":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1}},
 		"delete_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
@@ -846,11 +526,9 @@ func TestValidateScheduleBeforeMatchesKnownConformance(t *testing.T) {
 // generated output can move them — the same reasoning already on record for
 // every prior family.
 //
-// One loss the comparer cannot see, recorded here for the same reason
-// role's and group's were: the schema's declared <pattern> for
-// schedule_count is only <e>filtered</e><e>page</e>, no text token anywhere,
-// yet a live capture sends a bare total ahead of those children. See
-// TestScheduleCountBareTotalIsAnAcceptedLoss below.
+// schedule_count carried the same schema-vs-wire gap already documented for
+// role and group until T-23's FieldOverrides["get_schedules:/schedule_count"]
+// added it back.
 //
 // The sort field-name MISSING/EXTRA pair on get_schedules below is not a new
 // regression: it is T-18a's relocation of ScheduleSort's schema-declared
@@ -871,118 +549,10 @@ func TestValidateScheduleGeneratedMatchesOrImproves(t *testing.T) {
 	wantAfter := map[string]counts{
 		"create_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_schedules":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
+		"get_schedules":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1}},
 		"delete_schedule": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
-}
-
-// scheduleCountProbe mirrors testdata/golden/get_schedules.go's
-// ScheduleCount field, byte for byte — keep the two in sync. It exists to
-// decode real get_schedules fixtures with the exact shape the generator
-// emits today, without pulling in the out-of-process GeneratedGoRoots
-// machinery just to observe one field. See roleCountProbe/groupCountProbe
-// above for the identical precedent.
-type scheduleCountProbe struct {
-	XMLName       xml.Name `xml:"get_schedules_response"`
-	ScheduleCount struct {
-		Filtered int `xml:"filtered"`
-		Page     int `xml:"page"`
-	} `xml:"schedule_count"`
-}
-
-// scheduleCountEvidence is scheduleCountProbe plus a ",chardata" field the
-// generated shape does not have, proving what the fixture actually contains
-// independent of what the generated shape can retain.
-type scheduleCountEvidence struct {
-	XMLName       xml.Name `xml:"get_schedules_response"`
-	ScheduleCount struct {
-		Value    string `xml:",chardata"`
-		Filtered int    `xml:"filtered"`
-		Page     int    `xml:"page"`
-	} `xml:"schedule_count"`
-}
-
-// TestScheduleCountBareTotalIsAnAcceptedLoss is the schedule family's
-// counterpart to TestRoleCountBareTotalIsAnAcceptedLoss and
-// TestGroupCountBareTotalIsAnAcceptedLoss: live gvmd captures under
-// internal/gmptest/testdata/live/get_schedules send a bare total ahead of
-// <filtered>/<page>, but the schema's declared <pattern> for schedule_count
-// is only <e>filtered</e><e>page</e>, with no text token anywhere in it.
-// There is nothing for the schema-side parser to see: the pattern the
-// generator draws from simply never declares this content, so generation
-// cannot recover it, and schema.Comparer — which only compares against what
-// the pattern declares — correctly reports no finding for it either.
-//
-// This is the same class of gap as create_override's result-as-text loss and
-// role_count/group_count's identical shape (docs/review-2026-08.md's
-// "Accepted evidence" note): the schema's own declared structure and its own
-// examples disagree, and per the generate-only-what-the-schema-declares
-// principle, the fix is to document the loss, not to add a field the schema
-// never asked for.
-//
-// Each fixture is decoded twice, into two structurally identical types that
-// differ only in one field, so the test proves both halves of the claim
-// against the actual wire bytes rather than assuming either:
-// scheduleCountEvidence (which has a ,chardata field) proves the bare total
-// is really there; scheduleCountProbe (an exact mirror of the generated
-// ScheduleCount) proves that, with only Filtered/Page to decode into, that
-// same total has nowhere to go.
-func TestScheduleCountBareTotalIsAnAcceptedLoss(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	cases := []struct {
-		provenance string
-		path       string
-		wantTotal  string
-		wantChild  int
-	}{
-		{"live_001", filepath.Join(gmptestDir, "live", "get_schedules", "001_response.xml"), "0", 0},
-		{"live_002", filepath.Join(gmptestDir, "live", "get_schedules", "002_response.xml"), "0", 0},
-		{"live_003", filepath.Join(gmptestDir, "live", "get_schedules", "003_response.xml"), "1", 1},
-	}
-	for _, tc := range cases {
-		t.Run(tc.provenance, func(t *testing.T) {
-			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", tc.path, err)
-			}
-
-			// First, prove the wire actually carries the bare total: decode
-			// with a ,chardata field the generated shape lacks.
-			var evidence scheduleCountEvidence
-			if err := xml.Unmarshal(data, &evidence); err != nil {
-				t.Fatalf("decoding %s into scheduleCountEvidence: %v", tc.path, err)
-			}
-			if got := strings.TrimSpace(evidence.ScheduleCount.Value); got != tc.wantTotal {
-				t.Fatalf("%s: schedule_count bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
-					tc.path, got, tc.wantTotal)
-			}
-			if evidence.ScheduleCount.Filtered != tc.wantChild || evidence.ScheduleCount.Page != tc.wantChild {
-				t.Fatalf("%s: scheduleCountEvidence children = %+v, want Filtered=Page=%d",
-					tc.path, evidence.ScheduleCount, tc.wantChild)
-			}
-
-			// Second, prove the exact generated shape retains the children
-			// but has nowhere to put that total.
-			var got scheduleCountProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into scheduleCountProbe: %v", tc.path, err)
-			}
-			if got.ScheduleCount.Filtered != tc.wantChild || got.ScheduleCount.Page != tc.wantChild {
-				t.Errorf("scheduleCountProbe = %+v, want Filtered=Page=%d (the generated shape changed unexpectedly)",
-					got.ScheduleCount, tc.wantChild)
-			}
-			// scheduleCountProbe has no field that could have captured
-			// evidence.ScheduleCount.Value — that silent drop, now proven
-			// against the actual fixture bytes rather than assumed, is the
-			// accepted loss this test exists to pin.
-		})
-	}
 }
 
 // TestValidateAlertBeforeMatchesKnownConformance is the alert family's
@@ -997,7 +567,7 @@ func TestValidateAlertBeforeMatchesKnownConformance(t *testing.T) {
 	want := map[string]counts{
 		"create_alert": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_alert": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_alerts":   {actionable: map[string]int{schema.CatDefect: 2}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
+		"get_alerts":   {actionable: map[string]int{schema.CatDefect: 2}, suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1}},
 		"delete_alert": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"test_alert":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{}},
 	}
@@ -1034,11 +604,9 @@ func TestValidateAlertBeforeMatchesKnownConformance(t *testing.T) {
 // comparison ever runs, so no generated output can move them — the same
 // reasoning already on record for every prior family.
 //
-// One loss the comparer cannot see, recorded here for the same reason
-// role's, group's, tag's, and schedule's were: the schema's declared
-// <pattern> for alert_count is only <e>filtered</e><e>page</e>, no text
-// token anywhere, yet live captures send a bare total ahead of those
-// children. See TestAlertCountBareTotalIsAnAcceptedLoss below.
+// alert_count carried the same schema-vs-wire gap already documented for
+// role, group, tag, and schedule until T-23's
+// FieldOverrides["get_alerts:/alert_count"] added it back.
 //
 // The sort field-name MISSING/EXTRA pair on get_alerts below is not a new
 // regression: it is T-18a's relocation of AlertSort's schema-declared
@@ -1050,116 +618,11 @@ func TestValidateAlertGeneratedMatchesOrImproves(t *testing.T) {
 	wantAfter := map[string]counts{
 		"create_alert": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_alert": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_alerts":   {actionable: map[string]int{schema.CatDefect: 2}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
+		"get_alerts":   {actionable: map[string]int{schema.CatDefect: 2}, suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1}},
 		"delete_alert": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"test_alert":   {actionable: map[string]int{schema.CatDefect: 1}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
-}
-
-// alertCountProbe mirrors testdata/golden/get_alerts.go's AlertCount field,
-// byte for byte — keep the two in sync. It exists to decode real get_alerts
-// fixtures with the exact shape the generator emits today, without pulling in
-// the out-of-process GeneratedGoRoots machinery just to observe one field.
-// See scheduleCountProbe above for the identical precedent.
-type alertCountProbe struct {
-	XMLName    xml.Name `xml:"get_alerts_response"`
-	AlertCount struct {
-		Filtered int `xml:"filtered"`
-		Page     int `xml:"page"`
-	} `xml:"alert_count"`
-}
-
-// alertCountEvidence is alertCountProbe plus a ",chardata" field the
-// generated shape does not have, proving what the fixture actually contains
-// independent of what the generated shape can retain.
-type alertCountEvidence struct {
-	XMLName    xml.Name `xml:"get_alerts_response"`
-	AlertCount struct {
-		Value    string `xml:",chardata"`
-		Filtered int    `xml:"filtered"`
-		Page     int    `xml:"page"`
-	} `xml:"alert_count"`
-}
-
-// TestAlertCountBareTotalIsAnAcceptedLoss is the alert family's counterpart
-// to TestScheduleCountBareTotalIsAnAcceptedLoss: live gvmd captures under
-// internal/gmptest/testdata/live/get_alerts send a bare total ahead of
-// <filtered>/<page>, but the schema's declared <pattern> for alert_count is
-// only <e>filtered</e><e>page</e>, with no text token anywhere in it. There
-// is nothing for the schema-side parser to see: the pattern the generator
-// draws from simply never declares this content, so generation cannot
-// recover it, and schema.Comparer — which only compares against what the
-// pattern declares — correctly reports no finding for it either.
-//
-// This is the same class of gap as create_override's result-as-text loss and
-// role_count/group_count/tag_count/schedule_count's identical shape
-// (docs/review-2026-08.md's "Accepted evidence" note): the schema's own
-// declared structure and its own examples disagree, and per the
-// generate-only-what-the-schema-declares principle, the fix is to document
-// the loss, not to add a field the schema never asked for.
-//
-// Each fixture is decoded twice, into two structurally identical types that
-// differ only in one field, so the test proves both halves of the claim
-// against the actual wire bytes rather than assuming either: alertCountEvidence
-// (which has a ,chardata field) proves the bare total is really there;
-// alertCountProbe (an exact mirror of the generated AlertCount) proves that,
-// with only Filtered/Page to decode into, that same total has nowhere to go.
-func TestAlertCountBareTotalIsAnAcceptedLoss(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	cases := []struct {
-		provenance string
-		path       string
-		wantTotal  string
-		wantChild  int
-	}{
-		{"live_001", filepath.Join(gmptestDir, "live", "get_alerts", "001_response.xml"), "0", 0},
-		{"live_002", filepath.Join(gmptestDir, "live", "get_alerts", "002_response.xml"), "0", 0},
-		{"live_003", filepath.Join(gmptestDir, "live", "get_alerts", "003_response.xml"), "1", 1},
-	}
-	for _, tc := range cases {
-		t.Run(tc.provenance, func(t *testing.T) {
-			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", tc.path, err)
-			}
-
-			// First, prove the wire actually carries the bare total: decode
-			// with a ,chardata field the generated shape lacks.
-			var evidence alertCountEvidence
-			if err := xml.Unmarshal(data, &evidence); err != nil {
-				t.Fatalf("decoding %s into alertCountEvidence: %v", tc.path, err)
-			}
-			if got := strings.TrimSpace(evidence.AlertCount.Value); got != tc.wantTotal {
-				t.Fatalf("%s: alert_count bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
-					tc.path, got, tc.wantTotal)
-			}
-			if evidence.AlertCount.Filtered != tc.wantChild || evidence.AlertCount.Page != tc.wantChild {
-				t.Fatalf("%s: alertCountEvidence children = %+v, want Filtered=Page=%d",
-					tc.path, evidence.AlertCount, tc.wantChild)
-			}
-
-			// Second, prove the exact generated shape retains the children
-			// but has nowhere to put that total.
-			var got alertCountProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into alertCountProbe: %v", tc.path, err)
-			}
-			if got.AlertCount.Filtered != tc.wantChild || got.AlertCount.Page != tc.wantChild {
-				t.Errorf("alertCountProbe = %+v, want Filtered=Page=%d (the generated shape changed unexpectedly)",
-					got.AlertCount, tc.wantChild)
-			}
-			// alertCountProbe has no field that could have captured
-			// evidence.AlertCount.Value — that silent drop, now proven
-			// against the actual fixture bytes rather than assumed, is the
-			// accepted loss this test exists to pin.
-		})
-	}
 }
 
 // TestValidateFilterBeforeMatchesKnownConformance is the filter family's
@@ -1182,7 +645,7 @@ func TestValidateFilterBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_filter": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_filters": {
 			actionable: map[string]int{schema.CatDefect: 1},
-			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_filter": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -1221,6 +684,11 @@ func TestValidateFilterBeforeMatchesKnownConformance(t *testing.T) {
 // instead of collapsing every occurrence onto the first match. Together
 // these let the comparer see both Filters and Filters2 correctly, closing
 // the gap to zero MISSING/EXTRA.
+//
+// filter_count's bare leading total, once pinned as a permanent loss by
+// TestFilterCountBareTotalIsAnAcceptedLoss, is now recovered via
+// overrides.go's FieldOverrides["get_filters:/filter_count"] (T-23); that
+// adds one more suppressed EXTRA below.
 func TestValidateFilterGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_filter")
 
@@ -1229,115 +697,11 @@ func TestValidateFilterGeneratedMatchesOrImproves(t *testing.T) {
 		"modify_filter": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_filters": {
 			actionable: map[string]int{schema.CatDefect: 1},
-			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_filter": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
-}
-
-// filterCountProbe mirrors testdata/golden/get_filters.go's FilterCount
-// field, byte for byte — keep the two in sync. It exists to decode real
-// get_filters fixtures with the exact shape the generator emits today,
-// without pulling in the out-of-process GeneratedGoRoots machinery just to
-// observe one field. See roleCountProbe/groupCountProbe/scheduleCountProbe
-// above for the identical precedent.
-type filterCountProbe struct {
-	XMLName     xml.Name `xml:"get_filters_response"`
-	FilterCount struct {
-		Filtered int `xml:"filtered"`
-		Page     int `xml:"page"`
-	} `xml:"filter_count"`
-}
-
-// filterCountEvidence is filterCountProbe plus a ",chardata" field the
-// generated shape does not have, proving what the fixture actually contains
-// independent of what the generated shape can retain.
-type filterCountEvidence struct {
-	XMLName     xml.Name `xml:"get_filters_response"`
-	FilterCount struct {
-		Value    string `xml:",chardata"`
-		Filtered int    `xml:"filtered"`
-		Page     int    `xml:"page"`
-	} `xml:"filter_count"`
-}
-
-// TestFilterCountBareTotalIsAnAcceptedLoss is the filter family's
-// counterpart to TestScheduleCountBareTotalIsAnAcceptedLoss: live gvmd
-// captures under internal/gmptest/testdata/live/get_filters send a bare
-// total ahead of <filtered>/<page>, but the schema's declared <pattern> for
-// filter_count is only <e>filtered</e><e>page</e>, with no text token
-// anywhere in it. There is nothing for the schema-side parser to see: the
-// pattern the generator draws from simply never declares this content, so
-// generation cannot recover it, and schema.Comparer — which only compares
-// against what the pattern declares — correctly reports no finding for it
-// either.
-//
-// This is the same class of gap as create_override's result-as-text loss and
-// role_count/group_count/tag_count/schedule_count/alert_count's identical
-// shape (docs/review-2026-08.md's "Accepted evidence" note): the schema's
-// own declared structure and its own examples disagree, and per the
-// generate-only-what-the-schema-declares principle, the fix is to document
-// the loss, not to add a field the schema never asked for.
-//
-// Each fixture is decoded twice, into two structurally identical types that
-// differ only in one field, so the test proves both halves of the claim
-// against the actual wire bytes rather than assuming either:
-// filterCountEvidence (which has a ,chardata field) proves the bare total is
-// really there; filterCountProbe (an exact mirror of the generated
-// FilterCount) proves that, with only Filtered/Page to decode into, that
-// same total has nowhere to go.
-func TestFilterCountBareTotalIsAnAcceptedLoss(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	cases := []struct {
-		provenance string
-		path       string
-		wantTotal  string
-		wantChild  int
-	}{
-		{"live_001", filepath.Join(gmptestDir, "live", "get_filters", "001_response.xml"), "0", 0},
-		{"live_002", filepath.Join(gmptestDir, "live", "get_filters", "002_response.xml"), "0", 0},
-		{"live_003", filepath.Join(gmptestDir, "live", "get_filters", "003_response.xml"), "1", 1},
-	}
-	for _, tc := range cases {
-		t.Run(tc.provenance, func(t *testing.T) {
-			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", tc.path, err)
-			}
-
-			var evidence filterCountEvidence
-			if err := xml.Unmarshal(data, &evidence); err != nil {
-				t.Fatalf("decoding %s into filterCountEvidence: %v", tc.path, err)
-			}
-			if got := strings.TrimSpace(evidence.FilterCount.Value); got != tc.wantTotal {
-				t.Fatalf("%s: filter_count bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
-					tc.path, got, tc.wantTotal)
-			}
-			if evidence.FilterCount.Filtered != tc.wantChild || evidence.FilterCount.Page != tc.wantChild {
-				t.Fatalf("%s: filterCountEvidence children = %+v, want Filtered=Page=%d",
-					tc.path, evidence.FilterCount, tc.wantChild)
-			}
-
-			var got filterCountProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into filterCountProbe: %v", tc.path, err)
-			}
-			if got.FilterCount.Filtered != tc.wantChild || got.FilterCount.Page != tc.wantChild {
-				t.Errorf("filterCountProbe = %+v, want Filtered=Page=%d (the generated shape changed unexpectedly)",
-					got.FilterCount, tc.wantChild)
-			}
-			// filterCountProbe has no field that could have captured
-			// evidence.FilterCount.Value — that silent drop, now proven
-			// against the actual fixture bytes rather than assumed, is the
-			// accepted loss this test exists to pin.
-		})
-	}
 }
 
 // TestValidateTLSCertificateBeforeMatchesKnownConformance is the
@@ -1359,7 +723,7 @@ func TestValidateTLSCertificateBeforeMatchesKnownConformance(t *testing.T) {
 	want := map[string]counts{
 		"create_tls_certificate": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_tls_certificate": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_tls_certificates":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 3, schema.CatMissing: 1}},
+		"get_tls_certificates":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 4, schema.CatMissing: 1, schema.CatOmitEmpty: 1}},
 	}
 	for _, res := range before {
 		w, ok := want[res.Command]
@@ -1433,118 +797,19 @@ func TestValidateTLSCertificateBeforeMatchesKnownConformance(t *testing.T) {
 // "dn" entry as part of the same pass. schema.Comparer only compares wire
 // tags, not Go identifier casing, so this produces no finding in either
 // count above.
+// tls_certificate_count's bare leading total, once pinned as a permanent
+// loss by TestTLSCertificateCountBareTotalIsAnAcceptedLoss, is now recovered
+// via overrides.go's FieldOverrides["get_tls_certificates:/tls_certificate_count"]
+// (T-23); that adds one more suppressed EXTRA below.
 func TestValidateTLSCertificateGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_tls_certificate")
 
 	wantAfter := map[string]counts{
 		"create_tls_certificate": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_tls_certificate": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_tls_certificates":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 3, schema.CatMissing: 1}},
+		"get_tls_certificates":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 4, schema.CatMissing: 1, schema.CatOmitEmpty: 1}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
-}
-
-// tlsCertificateCountProbe mirrors testdata/golden/get_tls_certificates.go's
-// TLSCertificateCount field, byte for byte — keep the two in sync. Same
-// rationale as filterCountProbe: decode real fixtures with the exact shape
-// the generator emits today, without the out-of-process GeneratedGoRoots
-// machinery.
-type tlsCertificateCountProbe struct {
-	XMLName             xml.Name `xml:"get_tls_certificates_response"`
-	TLSCertificateCount struct {
-		Filtered int `xml:"filtered"`
-		Page     int `xml:"page"`
-	} `xml:"tls_certificate_count"`
-}
-
-// tlsCertificateCountEvidence is tlsCertificateCountProbe plus a ",chardata"
-// field the generated shape does not have, proving what the fixture
-// actually contains independent of what the generated shape can retain.
-type tlsCertificateCountEvidence struct {
-	XMLName             xml.Name `xml:"get_tls_certificates_response"`
-	TLSCertificateCount struct {
-		Value    string `xml:",chardata"`
-		Filtered int    `xml:"filtered"`
-		Page     int    `xml:"page"`
-	} `xml:"tls_certificate_count"`
-}
-
-// TestTLSCertificateCountBareTotalIsAnAcceptedLoss is the tls_certificate
-// family's counterpart to TestFilterCountBareTotalIsAnAcceptedLoss: live
-// gvmd captures under internal/gmptest/testdata/live/get_tls_certificates
-// send a bare total ahead of <filtered>/<page>, but the schema's declared
-// <pattern> for tls_certificate_count is only <e>filtered</e><e>page</e>,
-// with no text token anywhere in it. There is nothing for the schema-side
-// parser to see: the pattern the generator draws from simply never declares
-// this content, so generation cannot recover it, and schema.Comparer —
-// which only compares against what the pattern declares — correctly
-// reports no finding for it either.
-//
-// This is the same class of gap as role_count/group_count/tag_count/
-// schedule_count/alert_count/filter_count's identical shape
-// (docs/review-2026-08.md's "Accepted evidence" note): the schema's own
-// declared structure and its own examples disagree, and per the
-// generate-only-what-the-schema-declares principle, the fix is to document
-// the loss, not to add a field the schema never asked for.
-//
-// Each fixture is decoded twice, into two structurally identical types that
-// differ only in one field, so the test proves both halves of the claim
-// against the actual wire bytes rather than assuming either:
-// tlsCertificateCountEvidence (which has a ,chardata field) proves the bare
-// total is really there; tlsCertificateCountProbe (an exact mirror of the
-// generated TLSCertificateCount) proves that, with only Filtered/Page to
-// decode into, that same total has nowhere to go.
-func TestTLSCertificateCountBareTotalIsAnAcceptedLoss(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	cases := []struct {
-		provenance string
-		path       string
-		wantTotal  string
-		wantChild  int
-	}{
-		{"live_001", filepath.Join(gmptestDir, "live", "get_tls_certificates", "001_response.xml"), "0", 0},
-		{"live_002", filepath.Join(gmptestDir, "live", "get_tls_certificates", "002_response.xml"), "0", 0},
-		{"live_003", filepath.Join(gmptestDir, "live", "get_tls_certificates", "003_response.xml"), "1", 1},
-	}
-	for _, tc := range cases {
-		t.Run(tc.provenance, func(t *testing.T) {
-			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", tc.path, err)
-			}
-
-			var evidence tlsCertificateCountEvidence
-			if err := xml.Unmarshal(data, &evidence); err != nil {
-				t.Fatalf("decoding %s into tlsCertificateCountEvidence: %v", tc.path, err)
-			}
-			if got := strings.TrimSpace(evidence.TLSCertificateCount.Value); got != tc.wantTotal {
-				t.Fatalf("%s: tls_certificate_count bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
-					tc.path, got, tc.wantTotal)
-			}
-			if evidence.TLSCertificateCount.Filtered != tc.wantChild || evidence.TLSCertificateCount.Page != tc.wantChild {
-				t.Fatalf("%s: tlsCertificateCountEvidence children = %+v, want Filtered=Page=%d",
-					tc.path, evidence.TLSCertificateCount, tc.wantChild)
-			}
-
-			var got tlsCertificateCountProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into tlsCertificateCountProbe: %v", tc.path, err)
-			}
-			if got.TLSCertificateCount.Filtered != tc.wantChild || got.TLSCertificateCount.Page != tc.wantChild {
-				t.Errorf("tlsCertificateCountProbe = %+v, want Filtered=Page=%d (the generated shape changed unexpectedly)",
-					got.TLSCertificateCount, tc.wantChild)
-			}
-			// tlsCertificateCountProbe has no field that could have captured
-			// evidence.TLSCertificateCount.Value — that silent drop, now
-			// proven against the actual fixture bytes rather than assumed,
-			// is the accepted loss this test exists to pin.
-		})
-	}
 }
 
 // tlsCertificateDataProbeCert mirrors testdata/golden/get_tls_certificates.
@@ -1651,7 +916,7 @@ func TestValidatePermissionBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_permission": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_permissions": {
 			actionable: map[string]int{schema.CatDefect: 2},
-			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_permission": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -1692,6 +957,10 @@ func TestValidatePermissionBeforeMatchesKnownConformance(t *testing.T) {
 // permissions and subject/permissions stay untouched — copied from
 // cmd.Defects before any Go-type comparison runs, same as every other
 // family's empty-pattern class.
+// permission_count's bare leading total, once pinned as a permanent loss by
+// TestPermissionCountBareTotalIsAnAcceptedLoss, is now recovered via
+// overrides.go's FieldOverrides["get_permissions:/permission_count"] (T-23);
+// that adds one more suppressed EXTRA below.
 func TestValidatePermissionGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_permission")
 
@@ -1700,116 +969,11 @@ func TestValidatePermissionGeneratedMatchesOrImproves(t *testing.T) {
 		"modify_permission": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_permissions": {
 			actionable: map[string]int{schema.CatDefect: 2},
-			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_permission": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
-}
-
-// permissionCountProbe mirrors testdata/golden/get_permissions.go's
-// PermissionCount field, byte for byte — keep the two in sync. See
-// filterCountProbe above for the identical precedent.
-type permissionCountProbe struct {
-	XMLName         xml.Name `xml:"get_permissions_response"`
-	PermissionCount struct {
-		Filtered int `xml:"filtered"`
-		Page     int `xml:"page"`
-	} `xml:"permission_count"`
-}
-
-// permissionCountEvidence is permissionCountProbe plus a ",chardata" field
-// the generated shape does not have, proving what the fixture actually
-// contains independent of what the generated shape can retain.
-type permissionCountEvidence struct {
-	XMLName         xml.Name `xml:"get_permissions_response"`
-	PermissionCount struct {
-		Value    string `xml:",chardata"`
-		Filtered int    `xml:"filtered"`
-		Page     int    `xml:"page"`
-	} `xml:"permission_count"`
-}
-
-// TestPermissionCountBareTotalIsAnAcceptedLoss is the permission family's
-// counterpart to TestFilterCountBareTotalIsAnAcceptedLoss: live gvmd
-// captures under internal/gmptest/testdata/live/get_permissions, and gvmd's
-// own bundled/upstream example under
-// internal/gmptest/testdata/upstream/get_permissions, all send a bare total
-// ahead of <filtered>/<page>, but the schema's declared <pattern> for
-// permission_count is only <e>filtered</e><e>page</e>, with no text token
-// anywhere in it. There is nothing for the schema-side parser to see: the
-// pattern the generator draws from simply never declares this content, so
-// generation cannot recover it, and schema.Comparer — which only compares
-// against what the pattern declares — correctly reports no finding for it
-// either.
-//
-// This is the same class of gap as role_count/group_count/tag_count/
-// schedule_count/alert_count/filter_count/tls_certificate_count's identical
-// shape (docs/review-2026-08.md's "Accepted evidence" note): the schema's
-// own declared structure and its own examples disagree, and per the
-// generate-only-what-the-schema-declares principle, the fix is to document
-// the loss, not to add a field the schema never asked for.
-//
-// Each fixture is decoded twice, into two structurally identical types that
-// differ only in one field, so the test proves both halves of the claim
-// against the actual wire bytes rather than assuming either:
-// permissionCountEvidence (which has a ,chardata field) proves the bare
-// total is really there; permissionCountProbe (an exact mirror of the
-// generated PermissionCount) proves that, with only Filtered/Page to decode
-// into, that same total has nowhere to go.
-func TestPermissionCountBareTotalIsAnAcceptedLoss(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	cases := []struct {
-		provenance string
-		path       string
-		wantTotal  string
-		wantFilter int
-		wantPage   int
-	}{
-		{"live_001", filepath.Join(gmptestDir, "live", "get_permissions", "001_response.xml"), "260", 260, 11},
-		{"live_002", filepath.Join(gmptestDir, "live", "get_permissions", "002_response.xml"), "260", 260, 2},
-		{"live_003", filepath.Join(gmptestDir, "live", "get_permissions", "003_response.xml"), "262", 1, 1},
-		{"upstream_001", filepath.Join(gmptestDir, "upstream", "get_permissions", "001_response.xml"), "1", 1, 1},
-	}
-	for _, tc := range cases {
-		t.Run(tc.provenance, func(t *testing.T) {
-			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", tc.path, err)
-			}
-
-			var evidence permissionCountEvidence
-			if err := xml.Unmarshal(data, &evidence); err != nil {
-				t.Fatalf("decoding %s into permissionCountEvidence: %v", tc.path, err)
-			}
-			if got := strings.TrimSpace(evidence.PermissionCount.Value); got != tc.wantTotal {
-				t.Fatalf("%s: permission_count bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
-					tc.path, got, tc.wantTotal)
-			}
-			if evidence.PermissionCount.Filtered != tc.wantFilter || evidence.PermissionCount.Page != tc.wantPage {
-				t.Fatalf("%s: permissionCountEvidence children = %+v, want Filtered=%d Page=%d",
-					tc.path, evidence.PermissionCount, tc.wantFilter, tc.wantPage)
-			}
-
-			var got permissionCountProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into permissionCountProbe: %v", tc.path, err)
-			}
-			if got.PermissionCount.Filtered != tc.wantFilter || got.PermissionCount.Page != tc.wantPage {
-				t.Errorf("permissionCountProbe = %+v, want Filtered=%d Page=%d (the generated shape changed unexpectedly)",
-					got.PermissionCount, tc.wantFilter, tc.wantPage)
-			}
-			// permissionCountProbe has no field that could have captured
-			// evidence.PermissionCount.Value — that silent drop, now proven
-			// against the actual fixture bytes rather than assumed, is the
-			// accepted loss this test exists to pin.
-		})
-	}
 }
 
 // TestValidateTicketBeforeMatchesKnownConformance is the ticket family's
@@ -1828,7 +992,7 @@ func TestValidateTicketBeforeMatchesKnownConformance(t *testing.T) {
 	want := map[string]counts{
 		"create_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_tickets":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
+		"get_tickets":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1}},
 		"delete_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	for _, res := range before {
@@ -1844,94 +1008,21 @@ func TestValidateTicketBeforeMatchesKnownConformance(t *testing.T) {
 // TestValidateTicketGeneratedMatchesOrImproves is the ticket family's
 // post-swap gate. See docs/review-2026-08.md's ticket section for what each
 // closed finding was and why.
+//
+// ticket_count's bare leading total, once pinned as a permanent loss by
+// TestTicketCountBareTotalIsAnAcceptedLoss, is now recovered via
+// overrides.go's FieldOverrides["get_tickets:/ticket_count"] (T-23); that
+// adds one more suppressed EXTRA below.
 func TestValidateTicketGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_ticket")
 
 	wantAfter := map[string]counts{
 		"create_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_tickets":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1}},
+		"get_tickets":   {actionable: map[string]int{}, suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1}},
 		"delete_ticket": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
-}
-
-// ticketCountProbe mirrors TicketCount in testdata/golden/get_tickets.go.
-type ticketCountProbe struct {
-	XMLName     xml.Name `xml:"get_tickets_response"`
-	TicketCount struct {
-		Filtered int `xml:"filtered"`
-		Page     int `xml:"page"`
-	} `xml:"ticket_count"`
-}
-
-// ticketCountEvidence is ticketCountProbe plus a ",chardata" field to prove
-// the bare total the generated shape can't retain.
-type ticketCountEvidence struct {
-	XMLName     xml.Name `xml:"get_tickets_response"`
-	TicketCount struct {
-		Value    string `xml:",chardata"`
-		Filtered int    `xml:"filtered"`
-		Page     int    `xml:"page"`
-	} `xml:"ticket_count"`
-}
-
-// TestTicketCountBareTotalIsAnAcceptedLoss mirrors
-// TestPermissionCountBareTotalIsAnAcceptedLoss: fixtures send a bare total
-// ahead of <filtered>/<page>, but ticket_count's schema pattern declares no
-// text token, so generation can't recover it. See docs/review-2026-08.md.
-func TestTicketCountBareTotalIsAnAcceptedLoss(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	cases := []struct {
-		provenance string
-		path       string
-		wantTotal  string
-		wantFilter int
-		wantPage   int
-	}{
-		{"live_001", filepath.Join(gmptestDir, "live", "get_tickets", "001_response.xml"), "0", 0, 0},
-		{"live_002", filepath.Join(gmptestDir, "live", "get_tickets", "002_response.xml"), "0", 0, 0},
-		{"upstream_001", filepath.Join(gmptestDir, "upstream", "get_tickets", "001_response.xml"), "2", 2, 2},
-	}
-	for _, tc := range cases {
-		t.Run(tc.provenance, func(t *testing.T) {
-			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", tc.path, err)
-			}
-
-			var evidence ticketCountEvidence
-			if err := xml.Unmarshal(data, &evidence); err != nil {
-				t.Fatalf("decoding %s into ticketCountEvidence: %v", tc.path, err)
-			}
-			if got := strings.TrimSpace(evidence.TicketCount.Value); got != tc.wantTotal {
-				t.Fatalf("%s: ticket_count bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
-					tc.path, got, tc.wantTotal)
-			}
-			if evidence.TicketCount.Filtered != tc.wantFilter || evidence.TicketCount.Page != tc.wantPage {
-				t.Fatalf("%s: ticketCountEvidence children = %+v, want Filtered=%d Page=%d",
-					tc.path, evidence.TicketCount, tc.wantFilter, tc.wantPage)
-			}
-
-			var got ticketCountProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into ticketCountProbe: %v", tc.path, err)
-			}
-			if got.TicketCount.Filtered != tc.wantFilter || got.TicketCount.Page != tc.wantPage {
-				t.Errorf("ticketCountProbe = %+v, want Filtered=%d Page=%d (the generated shape changed unexpectedly)",
-					got.TicketCount, tc.wantFilter, tc.wantPage)
-			}
-			// ticketCountProbe has no field that could have captured
-			// evidence.TicketCount.Value — that silent drop, now proven
-			// against the actual fixture bytes rather than assumed, is the
-			// accepted loss this test exists to pin.
-		})
-	}
 }
 
 // TestValidateCredentialBeforeMatchesKnownConformance is the credential
@@ -1955,7 +1046,7 @@ func TestValidateCredentialBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_credential": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_credentials": {
 			actionable: map[string]int{schema.CatDefect: 2},
-			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_credential": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -1987,6 +1078,10 @@ func TestValidateCredentialBeforeMatchesKnownConformance(t *testing.T) {
 // on scanner/permissions and target/permissions stay untouched — copied from
 // cmd.Defects before any Go-type comparison runs, same as every other
 // family's empty-pattern class.
+// credential_count's bare leading total, once pinned as a permanent loss by
+// TestCredentialCountBareTotalIsAnAcceptedLoss, is now recovered via
+// overrides.go's FieldOverrides["get_credentials:/credential_count"] (T-23);
+// that adds one more suppressed EXTRA below.
 func TestValidateCredentialGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_credential")
 
@@ -1995,90 +1090,11 @@ func TestValidateCredentialGeneratedMatchesOrImproves(t *testing.T) {
 		"modify_credential": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_credentials": {
 			actionable: map[string]int{schema.CatDefect: 2},
-			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_credential": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)
-}
-
-// credentialCountProbe mirrors CredentialCount in
-// testdata/golden/get_credentials.go.
-type credentialCountProbe struct {
-	XMLName         xml.Name `xml:"get_credentials_response"`
-	CredentialCount struct {
-		Filtered int `xml:"filtered"`
-		Page     int `xml:"page"`
-	} `xml:"credential_count"`
-}
-
-// credentialCountEvidence is credentialCountProbe plus a ",chardata" field to
-// prove the bare total the generated shape can't retain.
-type credentialCountEvidence struct {
-	XMLName         xml.Name `xml:"get_credentials_response"`
-	CredentialCount struct {
-		Value    string `xml:",chardata"`
-		Filtered int    `xml:"filtered"`
-		Page     int    `xml:"page"`
-	} `xml:"credential_count"`
-}
-
-// TestCredentialCountBareTotalIsAnAcceptedLoss mirrors
-// TestTicketCountBareTotalIsAnAcceptedLoss: fixtures send a bare total ahead
-// of <filtered>/<page>, but credential_count's schema pattern declares no
-// text token, so generation can't recover it.
-func TestCredentialCountBareTotalIsAnAcceptedLoss(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	cases := []struct {
-		provenance string
-		path       string
-		wantTotal  string
-		wantFilter int
-		wantPage   int
-	}{
-		{"live_001", filepath.Join(gmptestDir, "live", "get_credentials", "001_response.xml"), "0", 0, 0},
-		{"live_003", filepath.Join(gmptestDir, "live", "get_credentials", "003_response.xml"), "1", 1, 1},
-		{"live_004", filepath.Join(gmptestDir, "live", "get_credentials", "004_response.xml"), "2", 1, 1},
-	}
-	for _, tc := range cases {
-		t.Run(tc.provenance, func(t *testing.T) {
-			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", tc.path, err)
-			}
-
-			var evidence credentialCountEvidence
-			if err := xml.Unmarshal(data, &evidence); err != nil {
-				t.Fatalf("decoding %s into credentialCountEvidence: %v", tc.path, err)
-			}
-			if got := strings.TrimSpace(evidence.CredentialCount.Value); got != tc.wantTotal {
-				t.Fatalf("%s: credential_count bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
-					tc.path, got, tc.wantTotal)
-			}
-			if evidence.CredentialCount.Filtered != tc.wantFilter || evidence.CredentialCount.Page != tc.wantPage {
-				t.Fatalf("%s: credentialCountEvidence children = %+v, want Filtered=%d Page=%d",
-					tc.path, evidence.CredentialCount, tc.wantFilter, tc.wantPage)
-			}
-
-			var got credentialCountProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into credentialCountProbe: %v", tc.path, err)
-			}
-			if got.CredentialCount.Filtered != tc.wantFilter || got.CredentialCount.Page != tc.wantPage {
-				t.Errorf("credentialCountProbe = %+v, want Filtered=%d Page=%d (the generated shape changed unexpectedly)",
-					got.CredentialCount, tc.wantFilter, tc.wantPage)
-			}
-			// credentialCountProbe has no field that could have captured
-			// evidence.CredentialCount.Value — that silent drop, now proven
-			// against the actual fixture bytes rather than assumed, is the
-			// accepted loss this test exists to pin.
-		})
-	}
 }
 
 // TestValidatePortListBeforeMatchesKnownConformance is the port_list family's
@@ -2097,7 +1113,7 @@ func TestValidatePortListBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_port_list": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_port_lists": {
 			actionable: map[string]int{schema.CatDefect: 1},
-			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_port_list": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -2116,6 +1132,11 @@ func TestValidatePortListBeforeMatchesKnownConformance(t *testing.T) {
 // docs/review-2026-08.md's port_list section for the per-finding
 // explanation of what generation closed while port_list was still
 // review_only.
+//
+// port_list_count's bare leading total, once pinned as a permanent loss by
+// TestPortListCountBareTotalIsAnAcceptedLoss, is now recovered via
+// overrides.go's FieldOverrides["get_port_lists:/port_list_count"] (T-23);
+// that adds one more suppressed EXTRA below.
 func TestValidatePortListGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_port_list")
 
@@ -2127,7 +1148,7 @@ func TestValidatePortListGeneratedMatchesOrImproves(t *testing.T) {
 		"modify_port_list": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_port_lists": {
 			actionable: map[string]int{schema.CatDefect: 1},
-			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_port_list": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -2146,7 +1167,7 @@ func TestValidateAssetBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_asset": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_assets": {
 			actionable: map[string]int{schema.CatDefect: 1},
-			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_asset": {actionable: map[string]int{}, suppressed: map[string]int{schema.CatOmitEmpty: 2}},
 	}
@@ -2164,6 +1185,10 @@ func TestValidateAssetBeforeMatchesKnownConformance(t *testing.T) {
 // post-swap gate, run at the same rigour every prior family's was. See
 // docs/review-2026-08.md's asset section for the per-finding explanation of
 // what generation closed while asset was still review_only.
+//
+// asset_count's bare leading total is now recovered via overrides.go's
+// FieldOverrides["get_assets:/asset_count"] (T-23), adding one suppressed
+// EXTRA below.
 func TestValidateAssetGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_asset")
 
@@ -2172,7 +1197,7 @@ func TestValidateAssetGeneratedMatchesOrImproves(t *testing.T) {
 		"modify_asset": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_assets": {
 			actionable: map[string]int{schema.CatDefect: 1},
-			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_asset": {actionable: map[string]int{}, suppressed: map[string]int{schema.CatOmitEmpty: 2}},
 	}
@@ -2194,7 +1219,7 @@ func TestValidateReportFormatBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_report_format": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_report_formats": {
 			actionable: map[string]int{},
-			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 3, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_report_format": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"verify_report_format": {actionable: map[string]int{}, suppressed: map[string]int{}},
@@ -2224,6 +1249,9 @@ func TestValidateReportFormatBeforeMatchesKnownConformance(t *testing.T) {
 // finding still fires — the schema really does not declare it — but carries
 // the evidence in its Reason instead of counting against commands/. See
 // TestReportFormatCommentRoundTrips.
+// report_format_count's bare leading total is now recovered via
+// overrides.go's FieldOverrides["get_report_formats:/report_format_count"]
+// (T-23), adding one more suppressed EXTRA below.
 func TestValidateReportFormatGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_report_format")
 
@@ -2235,7 +1263,7 @@ func TestValidateReportFormatGeneratedMatchesOrImproves(t *testing.T) {
 		"modify_report_format": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_report_formats": {
 			actionable: map[string]int{},
-			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 3, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_report_format": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"verify_report_format": {actionable: map[string]int{}, suppressed: map[string]int{}},
@@ -2307,84 +1335,6 @@ func TestReportFormatCommentRoundTrips(t *testing.T) {
 	}
 }
 
-// portListCountProbe mirrors PortListCount in testdata/golden/get_port_lists.go.
-type portListCountProbe struct {
-	XMLName       xml.Name `xml:"get_port_lists_response"`
-	PortListCount struct {
-		Filtered int `xml:"filtered"`
-		Page     int `xml:"page"`
-	} `xml:"port_list_count"`
-}
-
-// portListCountEvidence is portListCountProbe plus a ",chardata" field to
-// prove the bare total the generated shape can't retain.
-type portListCountEvidence struct {
-	XMLName       xml.Name `xml:"get_port_lists_response"`
-	PortListCount struct {
-		Value    string `xml:",chardata"`
-		Filtered int    `xml:"filtered"`
-		Page     int    `xml:"page"`
-	} `xml:"port_list_count"`
-}
-
-// TestPortListCountBareTotalIsAnAcceptedLoss mirrors
-// TestTicketCountBareTotalIsAnAcceptedLoss: live fixtures send a bare total
-// ahead of <filtered>/<page>, but port_list_count's schema pattern declares
-// no text token, so generation can't recover it. See docs/review-2026-08.md.
-func TestPortListCountBareTotalIsAnAcceptedLoss(t *testing.T) {
-	dir, err := packageDir()
-	if err != nil {
-		t.Fatalf("packageDir: %v", err)
-	}
-	gmptestDir := filepath.Join(dir, "..", "gmptest", "testdata")
-
-	cases := []struct {
-		provenance string
-		path       string
-		wantTotal  string
-		wantFilter int
-		wantPage   int
-	}{
-		{"live_001", filepath.Join(gmptestDir, "live", "get_port_lists", "001_response.xml"), "3", 3, 3},
-		{"live_002", filepath.Join(gmptestDir, "live", "get_port_lists", "002_response.xml"), "3", 3, 2},
-		{"live_003", filepath.Join(gmptestDir, "live", "get_port_lists", "003_response.xml"), "4", 1, 1},
-	}
-	for _, tc := range cases {
-		t.Run(tc.provenance, func(t *testing.T) {
-			data, err := os.ReadFile(tc.path) //nolint:gosec // fixed test-fixture path under this package's own tree
-			if err != nil {
-				t.Fatalf("reading %s: %v", tc.path, err)
-			}
-
-			var evidence portListCountEvidence
-			if err := xml.Unmarshal(data, &evidence); err != nil {
-				t.Fatalf("decoding %s into portListCountEvidence: %v", tc.path, err)
-			}
-			if got := strings.TrimSpace(evidence.PortListCount.Value); got != tc.wantTotal {
-				t.Fatalf("%s: port_list_count bare text = %q, want %q — fixture no longer demonstrates the documented contradiction",
-					tc.path, got, tc.wantTotal)
-			}
-			if evidence.PortListCount.Filtered != tc.wantFilter || evidence.PortListCount.Page != tc.wantPage {
-				t.Fatalf("%s: portListCountEvidence children = %+v, want Filtered=%d Page=%d",
-					tc.path, evidence.PortListCount, tc.wantFilter, tc.wantPage)
-			}
-
-			var got portListCountProbe
-			if err := xml.Unmarshal(data, &got); err != nil {
-				t.Fatalf("decoding %s into portListCountProbe: %v", tc.path, err)
-			}
-			if got.PortListCount.Filtered != tc.wantFilter || got.PortListCount.Page != tc.wantPage {
-				t.Errorf("portListCountProbe = %+v, want Filtered=%d Page=%d (the generated shape changed unexpectedly)",
-					got.PortListCount, tc.wantFilter, tc.wantPage)
-			}
-			// portListCountProbe has no field that could have captured
-			// evidence.PortListCount.Value — that silent drop, now proven
-			// against the actual fixture bytes rather than assumed, is the
-			// accepted loss this test exists to pin.
-		})
-	}
-}
-
 // TestValidateReportConfigBeforeMatchesKnownConformance is report_config's
 // counterpart to TestValidateReportFormatBeforeMatchesKnownConformance.
 // report_config is adopted, so this is a drift detector on the committed
@@ -2401,7 +1351,7 @@ func TestValidateReportConfigBeforeMatchesKnownConformance(t *testing.T) {
 		},
 		"get_report_configs": {
 			actionable: map[string]int{schema.CatDefect: 1, schema.CatMissing: 1},
-			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 3, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_report_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -2437,6 +1387,9 @@ func TestValidateReportConfigBeforeMatchesKnownConformance(t *testing.T) {
 // declares at all (see the FieldOverride's Reason and the modify_report_config
 // CommandWarning in overrides.go). schema.Comparer honestly reports the
 // schema-undeclared attribute as EXTRA; the gmpoverride tag suppresses it.
+// report_config_count's bare leading total is now recovered via
+// overrides.go's FieldOverrides["get_report_configs:/report_config_count"]
+// (T-23), adding one more suppressed EXTRA below.
 func TestValidateReportConfigGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_report_config")
 
@@ -2448,7 +1401,7 @@ func TestValidateReportConfigGeneratedMatchesOrImproves(t *testing.T) {
 		},
 		"get_report_configs": {
 			actionable: map[string]int{schema.CatDefect: 1, schema.CatMissing: 1},
-			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 3, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_report_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -2620,7 +1573,7 @@ func TestValidateUserBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_user": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_users": {
 			actionable: map[string]int{schema.CatDefect: 2},
-			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_user": {actionable: map[string]int{}, suppressed: map[string]int{schema.CatOmitEmpty: 4}},
 	}
@@ -2645,6 +1598,9 @@ func TestValidateUserBeforeMatchesKnownConformance(t *testing.T) {
 // content. No FieldOverride/FieldSuppression/PointerOverride/CommandWarning
 // was needed for this family — unlike report_config, no fixture or
 // live-gvmd evidence surfaced a schema/wire mismatch here.
+// user_count's bare leading total is now recovered via overrides.go's
+// FieldOverrides["get_users:/user_count"] (T-23), adding one more suppressed
+// EXTRA below.
 func TestValidateUserGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_user")
 
@@ -2653,7 +1609,7 @@ func TestValidateUserGeneratedMatchesOrImproves(t *testing.T) {
 		"modify_user": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_users": {
 			actionable: map[string]int{schema.CatDefect: 2},
-			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_user": {actionable: map[string]int{}, suppressed: map[string]int{schema.CatOmitEmpty: 4}},
 	}
@@ -2782,7 +1738,7 @@ func TestValidateTargetBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_target": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_targets": {
 			actionable: map[string]int{schema.CatDefect: 9},
-			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_target": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -2810,6 +1766,9 @@ func TestValidateTargetBeforeMatchesKnownConformance(t *testing.T) {
 // modify_target CommandWarning (Name/Hosts/ExcludeHosts presence hazards)
 // came from live gvmd evidence, not from a generator-vs-schema mismatch, so
 // neither shows up as a suppressed finding here.
+// target_count's bare leading total is now recovered via overrides.go's
+// FieldOverrides["get_targets:/target_count"] (T-23), adding one more
+// suppressed EXTRA below.
 func TestValidateTargetGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_target")
 
@@ -2818,7 +1777,7 @@ func TestValidateTargetGeneratedMatchesOrImproves(t *testing.T) {
 		"modify_target": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_targets": {
 			actionable: map[string]int{schema.CatDefect: 9},
-			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_target": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -2837,7 +1796,7 @@ func TestValidateTaskBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_task": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_tasks": {
 			actionable: map[string]int{schema.CatDefect: 7},
-			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_task": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"move_task":   {actionable: map[string]int{}, suppressed: map[string]int{}},
@@ -2876,6 +1835,12 @@ func TestValidateTaskBeforeMatchesKnownConformance(t *testing.T) {
 // here. resume_task.report_id and start_task.report_id do: their
 // RequiredOverrides entries deliberately keep omitempty despite the schema's
 // declared requiredness, so each still shows one suppressed OMITEMPTY finding.
+//
+// task_count's bare leading total (the top-level get_tasks_response summary
+// wrapper — not the excluded per-item TaskReportCount/TaskResultCount/
+// TaskComplianceCount) is now recovered via overrides.go's
+// FieldOverrides["get_tasks:/task_count"] (T-23), adding one more suppressed
+// EXTRA below.
 func TestValidateTaskGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_task")
 
@@ -2884,7 +1849,7 @@ func TestValidateTaskGeneratedMatchesOrImproves(t *testing.T) {
 		"modify_task": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_tasks": {
 			actionable: map[string]int{schema.CatDefect: 7},
-			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_task": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"move_task":   {actionable: map[string]int{}, suppressed: map[string]int{}},
@@ -2913,7 +1878,7 @@ func TestValidateScannerBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_scanner": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_scanners": {
 			actionable: map[string]int{schema.CatDefect: 10},
-			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_scanner": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"verify_scanner": {
@@ -2942,6 +1907,8 @@ func TestValidateScannerBeforeMatchesKnownConformance(t *testing.T) {
 // .ca_pub/.relay_host) came from live gvmd evidence, not from a
 // generator-vs-schema mismatch, so none shows up as a suppressed finding
 // here.
+// get_scanners' scanner_count gains a suppressed EXTRA below via
+// overrides.go's FieldOverrides["get_scanners:/scanner_count"] (T-23).
 func TestValidateScannerGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_scanner")
 
@@ -2950,7 +1917,7 @@ func TestValidateScannerGeneratedMatchesOrImproves(t *testing.T) {
 		"modify_scanner": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_scanners": {
 			actionable: map[string]int{schema.CatDefect: 10},
-			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"delete_scanner": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"verify_scanner": {
@@ -2975,7 +1942,7 @@ func TestValidateConfigBeforeMatchesKnownConformance(t *testing.T) {
 		},
 		"get_configs": {
 			actionable: map[string]int{schema.CatDefect: 1},
-			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"modify_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"delete_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
@@ -3008,6 +1975,10 @@ func TestValidateConfigBeforeMatchesKnownConformance(t *testing.T) {
 // found omission and explicit-empty indistinguishable (both no-ops), so
 // neither needed a PointerOverrides entry and no suppressed finding shows up
 // here for them.
+// get_configs' top-level config_count gains a suppressed EXTRA below via
+// overrides.go's FieldOverrides["get_configs:/config_count"] (T-23) — this is
+// distinct from the excluded per-family ConfigFamilyCount/ConfigNVTCount and
+// per-family <nvt_count> mixed-content shape nested under <config>.
 func TestValidateConfigGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_config")
 
@@ -3018,7 +1989,7 @@ func TestValidateConfigGeneratedMatchesOrImproves(t *testing.T) {
 		},
 		"get_configs": {
 			actionable: map[string]int{schema.CatDefect: 1},
-			suppressed: map[string]int{schema.CatExtra: 1, schema.CatMissing: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
 		},
 		"modify_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"delete_config": {actionable: map[string]int{}, suppressed: map[string]int{}},

@@ -6,7 +6,6 @@ namespaces-seen:
 DROPPED
   /get_permissions_response/permission/resource/@id                        x1
   /get_permissions_response/permission/resource/permissions                x1
-  /get_permissions_response/permission_count/#text                         x1
 
 TRUNCATED
   (none)

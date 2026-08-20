@@ -19,11 +19,6 @@ ADDED
   /get_credentials_response/credential/owner                               x1
   /get_credentials_response/credential/owner/name                          x1
   /get_credentials_response/credential/permissions                         x1
-  /get_credentials_response/credential_count                               x1
-  /get_credentials_response/credential_count/filtered                      x1
-  /get_credentials_response/credential_count/filtered/#text                x1
-  /get_credentials_response/credential_count/page                          x1
-  /get_credentials_response/credential_count/page/#text                    x1
   /get_credentials_response/credentials                                    x1
   /get_credentials_response/credentials/@max                               x1
   /get_credentials_response/credentials/@start                             x1

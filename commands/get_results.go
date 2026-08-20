@@ -73,6 +73,7 @@ type Results struct {
 
 // ResultCount is the <result_count> element of get_results. See the GMP protocol docs for details.
 type ResultCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: count-wrapper chardata total is schema-undeclared"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

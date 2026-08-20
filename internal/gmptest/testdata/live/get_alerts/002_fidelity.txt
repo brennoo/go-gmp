@@ -4,7 +4,7 @@ decode: ok
 namespaces-seen:
 
 DROPPED
-  /get_alerts_response/alert_count/#text                                   x1
+  (none)
 
 TRUNCATED
   (none)

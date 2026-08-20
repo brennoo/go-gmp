@@ -23,7 +23,7 @@ type GetTargetsResponse struct {
 	Filters     TargetFilters `xml:"filters"`
 	Sort        TargetSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Targets     Targets       `xml:"targets"`
-	TargetCount TargetCount   `xml:"target_count"`
+	TargetCount *TargetCount  `xml:"target_count,omitempty"`
 	Target      []Target      `xml:"target,omitempty"`
 }
 
@@ -71,6 +71,7 @@ type Targets struct {
 
 // TargetCount is the <target_count> element of get_targets. See the GMP protocol docs for details.
 type TargetCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: count-wrapper chardata total is schema-undeclared"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

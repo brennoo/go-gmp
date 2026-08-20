@@ -21,7 +21,7 @@ type GetTLSCertificatesResponse struct {
 	Filters             TLSCertificateFilters `xml:"filters"`
 	Sort                TLSCertificateSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	TLSCertificates     TLSCertificates       `xml:"tls_certificates"`
-	TLSCertificateCount TLSCertificateCount   `xml:"tls_certificate_count"`
+	TLSCertificateCount *TLSCertificateCount  `xml:"tls_certificate_count,omitempty"`
 	TLSCertificate      []TLSCertificate      `xml:"tls_certificate,omitempty"`
 }
 
@@ -69,6 +69,7 @@ type TLSCertificates struct {
 
 // TLSCertificateCount is the <tls_certificate_count> element of get_tls_certificates. See the GMP protocol docs for details.
 type TLSCertificateCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: count-wrapper chardata total is schema-undeclared"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

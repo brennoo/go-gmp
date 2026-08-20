@@ -18,11 +18,6 @@ ADDED
   /get_report_configs_response/filters/@id                                 x1
   /get_report_configs_response/filters/keywords                            x1
   /get_report_configs_response/filters/term                                x1
-  /get_report_configs_response/report_config_count                         x1
-  /get_report_configs_response/report_config_count/filtered                x1
-  /get_report_configs_response/report_config_count/filtered/#text          x1
-  /get_report_configs_response/report_config_count/page                    x1
-  /get_report_configs_response/report_config_count/page/#text              x1
   /get_report_configs_response/report_configs                              x1
   /get_report_configs_response/report_configs/@max                         x1
   /get_report_configs_response/report_configs/@start                       x1

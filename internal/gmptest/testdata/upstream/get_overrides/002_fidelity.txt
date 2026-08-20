@@ -62,11 +62,6 @@ ADDED
   /get_overrides_response/override/task/trash                              x1
   /get_overrides_response/override/task/trash/#text                        x1
   /get_overrides_response/override/text/@excerpt                           x1
-  /get_overrides_response/override_count                                   x1
-  /get_overrides_response/override_count/filtered                          x1
-  /get_overrides_response/override_count/filtered/#text                    x1
-  /get_overrides_response/override_count/page                              x1
-  /get_overrides_response/override_count/page/#text                        x1
   /get_overrides_response/overrides                                        x1
   /get_overrides_response/overrides/@max                                   x1
   /get_overrides_response/overrides/@start                                 x1

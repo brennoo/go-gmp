@@ -22,7 +22,7 @@ type GetScannersResponse struct {
 	Filters      ScannerFilters `xml:"filters"`
 	Sort         ScannerSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Scanners     Scanners       `xml:"scanners"`
-	ScannerCount ScannerCount   `xml:"scanner_count"`
+	ScannerCount *ScannerCount  `xml:"scanner_count,omitempty"`
 	Scanner      []Scanner      `xml:"scanner,omitempty"`
 }
 
@@ -70,6 +70,7 @@ type Scanners struct {
 
 // ScannerCount is the <scanner_count> element of get_scanners. See the GMP protocol docs for details.
 type ScannerCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: count-wrapper chardata total is schema-undeclared"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

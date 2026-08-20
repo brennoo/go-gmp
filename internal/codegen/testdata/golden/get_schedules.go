@@ -22,7 +22,7 @@ type GetSchedulesResponse struct {
 	Filters       ScheduleFilters `xml:"filters"`
 	Sort          ScheduleSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Schedules     Schedules       `xml:"schedules"`
-	ScheduleCount ScheduleCount   `xml:"schedule_count"`
+	ScheduleCount *ScheduleCount  `xml:"schedule_count,omitempty"`
 	Schedule      []Schedule      `xml:"schedule,omitempty"`
 }
 
@@ -70,6 +70,7 @@ type Schedules struct {
 
 // ScheduleCount is the <schedule_count> element of get_schedules. See the GMP protocol docs for details.
 type ScheduleCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: count-wrapper chardata total is schema-undeclared"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

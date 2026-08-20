@@ -25,7 +25,7 @@ type GetFiltersResponse struct {
 	Filters     Filters           `xml:"filters"`
 	Sort        FilterSort        `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Filters2    GetFiltersFilters `xml:"-" gmpwire:"filters"`
-	FilterCount FilterCount       `xml:"filter_count"`
+	FilterCount *FilterCount      `xml:"filter_count,omitempty"`
 	Filter      []Filter          `xml:"filter,omitempty"`
 }
 
@@ -111,7 +111,8 @@ func (r *GetFiltersResponse) UnmarshalXML(d *xml.Decoder, start xml.StartElement
 					return err
 				}
 			case "filter_count":
-				if err := d.DecodeElement(&r.FilterCount, &t); err != nil {
+				r.FilterCount = new(FilterCount)
+				if err := d.DecodeElement(r.FilterCount, &t); err != nil {
 					return err
 				}
 			case "filter":
@@ -152,8 +153,10 @@ func (r *GetFiltersResponse) MarshalXML(e *xml.Encoder, start xml.StartElement) 
 	if err := e.EncodeElement(r.Filters2, xml.StartElement{Name: xml.Name{Local: "filters"}}); err != nil {
 		return err
 	}
-	if err := e.EncodeElement(r.FilterCount, xml.StartElement{Name: xml.Name{Local: "filter_count"}}); err != nil {
-		return err
+	if r.FilterCount != nil {
+		if err := e.EncodeElement(r.FilterCount, xml.StartElement{Name: xml.Name{Local: "filter_count"}}); err != nil {
+			return err
+		}
 	}
 	for _, v := range r.Filter {
 		if err := e.EncodeElement(v, xml.StartElement{Name: xml.Name{Local: "filter"}}); err != nil {
@@ -205,6 +208,7 @@ type GetFiltersFilters struct {
 
 // FilterCount is the <filter_count> element of get_filters. See the GMP protocol docs for details.
 type FilterCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: count-wrapper chardata total is schema-undeclared"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

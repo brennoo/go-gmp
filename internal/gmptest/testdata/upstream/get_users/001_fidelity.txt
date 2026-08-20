@@ -37,11 +37,6 @@ ADDED
   /get_users_response/user/permissions                                     x1
   /get_users_response/user/writable                                        x1
   /get_users_response/user/writable/#text                                  x1
-  /get_users_response/user_count                                           x1
-  /get_users_response/user_count/filtered                                  x1
-  /get_users_response/user_count/filtered/#text                            x1
-  /get_users_response/user_count/page                                      x1
-  /get_users_response/user_count/page/#text                                x1
   /get_users_response/users                                                x1
   /get_users_response/users/@max                                           x1
   /get_users_response/users/@start                                         x1

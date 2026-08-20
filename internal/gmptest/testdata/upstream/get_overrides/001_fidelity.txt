@@ -24,11 +24,6 @@ ADDED
   /get_overrides_response/override/severity                                x1
   /get_overrides_response/override/severity/#text                          x1
   /get_overrides_response/override/threat                                  x1
-  /get_overrides_response/override_count                                   x1
-  /get_overrides_response/override_count/filtered                          x1
-  /get_overrides_response/override_count/filtered/#text                    x1
-  /get_overrides_response/override_count/page                              x1
-  /get_overrides_response/override_count/page/#text                        x1
   /get_overrides_response/overrides                                        x1
   /get_overrides_response/overrides/@max                                   x1
   /get_overrides_response/overrides/@start                                 x1

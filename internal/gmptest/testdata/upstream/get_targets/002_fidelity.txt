@@ -59,11 +59,6 @@ ADDED
   /get_targets_response/target/ssh_elevate_credential/name                 x1
   /get_targets_response/target/ssh_elevate_credential/trash                x1
   /get_targets_response/target/ssh_elevate_credential/trash/#text          x1
-  /get_targets_response/target_count                                       x1
-  /get_targets_response/target_count/filtered                              x1
-  /get_targets_response/target_count/filtered/#text                        x1
-  /get_targets_response/target_count/page                                  x1
-  /get_targets_response/target_count/page/#text                            x1
   /get_targets_response/targets                                            x1
   /get_targets_response/targets/@max                                       x1
   /get_targets_response/targets/@start                                     x1

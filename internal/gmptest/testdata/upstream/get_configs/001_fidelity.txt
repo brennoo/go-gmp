@@ -18,11 +18,6 @@ ADDED
   /get_configs_response/config/max_nvt_count                               x1
   /get_configs_response/config/max_nvt_count/#text                         x1
   /get_configs_response/config/tasks                                       x1
-  /get_configs_response/config_count                                       x1
-  /get_configs_response/config_count/filtered                              x1
-  /get_configs_response/config_count/filtered/#text                        x1
-  /get_configs_response/config_count/page                                  x1
-  /get_configs_response/config_count/page/#text                            x1
   /get_configs_response/configs                                            x1
   /get_configs_response/configs/@max                                       x1
   /get_configs_response/configs/@start                                     x1

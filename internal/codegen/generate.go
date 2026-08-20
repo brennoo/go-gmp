@@ -1297,19 +1297,22 @@ func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool, type
 	case n.Card == schema.CardRequired:
 		// A required item outside any <or> is present by definition: no
 		// pointer, no omitempty — unless RequiredOverrides names this field as
-		// an exception live evidence disproved that default for. Scoped to
-		// plain string leaves: that is the only shape live evidence
-		// (resume_task/start_task's report_id) has ever justified, and a
-		// non-string scalar or structured field would additionally need a
-		// pointer to stay distinguishable from its zero value — a bigger,
-		// unevidenced API change this mechanism does not take on.
+		// an exception live evidence disproved that default for. A plain
+		// string leaf just gets omitempty (resume_task/start_task's
+		// report_id). A structured field additionally needs a pointer to
+		// stay distinguishable from its zero value on re-encode — see T-23's
+		// count-wrapper entries, where the wrapper struct's own zero value
+		// (all-zero Value/Filtered/Page) is otherwise indistinguishable from
+		// "genuinely absent," fabricating an element the wire never sent.
 		key := command + "." + n.Name
 		if _, ok := g.ro[key]; ok {
-			if len(n.Children) > 0 || base != "string" {
+			if len(n.Children) > 0 {
+				goType = "*" + base
+			} else if base != "string" {
 				return field{}, fmt.Errorf(
-					"codegen: RequiredOverrides[%q]: only evidenced for plain string fields, got Go type %q; "+
-						"no live evidence yet justifies overriding requiredness for a structured or "+
-						"non-string-scalar field", key, base)
+					"codegen: RequiredOverrides[%q]: only evidenced for plain string or structured fields, "+
+						"got Go type %q; no live evidence yet justifies overriding requiredness for a "+
+						"non-string scalar field", key, base)
 			}
 			g.roConsumed[key] = true
 			opts = ",omitempty"

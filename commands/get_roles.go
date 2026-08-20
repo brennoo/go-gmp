@@ -21,7 +21,7 @@ type GetRolesResponse struct {
 	Filters    RoleFilters `xml:"filters"`
 	Sort       RoleSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Roles      Roles       `xml:"roles"`
-	RoleCount  RoleCount   `xml:"role_count"`
+	RoleCount  *RoleCount  `xml:"role_count,omitempty"`
 	Role       []Role      `xml:"role,omitempty"`
 }
 
@@ -69,6 +69,7 @@ type Roles struct {
 
 // RoleCount is the <role_count> element of get_roles. See the GMP protocol docs for details.
 type RoleCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: command_get_roles.xml's role_count <pattern> declares only <e>filtered</e>/<e>page</e>, no chardata, but the command's own baked <example> shows a bare leading total (\"1<filtered>1</filtered><page>1</page>\") and every live fixture agrees — internal/gmptest/testdata/live/get_roles/001_response.xml sends <role_count>6<filtered>6</filtered><page>6</page></role_count>. A zero total is equally real: internal/gmptest/testdata/live/get_alerts/001_response.xml's matching <alert_count>0<filtered>0</filtered><page>0</page></alert_count> proves the leading text can be \"0\", which rules out modeling this with omitempty (an int chardata field with omitempty added to its xml tag drops the whole element on marshal, zero or not — confirmed by a standalone encoding/xml experiment — so this and every entry below omits OmitEmpty entirely)"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

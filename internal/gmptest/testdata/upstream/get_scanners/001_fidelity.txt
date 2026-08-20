@@ -42,11 +42,6 @@ ADDED
   /get_scanners_response/scanner/relay_host                                x1
   /get_scanners_response/scanner/relay_port                                x1
   /get_scanners_response/scanner/tasks/task/usage_type                     x1
-  /get_scanners_response/scanner_count                                     x1
-  /get_scanners_response/scanner_count/filtered                            x1
-  /get_scanners_response/scanner_count/filtered/#text                      x1
-  /get_scanners_response/scanner_count/page                                x1
-  /get_scanners_response/scanner_count/page/#text                          x1
   /get_scanners_response/scanners                                          x1
   /get_scanners_response/scanners/@max                                     x1
   /get_scanners_response/scanners/@start                                   x1

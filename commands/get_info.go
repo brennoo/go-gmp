@@ -17,14 +17,14 @@ type GetInfo struct {
 
 // GetInfoResponse is a get_info command response. See the GMP protocol docs for details.
 type GetInfoResponse struct {
-	XMLName    xml.Name     `xml:"get_info_response"`
-	Status     string       `xml:"status,attr"`
-	StatusText string       `xml:"status_text,attr"`
-	Filters    NVTFilters   `xml:"filters"`
-	Sort       NVTSort      `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Details    GMPBool      `xml:"details"`
-	InfoCount  NVTInfoCount `xml:"info_count"`
-	Info       []NVTInfo    `xml:"info,omitempty"`
+	XMLName    xml.Name      `xml:"get_info_response"`
+	Status     string        `xml:"status,attr"`
+	StatusText string        `xml:"status_text,attr"`
+	Filters    NVTFilters    `xml:"filters"`
+	Sort       NVTSort       `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Details    GMPBool       `xml:"details"`
+	InfoCount  *NVTInfoCount `xml:"info_count,omitempty"`
+	Info       []NVTInfo     `xml:"info,omitempty"`
 }
 
 // GetStatus returns the status and status text from the response.
@@ -65,6 +65,7 @@ type NVTField struct {
 
 // NVTInfoCount is the <info_count> element of get_info. See the GMP protocol docs for details.
 type NVTInfoCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: count-wrapper chardata total is schema-undeclared"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

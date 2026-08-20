@@ -20,7 +20,7 @@ type GetUsersResponse struct {
 	Filters    UserFilters `xml:"filters"`
 	Sort       UserSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Users      Users       `xml:"users"`
-	UserCount  UserCount   `xml:"user_count"`
+	UserCount  *UserCount  `xml:"user_count,omitempty"`
 	User       []User      `xml:"user,omitempty"`
 }
 
@@ -68,6 +68,7 @@ type Users struct {
 
 // UserCount is the <user_count> element of get_users. See the GMP protocol docs for details.
 type UserCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: count-wrapper chardata total is schema-undeclared"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

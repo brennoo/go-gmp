@@ -5,7 +5,6 @@ namespaces-seen:
 
 DROPPED
   /get_scanners_response/scanner/credential/type                           x2
-  /get_scanners_response/scanner_count/#text                               x1
 
 TRUNCATED
   (none)

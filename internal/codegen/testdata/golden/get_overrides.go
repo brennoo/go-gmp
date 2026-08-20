@@ -24,7 +24,7 @@ type GetOverridesResponse struct {
 	Filters       OverrideFilters `xml:"filters"`
 	Sort          OverrideSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Overrides     Overrides       `xml:"overrides"`
-	OverrideCount OverrideCount   `xml:"override_count"`
+	OverrideCount *OverrideCount  `xml:"override_count,omitempty"`
 	Override      []Override      `xml:"override,omitempty"`
 }
 
@@ -72,6 +72,7 @@ type Overrides struct {
 
 // OverrideCount is the <override_count> element of get_overrides. See the GMP protocol docs for details.
 type OverrideCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: count-wrapper chardata total is schema-undeclared"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

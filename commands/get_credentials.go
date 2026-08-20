@@ -25,7 +25,7 @@ type GetCredentialsResponse struct {
 	Filters         CredentialFilters `xml:"filters"`
 	Sort            CredentialSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Credentials     Credentials       `xml:"credentials"`
-	CredentialCount CredentialCount   `xml:"credential_count"`
+	CredentialCount *CredentialCount  `xml:"credential_count,omitempty"`
 	Credential      []Credential      `xml:"credential,omitempty"`
 }
 
@@ -73,6 +73,7 @@ type Credentials struct {
 
 // CredentialCount is the <credential_count> element of get_credentials. See the GMP protocol docs for details.
 type CredentialCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: count-wrapper chardata total is schema-undeclared"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

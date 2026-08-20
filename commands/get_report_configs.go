@@ -22,7 +22,7 @@ type GetReportConfigsResponse struct {
 	Filters           ReportConfigFilters `xml:"filters"`
 	Sort              ReportConfigSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	ReportConfigs     ReportConfigs       `xml:"report_configs"`
-	ReportConfigCount ReportConfigCount   `xml:"report_config_count"`
+	ReportConfigCount *ReportConfigCount  `xml:"report_config_count,omitempty"`
 	ReportConfig      []ReportConfig      `xml:"report_config,omitempty"`
 }
 
@@ -70,6 +70,7 @@ type ReportConfigs struct {
 
 // ReportConfigCount is the <report_config_count> element of get_report_configs. See the GMP protocol docs for details.
 type ReportConfigCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: count-wrapper chardata total is schema-undeclared"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

@@ -110,7 +110,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 						Name: "Test Target 2",
 					},
 				}
-				resp.TargetCount = commands.TargetCount{
+				resp.TargetCount = &commands.TargetCount{
 					Filtered: 2,
 					Page:     1,
 				}
@@ -157,7 +157,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 						Name: "Test Port List 2",
 					},
 				}
-				resp.PortListCount = commands.PortListCount{
+				resp.PortListCount = &commands.PortListCount{
 					Filtered: 2,
 					Page:     1,
 				}
@@ -194,7 +194,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 						Status: "Running",
 					},
 				}
-				resp.TaskCount = commands.TaskCount{
+				resp.TaskCount = &commands.TaskCount{
 					Filtered: 2,
 					Page:     1,
 				}
@@ -349,7 +349,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 						Type:             "host",
 					},
 				}
-				resp.AssetCount = commands.AssetCount{
+				resp.AssetCount = &commands.AssetCount{
 					Filtered: 2,
 					Page:     1,
 				}
@@ -912,7 +912,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 			resp.Info = []commands.NVTInfo{{Name: "CVE-2011-0018"}}
 			resp.Filters = commands.NVTFilters{ID: "(null)", Term: ""}
 			resp.Sort = commands.NVTSort{Field: commands.NVTField{Order: "ascending"}}
-			resp.InfoCount = commands.NVTInfoCount{Filtered: 1, Page: 1}
+			resp.InfoCount = &commands.NVTInfoCount{Filtered: 1, Page: 1}
 			resp.Details = false
 		} else {
 			resp := response.(*commands.GetInfoResponse)
@@ -920,7 +920,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 			resp.StatusText = "Not found"
 			resp.Filters = commands.NVTFilters{ID: "(null)", Term: ""}
 			resp.Sort = commands.NVTSort{Field: commands.NVTField{Order: "ascending"}}
-			resp.InfoCount = commands.NVTInfoCount{Filtered: 0, Page: 0}
+			resp.InfoCount = &commands.NVTInfoCount{Filtered: 0, Page: 0}
 			resp.Details = false
 		}
 	}
@@ -1571,7 +1571,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 				},
 			}
 		}
-		resp.TicketCount = commands.TicketCount{
+		resp.TicketCount = &commands.TicketCount{
 			Filtered: len(resp.Ticket),
 			Page:     1,
 		}
@@ -1693,7 +1693,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 				{ID: "task-2", Name: "Test Task 2"},
 				{ID: "task-3", Name: "Test Task 3"},
 			}
-			resp.TaskCount = commands.TaskCount{Filtered: 3}
+			resp.TaskCount = &commands.TaskCount{Filtered: 3}
 		}
 	}
 
@@ -1722,7 +1722,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 				{ID: "asset-1", Name: "Test Asset 1"},
 				{ID: "asset-2", Name: "Test Asset 2"},
 			}
-			resp.AssetCount = commands.AssetCount{Filtered: 2}
+			resp.AssetCount = &commands.AssetCount{Filtered: 2}
 		}
 	}
 
@@ -1737,7 +1737,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 				{ID: "ticket-2", Name: "Test Ticket 2"},
 				{ID: "ticket-3", Name: "Test Ticket 3"},
 			}
-			resp.TicketCount = commands.TicketCount{Filtered: 3}
+			resp.TicketCount = &commands.TicketCount{Filtered: 3}
 		}
 	}
 
@@ -1752,7 +1752,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 				{ID: "portlist-2", Name: "Test PortList 2"},
 				{ID: "portlist-3", Name: "Test PortList 3"},
 			}
-			resp.PortListCount = commands.PortListCount{Filtered: 3}
+			resp.PortListCount = &commands.PortListCount{Filtered: 3}
 		}
 	}
 

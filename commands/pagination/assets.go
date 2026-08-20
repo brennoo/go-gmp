@@ -29,6 +29,11 @@ func NewAssetIterator(client Client, ctx context.Context, opts PaginationOptions
 			}
 			return items
 		},
-		func(resp *commands.GetAssetsResponse) int { return resp.AssetCount.Filtered },
+		func(resp *commands.GetAssetsResponse) int {
+			if resp.AssetCount != nil {
+				return resp.AssetCount.Filtered
+			}
+			return 0
+		},
 	)
 }

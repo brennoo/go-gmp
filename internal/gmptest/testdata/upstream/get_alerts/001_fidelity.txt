@@ -22,11 +22,6 @@ ADDED
   /get_alerts_response/alert/owner                                         x1
   /get_alerts_response/alert/owner/name                                    x1
   /get_alerts_response/alert/permissions                                   x1
-  /get_alerts_response/alert_count                                         x1
-  /get_alerts_response/alert_count/filtered                                x1
-  /get_alerts_response/alert_count/filtered/#text                          x1
-  /get_alerts_response/alert_count/page                                    x1
-  /get_alerts_response/alert_count/page/#text                              x1
   /get_alerts_response/alerts                                              x1
   /get_alerts_response/alerts/@max                                         x1
   /get_alerts_response/alerts/@start                                       x1

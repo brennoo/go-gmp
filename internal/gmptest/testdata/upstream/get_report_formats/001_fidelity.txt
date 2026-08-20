@@ -28,11 +28,6 @@ ADDED
   /get_report_formats_response/report_format/predefined/#text              x1
   /get_report_formats_response/report_format/report_type                   x1
   /get_report_formats_response/report_format/trust/@name                   x1
-  /get_report_formats_response/report_format_count                         x1
-  /get_report_formats_response/report_format_count/filtered                x1
-  /get_report_formats_response/report_format_count/filtered/#text          x1
-  /get_report_formats_response/report_format_count/page                    x1
-  /get_report_formats_response/report_format_count/page/#text              x1
   /get_report_formats_response/report_formats                              x1
   /get_report_formats_response/report_formats/@max                         x1
   /get_report_formats_response/report_formats/@start                       x1

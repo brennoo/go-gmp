@@ -20,7 +20,7 @@ type GetVulnsResponse struct {
 	Filters    VulnFilters `xml:"filters"`
 	Sort       VulnSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Vulns      Vulns       `xml:"vulns"`
-	VulnCount  VulnCount   `xml:"vuln_count"`
+	VulnCount  *VulnCount  `xml:"vuln_count,omitempty"`
 	Vuln       []Vuln      `xml:"vuln,omitempty"`
 }
 
@@ -68,6 +68,7 @@ type Vulns struct {
 
 // VulnCount is the <vuln_count> element of get_vulns. See the GMP protocol docs for details.
 type VulnCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: count-wrapper chardata total is schema-undeclared"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }

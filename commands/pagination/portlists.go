@@ -29,6 +29,11 @@ func NewPortListIterator(client Client, ctx context.Context, opts PaginationOpti
 			}
 			return items
 		},
-		func(resp *commands.GetPortListsResponse) int { return resp.PortListCount.Filtered },
+		func(resp *commands.GetPortListsResponse) int {
+			if resp.PortListCount != nil {
+				return resp.PortListCount.Filtered
+			}
+			return 0
+		},
 	)
 }

@@ -143,6 +143,45 @@ func TestChardataWithOverrideReasonIsSuppressed(t *testing.T) {
 	}
 }
 
+// T-23's shape: a chardata addition can sit on the same node as a genuinely
+// missing schema-declared sibling. Suppressing the chardata EXTRA must not
+// hide the sibling's MISSING — TestChardataWithOverrideReasonIsSuppressed
+// only ever exercises the override in isolation.
+func TestChardataWithOverrideReasonDoesNotHideSiblingMissing(t *testing.T) {
+	body := `
+    <name>x</name>
+    <pattern><e>a</e></pattern>
+    <ele>
+      <name>a</name>
+      <pattern><e>filtered</e><e>page</e></pattern>
+      <ele><name>filtered</name><pattern>text</pattern></ele>
+      <ele><name>page</name><pattern>text</pattern></ele>
+    </ele>
+    <response><pattern><attrib><name>status</name><type>status</type><required>1</required></attrib></pattern></response>`
+	type req struct {
+		XMLName xml.Name `xml:"x"`
+		A       struct {
+			Value    string `xml:",chardata" gmpoverride:"count total is schema-undeclared"`
+			Filtered string `xml:"filtered"`
+		} `xml:"a"`
+	}
+	r := diff(t, body, &req{}, &respOK{})
+	if got := only(r, CatExtra); len(got) != 0 {
+		t.Errorf("The chardata EXTRA must come back suppressed, not actionable, got %v", render(got))
+	}
+	wantOne(t, r, CatMissing, "/x/a/page")
+
+	var foundSuppressed bool
+	for _, f := range r.Findings {
+		if f.Path == "/x/a/#text" && f.Category == CatExtra && f.Suppressed && f.Reason == "count total is schema-undeclared" {
+			foundSuppressed = true
+		}
+	}
+	if !foundSuppressed {
+		t.Errorf("Expected a suppressed CatExtra finding at /x/a/#text with the override's reason, got %v", render(r.Findings))
+	}
+}
+
 // T-18a's shape: the schema wrongly declares an element's chardata on the
 // wrapper (e.g. <sort>) when the wire actually carries it one level deeper,
 // on a child (e.g. <sort><field>). internal/codegen's FieldSuppressions

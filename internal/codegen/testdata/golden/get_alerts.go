@@ -22,7 +22,7 @@ type GetAlertsResponse struct {
 	Filters    AlertFilters `xml:"filters"`
 	Sort       AlertSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
 	Alerts     Alerts       `xml:"alerts"`
-	AlertCount AlertCount   `xml:"alert_count"`
+	AlertCount *AlertCount  `xml:"alert_count,omitempty"`
 	Alert      []Alert      `xml:"alert,omitempty"`
 }
 
@@ -70,6 +70,7 @@ type Alerts struct {
 
 // AlertCount is the <alert_count> element of get_alerts. See the GMP protocol docs for details.
 type AlertCount struct {
+	Value    int `xml:",chardata" gmpoverride:"T-23: count-wrapper chardata total is schema-undeclared"`
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }
