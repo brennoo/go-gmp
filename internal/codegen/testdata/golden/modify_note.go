@@ -5,6 +5,8 @@ package commands
 import "encoding/xml"
 
 // ModifyNote is a modify_note command request. See the GMP protocol docs for details.
+//
+// Hosts and Port are both cleared whenever either is omitted from a request, not left unchanged: modifying one alone still blanks the other, so both must be resent together to preserve them. Explicit-empty produces the identical cleared result.
 type ModifyNote struct {
 	XMLName  xml.Name    `xml:"modify_note"`
 	NoteID   string      `xml:"note_id,attr"`

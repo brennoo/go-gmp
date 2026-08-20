@@ -1170,6 +1170,29 @@ var CommandWarnings = map[string]CommandWarning{
 			"rejection and the hosts/exclude_hosts pairing requirement; see docs/review-2026-08.md's " +
 			"`target` review-only section",
 	},
+	"modify_user": {
+		Text: "An explicit-empty <sources><source></source></sources> reproducibly segfaults gvmd " +
+			"(crash inside glib's g_markup_parse_context_parse). The typed API already cannot " +
+			"construct this payload: UserSources.Source is UserSource (a T-19 named string type) " +
+			"with xml:\"source,omitempty\", so an empty UserSource(\"\") is dropped by omitempty, " +
+			"not encoded as <source></source>. Omission leaves the stored source unchanged.",
+		Reason: "T-25: live gvmd probe confirmed the segfault; see docs/review-2026-08.md's T-25 section",
+	},
+	"modify_note": {
+		Text: "Hosts and Port are both cleared whenever either is omitted from a request, not left " +
+			"unchanged: modifying one alone still blanks the other, so both must be resent together " +
+			"to preserve them. Explicit-empty produces the identical cleared result.",
+		Reason: "T-25: live gvmd probe confirmed omitted fields are cleared rather than left unchanged; " +
+			"see docs/review-2026-08.md's T-25 section",
+	},
+	"modify_override": {
+		Text: "Hosts, Port and Threat are all cleared whenever any is omitted from a request, not " +
+			"left unchanged: modifying one alone blanks the others. NewThreat behaves oppositely: " +
+			"omission and explicit-empty both leave it unchanged. This asymmetry within one command " +
+			"means a caller cannot assume uniform full-replace across modify_override's fields.",
+		Reason: "T-25: live gvmd probe confirmed the Hosts/Port/Threat full-replace behavior and the " +
+			"NewThreat leave-unchanged behavior; see docs/review-2026-08.md's T-25 section",
+	},
 }
 
 // DefectKey identifies one schema.Defect (internal/schema/parse.go's

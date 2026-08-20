@@ -5,6 +5,8 @@ package commands
 import "encoding/xml"
 
 // ModifyUser is a modify_user command request. See the GMP protocol docs for details.
+//
+// An explicit-empty <sources><source></source></sources> reproducibly segfaults gvmd (crash inside glib's g_markup_parse_context_parse). The typed API already cannot construct this payload: UserSources.Source is UserSource (a T-19 named string type) with xml:"source,omitempty", so an empty UserSource("") is dropped by omitempty, not encoded as <source></source>. Omission leaves the stored source unchanged.
 type ModifyUser struct {
 	XMLName  xml.Name      `xml:"modify_user"`
 	UserID   string        `xml:"user_id,attr"`

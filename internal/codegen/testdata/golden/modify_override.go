@@ -5,6 +5,8 @@ package commands
 import "encoding/xml"
 
 // ModifyOverride is a modify_override command request. See the GMP protocol docs for details.
+//
+// Hosts, Port and Threat are all cleared whenever any is omitted from a request, not left unchanged: modifying one alone blanks the others. NewThreat behaves oppositely: omission and explicit-empty both leave it unchanged. This asymmetry within one command means a caller cannot assume uniform full-replace across modify_override's fields.
 type ModifyOverride struct {
 	XMLName     xml.Name        `xml:"modify_override"`
 	OverrideID  string          `xml:"override_id,attr"`
