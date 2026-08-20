@@ -1,0 +1,46 @@
+.gitignore
+  s_6b74b50f8b69ed::t_e4eb4fa8eb71a4 20
+  s_6b74b50f8b69ed::t_9f8effa0a79996 21
+commands/modify_note.go
+  s_b0ea5d5ed6c4f5::t_9dc5dc168b0508 8-9
+commands/modify_override.go
+  s_b0ea5d5ed6c4f5::t_4ac8be17ac7879 8-9
+commands/modify_user.go
+  s_b0ea5d5ed6c4f5::t_0ddb85c526762a 8-9
+docs/review-2026-08.md
+  s_b0ea5d5ed6c4f5::t_5857a2d5ddeec1 5452-5472
+internal/codegen/overrides.go
+  s_b0ea5d5ed6c4f5::t_9ffa3f504b945e 1173-1195
+internal/codegen/testdata/golden/modify_note.go
+  s_b0ea5d5ed6c4f5::t_5e1dd1d5651906 8-9
+internal/codegen/testdata/golden/modify_override.go
+  s_b0ea5d5ed6c4f5::t_4f87bb81cf9b59 8-9
+internal/codegen/testdata/golden/modify_user.go
+  s_b0ea5d5ed6c4f5::t_e57151c5adb944 8-9
+internal/gmptest/explicit_empty_test.go
+  s_b0ea5d5ed6c4f5::t_7612903826d723 1-566
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "5efb6718aa8c1725a4d799a88196f70d726f73a2",
+  "prompts": {},
+  "sessions": {
+    "s_6b74b50f8b69ed": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "019fdd9a-6605-7b1e-bab6-fd85490a37f6",
+        "model": "0fe02vv2qtwc"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    },
+    "s_b0ea5d5ed6c4f5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_b0ea5d5ed6c4f5",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
