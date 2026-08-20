@@ -1,0 +1,37 @@
+docs/review-2026-08.md
+  s_74248921cd2045::t_5ed0d5947dfd9d 5318-5390
+internal/codegen/generate.go
+  s_74248921cd2045::t_b39db497132124 61,140-142,166-168,384-432,986-990,1353
+internal/codegen/generate_test.go
+  s_74248921cd2045::t_821218df7c92f4 2101,2110-2192
+internal/codegen/overrides_test.go
+  s_74248921cd2045::t_ca0fc7a7952cd6 627-716
+internal/schema/conform.go
+  s_74248921cd2045::t_553296d31c4257 70-75,235-238
+internal/schema/gomodel.go
+  s_74248921cd2045::t_56654c14dd3864 281-287
+internal/schema/gomodel_test.go
+  s_74248921cd2045::t_b6391bf116dc44 6-7,138-201
+internal/schema/inventory.go
+  s_74248921cd2045::t_afd64881857274 1-65
+internal/schema/inventory_test.go
+  s_74248921cd2045::t_983505ca547b2a 1-93
+internal/schema/testdata/OPTIONAL_SCALAR_INVENTORY.md
+  s_74248921cd2045::t_2d8b5c06da3212 1-709
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "f1fda41b5f7ea58c9cf5359c940ed5859158f504",
+  "prompts": {},
+  "sessions": {
+    "s_74248921cd2045": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_74248921cd2045",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
