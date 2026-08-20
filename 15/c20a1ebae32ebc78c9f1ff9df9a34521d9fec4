@@ -1,0 +1,216 @@
+docs/review-2026-08.md
+  s_6b74b50f8b69ed::t_1e7e6ae5fcb4ba 5156
+  s_6b74b50f8b69ed::t_a0c57cf15f1eb6 5153-5155
+  s_6b74b50f8b69ed::t_ab205e58392fd1 5157-5159
+  s_4595c877fce8d7::t_c951a6ad8cef81 5087-5091,5094-5152
+client/client_test.go
+  s_4595c877fce8d7::t_ea9ec7ceb92a38 740,750,765,1660
+commands/authenticate.go
+  s_4595c877fce8d7::t_c49124553ae341 18,32-41
+commands/config_shared.go
+  s_4595c877fce8d7::t_ff287c87b0f095 1-11
+commands/create_config.go
+  s_4595c877fce8d7::t_123d2e93d0d2b5 9-13
+commands/create_credential.go
+  s_4595c877fce8d7::t_79cf56046b1967 9-24
+commands/create_task.go
+  s_4595c877fce8d7::t_057cb2f871f2c1 17
+commands/credential_shared.go
+  s_4595c877fce8d7::t_c2318f2e9c48dc 19-20,22-51
+commands/describe_auth.go
+  s_4595c877fce8d7::t_a089cf6fdc6b6c 40-47,49-58
+commands/get_aggregates.go
+  s_4595c877fce8d7::t_ca7dd3eb3e0680 64-66,148-158
+commands/get_alerts.go
+  s_4595c877fce8d7::t_dfa473b0b06af4 49-51,61-62,136-143,179-207
+commands/get_assets.go
+  s_4595c877fce8d7::t_72b1823c155b93 52-54,64-65,243-261
+commands/get_configs.go
+  s_4595c877fce8d7::t_79b1858044df96 53-55,65-66,92-93,217-243
+commands/get_credentials.go
+  s_4595c877fce8d7::t_c89208fc888b87 52-54,64-65,94,98,130,149,154-161,204-243
+commands/get_filters.go
+  s_4595c877fce8d7::t_1e2f512e7861a1 187-189,199-200,273-291
+commands/get_groups.go
+  s_4595c877fce8d7::t_2ecfcbfbe5700d 48-50,60-61,120-138
+commands/get_info.go
+  s_4595c877fce8d7::t_9f93da863140f2 50-52,62-63,271-289
+commands/get_notes.go
+  s_4595c877fce8d7::t_6e30f568d5a8e1 51-53,63-64,361-379
+commands/get_nvts.go
+  s_4595c877fce8d7::t_ae471c3f290547 46,146-163
+commands/get_overrides.go
+  s_4595c877fce8d7::t_27d3139e75ef2c 51-53,63-64,361-379
+commands/get_permissions.go
+  s_4595c877fce8d7::t_75ea89a990e918 48-50,60-61,140-158
+commands/get_port_lists.go
+  s_4595c877fce8d7::t_b6d1707ff0f932 50-52,62-63,159-177
+commands/get_report_configs.go
+  s_4595c877fce8d7::t_6c25f525de4167 49-51,61-62,143-145,169-200
+commands/get_report_formats.go
+  s_4595c877fce8d7::t_3be0479cca595b 52-54,64-65,99,129-131,186-189,207-256
+commands/get_reports.go
+  s_4595c877fce8d7::t_5ec564d53e93d4 60-62,72-73,88-98
+commands/get_results.go
+  s_4595c877fce8d7::t_085966608c261d 52-54,64-65,370-388
+commands/get_roles.go
+  s_4595c877fce8d7::t_3f743f44c3fc19 48-50,60-61,120-138
+commands/get_scanners.go
+  s_4595c877fce8d7::t_8cb11af05da174 49-51,61-62,123-130,135-142,185-188,222-258
+commands/get_schedules.go
+  s_4595c877fce8d7::t_055470eac8ba1b 49-51,61-62,135-153
+commands/get_tags.go
+  s_4595c877fce8d7::t_f84a698ae0616e 49-51,61-62,123-141
+commands/get_targets.go
+  s_4595c877fce8d7::t_17aed20a984e4c 50-52,62-63,206-224
+commands/get_tasks.go
+  s_4595c877fce8d7::t_290f51f50f845d 22-30,53-55,65-66,96,267-293
+commands/get_tickets.go
+  s_4595c877fce8d7::t_478be6a9656dbe 48-50,60-61,158-176
+commands/get_tls_certificates.go
+  s_4595c877fce8d7::t_7c602f8ab116d3 48-50,60-61,92,177-205
+commands/get_users.go
+  s_4595c877fce8d7::t_b067af73a961ae 47-49,59-60,129,152-170
+commands/get_vulns.go
+  s_4595c877fce8d7::t_a45fa4ab143a5e 47-49,59-60,100-118
+commands/modify_credential.go
+  s_4595c877fce8d7::t_60fabd7d312939 11-25
+commands/report_shared.go
+  s_4595c877fce8d7::t_ea6cbd727c007e 97-98,103-113,802-852
+commands/task_shared.go
+  s_4595c877fce8d7::t_0b5cd87c482784 40-47
+commands/user_shared.go
+  s_4595c877fce8d7::t_7b0c02cf8c5d12 13,20-28
+internal/cmd/gengmp/main.go
+  s_4595c877fce8d7::t_a78611576b90f2 106,140
+internal/codegen/check.go
+  s_4595c877fce8d7::t_98f49139a95590 82,88,100,109-112
+internal/codegen/check_test.go
+  s_4595c877fce8d7::t_f9f0845206c670 48,111-131,257
+internal/codegen/enum_inventory_test.go
+  s_4595c877fce8d7::t_13c1260bebcd17 1-224
+internal/codegen/enum_test.go
+  s_4595c877fce8d7::t_5a4f3b40ae6b0c 1-417
+internal/codegen/generate.go
+  s_4595c877fce8d7::t_e5376c538a97b3 13,49-72,77,80,91,99-100,127-129,133-135,172-175,749-774,924,932,942,950-953,957-976,1022-1046,1059,1069-1075,1121-1125,1139-1140,1143-1148,1150,1153,1155-1164,1166,1180-1182,1184-1242,1359-1498,1541-1550,1587-1610,1612,1650,1652,1654,1658-1676,1678,1681,1683,1712-1715,1737-1740,1744,1758-1796,1830-1831,1840,1844-1848,1853,1896-1898,1948-1950,2002-2004,2069-2071,2094-2108,2376-2382,2385,2798,2807-2810
+internal/codegen/generate_test.go
+  s_4595c877fce8d7::t_2310f1bbc986f1 201,1864,2232,2247,2262,2281,2332,2364,2404,2435,2456,2471,2486,2528,2557,2577
+internal/codegen/manifest_test.go
+  s_4595c877fce8d7::t_a3d1b74c50c0d8 320,339,378,383-387,390-404,406-410,456,460,514,518,574,578,629,647,704,716
+internal/codegen/overrides.go
+  s_4595c877fce8d7::t_dd940de3d1723e 1508-1548
+internal/codegen/overrides_test.go
+  s_4595c877fce8d7::t_d73ed8757325f0 59,105,132,160,178,273,441,459,464,478,493,532,555,566,585,661,693,712,752,823,905,936,951,970,985,1002
+internal/codegen/schema_patches_test.go
+  s_4595c877fce8d7::t_69793b5e9aafa2 73
+internal/codegen/testdata/ENUM_INVENTORY.md
+  s_4595c877fce8d7::t_91f6dfd9b4f79b 1-367
+internal/codegen/testdata/golden/authenticate.go
+  s_4595c877fce8d7::t_28b81bb9885709 18,32-41
+internal/codegen/testdata/golden/config_shared.go
+  s_4595c877fce8d7::t_d638f7ac6ea9b4 1-11
+internal/codegen/testdata/golden/create_config.go
+  s_4595c877fce8d7::t_b3430d486350ba 9-13
+internal/codegen/testdata/golden/create_credential.go
+  s_4595c877fce8d7::t_92a61907b80416 9-24
+internal/codegen/testdata/golden/create_task.go
+  s_4595c877fce8d7::t_59df88e8af507d 17
+internal/codegen/testdata/golden/credential_shared.go
+  s_4595c877fce8d7::t_752f3eacd8e052 19-20,22-51
+internal/codegen/testdata/golden/describe_auth.go
+  s_4595c877fce8d7::t_1b2f7152470d12 40-47,49-58
+internal/codegen/testdata/golden/get_aggregates.go
+  s_4595c877fce8d7::t_2ccbbfd52c314f 64-66,148-158
+internal/codegen/testdata/golden/get_alerts.go
+  s_4595c877fce8d7::t_99656dd30e6598 49-51,61-62,136-143,179-207
+internal/codegen/testdata/golden/get_assets.go
+  s_4595c877fce8d7::t_e92c016f4eb524 52-54,64-65,243-261
+internal/codegen/testdata/golden/get_configs.go
+  s_4595c877fce8d7::t_44da3f4e724762 53-55,65-66,92-93,217-243
+internal/codegen/testdata/golden/get_credentials.go
+  s_4595c877fce8d7::t_ac5a70ffc89612 52-54,64-65,94,98,130,149,154-161,204-243
+internal/codegen/testdata/golden/get_filters.go
+  s_4595c877fce8d7::t_0c3e24393be409 187-189,199-200,273-291
+internal/codegen/testdata/golden/get_groups.go
+  s_4595c877fce8d7::t_296b9fb1de0d98 48-50,60-61,120-138
+internal/codegen/testdata/golden/get_info.go
+  s_4595c877fce8d7::t_3070e0770f04f0 50-52,62-63,271-289
+internal/codegen/testdata/golden/get_notes.go
+  s_4595c877fce8d7::t_672bf85ce8cc92 51-53,63-64,361-379
+internal/codegen/testdata/golden/get_nvts.go
+  s_4595c877fce8d7::t_019c43f07d0136 46,146-163
+internal/codegen/testdata/golden/get_overrides.go
+  s_4595c877fce8d7::t_120f58bbccb626 51-53,63-64,361-379
+internal/codegen/testdata/golden/get_permissions.go
+  s_4595c877fce8d7::t_cf21c00cd08854 48-50,60-61,140-158
+internal/codegen/testdata/golden/get_port_lists.go
+  s_4595c877fce8d7::t_c78d772a9631fe 50-52,62-63,159-177
+internal/codegen/testdata/golden/get_report_configs.go
+  s_4595c877fce8d7::t_c18a6e33972d9a 49-51,61-62,143-145,169-200
+internal/codegen/testdata/golden/get_report_formats.go
+  s_4595c877fce8d7::t_0dbee17487e60c 52-54,64-65,99,129-131,186-189,207-256
+internal/codegen/testdata/golden/get_reports.go
+  s_4595c877fce8d7::t_3db9ac24962b95 60-62,72-73,88-98
+internal/codegen/testdata/golden/get_results.go
+  s_4595c877fce8d7::t_30939fdc04dac5 52-54,64-65,370-388
+internal/codegen/testdata/golden/get_roles.go
+  s_4595c877fce8d7::t_e96d2c0b8dafd4 48-50,60-61,120-138
+internal/codegen/testdata/golden/get_scanners.go
+  s_4595c877fce8d7::t_90e7a5e1b60447 49-51,61-62,123-130,135-142,185-188,222-258
+internal/codegen/testdata/golden/get_schedules.go
+  s_4595c877fce8d7::t_7f47c96d1ea0ba 49-51,61-62,135-153
+internal/codegen/testdata/golden/get_tags.go
+  s_4595c877fce8d7::t_0d1dc36498e39a 49-51,61-62,123-141
+internal/codegen/testdata/golden/get_targets.go
+  s_4595c877fce8d7::t_8e4e7b9cd19f42 50-52,62-63,206-224
+internal/codegen/testdata/golden/get_tasks.go
+  s_4595c877fce8d7::t_714b63499d4840 22-30,53-55,65-66,96,267-293
+internal/codegen/testdata/golden/get_tickets.go
+  s_4595c877fce8d7::t_824fc0ab4e35e5 48-50,60-61,158-176
+internal/codegen/testdata/golden/get_tls_certificates.go
+  s_4595c877fce8d7::t_32eb9f197d2005 48-50,60-61,92,177-205
+internal/codegen/testdata/golden/get_users.go
+  s_4595c877fce8d7::t_1e2930044de415 47-49,59-60,129,152-170
+internal/codegen/testdata/golden/get_vulns.go
+  s_4595c877fce8d7::t_e135cf4a1ca2c1 47-49,59-60,100-118
+internal/codegen/testdata/golden/modify_credential.go
+  s_4595c877fce8d7::t_bf922bf3f2c83b 11-25
+internal/codegen/testdata/golden/report_shared.go
+  s_4595c877fce8d7::t_acbc0531299560 97-98,103-113,802-852
+internal/codegen/testdata/golden/task_shared.go
+  s_4595c877fce8d7::t_d8ace4682cfcc3 40-47
+internal/codegen/testdata/golden/user_shared.go
+  s_4595c877fce8d7::t_505b53a5ba85ba 13,20-28
+internal/codegen/validate.go
+  s_4595c877fce8d7::t_515593b91788f4 604,610,740,742
+internal/codegen/validate_test.go
+  s_4595c877fce8d7::t_cc4c87160f43b5 37
+internal/schema/testdata/CONFORMANCE.md
+  s_4595c877fce8d7::t_3c40327ffdd673 924
+internal/schema/testdata/OPTIONAL_SCALAR_INVENTORY.md
+  s_4595c877fce8d7::t_a0805b506fee64 19,21,33,140,151,220,307,584,621,709
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "15c20a1ebae32ebc78c9f1ff9df9a34521d9fec4",
+  "prompts": {},
+  "sessions": {
+    "s_4595c877fce8d7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_4595c877fce8d7",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    },
+    "s_6b74b50f8b69ed": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "019fdd9a-6605-7b1e-bab6-fd85490a37f6",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
