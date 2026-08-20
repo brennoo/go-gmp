@@ -3,6 +3,8 @@ package schema
 import (
 	"encoding/xml"
 	"testing"
+
+	"github.com/brennoo/go-gmp/commands"
 )
 
 // encoding/xml flattens an anonymous struct field's children into the
@@ -131,5 +133,69 @@ func TestModelOfFlattensAnonymousFieldEvenWithATag(t *testing.T) {
 	}
 	if got := root.Children[0].Path("/root"); got != "/root/a" {
 		t.Fatalf("got path %q, want /root/a", got)
+	}
+}
+
+// ZeroIsMeaningful must recognize commands.GMPBool and commands.GMPAtoiBool
+// as reflection actually spells them: package-qualified (f.Type.String()
+// returns "commands.GMPBool", not "GMPBool"). A prior version of the switch
+// only matched the unqualified name, so a hand-written or regressed
+// non-pointer optional field of either type went undetected. These use the
+// real commands types via reflection rather than a manually constructed
+// GoNode{GoType: "GMPBool"}, so a regression in the package-qualifier
+// stripping would actually be caught.
+func TestZeroIsMeaningfulRecognizesQualifiedGMPBool(t *testing.T) {
+	type Root struct {
+		XMLName xml.Name         `xml:"root"`
+		Active  commands.GMPBool `xml:"active"`
+	}
+	root := ModelOf(&Root{}).Root
+	if len(root.Children) != 1 {
+		t.Fatalf("got %d children, want 1: %+v", len(root.Children), root.Children)
+	}
+	if got := root.Children[0].ZeroIsMeaningful(); !got {
+		t.Errorf("ZeroIsMeaningful() on non-pointer commands.GMPBool = %v, want true", got)
+	}
+}
+
+func TestZeroIsMeaningfulRecognizesQualifiedGMPAtoiBool(t *testing.T) {
+	type Root struct {
+		XMLName xml.Name             `xml:"root"`
+		Active  commands.GMPAtoiBool `xml:"active"`
+	}
+	root := ModelOf(&Root{}).Root
+	if len(root.Children) != 1 {
+		t.Fatalf("got %d children, want 1: %+v", len(root.Children), root.Children)
+	}
+	if got := root.Children[0].ZeroIsMeaningful(); !got {
+		t.Errorf("ZeroIsMeaningful() on non-pointer commands.GMPAtoiBool = %v, want true", got)
+	}
+}
+
+func TestZeroIsMeaningfulIgnoresPointerGMPBool(t *testing.T) {
+	type Root struct {
+		XMLName xml.Name          `xml:"root"`
+		Active  *commands.GMPBool `xml:"active"`
+	}
+	root := ModelOf(&Root{}).Root
+	if len(root.Children) != 1 {
+		t.Fatalf("got %d children, want 1: %+v", len(root.Children), root.Children)
+	}
+	if got := root.Children[0].ZeroIsMeaningful(); got {
+		t.Errorf("ZeroIsMeaningful() on pointer *commands.GMPBool = %v, want false", got)
+	}
+}
+
+func TestZeroIsMeaningfulIgnoresPointerGMPAtoiBool(t *testing.T) {
+	type Root struct {
+		XMLName xml.Name              `xml:"root"`
+		Active  *commands.GMPAtoiBool `xml:"active"`
+	}
+	root := ModelOf(&Root{}).Root
+	if len(root.Children) != 1 {
+		t.Fatalf("got %d children, want 1: %+v", len(root.Children), root.Children)
+	}
+	if got := root.Children[0].ZeroIsMeaningful(); got {
+		t.Errorf("ZeroIsMeaningful() on pointer *commands.GMPAtoiBool = %v, want false", got)
 	}
 }

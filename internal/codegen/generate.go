@@ -58,6 +58,7 @@ func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]Point
 		fsConsumed:  map[string]bool{},
 		cwConsumed:  map[string]bool{},
 		daConsumed:  map[DefectKey]bool{},
+		pfConsumed:  map[string]bool{},
 		roConsumed:  map[string]bool{},
 		noConsumed:  map[string]bool{},
 		tovConsumed: map[string]bool{},
@@ -136,6 +137,9 @@ func (g *gen) validateOverrideTables() error {
 	if err := g.validateFieldTypeOverrides(); err != nil {
 		return err
 	}
+	if err := g.validatePointerOverrides(); err != nil {
+		return err
+	}
 	if err := g.validateRequiredOverrides(); err != nil {
 		return err
 	}
@@ -157,6 +161,9 @@ func (g *gen) checkTablesConsumed() error {
 		return err
 	}
 	if err := g.checkDefectAllowlistConsumed(); err != nil {
+		return err
+	}
+	if err := g.checkPointerOverridesConsumed(); err != nil {
 		return err
 	}
 	if err := g.checkRequiredOverridesConsumed(); err != nil {
@@ -372,6 +379,55 @@ func (g *gen) checkCommandWarningsConsumed() error {
 	}
 	sort.Strings(stale)
 	return fmt.Errorf("codegen: CommandWarnings entry(ies) never attached to a generated command: %s", strings.Join(stale, ", "))
+}
+
+// validatePointerOverrides checks the shape of every PointerOverrides entry in
+// g.pf, independent of which command is in scope for this call, the same
+// reasoning validateRequiredOverrides applies to g.ro: a malformed key or a
+// missing Reason is a defect in the table itself.
+func (g *gen) validatePointerOverrides() error {
+	keys := make([]string, 0, len(g.pf))
+	for k := range g.pf {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, key := range keys {
+		command, field, ok := strings.Cut(key, ".")
+		if !ok || command == "" || field == "" {
+			return fmt.Errorf(`codegen: PointerOverrides[%q]: key must be "<command>.<field>"`, key)
+		}
+		if g.pf[key].Reason == "" {
+			return fmt.Errorf("codegen: PointerOverrides[%q]: Reason is empty", key)
+		}
+	}
+	return nil
+}
+
+// checkPointerOverridesConsumed fails the build on a stale or mistyped
+// PointerOverrides entry: one whose command is among g.cmds (so this call was
+// in a position to apply it) but which never matched a generated optional
+// top-level field — a typo'd field name, an entry aimed at a required or
+// nested field (fieldOf only ever consults g.pf from its CardOptional/
+// InChoice, command != "" case), or a schema correction that removed the
+// field the override existed to work around. Scoped by command like
+// checkRequiredOverridesConsumed, for the same GenerateAll/CheckOutput
+// per-family reason.
+func (g *gen) checkPointerOverridesConsumed() error {
+	return checkOverridesConsumed(g.cmds, g.pf, g.pfConsumed, "PointerOverrides", "optional field")
+}
+
+// pointerOverrideForced reports whether PointerOverrides names this optional
+// field, recording the match in g.pfConsumed as a side effect. Factored out
+// of fieldOf so the lookup-and-record pair costs that function's cyclomatic
+// complexity nothing beyond the plain boolean it already had.
+func (g *gen) pointerOverrideForced(command, name string) bool {
+	key := command + "." + name
+	_, forced := g.pf[key]
+	if forced {
+		g.pfConsumed[key] = true
+	}
+	return forced
 }
 
 // validateRequiredOverrides checks the shape of every RequiredOverrides entry
@@ -927,6 +983,11 @@ type gen struct {
 	// during this run, so checkDefectAllowlistConsumed can flag a stale one.
 	daConsumed map[DefectKey]bool
 
+	// pfConsumed records which PointerOverrides keys matched an optional
+	// field during this run, so checkPointerOverridesConsumed can flag a
+	// stale or mistyped one.
+	pfConsumed map[string]bool
+
 	// roConsumed records which RequiredOverrides keys matched a required
 	// top-level field during this run, so checkRequiredOverridesConsumed can
 	// flag a stale or mistyped one.
@@ -1289,7 +1350,7 @@ func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool, type
 		// marks each branch required, but at most one branch is ever present,
 		// so its cardinality is advisory (see schema.Node.InChoice) and it
 		// needs the same omitempty treatment as a genuinely optional field.
-		_, forced := g.pf[command+"."+n.Name]
+		forced := g.pointerOverrideForced(command, n.Name)
 		if len(n.Children) > 0 || pointerScalars[base] || forced {
 			goType = "*" + base
 		}

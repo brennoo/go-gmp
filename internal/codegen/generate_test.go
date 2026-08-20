@@ -2098,8 +2098,91 @@ func TestFieldOfGMPTimePointerPolicy(t *testing.T) {
 			if pf == nil {
 				pf = map[string]PointerOverride{}
 			}
-			g := &gen{ov: TypeOverrides, pf: pf}
+			g := &gen{ov: TypeOverrides, pf: pf, pfConsumed: map[string]bool{}}
 			f, err := g.fieldOf(tt.command, tt.node, map[string]bool{}, nil)
+			if err != nil {
+				t.Fatalf("fieldOf: %v", err)
+			}
+			if f.goType != tt.wantGoType {
+				t.Errorf("goType = %q, want %q", f.goType, tt.wantGoType)
+			}
+			if f.tag != tt.wantTag {
+				t.Errorf("tag = %q, want %q", f.tag, tt.wantTag)
+			}
+		})
+	}
+}
+
+// TestFieldOfScalarPointerPolicy pins pointerScalars' int/GMPBool/GMPAtoiBool
+// entries directly at the fieldOf level, the same way
+// TestFieldOfGMPTimePointerPolicy pins its GMPTime entry: T-24's audit found
+// this policy already fully and correctly generalized (zero exceptions across
+// the generated corpus), so this test documents the existing, already-correct
+// behavior rather than changing it. An optional field of any of these types
+// must generate as a pointer with omitempty, since each one's Go zero value
+// (0, false) is itself a legal wire value; a required field of the same type
+// stays a plain value with no omitempty.
+func TestFieldOfScalarPointerPolicy(t *testing.T) {
+	tests := []struct {
+		name       string
+		node       *schema.Node
+		wantGoType string
+		wantTag    string
+	}{
+		{
+			name:       "optional integer generates *int with omitempty",
+			node:       &schema.Node{Name: "count", Kind: schema.KindElement, Card: schema.CardOptional, Type: "integer"},
+			wantGoType: "*int",
+			wantTag:    "count,omitempty",
+		},
+		{
+			name:       "required integer stays plain int, no omitempty",
+			node:       &schema.Node{Name: "count", Kind: schema.KindElement, Card: schema.CardRequired, Type: "integer"},
+			wantGoType: "int",
+			wantTag:    "count",
+		},
+		{
+			name:       "optional decimal generates *float64 with omitempty",
+			node:       &schema.Node{Name: "score", Kind: schema.KindElement, Card: schema.CardOptional, Type: "decimal"},
+			wantGoType: "*float64",
+			wantTag:    "score,omitempty",
+		},
+		{
+			name:       "required decimal stays plain float64, no omitempty",
+			node:       &schema.Node{Name: "score", Kind: schema.KindElement, Card: schema.CardRequired, Type: "decimal"},
+			wantGoType: "float64",
+			wantTag:    "score",
+		},
+		{
+			name:       "optional boolean generates *GMPBool with omitempty",
+			node:       &schema.Node{Name: "active", Kind: schema.KindElement, Card: schema.CardOptional, Type: "boolean"},
+			wantGoType: "*GMPBool",
+			wantTag:    "active,omitempty",
+		},
+		{
+			name:       "required boolean stays plain GMPBool, no omitempty",
+			node:       &schema.Node{Name: "active", Kind: schema.KindElement, Card: schema.CardRequired, Type: "boolean"},
+			wantGoType: "GMPBool",
+			wantTag:    "active",
+		},
+		{
+			name:       "optional boolean_atoi generates *GMPAtoiBool with omitempty",
+			node:       &schema.Node{Name: "growing", Kind: schema.KindElement, Card: schema.CardOptional, Type: "boolean_atoi"},
+			wantGoType: "*GMPAtoiBool",
+			wantTag:    "growing,omitempty",
+		},
+		{
+			name:       "required boolean_atoi stays plain GMPAtoiBool, no omitempty",
+			node:       &schema.Node{Name: "growing", Kind: schema.KindElement, Card: schema.CardRequired, Type: "boolean_atoi"},
+			wantGoType: "GMPAtoiBool",
+			wantTag:    "growing",
+		},
+	}
+
+	g := &gen{ov: TypeOverrides, pf: map[string]PointerOverride{}, pfConsumed: map[string]bool{}}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f, err := g.fieldOf("", tt.node, map[string]bool{}, nil)
 			if err != nil {
 				t.Fatalf("fieldOf: %v", err)
 			}

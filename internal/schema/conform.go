@@ -67,6 +67,12 @@ type Comparer struct {
 	// Dropped is per-command the set of paths the fidelity corpus saw a real
 	// document lose. Optional: an empty map just means no cross-references.
 	Dropped map[string]map[string]bool
+
+	// OnOptionalScalar, if set, is called once per matched leaf where the
+	// schema declares CardOptional and both sides are scalar (no children on
+	// either side). Used by the optional-scalar inventory to record every
+	// such field without a second tree walk.
+	OnOptionalScalar func(cmd, side string, s *Node, g *GoNode, path string)
 }
 
 // Compare diffs one command's schema shape against its Go types. Either root
@@ -225,6 +231,10 @@ func (c *Comparer) compareNode(res *Result, cmd Command, side string, s *Node, g
 	c.checkCardinality(res, cmd, side, s, g, path)
 	checkOmitEmpty(res, cmd, side, s, g, path)
 	checkType(res, cmd, side, s, g, path)
+
+	if c.OnOptionalScalar != nil && s.Card == CardOptional && len(s.Children) == 0 && len(g.Children) == 0 {
+		c.OnOptionalScalar(cmd.Name, side, s, g, path)
+	}
 
 	switch {
 	case len(s.Children) > 0 && len(g.Children) == 0:

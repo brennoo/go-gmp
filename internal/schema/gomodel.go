@@ -278,8 +278,13 @@ func (n *GoNode) ZeroIsMeaningful() bool {
 	if n.Pointer || n.Slice {
 		return false
 	}
-	switch strings.TrimPrefix(n.GoType, "*") {
-	case "bool", "int", "int32", "int64", "uint", "uint32", "uint64", "float32", "float64":
+	base := strings.TrimPrefix(n.GoType, "*")
+	if i := strings.LastIndex(base, "."); i >= 0 {
+		base = base[i+1:]
+	}
+	switch base {
+	case "bool", "int", "int32", "int64", "uint", "uint32", "uint64", "float32", "float64",
+		"GMPBool", "GMPAtoiBool":
 		return true
 	}
 	return false

@@ -624,6 +624,96 @@ func TestDefectAllowlistHasNoOrphans(t *testing.T) {
 	}
 }
 
+// TestValidatePointerOverridesRejectsBadEntries mirrors
+// TestValidateRequiredOverridesRejectsBadEntries for the PointerOverrides
+// table: a malformed key or missing Reason is a defect in the table itself,
+// caught before generation ever looks for a matching optional field.
+func TestValidatePointerOverridesRejectsBadEntries(t *testing.T) {
+	tests := []struct {
+		name    string
+		pf      map[string]PointerOverride
+		wantSub string
+	}{
+		{
+			name:    "key with no dot separator",
+			pf:      map[string]PointerOverride{"test_cmdcomment": {Reason: "r"}},
+			wantSub: `key must be "<command>.<field>"`,
+		},
+		{
+			name:    "empty command",
+			pf:      map[string]PointerOverride{".comment": {Reason: "r"}},
+			wantSub: `key must be "<command>.<field>"`,
+		},
+		{
+			name:    "empty field",
+			pf:      map[string]PointerOverride{"test_cmd.": {Reason: "r"}},
+			wantSub: `key must be "<command>.<field>"`,
+		},
+		{
+			name:    "empty Reason",
+			pf:      map[string]PointerOverride{"test_cmd.comment": {Reason: ""}},
+			wantSub: "Reason is empty",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := Generate([]schema.Command{minimalCommand()}, TypeOverrides, tt.pf, nil, nil, nil, nil, nil, nil, nil, "", nil)
+			if err == nil {
+				t.Fatalf("Generate succeeded; want an error containing %q", tt.wantSub)
+			}
+			if !strings.Contains(err.Error(), tt.wantSub) {
+				t.Fatalf("Generate error = %q, want it to contain %q", err.Error(), tt.wantSub)
+			}
+		})
+	}
+}
+
+// TestValidatePointerOverridesAcceptsCommittedTable is a regression net: the
+// real, committed PointerOverrides table must always pass the table-shape
+// checks, so any future entry that fails this test has a defect in the entry
+// itself, not in the checker.
+func TestValidatePointerOverridesAcceptsCommittedTable(t *testing.T) {
+	g := &gen{pf: PointerOverrides}
+	if err := g.validatePointerOverrides(); err != nil {
+		t.Fatalf("The committed PointerOverrides table failed validation: %v", err)
+	}
+}
+
+// TestCheckPointerOverridesConsumedRejectsStaleEntry proves the fail-closed
+// guarantee already enforced for RequiredOverrides also holds for
+// PointerOverrides: an entry for a command in scope that never matched a
+// generated optional field — a typo'd field name here — fails generation
+// rather than silently doing nothing.
+func TestCheckPointerOverridesConsumedRejectsStaleEntry(t *testing.T) {
+	cmd := commandWithResponseChild(&schema.Node{
+		Name: "comment", Kind: schema.KindElement, Card: schema.CardOptional, Type: "text",
+	})
+	pf := map[string]PointerOverride{"test_cmd.comment_typo": {Reason: "typo'd field name"}}
+	_, err := Generate([]schema.Command{cmd}, TypeOverrides, pf, nil, nil, nil, nil, nil, nil, nil, "", nil)
+	if err == nil || !strings.Contains(err.Error(), "never matched a generated optional field") {
+		t.Fatalf("Generate error = %v, want a stale-entry error", err)
+	}
+}
+
+// TestCheckPointerOverridesConsumedIgnoresOutOfScopeEntries mirrors
+// TestCheckRequiredOverridesConsumedIgnoresOutOfScopeEntries: an entry for a
+// command that is not part of this Generate call is not "stale" for this
+// call, the per-family scoping GenerateAll's family-local generation depends
+// on for a table shared across families.
+func TestCheckPointerOverridesConsumedIgnoresOutOfScopeEntries(t *testing.T) {
+	cmd := commandWithResponseChild(&schema.Node{
+		Name: "comment", Kind: schema.KindElement, Card: schema.CardOptional, Type: "text",
+	})
+	pf := map[string]PointerOverride{
+		"test_cmd.comment":           {Reason: "real"},
+		"some_other_command.field_x": {Reason: "out of scope for this call"},
+	}
+	if _, err := Generate([]schema.Command{cmd}, TypeOverrides, pf, nil, nil, nil, nil, nil, nil, nil, "", nil); err != nil {
+		t.Fatalf("Generate failed because of an out-of-scope PointerOverrides entry: %v", err)
+	}
+}
+
 // TestValidateRequiredOverridesRejectsBadEntries proves RequiredOverrides'
 // table-shape checks fail closed the same way validateFieldOverrides and
 // validateDefectAllowlist do: a malformed key or missing Reason is a defect
