@@ -70,7 +70,7 @@ func TestApplySchemaPatchesSplicesIntoGenerate(t *testing.T) {
 		t.Fatalf("solution was not spliced in after tags: %+v", nvt.Children)
 	}
 
-	files, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, RequiredOverrides, nil, nil, nil, nil, nil, nil, "", nil)
+	files, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, RequiredOverrides, nil, nil, nil, nil, nil, nil, "", nil, nil, nil)
 	if err != nil {
 		t.Fatalf("Generate failed on a patched command: %v", err)
 	}

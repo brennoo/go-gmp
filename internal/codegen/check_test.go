@@ -45,7 +45,7 @@ func writeTestFile(t *testing.T, path, content string) {
 
 func checkOrFail(t *testing.T, m Manifest, schemaDir, outDir string) Report {
 	t.Helper()
-	r, err := CheckOutput(m, schemaDir, outDir, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, NameOverrides, FieldTypeOverrides, CardinalityOverrides)
+	r, err := CheckOutput(m, schemaDir, outDir, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, NameOverrides, FieldTypeOverrides, CardinalityOverrides, EnumConstantNames)
 	if err != nil {
 		t.Fatalf("CheckOutput failed: %v", err)
 	}
@@ -105,6 +105,27 @@ func TestCheckOutputAgreesWithCommittedTree(t *testing.T) {
 	r := checkOrFail(t, m, snapshotDir, commandsDir)
 	if !r.OK() {
 		t.Errorf("commands/ disagrees with the manifest and schema. Re-run hack/generate.sh.\n%s", r)
+	}
+}
+
+// TestCheckOutputRejectsStaleEnumConstantNameEntry proves the read-only
+// check path enforces the same EnumConstantNames staleness guarantee the
+// write path does (checkEnumConstantNamesConsumed, shared by GenerateAll and
+// CheckOutput): gengmp -check must fail closed on an entry no family's
+// generation ever needed, or a value could stop appearing anywhere in the
+// schema without anything ever catching it.
+func TestCheckOutputRejectsStaleEnumConstantNameEntry(t *testing.T) {
+	ec := map[string]EnumConstantName{}
+	for k, v := range EnumConstantNames {
+		ec[k] = v
+	}
+	ec["test: deliberately unused"] = EnumConstantName{Suffix: "NeverUsed", Reason: "test"}
+
+	_, err := CheckOutput(manifestOrFail(t), snapshotDir, commandsDir, TypeOverrides, PointerOverrides,
+		RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, NameOverrides,
+		FieldTypeOverrides, CardinalityOverrides, ec)
+	if err == nil || !strings.Contains(err.Error(), "never used by any alt value") {
+		t.Fatalf("CheckOutput error = %v, want a stale EnumConstantNames error", err)
 	}
 }
 
@@ -233,7 +254,7 @@ func TestCheckOutputWritesNothing(t *testing.T) {
 	}
 	dirty := dirState(t, dir)
 
-	if _, err := CheckOutput(manifestOrFail(t), snapshotDir, dir, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, NameOverrides, FieldTypeOverrides, CardinalityOverrides); err != nil {
+	if _, err := CheckOutput(manifestOrFail(t), snapshotDir, dir, TypeOverrides, PointerOverrides, RequiredOverrides, FieldOverrides, FieldSuppressions, CommandWarnings, DefectAllowlist, NameOverrides, FieldTypeOverrides, CardinalityOverrides, EnumConstantNames); err != nil {
 		t.Fatalf("CheckOutput failed: %v", err)
 	}
 	if got := dirState(t, dir); got != dirty {

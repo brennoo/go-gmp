@@ -61,9 +61,9 @@ type AggregateKeywords struct {
 
 // AggregateKeyword is the <keyword> element of get_aggregates. See the GMP protocol docs for details.
 type AggregateKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string            `xml:"column"`
+	Relation AggregateRelation `xml:"relation"`
+	Value    string            `xml:"value"`
 }
 
 // Aggregate is the <aggregate> element of get_aggregates. See the GMP protocol docs for details.
@@ -145,3 +145,14 @@ type AggregateSubgroup struct {
 	CCount int              `xml:"c_count"`
 	Stats  []AggregateStats `xml:"stats,omitempty"`
 }
+
+// AggregateRelation is the <relation> value of get_aggregates. See the GMP protocol docs for details.
+type AggregateRelation string
+
+const (
+	AggregateRelationEq       AggregateRelation = "="
+	AggregateRelationContains AggregateRelation = ":"
+	AggregateRelationRegex    AggregateRelation = "~"
+	AggregateRelationGT       AggregateRelation = ">"
+	AggregateRelationLT       AggregateRelation = "<"
+)

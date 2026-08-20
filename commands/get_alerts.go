@@ -46,9 +46,9 @@ type AlertKeywords struct {
 
 // AlertKeyword is the <keyword> element of get_alerts. See the GMP protocol docs for details.
 type AlertKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string        `xml:"column"`
+	Relation AlertRelation `xml:"relation"`
+	Value    string        `xml:"value"`
 }
 
 // AlertSort is the <sort> element of get_alerts. See the GMP protocol docs for details.
@@ -58,8 +58,8 @@ type AlertSort struct {
 
 // AlertField is the <field> element of get_alerts. See the GMP protocol docs for details.
 type AlertField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string     `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order AlertOrder `xml:"order"`
 }
 
 // Alerts is the <alerts> element of get_alerts. See the GMP protocol docs for details.
@@ -133,14 +133,14 @@ type AlertCredential struct {
 
 // AlertCertificateInfo is the <certificate_info> element of get_alerts. See the GMP protocol docs for details.
 type AlertCertificateInfo struct {
-	TimeStatus        string `xml:"time_status"`
-	ActivationTime    string `xml:"activation_time"`
-	ExpirationTime    string `xml:"expiration_time"`
-	Issuer            string `xml:"issuer"`
-	MD5Fingerprint    string `xml:"md5_fingerprint"`
-	SHA256Fingerprint string `xml:"sha256_fingerprint,omitempty"`
-	Subject           string `xml:"subject,omitempty"`
-	Serial            string `xml:"serial,omitempty"`
+	TimeStatus        AlertTimeStatus `xml:"time_status"`
+	ActivationTime    string          `xml:"activation_time"`
+	ExpirationTime    string          `xml:"expiration_time"`
+	Issuer            string          `xml:"issuer"`
+	MD5Fingerprint    string          `xml:"md5_fingerprint"`
+	SHA256Fingerprint string          `xml:"sha256_fingerprint,omitempty"`
+	Subject           string          `xml:"subject,omitempty"`
+	Serial            string          `xml:"serial,omitempty"`
 }
 
 // GetAlertsFilter is the <filter> element of get_alerts. See the GMP protocol docs for details.
@@ -176,3 +176,32 @@ type AlertTask struct {
 	Name        string `xml:"name"`
 	Permissions string `xml:"permissions,omitempty"`
 }
+
+// AlertRelation is the <relation> value of get_alerts. See the GMP protocol docs for details.
+type AlertRelation string
+
+const (
+	AlertRelationEq       AlertRelation = "="
+	AlertRelationContains AlertRelation = ":"
+	AlertRelationRegex    AlertRelation = "~"
+	AlertRelationGT       AlertRelation = ">"
+	AlertRelationLT       AlertRelation = "<"
+)
+
+// AlertOrder is the <order> value of get_alerts. See the GMP protocol docs for details.
+type AlertOrder string
+
+const (
+	AlertOrderAscending  AlertOrder = "ascending"
+	AlertOrderDescending AlertOrder = "descending"
+)
+
+// AlertTimeStatus is the <time_status> value of get_alerts. See the GMP protocol docs for details.
+type AlertTimeStatus string
+
+const (
+	AlertTimeStatusExpired  AlertTimeStatus = "expired"
+	AlertTimeStatusInactive AlertTimeStatus = "inactive"
+	AlertTimeStatusUnknown  AlertTimeStatus = "unknown"
+	AlertTimeStatusValid    AlertTimeStatus = "valid"
+)

@@ -46,9 +46,9 @@ type ScheduleKeywords struct {
 
 // ScheduleKeyword is the <keyword> element of get_schedules. See the GMP protocol docs for details.
 type ScheduleKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string           `xml:"column"`
+	Relation ScheduleRelation `xml:"relation"`
+	Value    string           `xml:"value"`
 }
 
 // ScheduleSort is the <sort> element of get_schedules. See the GMP protocol docs for details.
@@ -58,8 +58,8 @@ type ScheduleSort struct {
 
 // ScheduleField is the <field> element of get_schedules. See the GMP protocol docs for details.
 type ScheduleField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string        `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order ScheduleOrder `xml:"order"`
 }
 
 // Schedules is the <schedules> element of get_schedules. See the GMP protocol docs for details.
@@ -132,3 +132,22 @@ type ScheduleTask struct {
 	Name        string `xml:"name"`
 	Permissions string `xml:"permissions,omitempty"`
 }
+
+// ScheduleRelation is the <relation> value of get_schedules. See the GMP protocol docs for details.
+type ScheduleRelation string
+
+const (
+	ScheduleRelationEq       ScheduleRelation = "="
+	ScheduleRelationContains ScheduleRelation = ":"
+	ScheduleRelationRegex    ScheduleRelation = "~"
+	ScheduleRelationGT       ScheduleRelation = ">"
+	ScheduleRelationLT       ScheduleRelation = "<"
+)
+
+// ScheduleOrder is the <order> value of get_schedules. See the GMP protocol docs for details.
+type ScheduleOrder string
+
+const (
+	ScheduleOrderAscending  ScheduleOrder = "ascending"
+	ScheduleOrderDescending ScheduleOrder = "descending"
+)

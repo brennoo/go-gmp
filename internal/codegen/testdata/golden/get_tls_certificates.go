@@ -45,9 +45,9 @@ type TLSCertificateKeywords struct {
 
 // TLSCertificateKeyword is the <keyword> element of get_tls_certificates. See the GMP protocol docs for details.
 type TLSCertificateKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string                 `xml:"column"`
+	Relation TLSCertificateRelation `xml:"relation"`
+	Value    string                 `xml:"value"`
 }
 
 // TLSCertificateSort is the <sort> element of get_tls_certificates. See the GMP protocol docs for details.
@@ -57,8 +57,8 @@ type TLSCertificateSort struct {
 
 // TLSCertificateField is the <field> element of get_tls_certificates. See the GMP protocol docs for details.
 type TLSCertificateField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string              `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order TLSCertificateOrder `xml:"order"`
 }
 
 // TLSCertificates is the <tls_certificates> element of get_tls_certificates. See the GMP protocol docs for details.
@@ -89,7 +89,7 @@ type TLSCertificate struct {
 	SHA256Fingerprint string                    `xml:"sha256_fingerprint"`
 	MD5Fingerprint    string                    `xml:"md5_fingerprint"`
 	Trust             GMPBool                   `xml:"trust"`
-	TimeStatus        string                    `xml:"time_status"`
+	TimeStatus        TLSCertificateTimeStatus  `xml:"time_status"`
 	ActivationTime    GMPTime                   `xml:"activation_time"`
 	ExpirationTime    GMPTime                   `xml:"expiration_time"`
 	SubjectDN         string                    `xml:"subject_dn"`
@@ -174,3 +174,32 @@ type TLSCertificateHost struct {
 type TLSCertificateAsset struct {
 	ID string `xml:"id,attr,omitempty"`
 }
+
+// TLSCertificateRelation is the <relation> value of get_tls_certificates. See the GMP protocol docs for details.
+type TLSCertificateRelation string
+
+const (
+	TLSCertificateRelationEq       TLSCertificateRelation = "="
+	TLSCertificateRelationContains TLSCertificateRelation = ":"
+	TLSCertificateRelationRegex    TLSCertificateRelation = "~"
+	TLSCertificateRelationGT       TLSCertificateRelation = ">"
+	TLSCertificateRelationLT       TLSCertificateRelation = "<"
+)
+
+// TLSCertificateOrder is the <order> value of get_tls_certificates. See the GMP protocol docs for details.
+type TLSCertificateOrder string
+
+const (
+	TLSCertificateOrderAscending  TLSCertificateOrder = "ascending"
+	TLSCertificateOrderDescending TLSCertificateOrder = "descending"
+)
+
+// TLSCertificateTimeStatus is the <time_status> value of get_tls_certificates. See the GMP protocol docs for details.
+type TLSCertificateTimeStatus string
+
+const (
+	TLSCertificateTimeStatusExpired  TLSCertificateTimeStatus = "expired"
+	TLSCertificateTimeStatusInactive TLSCertificateTimeStatus = "inactive"
+	TLSCertificateTimeStatusUnknown  TLSCertificateTimeStatus = "unknown"
+	TLSCertificateTimeStatusValid    TLSCertificateTimeStatus = "valid"
+)

@@ -184,9 +184,9 @@ type FilterKeywords struct {
 
 // FilterKeyword is the <keyword> element of get_filters. See the GMP protocol docs for details.
 type FilterKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string         `xml:"column"`
+	Relation FilterRelation `xml:"relation"`
+	Value    string         `xml:"value"`
 }
 
 // FilterSort is the <sort> element of get_filters. See the GMP protocol docs for details.
@@ -196,8 +196,8 @@ type FilterSort struct {
 
 // FilterField is the <field> element of get_filters. See the GMP protocol docs for details.
 type FilterField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string      `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order FilterOrder `xml:"order"`
 }
 
 // GetFiltersFilters is the <filters> element of get_filters. See the GMP protocol docs for details.
@@ -270,3 +270,22 @@ type FilterAlert struct {
 	Name        string `xml:"name"`
 	Permissions string `xml:"permissions,omitempty"`
 }
+
+// FilterRelation is the <relation> value of get_filters. See the GMP protocol docs for details.
+type FilterRelation string
+
+const (
+	FilterRelationEq       FilterRelation = "="
+	FilterRelationContains FilterRelation = ":"
+	FilterRelationRegex    FilterRelation = "~"
+	FilterRelationGT       FilterRelation = ">"
+	FilterRelationLT       FilterRelation = "<"
+)
+
+// FilterOrder is the <order> value of get_filters. See the GMP protocol docs for details.
+type FilterOrder string
+
+const (
+	FilterOrderAscending  FilterOrder = "ascending"
+	FilterOrderDescending FilterOrder = "descending"
+)

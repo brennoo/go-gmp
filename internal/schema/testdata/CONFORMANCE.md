@@ -921,7 +921,7 @@ MISSING=1  EXTRA=4  OMITEMPTY=1  SCHEMA-DEFECT=10
   EXTRA         response /get_scanners_response/scanner/disabled
                 Go field Disabled *commands.GMPBool has no counterpart in the schema
   EXTRA         response /get_scanners_response/scanner/tasks/task/usage_type
-                Go field UsageType string has no counterpart in the schema
+                Go field UsageType commands.ScannerUsageType has no counterpart in the schema
   EXTRA         response /get_scanners_response/scanner_count/#text
                 Go *commands.ScannerCount has a `,chardata` field; schema declares no character data here  [suppressed: T-23: count-wrapper chardata total is schema-undeclared]
   EXTRA         response /get_scanners_response/sort/field/#text

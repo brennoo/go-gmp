@@ -16,9 +16,9 @@ create_alert                 request   /create_alert/copy                       
 create_asset                 request   /create_asset/asset/comment              text       -> string pointer=false omitempty=true
 create_config                request   /create_config/comment                   text       -> string pointer=false omitempty=true
 create_config                request   /create_config/copy                      uuid       -> string pointer=false omitempty=true
-create_config                request   /create_config/usage_type                           alts=[scan,policy] -> string pointer=false omitempty=true
+create_config                request   /create_config/usage_type                           alts=[scan,policy] -> commands.ConfigUsageType pointer=false omitempty=true
 create_credential            request   /create_credential/allow_insecure        boolean    -> *commands.GMPBool pointer=true omitempty=true
-create_credential            request   /create_credential/auth_algorithm                   alts=[md5,sha1] -> string pointer=false omitempty=true
+create_credential            request   /create_credential/auth_algorithm                   alts=[md5,sha1] -> commands.CredentialAuthAlgorithm pointer=false omitempty=true
 create_credential            request   /create_credential/certificate           text       -> string pointer=false omitempty=true
 create_credential            request   /create_credential/comment               text       -> string pointer=false omitempty=true
 create_credential            request   /create_credential/community             text       -> string pointer=false omitempty=true
@@ -30,7 +30,7 @@ create_credential            request   /create_credential/key/public            
 create_credential            request   /create_credential/login                 text       -> string pointer=false omitempty=true
 create_credential            request   /create_credential/password              text       -> string pointer=false omitempty=true
 create_credential            request   /create_credential/realm                 text       -> string pointer=false omitempty=true
-create_credential            request   /create_credential/type                             alts=[cc,krb5,pgp,pw,smime,snmp,up,usk] -> string pointer=false omitempty=true
+create_credential            request   /create_credential/type                             alts=[cc,krb5,pgp,pw,smime,snmp,up,usk] -> commands.CredentialType pointer=false omitempty=true
 create_filter                request   /create_filter/comment                   text       -> string pointer=false omitempty=true
 create_filter                request   /create_filter/copy                      uuid       -> string pointer=false omitempty=true
 create_filter                request   /create_filter/term                      text       -> string pointer=false omitempty=true
@@ -137,7 +137,7 @@ create_task                  request   /create_task/alterable                   
 create_task                  request   /create_task/comment                     text       -> string pointer=false omitempty=true
 create_task                  request   /create_task/copy                        uuid       -> string pointer=false omitempty=true
 create_task                  request   /create_task/schedule_periods            integer    -> *int pointer=true omitempty=true
-create_task                  request   /create_task/usage_type                             alts=[scan,audit] -> string pointer=false omitempty=true
+create_task                  request   /create_task/usage_type                             alts=[scan,audit] -> commands.TaskUsageType pointer=false omitempty=true
 create_ticket                request   /create_ticket/comment                   text       -> string pointer=false omitempty=true
 create_ticket                request   /create_ticket/copy                      uuid       -> string pointer=false omitempty=true
 create_tls_certificate       request   /create_tls_certificate/comment          text       -> string pointer=false omitempty=true
@@ -148,7 +148,7 @@ create_user                  request   /create_user/comment                     
 create_user                  request   /create_user/copy                        uuid       -> string pointer=false omitempty=true
 create_user                  request   /create_user/hosts/@allow                boolean    -> *commands.GMPBool pointer=true omitempty=true
 create_user                  request   /create_user/password                    text       -> string pointer=false omitempty=true
-create_user                  request   /create_user/sources/source                         alts=[file,ldap_connect,radius_connect] -> string pointer=false omitempty=true
+create_user                  request   /create_user/sources/source                         alts=[file,ldap_connect,radius_connect] -> commands.UserSource pointer=false omitempty=true
 describe_auth                response  /describe_auth_response/group/auth_conf_setting/certificate_info/serial text       -> string pointer=false omitempty=true
 describe_auth                response  /describe_auth_response/group/auth_conf_setting/certificate_info/sha256_fingerprint text       -> string pointer=false omitempty=true
 describe_auth                response  /describe_auth_response/group/auth_conf_setting/certificate_info/subject text       -> string pointer=false omitempty=true
@@ -217,7 +217,7 @@ get_credentials              request   /get_credentials/@format                 
 get_credentials              request   /get_credentials/@scanners               boolean    -> *commands.GMPBool pointer=true omitempty=true
 get_credentials              request   /get_credentials/@targets                boolean    -> *commands.GMPBool pointer=true omitempty=true
 get_credentials              request   /get_credentials/@trash                  boolean    -> *commands.GMPBool pointer=true omitempty=true
-get_credentials              response  /get_credentials_response/credential/auth_algorithm            alts=[md5,sha1] -> string pointer=false omitempty=true
+get_credentials              response  /get_credentials_response/credential/auth_algorithm            alts=[md5,sha1] -> commands.CredentialAuthAlgorithm pointer=false omitempty=true
 get_credentials              response  /get_credentials_response/credential/certificate text       -> string pointer=false omitempty=true
 get_credentials              response  /get_credentials_response/credential/certificate_info/serial text       -> string pointer=false omitempty=true
 get_credentials              response  /get_credentials_response/credential/certificate_info/sha256_fingerprint text       -> string pointer=false omitempty=true
@@ -304,7 +304,7 @@ get_nvts                     request   /get_nvts/@skip_tags                     
 get_nvts                     request   /get_nvts/@sort_field                    text       -> string pointer=false omitempty=true
 get_nvts                     request   /get_nvts/@sort_order                    sort_order -> string pointer=false omitempty=true
 get_nvts                     request   /get_nvts/@timeout                       boolean    -> *commands.GMPBool pointer=true omitempty=true
-get_nvts                     response  /get_nvts_response/nvt/category                     alts=[0,1,2,3,4,5,6,7,8,9,10,11] -> string pointer=false omitempty=true
+get_nvts                     response  /get_nvts_response/nvt/category                     alts=[0,1,2,3,4,5,6,7,8,9,10,11] -> commands.NVTCategory pointer=false omitempty=true
 get_nvts                     response  /get_nvts_response/nvt/creation_time     iso_time   -> *commands.GMPTime pointer=true omitempty=true
 get_nvts                     response  /get_nvts_response/nvt/cvss_base         text       -> string pointer=false omitempty=true
 get_nvts                     response  /get_nvts_response/nvt/default_timeout   text       -> string pointer=false omitempty=true
@@ -581,7 +581,7 @@ get_tasks                    response  /get_tasks_response/task/schedule/timezon
 get_tasks                    response  /get_tasks_response/task/schedule_periods integer    -> *int pointer=true omitempty=true
 get_tasks                    response  /get_tasks_response/task/status          task_status -> string pointer=false omitempty=true
 get_tasks                    response  /get_tasks_response/task/trend           task_trend -> string pointer=false omitempty=true
-get_tasks                    response  /get_tasks_response/task/usage_type                 alts=[scan,audit] -> string pointer=false omitempty=true
+get_tasks                    response  /get_tasks_response/task/usage_type                 alts=[scan,audit] -> commands.TaskUsageType pointer=false omitempty=true
 get_tasks                    response  /get_tasks_response/task/writable        boolean    -> *commands.GMPBool pointer=true omitempty=true
 get_tickets                  request   /get_tickets/@filt_id                    uuid       -> string pointer=false omitempty=true
 get_tickets                  request   /get_tickets/@filter                     text       -> string pointer=false omitempty=true
@@ -618,7 +618,7 @@ modify_config                request   /modify_config/family_selection/growing  
 modify_config                request   /modify_config/name                      name       -> string pointer=false omitempty=true
 modify_config                request   /modify_config/preference/value          base64     -> string pointer=false omitempty=true
 modify_credential            request   /modify_credential/allow_insecure        boolean    -> *commands.GMPBool pointer=true omitempty=true
-modify_credential            request   /modify_credential/auth_algorithm                   alts=[md5,sha1] -> string pointer=false omitempty=true
+modify_credential            request   /modify_credential/auth_algorithm                   alts=[md5,sha1] -> commands.CredentialAuthAlgorithm pointer=false omitempty=true
 modify_credential            request   /modify_credential/certificate           text       -> string pointer=false omitempty=true
 modify_credential            request   /modify_credential/comment               text       -> *string pointer=true omitempty=true
 modify_credential            request   /modify_credential/community             text       -> string pointer=false omitempty=true
@@ -706,4 +706,4 @@ modify_user                  request   /modify_user/comment                     
 modify_user                  request   /modify_user/hosts/@allow                boolean    -> *commands.GMPBool pointer=true omitempty=true
 modify_user                  request   /modify_user/new_name                    text       -> string pointer=false omitempty=true
 modify_user                  request   /modify_user/password/@modify            boolean    -> *commands.GMPBool pointer=true omitempty=true
-modify_user                  request   /modify_user/sources/source                         alts=[file,ldap_connect,radius_connect] -> string pointer=false omitempty=true
+modify_user                  request   /modify_user/sources/source                         alts=[file,ldap_connect,radius_connect] -> commands.UserSource pointer=false omitempty=true

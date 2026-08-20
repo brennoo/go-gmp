@@ -1505,3 +1505,44 @@ var DefectAllowlist = map[DefectKey]DefectAllowlistEntry{
 			"get_info's recursive <node>",
 	},
 }
+
+// EnumConstantName names the constant suffix for one <alts>-declared wire
+// value that goName (generate.go) cannot turn into a Go identifier fragment
+// on its own — a value that is nothing but punctuation has no letters for
+// goName to capitalize and no separator to split on, so it comes back
+// unchanged and invalid as an exported constant name.
+type EnumConstantName struct {
+	Suffix string
+	Reason string
+}
+
+// EnumConstantNames is keyed by the literal wire value, not by command: a GMP
+// <relation> filter operator means the same thing in every command it
+// appears in (T-19; docs/review-2026-08.md), so one entry stands in for every
+// occurrence across the corpus instead of a family-scoped table repeating the
+// same fix. Checked for staleness once across the whole GenerateAll run
+// rather than per family, since a family that never happens to use a given
+// operator is not evidence the entry is unused corpus-wide.
+var EnumConstantNames = map[string]EnumConstantName{
+	"=": {
+		Suffix: "Eq",
+		Reason: "T-19: <relation> equality operator; punctuation-only, no word for goName to derive a name from",
+	},
+	":": {
+		Suffix: "Contains",
+		Reason: "T-19: <relation> substring-match operator; goName treats ':' itself as a word separator, " +
+			"which would otherwise silently produce the misleading generic name \"Field\"",
+	},
+	"~": {
+		Suffix: "Regex",
+		Reason: "T-19: <relation> regular-expression-match operator; punctuation-only",
+	},
+	">": {
+		Suffix: "GT",
+		Reason: "T-19: <relation> greater-than operator; punctuation-only",
+	},
+	"<": {
+		Suffix: "LT",
+		Reason: "T-19: <relation> less-than operator; punctuation-only",
+	},
+}

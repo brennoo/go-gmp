@@ -48,9 +48,9 @@ type OverrideKeywords struct {
 
 // OverrideKeyword is the <keyword> element of get_overrides. See the GMP protocol docs for details.
 type OverrideKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string           `xml:"column"`
+	Relation OverrideRelation `xml:"relation"`
+	Value    string           `xml:"value"`
 }
 
 // OverrideSort is the <sort> element of get_overrides. See the GMP protocol docs for details.
@@ -60,8 +60,8 @@ type OverrideSort struct {
 
 // OverrideField is the <field> element of get_overrides. See the GMP protocol docs for details.
 type OverrideField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string        `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order OverrideOrder `xml:"order"`
 }
 
 // Overrides is the <overrides> element of get_overrides. See the GMP protocol docs for details.
@@ -358,3 +358,22 @@ type OverrideTickets struct {
 type OverrideTicket struct {
 	ID string `xml:"id,attr"`
 }
+
+// OverrideRelation is the <relation> value of get_overrides. See the GMP protocol docs for details.
+type OverrideRelation string
+
+const (
+	OverrideRelationEq       OverrideRelation = "="
+	OverrideRelationContains OverrideRelation = ":"
+	OverrideRelationRegex    OverrideRelation = "~"
+	OverrideRelationGT       OverrideRelation = ">"
+	OverrideRelationLT       OverrideRelation = "<"
+)
+
+// OverrideOrder is the <order> value of get_overrides. See the GMP protocol docs for details.
+type OverrideOrder string
+
+const (
+	OverrideOrderAscending  OverrideOrder = "ascending"
+	OverrideOrderDescending OverrideOrder = "descending"
+)

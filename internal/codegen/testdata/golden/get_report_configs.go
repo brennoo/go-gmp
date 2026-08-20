@@ -46,9 +46,9 @@ type ReportConfigKeywords struct {
 
 // ReportConfigKeyword is the <keyword> element of get_report_configs. See the GMP protocol docs for details.
 type ReportConfigKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string               `xml:"column"`
+	Relation ReportConfigRelation `xml:"relation"`
+	Value    string               `xml:"value"`
 }
 
 // ReportConfigSort is the <sort> element of get_report_configs. See the GMP protocol docs for details.
@@ -58,8 +58,8 @@ type ReportConfigSort struct {
 
 // ReportConfigField is the <field> element of get_report_configs. See the GMP protocol docs for details.
 type ReportConfigField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string            `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order ReportConfigOrder `xml:"order"`
 }
 
 // ReportConfigs is the <report_configs> element of get_report_configs. See the GMP protocol docs for details.
@@ -140,9 +140,9 @@ type GetReportConfigsParam struct {
 
 // ReportConfigType is the <type> element of get_report_configs. See the GMP protocol docs for details.
 type ReportConfigType struct {
-	Value string `xml:",chardata"`
-	Min   string `xml:"min,omitempty"`
-	Max   string `xml:"max,omitempty"`
+	Value ReportConfigParamType `xml:",chardata"`
+	Min   string                `xml:"min,omitempty"`
+	Max   string                `xml:"max,omitempty"`
 }
 
 // ReportConfigParamValue is the <value> element of get_report_configs. See the GMP protocol docs for details.
@@ -166,3 +166,35 @@ type ReportConfigDefault struct {
 type ReportConfigOptions struct {
 	Option []string `xml:"option,omitempty"`
 }
+
+// ReportConfigRelation is the <relation> value of get_report_configs. See the GMP protocol docs for details.
+type ReportConfigRelation string
+
+const (
+	ReportConfigRelationEq       ReportConfigRelation = "="
+	ReportConfigRelationContains ReportConfigRelation = ":"
+	ReportConfigRelationRegex    ReportConfigRelation = "~"
+	ReportConfigRelationGT       ReportConfigRelation = ">"
+	ReportConfigRelationLT       ReportConfigRelation = "<"
+)
+
+// ReportConfigOrder is the <order> value of get_report_configs. See the GMP protocol docs for details.
+type ReportConfigOrder string
+
+const (
+	ReportConfigOrderAscending  ReportConfigOrder = "ascending"
+	ReportConfigOrderDescending ReportConfigOrder = "descending"
+)
+
+// ReportConfigParamType is the <type> value of get_report_configs. See the GMP protocol docs for details.
+type ReportConfigParamType string
+
+const (
+	ReportConfigParamTypeBoolean          ReportConfigParamType = "boolean"
+	ReportConfigParamTypeInteger          ReportConfigParamType = "integer"
+	ReportConfigParamTypeMultiSelection   ReportConfigParamType = "multi_selection"
+	ReportConfigParamTypeSelection        ReportConfigParamType = "selection"
+	ReportConfigParamTypeString           ReportConfigParamType = "string"
+	ReportConfigParamTypeText             ReportConfigParamType = "text"
+	ReportConfigParamTypeReportFormatList ReportConfigParamType = "report_format_list"
+)

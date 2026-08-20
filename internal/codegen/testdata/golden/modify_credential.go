@@ -8,21 +8,21 @@ import "encoding/xml"
 //
 // Realm and Kdc each reject an explicit-empty element outright ("400 Invalid or empty kerberos realm value" / "400 Invalid or empty kdc value(s)") rather than accepting it as a clear; omitting either leaves the stored value unchanged, so neither can take a PointerOverride. Certificate, Community and Password could not be tested: gvmd's get_credentials response never echoes their stored values back (with or without details=1), so no live test can observe whether omission and explicit-empty differ for them.
 type ModifyCredential struct {
-	XMLName       xml.Name           `xml:"modify_credential"`
-	CredentialID  string             `xml:"credential_id,attr"`
-	Comment       *string            `xml:"comment,omitempty"`
-	Name          string             `xml:"name,omitempty"`
-	AllowInsecure *GMPBool           `xml:"allow_insecure,omitempty"`
-	Certificate   string             `xml:"certificate,omitempty"`
-	Kdc           string             `xml:"kdc,omitempty"`
-	Kdcs          *CredentialKdcs    `xml:"kdcs,omitempty"`
-	Key           *CredentialKey     `xml:"key,omitempty"`
-	Login         string             `xml:"login,omitempty"`
-	Password      string             `xml:"password,omitempty"`
-	Community     string             `xml:"community,omitempty"`
-	AuthAlgorithm string             `xml:"auth_algorithm,omitempty"`
-	Privacy       *CredentialPrivacy `xml:"privacy,omitempty"`
-	Realm         string             `xml:"realm,omitempty"`
+	XMLName       xml.Name                `xml:"modify_credential"`
+	CredentialID  string                  `xml:"credential_id,attr"`
+	Comment       *string                 `xml:"comment,omitempty"`
+	Name          string                  `xml:"name,omitempty"`
+	AllowInsecure *GMPBool                `xml:"allow_insecure,omitempty"`
+	Certificate   string                  `xml:"certificate,omitempty"`
+	Kdc           string                  `xml:"kdc,omitempty"`
+	Kdcs          *CredentialKdcs         `xml:"kdcs,omitempty"`
+	Key           *CredentialKey          `xml:"key,omitempty"`
+	Login         string                  `xml:"login,omitempty"`
+	Password      string                  `xml:"password,omitempty"`
+	Community     string                  `xml:"community,omitempty"`
+	AuthAlgorithm CredentialAuthAlgorithm `xml:"auth_algorithm,omitempty"`
+	Privacy       *CredentialPrivacy      `xml:"privacy,omitempty"`
+	Realm         string                  `xml:"realm,omitempty"`
 }
 
 // ModifyCredentialResponse is a modify_credential command response. See the GMP protocol docs for details.

@@ -737,7 +737,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 					InUse:    false,
 					Type:     "usk",
 					FullType: "username + SSH key",
-					Formats:  commands.CredentialFormats{Format: []string{"key", "rpm", "deb"}},
+					Formats:  commands.CredentialFormats{Format: []commands.CredentialFormat{"key", "rpm", "deb"}},
 				},
 				{
 					ID:       "cred-uuid-2",
@@ -747,7 +747,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 					InUse:    true,
 					Type:     "up",
 					FullType: "username + password",
-					Formats:  commands.CredentialFormats{Format: []string{"exe"}},
+					Formats:  commands.CredentialFormats{Format: []commands.CredentialFormat{"exe"}},
 				},
 			}
 		case "cred-uuid-1":
@@ -762,7 +762,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 					InUse:    false,
 					Type:     "usk",
 					FullType: "username + SSH key",
-					Formats:  commands.CredentialFormats{Format: []string{"key", "rpm", "deb"}},
+					Formats:  commands.CredentialFormats{Format: []commands.CredentialFormat{"key", "rpm", "deb"}},
 				},
 			}
 		default:
@@ -1657,7 +1657,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 				Name:    "foobar",
 				Role:    []commands.GetUsersRole{{ID: "8d453140-b74d-11e2-b0be-406186ea4fc5", Name: "User"}},
 				Hosts:   commands.GetUsersHosts{Allow: "2"},
-				Sources: commands.GetUsersSources{Source: []string{"file"}},
+				Sources: commands.GetUsersSources{Source: []commands.UserSource{"file"}},
 			},
 		}
 	}

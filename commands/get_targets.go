@@ -47,9 +47,9 @@ type TargetKeywords struct {
 
 // TargetKeyword is the <keyword> element of get_targets. See the GMP protocol docs for details.
 type TargetKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string         `xml:"column"`
+	Relation TargetRelation `xml:"relation"`
+	Value    string         `xml:"value"`
 }
 
 // TargetSort is the <sort> element of get_targets. See the GMP protocol docs for details.
@@ -59,8 +59,8 @@ type TargetSort struct {
 
 // TargetField is the <field> element of get_targets. See the GMP protocol docs for details.
 type TargetField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string      `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order TargetOrder `xml:"order"`
 }
 
 // Targets is the <targets> element of get_targets. See the GMP protocol docs for details.
@@ -203,3 +203,22 @@ type TargetTask struct {
 	Name        string `xml:"name"`
 	Permissions string `xml:"permissions,omitempty"`
 }
+
+// TargetRelation is the <relation> value of get_targets. See the GMP protocol docs for details.
+type TargetRelation string
+
+const (
+	TargetRelationEq       TargetRelation = "="
+	TargetRelationContains TargetRelation = ":"
+	TargetRelationRegex    TargetRelation = "~"
+	TargetRelationGT       TargetRelation = ">"
+	TargetRelationLT       TargetRelation = "<"
+)
+
+// TargetOrder is the <order> value of get_targets. See the GMP protocol docs for details.
+type TargetOrder string
+
+const (
+	TargetOrderAscending  TargetOrder = "ascending"
+	TargetOrderDescending TargetOrder = "descending"
+)

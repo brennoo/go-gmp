@@ -49,9 +49,9 @@ type CredentialKeywords struct {
 
 // CredentialKeyword is the <keyword> element of get_credentials. See the GMP protocol docs for details.
 type CredentialKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string             `xml:"column"`
+	Relation CredentialRelation `xml:"relation"`
+	Value    string             `xml:"value"`
 }
 
 // CredentialSort is the <sort> element of get_credentials. See the GMP protocol docs for details.
@@ -61,8 +61,8 @@ type CredentialSort struct {
 
 // CredentialField is the <field> element of get_credentials. See the GMP protocol docs for details.
 type CredentialField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string          `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order CredentialOrder `xml:"order"`
 }
 
 // Credentials is the <credentials> element of get_credentials. See the GMP protocol docs for details.
@@ -91,11 +91,11 @@ type Credential struct {
 	Writable         GMPBool                    `xml:"writable"`
 	InUse            GMPBool                    `xml:"in_use"`
 	Permissions      CredentialPermissions      `xml:"permissions"`
-	Type             string                     `xml:"type"`
+	Type             CredentialType             `xml:"type"`
 	FullType         string                     `xml:"full_type"`
 	Formats          CredentialFormats          `xml:"formats"`
 	UserTags         *CredentialUserTags        `xml:"user_tags,omitempty"`
-	AuthAlgorithm    string                     `xml:"auth_algorithm,omitempty"`
+	AuthAlgorithm    CredentialAuthAlgorithm    `xml:"auth_algorithm,omitempty"`
 	Privacy          *GetCredentialsPrivacy     `xml:"privacy,omitempty"`
 	CertificateInfo  *CredentialCertificateInfo `xml:"certificate_info,omitempty"`
 	PrivateKeyInfo   *CredentialPrivateKeyInfo  `xml:"private_key_info,omitempty"`
@@ -127,7 +127,7 @@ type CredentialPermission struct {
 
 // CredentialFormats is the <formats> element of get_credentials. See the GMP protocol docs for details.
 type CredentialFormats struct {
-	Format []string `xml:"format,omitempty"`
+	Format []CredentialFormat `xml:"format,omitempty"`
 }
 
 // CredentialUserTags is the <user_tags> element of get_credentials. See the GMP protocol docs for details.
@@ -146,19 +146,19 @@ type CredentialTag struct {
 
 // GetCredentialsPrivacy is the <privacy> element of get_credentials. See the GMP protocol docs for details.
 type GetCredentialsPrivacy struct {
-	Algorithm string `xml:"algorithm"`
+	Algorithm CredentialAlgorithm `xml:"algorithm"`
 }
 
 // CredentialCertificateInfo is the <certificate_info> element of get_credentials. See the GMP protocol docs for details.
 type CredentialCertificateInfo struct {
-	TimeStatus        string `xml:"time_status"`
-	ActivationTime    string `xml:"activation_time"`
-	ExpirationTime    string `xml:"expiration_time"`
-	Issuer            string `xml:"issuer"`
-	MD5Fingerprint    string `xml:"md5_fingerprint"`
-	SHA256Fingerprint string `xml:"sha256_fingerprint,omitempty"`
-	Subject           string `xml:"subject,omitempty"`
-	Serial            string `xml:"serial,omitempty"`
+	TimeStatus        CredentialTimeStatus `xml:"time_status"`
+	ActivationTime    string               `xml:"activation_time"`
+	ExpirationTime    string               `xml:"expiration_time"`
+	Issuer            string               `xml:"issuer"`
+	MD5Fingerprint    string               `xml:"md5_fingerprint"`
+	SHA256Fingerprint string               `xml:"sha256_fingerprint,omitempty"`
+	Subject           string               `xml:"subject,omitempty"`
+	Serial            string               `xml:"serial,omitempty"`
 }
 
 // CredentialPrivateKeyInfo is the <private_key_info> element of get_credentials. See the GMP protocol docs for details.
@@ -201,3 +201,43 @@ type CredentialPackage struct {
 	Value  string `xml:",chardata"`
 	Format string `xml:"format,attr"`
 }
+
+// CredentialRelation is the <relation> value of get_credentials. See the GMP protocol docs for details.
+type CredentialRelation string
+
+const (
+	CredentialRelationEq       CredentialRelation = "="
+	CredentialRelationContains CredentialRelation = ":"
+	CredentialRelationRegex    CredentialRelation = "~"
+	CredentialRelationGT       CredentialRelation = ">"
+	CredentialRelationLT       CredentialRelation = "<"
+)
+
+// CredentialOrder is the <order> value of get_credentials. See the GMP protocol docs for details.
+type CredentialOrder string
+
+const (
+	CredentialOrderAscending  CredentialOrder = "ascending"
+	CredentialOrderDescending CredentialOrder = "descending"
+)
+
+// CredentialFormat is the <format> value of get_credentials. See the GMP protocol docs for details.
+type CredentialFormat string
+
+const (
+	CredentialFormatKey CredentialFormat = "key"
+	CredentialFormatRpm CredentialFormat = "rpm"
+	CredentialFormatDeb CredentialFormat = "deb"
+	CredentialFormatExe CredentialFormat = "exe"
+	CredentialFormatPem CredentialFormat = "pem"
+)
+
+// CredentialTimeStatus is the <time_status> value of get_credentials. See the GMP protocol docs for details.
+type CredentialTimeStatus string
+
+const (
+	CredentialTimeStatusExpired  CredentialTimeStatus = "expired"
+	CredentialTimeStatusInactive CredentialTimeStatus = "inactive"
+	CredentialTimeStatusUnknown  CredentialTimeStatus = "unknown"
+	CredentialTimeStatusValid    CredentialTimeStatus = "valid"
+)

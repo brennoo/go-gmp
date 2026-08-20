@@ -45,9 +45,9 @@ type GroupKeywords struct {
 
 // GroupKeyword is the <keyword> element of get_groups. See the GMP protocol docs for details.
 type GroupKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string        `xml:"column"`
+	Relation GroupRelation `xml:"relation"`
+	Value    string        `xml:"value"`
 }
 
 // GroupSort is the <sort> element of get_groups. See the GMP protocol docs for details.
@@ -57,8 +57,8 @@ type GroupSort struct {
 
 // GroupField is the <field> element of get_groups. See the GMP protocol docs for details.
 type GroupField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string     `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order GroupOrder `xml:"order"`
 }
 
 // Groups is the <groups> element of get_groups. See the GMP protocol docs for details.
@@ -117,3 +117,22 @@ type GroupTag struct {
 	Value   string `xml:"value"`
 	Comment string `xml:"comment"`
 }
+
+// GroupRelation is the <relation> value of get_groups. See the GMP protocol docs for details.
+type GroupRelation string
+
+const (
+	GroupRelationEq       GroupRelation = "="
+	GroupRelationContains GroupRelation = ":"
+	GroupRelationRegex    GroupRelation = "~"
+	GroupRelationGT       GroupRelation = ">"
+	GroupRelationLT       GroupRelation = "<"
+)
+
+// GroupOrder is the <order> value of get_groups. See the GMP protocol docs for details.
+type GroupOrder string
+
+const (
+	GroupOrderAscending  GroupOrder = "ascending"
+	GroupOrderDescending GroupOrder = "descending"
+)

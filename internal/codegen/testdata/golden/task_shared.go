@@ -37,3 +37,11 @@ type TaskPreference struct {
 type TaskAlert struct {
 	ID string `xml:"id,attr"`
 }
+
+// TaskUsageType is the <usage_type> value of create_task and get_tasks. See the GMP protocol docs for details.
+type TaskUsageType string
+
+const (
+	TaskUsageTypeScan  TaskUsageType = "scan"
+	TaskUsageTypeAudit TaskUsageType = "audit"
+)

@@ -44,9 +44,9 @@ type VulnKeywords struct {
 
 // VulnKeyword is the <keyword> element of get_vulns. See the GMP protocol docs for details.
 type VulnKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string       `xml:"column"`
+	Relation VulnRelation `xml:"relation"`
+	Value    string       `xml:"value"`
 }
 
 // VulnSort is the <sort> element of get_vulns. See the GMP protocol docs for details.
@@ -56,8 +56,8 @@ type VulnSort struct {
 
 // VulnField is the <field> element of get_vulns. See the GMP protocol docs for details.
 type VulnField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string    `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order VulnOrder `xml:"order"`
 }
 
 // Vulns is the <vulns> element of get_vulns. See the GMP protocol docs for details.
@@ -97,3 +97,22 @@ type VulnResults struct {
 type VulnHosts struct {
 	Count int `xml:"count"`
 }
+
+// VulnRelation is the <relation> value of get_vulns. See the GMP protocol docs for details.
+type VulnRelation string
+
+const (
+	VulnRelationEq       VulnRelation = "="
+	VulnRelationContains VulnRelation = ":"
+	VulnRelationRegex    VulnRelation = "~"
+	VulnRelationGT       VulnRelation = ">"
+	VulnRelationLT       VulnRelation = "<"
+)
+
+// VulnOrder is the <order> value of get_vulns. See the GMP protocol docs for details.
+type VulnOrder string
+
+const (
+	VulnOrderAscending  VulnOrder = "ascending"
+	VulnOrderDescending VulnOrder = "descending"
+)

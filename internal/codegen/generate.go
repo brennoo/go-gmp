@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strings"
 	"time"
+	"unicode"
 
 	"github.com/brennoo/go-gmp/internal/schema"
 )
@@ -45,14 +46,38 @@ const sharedFileSuffix = "_shared.go"
 //
 // co is CardinalityOverrides, RequiredOverride's mirror image for schema Card
 // rather than requiredness.
-func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, ro map[string]RequiredOverride, fo map[string][]FieldOverride, fs map[string][]FieldSuppression, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry, no map[string]NameOverride, tov map[string][]FieldTypeOverride, family string, co map[string]CardinalityOverride) (map[string]string, error) {
+//
+// ec is EnumConstantNames, keyed by literal wire value rather than by
+// command; ecConsumed accumulates which of its entries this call resolved an
+// alt value through. Unlike every other override table's own xConsumed map,
+// ecConsumed is caller-owned and shared across every family in one
+// GenerateAll run rather than reset per call: EnumConstantNames' entries are
+// not command-scoped, so a family that never happens to need a given
+// <relation> operator is not evidence the entry is unused corpus-wide — only
+// GenerateAll, which sees every family, can decide that.
+// validateCommandShapes fails closed on a snapshot too malformed to generate
+// from at all, before any naming or emission work starts.
+func validateCommandShapes(cmds []schema.Command) error {
+	for i := range cmds {
+		if cmds[i].Name == "" {
+			return fmt.Errorf("codegen: command %d has no name", i)
+		}
+		if cmds[i].Request == nil || cmds[i].Response == nil {
+			return fmt.Errorf("codegen: %s: snapshot is missing a request or response shape", cmds[i].Name)
+		}
+	}
+	return nil
+}
+
+func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, ro map[string]RequiredOverride, fo map[string][]FieldOverride, fs map[string][]FieldSuppression, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry, no map[string]NameOverride, tov map[string][]FieldTypeOverride, family string, co map[string]CardinalityOverride, ec map[string]EnumConstantName, ecConsumed map[string]bool) (map[string]string, error) {
 	if len(cmds) == 0 {
 		return nil, fmt.Errorf("codegen: no commands to generate")
 	}
 	g := &gen{
-		ov: ov, pf: pf, ro: ro, fo: fo, fs: fs, cw: cw, da: da, no: no, tov: tov, co: co,
+		ov: ov, pf: pf, ro: ro, fo: fo, fs: fs, cw: cw, da: da, no: no, tov: tov, co: co, ec: ec,
 		byHash:      map[string]*structType{},
 		taken:       map[string]bool{},
+		byEnumName:  map[string]*enumType{},
 		needsErrors: map[*strings.Builder]bool{},
 		foConsumed:  map[string]bool{},
 		fsConsumed:  map[string]bool{},
@@ -63,6 +88,7 @@ func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]Point
 		noConsumed:  map[string]bool{},
 		tovConsumed: map[string]bool{},
 		coConsumed:  map[string]bool{},
+		ecConsumed:  ecConsumed,
 	}
 
 	// Sorting decouples the output from the caller's slice order, so a
@@ -70,13 +96,8 @@ func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]Point
 	g.cmds = append(g.cmds, cmds...)
 	sort.Slice(g.cmds, func(i, j int) bool { return g.cmds[i].Name < g.cmds[j].Name })
 
-	for i := range g.cmds {
-		if g.cmds[i].Name == "" {
-			return nil, fmt.Errorf("codegen: command %d has no name", i)
-		}
-		if g.cmds[i].Request == nil || g.cmds[i].Response == nil {
-			return nil, fmt.Errorf("codegen: %s: snapshot is missing a request or response shape", g.cmds[i].Name)
-		}
+	if err := validateCommandShapes(g.cmds); err != nil {
+		return nil, err
 	}
 	if err := g.checkProvenance(); err != nil {
 		return nil, err
@@ -100,11 +121,16 @@ func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]Point
 		g.familyNoun = family
 	}
 	g.family = goName(g.familyNoun)
-	g.collect()
 	if err := g.validateOverrideTables(); err != nil {
 		return nil, err
 	}
+	if err := g.collect(); err != nil {
+		return nil, err
+	}
 	if err := g.name(); err != nil {
+		return nil, err
+	}
+	if err := g.nameEnums(); err != nil {
 		return nil, err
 	}
 	out, err := g.emit()
@@ -143,7 +169,10 @@ func (g *gen) validateOverrideTables() error {
 	if err := g.validateRequiredOverrides(); err != nil {
 		return err
 	}
-	return g.validateCardinalityOverrides()
+	if err := g.validateCardinalityOverrides(); err != nil {
+		return err
+	}
+	return g.validateEnumConstantNames()
 }
 
 // checkTablesConsumed fails the build on any stale override-table entry left
@@ -717,6 +746,32 @@ func (g *gen) validateNameOverrides() error {
 	return nil
 }
 
+// validateEnumConstantNames checks the shape of every EnumConstantNames
+// entry in g.ec, independent of which command is in scope for this call: the
+// table is keyed by literal wire value, not by command, so there is no
+// per-call subset of it to validate.
+func (g *gen) validateEnumConstantNames() error {
+	keys := make([]string, 0, len(g.ec))
+	for k := range g.ec {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, key := range keys {
+		if key == "" {
+			return fmt.Errorf("codegen: EnumConstantNames: key (the wire alt value) is empty")
+		}
+		e := g.ec[key]
+		if e.Reason == "" {
+			return fmt.Errorf("codegen: EnumConstantNames[%q]: Reason is empty", key)
+		}
+		if !isIdentifierFragment(e.Suffix) {
+			return fmt.Errorf("codegen: EnumConstantNames[%q]: Suffix %q is not a valid Go identifier fragment", key, e.Suffix)
+		}
+	}
+	return nil
+}
+
 // validateFieldTypeOverrides checks the shape of every FieldTypeOverrides
 // entry in g.tov, independent of which command is in scope for this call,
 // the same reasoning validateFieldOverrides applies to g.fo. Unlike an
@@ -866,7 +921,7 @@ func staleTableKeys[V any](cmds []schema.Command, table map[string]V, consumed m
 // cmds may contain commands in any order and must cover every command the
 // manifest names; a command not claimed by any family is an error, since it
 // would otherwise be silently dropped.
-func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, ro map[string]RequiredOverride, fo map[string][]FieldOverride, fs map[string][]FieldSuppression, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry, no map[string]NameOverride, tov map[string][]FieldTypeOverride, co map[string]CardinalityOverride) (map[string]string, error) {
+func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, ro map[string]RequiredOverride, fo map[string][]FieldOverride, fs map[string][]FieldSuppression, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry, no map[string]NameOverride, tov map[string][]FieldTypeOverride, co map[string]CardinalityOverride, ec map[string]EnumConstantName) (map[string]string, error) {
 	byName := make(map[string]schema.Command, len(cmds))
 	for _, c := range cmds {
 		byName[c.Name] = c
@@ -874,6 +929,7 @@ func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf m
 
 	out := map[string]string{}
 	from := map[string]string{} // filename -> the family that emitted it
+	ecConsumed := map[string]bool{}
 	for _, f := range m.Families {
 		fam := make([]schema.Command, 0, len(f.Commands))
 		for _, name := range f.Commands {
@@ -883,7 +939,7 @@ func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf m
 			}
 			fam = append(fam, c)
 		}
-		files, err := Generate(fam, ov, pf, ro, fo, fs, cw, da, no, tov, f.Name, co)
+		files, err := Generate(fam, ov, pf, ro, fo, fs, cw, da, no, tov, f.Name, co, ec, ecConsumed)
 		if err != nil {
 			return nil, fmt.Errorf("codegen: family %q: %w", f.Name, err)
 		}
@@ -891,7 +947,31 @@ func GenerateAll(m Manifest, cmds []schema.Command, ov map[string]Override, pf m
 			return nil, err
 		}
 	}
+
+	if err := checkEnumConstantNamesConsumed(ec, ecConsumed); err != nil {
+		return nil, err
+	}
 	return out, nil
+}
+
+// checkEnumConstantNamesConsumed fails closed on an EnumConstantNames entry
+// no family's generation used: a corpus-wide table (see overrides.go) can go
+// stale if the schema stops using a value like "=" anywhere, and nothing else
+// would ever notice. Shared by GenerateAll and CheckOutput so gengmp -check
+// enforces the same guarantee as the real write path.
+func checkEnumConstantNamesConsumed(ec map[string]EnumConstantName, ecConsumed map[string]bool) error {
+	var stale []string
+	for key := range ec {
+		if !ecConsumed[key] {
+			stale = append(stale, key)
+		}
+	}
+	if len(stale) > 0 {
+		sort.Strings(stale)
+		return fmt.Errorf("codegen: EnumConstantNames entries never used by any alt value across the "+
+			"corpus: %q", stale)
+	}
+	return nil
 }
 
 // mergeFamilyFiles folds one family's Generate output into out.
@@ -939,6 +1019,31 @@ type use struct {
 	path    []string // ancestor element names, outermost first, excluding the node
 }
 
+// enumType is one generated named string type for an <alts>-constrained
+// field: every place in the family an Alts-bearing scalar leaf named node.Name
+// was reached, plus the ordered constants derived from node.Alts.
+//
+// Grouped by wire name rather than by structural shape (unlike structType):
+// a scalar leaf has no children for typeHash to fold Alts into, so
+// registerEnum is what typeHash's identical-shape rule becomes for a leaf.
+type enumType struct {
+	name string       // the wire element/attribute name, e.g. "condition"
+	node *schema.Node // the first occurrence; every other must share its Alts
+	uses []use
+
+	goName string
+	file   string
+	consts []enumConst // in node.Alts order
+}
+
+// enumConst is one exported constant an enumType declares: goName is already
+// qualified by the enum type's own name (e.g. "AlertConditionAlways"), not
+// just the suffix, so emitEnum can write it directly.
+type enumConst struct {
+	value  string
+	goName string
+}
+
 type gen struct {
 	cmds   []schema.Command
 	ov     map[string]Override
@@ -951,6 +1056,7 @@ type gen struct {
 	no     map[string]NameOverride
 	tov    map[string][]FieldTypeOverride
 	co     map[string]CardinalityOverride
+	ec     map[string]EnumConstantName
 	family string
 	// familyNoun is family's pre-goName snake_case form, used only by fileFor
 	// for the shared-file basename (see familyNoun's doc comment).
@@ -959,6 +1065,13 @@ type gen struct {
 	byHash map[string]*structType
 	types  []*structType   // first-occurrence order
 	taken  map[string]bool // every Go type name already handed out
+
+	// byEnumName groups Alts-bearing scalar leaves by wire name within this
+	// family: two occurrences of the same name must agree on their alt set
+	// (see registerEnum), the scalar-leaf counterpart to typeHash folding
+	// Alts into a struct child's content hash.
+	byEnumName map[string]*enumType
+	enums      []*enumType // first-occurrence order
 
 	// needsErrors marks, by output builder, a file whose generated collision
 	// codec (emitCollisionUnmarshal) reports an unexpected extra occurrence by
@@ -1005,6 +1118,11 @@ type gen struct {
 	// schema-singular top-level field during this run, so
 	// checkCardinalityOverridesConsumed can flag a stale or mistyped one.
 	coConsumed map[string]bool
+
+	// ecConsumed records which EnumConstantNames keys resolved an alt value
+	// during this run. Caller-owned and shared across every Generate call in
+	// one GenerateAll run — see Generate's doc comment.
+	ecConsumed map[string]bool
 }
 
 // fieldOverrideKey builds a FieldOverrides key from a structType's use: the
@@ -1018,19 +1136,34 @@ func fieldOverrideKey(command string, path []string, name string) string {
 }
 
 // collect walks every command's request and response, recording one entry per
-// distinct nested struct shape.
-func (g *gen) collect() {
+// distinct nested struct shape and one per distinct Alts-bearing wire name.
+func (g *gen) collect() error {
 	for i := range g.cmds {
 		c := &g.cmds[i]
-		g.walk(c.Name, c.Request, nil)
-		g.walk(c.Name, c.Response, nil)
+		if err := g.walk(c.Name, c.Request, nil); err != nil {
+			return err
+		}
+		if err := g.walk(c.Name, c.Response, nil); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
-func (g *gen) walk(command string, n *schema.Node, path []string) {
+func (g *gen) walk(command string, n *schema.Node, path []string) error {
 	for _, kid := range n.Children {
+		if len(kid.Alts) > 0 {
+			// Checked before the Children guard below: a "dual-role" node
+			// (get_report_configs.type, get_report_formats.trust/type) has
+			// both its own Alts (its chardata text is enum-constrained) and
+			// Children (attributes), so it needs both a struct and an enum
+			// type registered for it.
+			if err := g.registerEnum(command, kid, path); err != nil {
+				return err
+			}
+		}
 		if len(kid.Children) == 0 {
-			continue // a scalar leaf needs no type of its own
+			continue // a scalar leaf needs no struct type of its own
 		}
 		h := typeHash(kid)
 		st, ok := g.byHash[h]
@@ -1044,8 +1177,69 @@ func (g *gen) walk(command string, n *schema.Node, path []string) {
 		// later sibling overwrite an ancestor path already recorded above.
 		down := make([]string, len(path), len(path)+1)
 		copy(down, path)
-		g.walk(command, kid, append(down, kid.Name))
+		if err := g.walk(command, kid, append(down, kid.Name)); err != nil {
+			return err
+		}
 	}
+	return nil
+}
+
+// registerEnum records one Alts-bearing leaf occurrence, grouped by wire name
+// within this family. A second occurrence of the same name must declare the
+// same alt set (order-independent) — the counterpart, for a leaf typeHash
+// never visits, of typeHash already folding Alts into a struct child's
+// content hash. Per T-19's scope, this is a hard generation error rather
+// than a family-specific alias: no real disagreement exists in the corpus
+// today, and the user's guidance is not to build an override mechanism to
+// speculatively paper over one that might appear later.
+func (g *gen) registerEnum(command string, n *schema.Node, path []string) error {
+	if len(n.Alts) == 0 {
+		return fmt.Errorf("codegen: %s: enum node %q reached with empty Alts", command, n.Name)
+	}
+	seen := make(map[string]bool, len(n.Alts))
+	for _, a := range n.Alts {
+		if a == "" {
+			return fmt.Errorf("codegen: %s: enum %q declares an empty alt value", command, n.Name)
+		}
+		if seen[a] {
+			return fmt.Errorf("codegen: %s: enum %q declares duplicate alt value %q", command, n.Name, a)
+		}
+		seen[a] = true
+	}
+
+	et, ok := g.byEnumName[n.Name]
+	if !ok {
+		et = &enumType{name: n.Name, node: n}
+		g.byEnumName[n.Name] = et
+		g.enums = append(g.enums, et)
+	} else if !sameAltSet(et.node.Alts, n.Alts) {
+		return fmt.Errorf(
+			"codegen: %s: enum %q declares alt set %v, but %s already established %v for the same "+
+				"name in this family; structurally-shared enum fields must agree on their alt set "+
+				"(see docs/review-2026-08.md T-19)",
+			command, n.Name, n.Alts, ownerOfUses(et.uses), et.node.Alts)
+	}
+	et.uses = append(et.uses, use{command: command, path: append([]string(nil), path...)})
+	return nil
+}
+
+// sameAltSet reports whether a and b declare the same alt values, ignoring
+// order: two occurrences of one wire name are allowed to declare their alts
+// in different schema-document order and still be the same enum.
+func sameAltSet(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	sa := append([]string(nil), a...)
+	sb := append([]string(nil), b...)
+	sort.Strings(sa)
+	sort.Strings(sb)
+	for i := range sa {
+		if sa[i] != sb[i] {
+			return false
+		}
+	}
+	return true
 }
 
 // typeHash identifies a generated struct by the shape it would have.
@@ -1162,6 +1356,146 @@ func (g *gen) pick(st *structType) (string, error) {
 	}
 }
 
+// nameEnums assigns every collected enum type a unique Go type name and
+// derives its constants. It runs strictly after name(), so g.taken already
+// reflects every struct name: this is what resolves the 3 "dual-role" nodes
+// (get_report_configs.type, get_report_formats.trust/type — see registerEnum)
+// for free, the same way any other struct-vs-struct name collision is
+// resolved, since the struct half of a dual-role node claims the bare name
+// first and the enum ladder here falls through to the next qualified
+// candidate.
+//
+// Enum types do not consult NameOverrides: that table is struct-scoped
+// (fieldOverrideKey-keyed) and has no entries aimed at an enum today; if a
+// real, reviewed collision appears, it gets its own override then rather
+// than widening NameOverrides' meaning now.
+func (g *gen) nameEnums() error {
+	for _, et := range g.enums {
+		et.goName = g.pickEnum(et)
+		g.taken[et.goName] = true
+		et.file = g.fileForEnum(et)
+		if err := g.buildEnumConsts(et); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// pickEnum is pick's counterpart for an enumType: the same qualified-name
+// ladder, without a NameOverrides consultation (see nameEnums). Unlike pick,
+// it cannot fail: there's no override lookup to reject, and the fallback
+// loop always terminates on some suffixed candidate.
+func (g *gen) pickEnum(et *enumType) string {
+	first := et.uses[0]
+	for _, c := range g.candidateLadder(goName(et.name), first) {
+		if !g.taken[c] {
+			return c
+		}
+	}
+	base := g.qualify(goName(et.name))
+	for i := 2; ; i++ {
+		if c := fmt.Sprintf("%s%d", base, i); !g.taken[c] {
+			return c
+		}
+	}
+}
+
+// buildEnumConsts derives one exported constant per alt value, in the order
+// node.Alts declares them, and fails closed if two different alt values
+// collapse onto the same constant name: silently keeping only one would drop
+// a legitimate wire value from the generated API.
+func (g *gen) buildEnumConsts(et *enumType) error {
+	byName := make(map[string]string, len(et.node.Alts))
+	for _, v := range et.node.Alts {
+		suffix, err := g.altSuffix(v)
+		if err != nil {
+			return fmt.Errorf("codegen: enum %s: %w", et.goName, err)
+		}
+		name := et.goName + suffix
+		if other, ok := byName[name]; ok {
+			return fmt.Errorf(
+				"codegen: enum %s: alt values %q and %q both produce constant name %q",
+				et.goName, other, v, name)
+		}
+		byName[name] = v
+		et.consts = append(et.consts, enumConst{value: v, goName: name})
+	}
+	return nil
+}
+
+// altSuffix derives an enum constant's name suffix from its wire value.
+// goName handles ordinary words (snake_case, kebab-case, space-separated),
+// but two shapes of value defeat it:
+//
+//   - A value that is purely numeric (GMP uses these for a handful of
+//     integer-coded fields, e.g. NVT category codes) has no letters for
+//     goName to capitalize, so it round-trips unchanged — a legal Go
+//     identifier fragment everywhere except its required first rune.
+//     Prefixing "N" fixes this mechanically for any such value, with no
+//     per-value table: unlike a punctuation symbol, a digit string has no
+//     protocol-wide meaning to look up, so there's nothing an override table
+//     could add. Checked against the raw value, not goName's output: this
+//     must not fire on a value goName legitimately transforms into something
+//     else.
+//   - A value that is nothing but punctuation — GMP's <relation> filter
+//     operators (=, :, ~, >, <) chief among them — gives goName no letters
+//     to capitalize and no separator to split on. For ':' specifically,
+//     goName treats the character itself as a word separator, leaving no
+//     word at all; goName's empty-input fallback then silently returns the
+//     generic name "Field", which would be wrong here, not merely invalid,
+//     so it must never reach that fallback for a value with no word content.
+//     A relation operator's meaning is intrinsic to the symbol wherever it
+//     appears, so EnumConstantNames is the reviewed, protocol-wide fallback
+//     for this whole case.
+func (g *gen) altSuffix(value string) (string, error) {
+	if isAllDigits(value) {
+		return "N" + value, nil
+	}
+	if len(strings.FieldsFunc(value, isNameSeparator)) > 0 {
+		if s := goName(value); isIdentifierFragment(s) {
+			return s, nil
+		}
+	}
+	if o, ok := g.ec[value]; ok {
+		if g.ecConsumed != nil {
+			g.ecConsumed[value] = true
+		}
+		return o.Suffix, nil
+	}
+	return "", fmt.Errorf(
+		"alt value %q does not produce a valid Go identifier and has no EnumConstantNames entry", value)
+}
+
+func isAllDigits(s string) bool {
+	if s == "" {
+		return false
+	}
+	for _, r := range s {
+		if r < '0' || r > '9' {
+			return false
+		}
+	}
+	return true
+}
+
+// isIdentifierFragment reports whether s is safe to use, on its own or
+// concatenated after another identifier, as a piece of a Go identifier:
+// every rune is a letter or underscore, and any digit is not the first rune.
+func isIdentifierFragment(s string) bool {
+	if s == "" {
+		return false
+	}
+	for i, r := range s {
+		switch {
+		case r == '_' || unicode.IsLetter(r):
+		case i > 0 && unicode.IsDigit(r):
+		default:
+			return false
+		}
+	}
+	return true
+}
+
 // nameOverrideFor looks up st in NameOverrides by every path it was reached
 // from, mirroring fieldOverridesFor's per-use agreement discipline: every use
 // — including one with no matching g.no entry, which resolves to "no
@@ -1204,6 +1538,16 @@ func (g *gen) nameOverrideFor(st *structType) (name string, ok bool, err error) 
 }
 
 func (g *gen) candidates(st *structType, first use) []string {
+	return g.candidateLadder(goName(st.node.Name), first)
+}
+
+// candidateLadder builds the shared candidate sequence pick and pickEnum both
+// walk: the bare (family-qualified) name, then the name prefixed by one more
+// ancestor at a time, then the same qualified by the command that first
+// reached it. Factored out of candidates rather than folding enumType into
+// candidates itself, to keep the already-golden-tested struct naming path
+// untouched by the enum feature.
+func (g *gen) candidateLadder(self string, first use) []string {
 	var out []string
 	add := func(s string) {
 		for _, seen := range out {
@@ -1214,7 +1558,6 @@ func (g *gen) candidates(st *structType, first use) []string {
 		out = append(out, s)
 	}
 
-	self := goName(st.node.Name)
 	// Family-qualified, from the bare name outward through the ancestors.
 	add(g.qualify(self))
 	for i := len(first.path) - 1; i >= 0; i-- {
@@ -1241,14 +1584,32 @@ func (g *gen) qualify(s string) string {
 // fileFor puts a shape used by one command in that command's file, and a shape
 // reached from more than one command in the family's shared file.
 func (g *gen) fileFor(st *structType) string {
-	first := st.uses[0].command
-	for _, u := range st.uses[1:] {
+	return fileForUses(st.uses, g.sharedFile())
+}
+
+// fileForEnum mirrors fileFor for an enumType.
+func (g *gen) fileForEnum(et *enumType) string {
+	return fileForUses(et.uses, g.sharedFile())
+}
+
+// sharedFile names the family's shared file, falling back to "commands" for
+// the handful of families whose commands share no common noun (familyNoun's
+// doc comment explains why).
+func (g *gen) sharedFile() string {
+	base := g.familyNoun
+	if base == "" {
+		base = "commands"
+	}
+	return base + sharedFileSuffix
+}
+
+// fileForUses puts a shape used by exactly one command in that command's
+// file, and a shape reached from more than one command in shared.
+func fileForUses(uses []use, shared string) string {
+	first := uses[0].command
+	for _, u := range uses[1:] {
 		if u.command != first {
-			base := g.familyNoun
-			if base == "" {
-				base = "commands"
-			}
-			return base + sharedFileSuffix
+			return shared
 		}
 	}
 	return first + ".go"
@@ -1286,26 +1647,40 @@ var pointerScalars = map[string]bool{
 }
 
 // goTypeOf resolves a node's Go type name, unqualified for targetPackage.
-func (g *gen) goTypeOf(n *schema.Node) string {
+func (g *gen) goTypeOf(n *schema.Node) (string, error) {
 	if len(n.Children) > 0 {
-		return g.byHash[typeHash(n)].goName
+		return g.byHash[typeHash(n)].goName, nil
 	}
-	return g.scalarGoType(n.Type)
+	return g.scalarGoType(n)
 }
 
 // scalarGoType is goTypeOf's leaf-resolution rule, factored out so
-// emitChardata can share it directly: a chardata node's own Type is always a
-// lexical leaf type (e.g. "text", "base64"), never a nested shape, so it has
-// no use for goTypeOf's structural branch.
-func (g *gen) scalarGoType(t string) string {
-	t = schema.Resolve(t)
+// emitChardataOverridable can share it directly: a chardata node's own Type
+// is always a lexical leaf type (e.g. "text", "base64"), never a nested
+// shape, so it has no use for goTypeOf's structural branch. It takes the
+// whole node, not just n.Type, so it can also route an Alts-bearing node
+// (including a "dual-role" struct node whose own chardata text is itself
+// enum-constrained — see registerEnum) to its collected enum type.
+func (g *gen) scalarGoType(n *schema.Node) (string, error) {
+	if len(n.Alts) > 0 {
+		et, ok := g.byEnumName[n.Name]
+		if !ok {
+			// Unreachable by construction: collect's walk() visits every node
+			// emit() later visits, so an Alts-bearing node reached here was
+			// already registered. Kept as an error, not a panic or a silent
+			// "string" fallback, per this codebase's fail-closed convention.
+			return "", fmt.Errorf("codegen: %s: enum type was never registered during collection", n.Name)
+		}
+		return et.goName, nil
+	}
+	t := schema.Resolve(n.Type)
 	if o, ok := g.ov[t]; ok {
-		return strings.TrimPrefix(o.GoType, targetPackage+".")
+		return strings.TrimPrefix(o.GoType, targetPackage+"."), nil
 	}
 	if s, ok := scalarTypes[t]; ok {
-		return s
+		return s, nil
 	}
-	return "string"
+	return "string", nil
 }
 
 type field struct {
@@ -1334,7 +1709,10 @@ type field struct {
 // since a shape shared by more than one command has no single owner for
 // either table to key on — see PointerOverrides' doc comment.
 func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool, typeOv map[fieldKey]string) (field, error) {
-	base := g.goTypeOf(n)
+	base, err := g.goTypeOf(n)
+	if err != nil {
+		return field{}, err
+	}
 	if t, ok := typeOv[fieldKey{name: n.Name, attr: n.Kind == schema.KindAttribute}]; ok {
 		base = t
 	}
@@ -1356,42 +1734,14 @@ func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool, type
 		}
 		opts = ",omitempty"
 	case n.Card == schema.CardRequired:
-		// A required item outside any <or> is present by definition: no
-		// pointer, no omitempty — unless RequiredOverrides names this field as
-		// an exception live evidence disproved that default for. A plain
-		// string leaf just gets omitempty (resume_task/start_task's
-		// report_id). A structured field additionally needs a pointer to
-		// stay distinguishable from its zero value on re-encode — see T-23's
-		// count-wrapper entries, where the wrapper struct's own zero value
-		// (all-zero Value/Filtered/Page) is otherwise indistinguishable from
-		// "genuinely absent," fabricating an element the wire never sent.
-		key := command + "." + n.Name
-		if _, ok := g.ro[key]; ok {
-			if len(n.Children) > 0 {
-				goType = "*" + base
-			} else if base != "string" {
-				return field{}, fmt.Errorf(
-					"codegen: RequiredOverrides[%q]: only evidenced for plain string or structured fields, "+
-						"got Go type %q; no live evidence yet justifies overriding requiredness for a "+
-						"non-string scalar field", key, base)
-			}
-			g.roConsumed[key] = true
-			opts = ",omitempty"
-		}
-		// CardinalityOverrides names this field as one the schema declares
-		// exactly-one but live evidence proves repeats on the wire (see
-		// get_nvts.nvt): unlike RequiredOverrides, this is not restricted to
-		// string leaves, since the whole point is forcing a structured shape
-		// into a slice.
-		if ov, ok := g.co[key]; ok {
-			goType = "[]" + base
-			opts = ",omitempty"
-			overrideReason = ov.Reason
-			g.coConsumed[key] = true
+		var err error
+		goType, opts, overrideReason, err = g.requiredFieldType(command, n, base)
+		if err != nil {
+			return field{}, err
 		}
 	}
 
-	overrideReason, err := g.withChardataRelocationReason(command, n, overrideReason)
+	overrideReason, err = g.withChardataRelocationReason(command, n, overrideReason)
 	if err != nil {
 		return field{}, err
 	}
@@ -1403,6 +1753,45 @@ func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool, type
 	tag += opts
 
 	return field{name: uniqueName(goName(n.Name), used), goType: goType, tag: tag, node: n, overrideReason: overrideReason}, nil
+}
+
+// requiredFieldType computes the Go type/tag-options/override-reason for a
+// field outside any <or> that the schema declares exactly-one. Present by
+// definition: no pointer, no omitempty — unless RequiredOverrides names this
+// field as an exception live evidence disproved that default for. A plain
+// string leaf just gets omitempty (resume_task/start_task's report_id). A
+// structured field additionally needs a pointer to stay distinguishable from
+// its zero value on re-encode — see T-23's count-wrapper entries, where the
+// wrapper struct's own zero value (all-zero Value/Filtered/Page) is otherwise
+// indistinguishable from "genuinely absent," fabricating an element the wire
+// never sent.
+func (g *gen) requiredFieldType(command string, n *schema.Node, base string) (goType, opts, overrideReason string, err error) {
+	goType = base
+	key := command + "." + n.Name
+	if _, ok := g.ro[key]; ok {
+		if len(n.Children) > 0 {
+			goType = "*" + base
+		} else if base != "string" {
+			return "", "", "", fmt.Errorf(
+				"codegen: RequiredOverrides[%q]: only evidenced for plain string or structured fields, "+
+					"got Go type %q; no live evidence yet justifies overriding requiredness for a "+
+					"non-string scalar field", key, base)
+		}
+		g.roConsumed[key] = true
+		opts = ",omitempty"
+	}
+	// CardinalityOverrides names this field as one the schema declares
+	// exactly-one but live evidence proves repeats on the wire (see
+	// get_nvts.nvt): unlike RequiredOverrides, this is not restricted to
+	// string leaves, since the whole point is forcing a structured shape
+	// into a slice.
+	if ov, ok := g.co[key]; ok {
+		goType = "[]" + base
+		opts = ",omitempty"
+		overrideReason = ov.Reason
+		g.coConsumed[key] = true
+	}
+	return goType, opts, overrideReason, nil
 }
 
 // withChardataRelocationReason returns existing unchanged unless n's struct
@@ -1438,8 +1827,8 @@ func (g *gen) withChardataRelocationReason(command string, n *schema.Node, exist
 // has any. It is called before emitFields so the chardata field reads first,
 // matching the hand-written override types this generator is meant to match
 // (e.g. commands.OverrideText's Text field precedes its Excerpt attribute).
-func (g *gen) emitChardata(b *strings.Builder, n *schema.Node, used map[string]bool) {
-	g.emitChardataOverridable(b, n, used, nil)
+func (g *gen) emitChardata(b *strings.Builder, n *schema.Node, used map[string]bool) error {
+	return g.emitChardataOverridable(b, n, used, nil)
 }
 
 // emitChardataOverridable is emitChardata plus a FieldOverrides chardata
@@ -1448,15 +1837,20 @@ func (g *gen) emitChardata(b *strings.Builder, n *schema.Node, used map[string]b
 // double-declaring the field would collide. override is only ever non-nil
 // from emitStruct, since FieldOverrides addresses nested struct shapes by
 // path, and a command's own request/response envelope has none.
-func (g *gen) emitChardataOverridable(b *strings.Builder, n *schema.Node, used map[string]bool, override *FieldOverride) {
+func (g *gen) emitChardataOverridable(b *strings.Builder, n *schema.Node, used map[string]bool, override *FieldOverride) error {
 	switch {
 	case n.Chardata:
 		name := uniqueName("Value", used)
-		fmt.Fprintf(b, "%s %s `xml:\",chardata\"`\n", name, g.scalarGoType(n.Type))
+		t, err := g.scalarGoType(n)
+		if err != nil {
+			return err
+		}
+		fmt.Fprintf(b, "%s %s `xml:\",chardata\"`\n", name, t)
 	case override != nil:
 		name := uniqueName("Value", used)
 		fmt.Fprintf(b, "%s %s `xml:\",chardata\" gmpoverride:%q`\n", name, override.GoType, override.Reason)
 	}
+	return nil
 }
 
 func uniqueName(name string, used map[string]bool) string {
@@ -1498,6 +1892,9 @@ func (g *gen) emit() (map[string]string, error) {
 		if err := g.emitStruct(get(st.file), st); err != nil {
 			return nil, err
 		}
+	}
+	for _, et := range g.enums {
+		emitEnum(get(et.file), et)
 	}
 
 	out := make(map[string]string, len(files))
@@ -1548,7 +1945,9 @@ func (g *gen) emitRequest(b *strings.Builder, c *schema.Command) error {
 	fmt.Fprintf(b, "type %s struct {\n", name)
 	used := map[string]bool{"XMLName": true}
 	fmt.Fprintf(b, "XMLName xml.Name `xml:%q`\n", c.Name)
-	g.emitChardata(b, c.Request, used)
+	if err := g.emitChardata(b, c.Request, used); err != nil {
+		return err
+	}
 	extra, _, err := g.fieldOverridesFor(&structType{node: c.Request, uses: []use{{command: c.Name}}})
 	if err != nil {
 		return err
@@ -1600,7 +1999,9 @@ func (g *gen) emitResponse(b *strings.Builder, c *schema.Command) error {
 	// schema children, so their order and spelling cannot drift per command.
 	b.WriteString("Status string `xml:\"status,attr\"`\n")
 	b.WriteString("StatusText string `xml:\"status_text,attr\"`\n")
-	g.emitChardata(b, c.Response, used)
+	if err := g.emitChardata(b, c.Response, used); err != nil {
+		return err
+	}
 	extra, _, err := g.fieldOverridesFor(&structType{node: c.Response, uses: []use{{command: c.Name}}})
 	if err != nil {
 		return err
@@ -1665,7 +2066,9 @@ func (g *gen) emitStruct(b *strings.Builder, st *structType) error {
 		return err
 	}
 	if chardataSuppression == nil {
-		g.emitChardataOverridable(b, st.node, used, chardataOverride)
+		if err := g.emitChardataOverridable(b, st.node, used, chardataOverride); err != nil {
+			return err
+		}
 	}
 	fields, collided, err := g.emitFields(st.node.Children, used, suppressed, typeOv, "")
 	if err != nil {
@@ -1686,6 +2089,21 @@ func (g *gen) emitStruct(b *strings.Builder, st *structType) error {
 		}
 	}
 	return nil
+}
+
+// emitEnum declares the named string type and its constants for one
+// <alts>-constrained wire name. Open, not closed: the underlying type is a
+// plain string, so decoding an unrecognized server value neither fails nor
+// loses the value.
+func emitEnum(b *strings.Builder, et *enumType) {
+	fmt.Fprintf(b, "// %s is the <%s> value of %s. See the GMP protocol docs for details.\n",
+		et.goName, et.name, ownerOfUses(et.uses))
+	fmt.Fprintf(b, "type %s string\n\n", et.goName)
+	b.WriteString("const (\n")
+	for _, c := range et.consts {
+		fmt.Fprintf(b, "%s %s = %q\n", c.goName, et.goName, c.value)
+	}
+	b.WriteString(")\n\n")
 }
 
 // overrideResult is one key's resolved FieldOverrides for a structType: the
@@ -1955,9 +2373,16 @@ func (g *gen) overrideField(ov FieldOverride, used map[string]bool) field {
 
 // ownerOf describes, for the doc comment, which commands reach a shape.
 func (g *gen) ownerOf(st *structType) string {
+	return ownerOfUses(st.uses)
+}
+
+// ownerOfUses is ownerOf's shared implementation, usable from both a
+// structType and an enumType (and from registerEnum's error message, before
+// any enumType even exists to hold the uses).
+func ownerOfUses(uses []use) string {
 	var names []string
 	seen := map[string]bool{}
-	for _, u := range st.uses {
+	for _, u := range uses {
 		if !seen[u.command] {
 			seen[u.command] = true
 			names = append(names, u.command)
@@ -2370,15 +2795,17 @@ var initialisms = map[string]string{
 // identifier: snake_case to CamelCase, with known acronyms capitalised.
 func goName(s string) string {
 	var b strings.Builder
-	for _, part := range strings.FieldsFunc(s, func(r rune) bool {
-		return r == '_' || r == '-' || r == '.' || r == ':' || r == ' '
-	}) {
+	for _, part := range strings.FieldsFunc(s, isNameSeparator) {
 		b.WriteString(goWord(part))
 	}
 	if b.Len() == 0 {
 		return "Field"
 	}
 	return b.String()
+}
+
+func isNameSeparator(r rune) bool {
+	return r == '_' || r == '-' || r == '.' || r == ':' || r == ' '
 }
 
 // goWord capitalises a single already-split word, expanding it via

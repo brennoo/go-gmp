@@ -57,9 +57,9 @@ type ReportKeywords struct {
 
 // ReportKeyword is the <keyword> element of get_reports. See the GMP protocol docs for details.
 type ReportKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string         `xml:"column"`
+	Relation ReportRelation `xml:"relation"`
+	Value    string         `xml:"value"`
 }
 
 // GetReportsSort is the <sort> element of get_reports. See the GMP protocol docs for details.
@@ -69,8 +69,8 @@ type GetReportsSort struct {
 
 // ReportSortField is the <field> element of get_reports. See the GMP protocol docs for details.
 type ReportSortField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string      `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order ReportOrder `xml:"order"`
 }
 
 // Reports is the <reports> element of get_reports. See the GMP protocol docs for details.
@@ -85,3 +85,14 @@ type ReportCount struct {
 	Filtered int `xml:"filtered"`
 	Page     int `xml:"page"`
 }
+
+// ReportRelation is the <relation> value of get_reports. See the GMP protocol docs for details.
+type ReportRelation string
+
+const (
+	ReportRelationEq       ReportRelation = "="
+	ReportRelationContains ReportRelation = ":"
+	ReportRelationRegex    ReportRelation = "~"
+	ReportRelationGT       ReportRelation = ">"
+	ReportRelationLT       ReportRelation = "<"
+)

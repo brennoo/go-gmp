@@ -43,7 +43,7 @@ type GetNVTsNVT struct {
 	Discovery        *int            `xml:"discovery,omitempty"`
 	CreationTime     *GMPTime        `xml:"creation_time,omitempty"`
 	ModificationTime *GMPTime        `xml:"modification_time,omitempty"`
-	Category         string          `xml:"category,omitempty"`
+	Category         NVTCategory     `xml:"category,omitempty"`
 	Family           string          `xml:"family,omitempty"`
 	CVSSBase         string          `xml:"cvss_base,omitempty"`
 	Severities       *NVTSeverities  `xml:"severities,omitempty"`
@@ -143,3 +143,21 @@ type NVTPreference struct {
 	Default string           `xml:"default"`
 	Alt     []string         `xml:"alt,omitempty"`
 }
+
+// NVTCategory is the <category> value of get_nvts. See the GMP protocol docs for details.
+type NVTCategory string
+
+const (
+	NVTCategoryN0  NVTCategory = "0"
+	NVTCategoryN1  NVTCategory = "1"
+	NVTCategoryN2  NVTCategory = "2"
+	NVTCategoryN3  NVTCategory = "3"
+	NVTCategoryN4  NVTCategory = "4"
+	NVTCategoryN5  NVTCategory = "5"
+	NVTCategoryN6  NVTCategory = "6"
+	NVTCategoryN7  NVTCategory = "7"
+	NVTCategoryN8  NVTCategory = "8"
+	NVTCategoryN9  NVTCategory = "9"
+	NVTCategoryN10 NVTCategory = "10"
+	NVTCategoryN11 NVTCategory = "11"
+)

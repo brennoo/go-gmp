@@ -46,9 +46,9 @@ type TagKeywords struct {
 
 // TagKeyword is the <keyword> element of get_tags. See the GMP protocol docs for details.
 type TagKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string      `xml:"column"`
+	Relation TagRelation `xml:"relation"`
+	Value    string      `xml:"value"`
 }
 
 // TagSort is the <sort> element of get_tags. See the GMP protocol docs for details.
@@ -58,8 +58,8 @@ type TagSort struct {
 
 // TagField is the <field> element of get_tags. See the GMP protocol docs for details.
 type TagField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string   `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order TagOrder `xml:"order"`
 }
 
 // Tags is the <tags> element of get_tags. See the GMP protocol docs for details.
@@ -120,3 +120,22 @@ type TagResourcesResource struct {
 	Trash       GMPBool `xml:"trash"`
 	Permissions string  `xml:"permissions,omitempty"`
 }
+
+// TagRelation is the <relation> value of get_tags. See the GMP protocol docs for details.
+type TagRelation string
+
+const (
+	TagRelationEq       TagRelation = "="
+	TagRelationContains TagRelation = ":"
+	TagRelationRegex    TagRelation = "~"
+	TagRelationGT       TagRelation = ">"
+	TagRelationLT       TagRelation = "<"
+)
+
+// TagOrder is the <order> value of get_tags. See the GMP protocol docs for details.
+type TagOrder string
+
+const (
+	TagOrderAscending  TagOrder = "ascending"
+	TagOrderDescending TagOrder = "descending"
+)

@@ -45,9 +45,9 @@ type RoleKeywords struct {
 
 // RoleKeyword is the <keyword> element of get_roles. See the GMP protocol docs for details.
 type RoleKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string       `xml:"column"`
+	Relation RoleRelation `xml:"relation"`
+	Value    string       `xml:"value"`
 }
 
 // RoleSort is the <sort> element of get_roles. See the GMP protocol docs for details.
@@ -57,8 +57,8 @@ type RoleSort struct {
 
 // RoleField is the <field> element of get_roles. See the GMP protocol docs for details.
 type RoleField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string    `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order RoleOrder `xml:"order"`
 }
 
 // Roles is the <roles> element of get_roles. See the GMP protocol docs for details.
@@ -117,3 +117,22 @@ type RoleTag struct {
 	Value   string `xml:"value"`
 	Comment string `xml:"comment"`
 }
+
+// RoleRelation is the <relation> value of get_roles. See the GMP protocol docs for details.
+type RoleRelation string
+
+const (
+	RoleRelationEq       RoleRelation = "="
+	RoleRelationContains RoleRelation = ":"
+	RoleRelationRegex    RoleRelation = "~"
+	RoleRelationGT       RoleRelation = ">"
+	RoleRelationLT       RoleRelation = "<"
+)
+
+// RoleOrder is the <order> value of get_roles. See the GMP protocol docs for details.
+type RoleOrder string
+
+const (
+	RoleOrderAscending  RoleOrder = "ascending"
+	RoleOrderDescending RoleOrder = "descending"
+)

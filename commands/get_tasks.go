@@ -19,15 +19,15 @@ type GetTasks struct {
 
 // GetTasksResponse is a get_tasks command response. See the GMP protocol docs for details.
 type GetTasksResponse struct {
-	XMLName        xml.Name    `xml:"get_tasks_response"`
-	Status         string      `xml:"status,attr"`
-	StatusText     string      `xml:"status_text,attr"`
-	ApplyOverrides string      `xml:"apply_overrides"`
-	Filters        TaskFilters `xml:"filters"`
-	Sort           TaskSort    `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Tasks          Tasks       `xml:"tasks"`
-	TaskCount      *TaskCount  `xml:"task_count,omitempty"`
-	Task           []Task      `xml:"task,omitempty"`
+	XMLName        xml.Name           `xml:"get_tasks_response"`
+	Status         string             `xml:"status,attr"`
+	StatusText     string             `xml:"status_text,attr"`
+	ApplyOverrides TaskApplyOverrides `xml:"apply_overrides"`
+	Filters        TaskFilters        `xml:"filters"`
+	Sort           TaskSort           `xml:"sort" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Tasks          Tasks              `xml:"tasks"`
+	TaskCount      *TaskCount         `xml:"task_count,omitempty"`
+	Task           []Task             `xml:"task,omitempty"`
 }
 
 // GetStatus returns the status and status text from the response.
@@ -50,9 +50,9 @@ type TaskKeywords struct {
 
 // TaskKeyword is the <keyword> element of get_tasks. See the GMP protocol docs for details.
 type TaskKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string       `xml:"column"`
+	Relation TaskRelation `xml:"relation"`
+	Value    string       `xml:"value"`
 }
 
 // TaskSort is the <sort> element of get_tasks. See the GMP protocol docs for details.
@@ -62,8 +62,8 @@ type TaskSort struct {
 
 // TaskField is the <field> element of get_tasks. See the GMP protocol docs for details.
 type TaskField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string    `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order TaskOrder `xml:"order"`
 }
 
 // Tasks is the <tasks> element of get_tasks. See the GMP protocol docs for details.
@@ -93,7 +93,7 @@ type Task struct {
 	Status           string               `xml:"status,omitempty"`
 	Progress         *int                 `xml:"progress,omitempty"`
 	Alterable        *GMPBool             `xml:"alterable,omitempty"`
-	UsageType        string               `xml:"usage_type,omitempty"`
+	UsageType        TaskUsageType        `xml:"usage_type,omitempty"`
 	Config           *GetTasksConfig      `xml:"config,omitempty"`
 	Target           *GetTasksTarget      `xml:"target,omitempty"`
 	Scanner          *GetTasksScanner     `xml:"scanner,omitempty"`
@@ -264,3 +264,30 @@ type TaskComplianceCount struct {
 	Incomplete int `xml:"incomplete"`
 	Undefined  int `xml:"undefined"`
 }
+
+// TaskApplyOverrides is the <apply_overrides> value of get_tasks. See the GMP protocol docs for details.
+type TaskApplyOverrides string
+
+const (
+	TaskApplyOverridesN0 TaskApplyOverrides = "0"
+	TaskApplyOverridesN1 TaskApplyOverrides = "1"
+)
+
+// TaskRelation is the <relation> value of get_tasks. See the GMP protocol docs for details.
+type TaskRelation string
+
+const (
+	TaskRelationEq       TaskRelation = "="
+	TaskRelationContains TaskRelation = ":"
+	TaskRelationRegex    TaskRelation = "~"
+	TaskRelationGT       TaskRelation = ">"
+	TaskRelationLT       TaskRelation = "<"
+)
+
+// TaskOrder is the <order> value of get_tasks. See the GMP protocol docs for details.
+type TaskOrder string
+
+const (
+	TaskOrderAscending  TaskOrder = "ascending"
+	TaskOrderDescending TaskOrder = "descending"
+)

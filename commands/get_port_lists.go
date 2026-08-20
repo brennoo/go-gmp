@@ -47,9 +47,9 @@ type PortListKeywords struct {
 
 // PortListKeyword is the <keyword> element of get_port_lists. See the GMP protocol docs for details.
 type PortListKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string           `xml:"column"`
+	Relation PortListRelation `xml:"relation"`
+	Value    string           `xml:"value"`
 }
 
 // PortListSort is the <sort> element of get_port_lists. See the GMP protocol docs for details.
@@ -59,8 +59,8 @@ type PortListSort struct {
 
 // PortListField is the <field> element of get_port_lists. See the GMP protocol docs for details.
 type PortListField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string        `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order PortListOrder `xml:"order"`
 }
 
 // PortLists is the <port_lists> element of get_port_lists. See the GMP protocol docs for details.
@@ -156,3 +156,22 @@ type PortListTarget struct {
 	Name        string `xml:"name"`
 	Permissions string `xml:"permissions,omitempty"`
 }
+
+// PortListRelation is the <relation> value of get_port_lists. See the GMP protocol docs for details.
+type PortListRelation string
+
+const (
+	PortListRelationEq       PortListRelation = "="
+	PortListRelationContains PortListRelation = ":"
+	PortListRelationRegex    PortListRelation = "~"
+	PortListRelationGT       PortListRelation = ">"
+	PortListRelationLT       PortListRelation = "<"
+)
+
+// PortListOrder is the <order> value of get_port_lists. See the GMP protocol docs for details.
+type PortListOrder string
+
+const (
+	PortListOrderAscending  PortListOrder = "ascending"
+	PortListOrderDescending PortListOrder = "descending"
+)

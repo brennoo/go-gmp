@@ -6,22 +6,22 @@ import "encoding/xml"
 
 // CreateCredential is a create_credential command request. See the GMP protocol docs for details.
 type CreateCredential struct {
-	XMLName       xml.Name           `xml:"create_credential"`
-	Name          string             `xml:"name"`
-	Comment       string             `xml:"comment,omitempty"`
-	Copy          string             `xml:"copy,omitempty"`
-	AllowInsecure *GMPBool           `xml:"allow_insecure,omitempty"`
-	Certificate   string             `xml:"certificate,omitempty"`
-	Kdc           string             `xml:"kdc,omitempty"`
-	Kdcs          *CredentialKdcs    `xml:"kdcs,omitempty"`
-	Key           *CredentialKey     `xml:"key,omitempty"`
-	Login         string             `xml:"login,omitempty"`
-	Password      string             `xml:"password,omitempty"`
-	AuthAlgorithm string             `xml:"auth_algorithm,omitempty"`
-	Community     string             `xml:"community,omitempty"`
-	Privacy       *CredentialPrivacy `xml:"privacy,omitempty"`
-	Realm         string             `xml:"realm,omitempty"`
-	Type          string             `xml:"type,omitempty"`
+	XMLName       xml.Name                `xml:"create_credential"`
+	Name          string                  `xml:"name"`
+	Comment       string                  `xml:"comment,omitempty"`
+	Copy          string                  `xml:"copy,omitempty"`
+	AllowInsecure *GMPBool                `xml:"allow_insecure,omitempty"`
+	Certificate   string                  `xml:"certificate,omitempty"`
+	Kdc           string                  `xml:"kdc,omitempty"`
+	Kdcs          *CredentialKdcs         `xml:"kdcs,omitempty"`
+	Key           *CredentialKey          `xml:"key,omitempty"`
+	Login         string                  `xml:"login,omitempty"`
+	Password      string                  `xml:"password,omitempty"`
+	AuthAlgorithm CredentialAuthAlgorithm `xml:"auth_algorithm,omitempty"`
+	Community     string                  `xml:"community,omitempty"`
+	Privacy       *CredentialPrivacy      `xml:"privacy,omitempty"`
+	Realm         string                  `xml:"realm,omitempty"`
+	Type          CredentialType          `xml:"type,omitempty"`
 }
 
 // CreateCredentialResponse is a create_credential command response. See the GMP protocol docs for details.

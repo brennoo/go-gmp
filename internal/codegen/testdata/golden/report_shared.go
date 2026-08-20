@@ -94,23 +94,23 @@ type ReportSort struct {
 
 // ReportField is the <field> element of create_report and get_reports. See the GMP protocol docs for details.
 type ReportField struct {
-	Value string `xml:",chardata"`
-	Order string `xml:"order"`
+	Value string      `xml:",chardata"`
+	Order ReportOrder `xml:"order"`
 }
 
 // ReportFilters is the <filters> element of create_report and get_reports. See the GMP protocol docs for details.
 type ReportFilters struct {
-	Value           string       `xml:",chardata"`
-	ID              string       `xml:"id,attr,omitempty"`
-	Term            string       `xml:"term"`
-	Phrase          string       `xml:"phrase"`
-	Notes           string       `xml:"notes"`
-	Overrides       string       `xml:"overrides"`
-	ApplyOverrides  string       `xml:"apply_overrides"`
-	ResultHostsOnly string       `xml:"result_hosts_only"`
-	MinQOD          string       `xml:"min_qod"`
-	Delta           *ReportDelta `xml:"delta,omitempty"`
-	Filter          []string     `xml:"filter,omitempty"`
+	Value           string                 `xml:",chardata"`
+	ID              string                 `xml:"id,attr,omitempty"`
+	Term            string                 `xml:"term"`
+	Phrase          string                 `xml:"phrase"`
+	Notes           ReportFiltersNotes     `xml:"notes"`
+	Overrides       ReportFiltersOverrides `xml:"overrides"`
+	ApplyOverrides  ReportApplyOverrides   `xml:"apply_overrides"`
+	ResultHostsOnly ReportResultHostsOnly  `xml:"result_hosts_only"`
+	MinQOD          string                 `xml:"min_qod"`
+	Delta           *ReportDelta           `xml:"delta,omitempty"`
+	Filter          []ReportFilter         `xml:"filter,omitempty"`
 }
 
 // ReportDelta is the <delta> element of create_report and get_reports. See the GMP protocol docs for details.
@@ -799,3 +799,54 @@ type ReportReportConfig struct {
 	ID   string `xml:"id,attr"`
 	Name string `xml:"name"`
 }
+
+// ReportOrder is the <order> value of create_report and get_reports. See the GMP protocol docs for details.
+type ReportOrder string
+
+const (
+	ReportOrderAscending  ReportOrder = "ascending"
+	ReportOrderDescending ReportOrder = "descending"
+)
+
+// ReportFiltersNotes is the <notes> value of create_report and get_reports. See the GMP protocol docs for details.
+type ReportFiltersNotes string
+
+const (
+	ReportFiltersNotesN0 ReportFiltersNotes = "0"
+	ReportFiltersNotesN1 ReportFiltersNotes = "1"
+)
+
+// ReportFiltersOverrides is the <overrides> value of create_report and get_reports. See the GMP protocol docs for details.
+type ReportFiltersOverrides string
+
+const (
+	ReportFiltersOverridesN0 ReportFiltersOverrides = "0"
+	ReportFiltersOverridesN1 ReportFiltersOverrides = "1"
+)
+
+// ReportApplyOverrides is the <apply_overrides> value of create_report and get_reports. See the GMP protocol docs for details.
+type ReportApplyOverrides string
+
+const (
+	ReportApplyOverridesN0 ReportApplyOverrides = "0"
+	ReportApplyOverridesN1 ReportApplyOverrides = "1"
+)
+
+// ReportResultHostsOnly is the <result_hosts_only> value of create_report and get_reports. See the GMP protocol docs for details.
+type ReportResultHostsOnly string
+
+const (
+	ReportResultHostsOnlyN0 ReportResultHostsOnly = "0"
+	ReportResultHostsOnlyN1 ReportResultHostsOnly = "1"
+)
+
+// ReportFilter is the <filter> value of create_report and get_reports. See the GMP protocol docs for details.
+type ReportFilter string
+
+const (
+	ReportFilterCritical ReportFilter = "Critical"
+	ReportFilterHigh     ReportFilter = "High"
+	ReportFilterMedium   ReportFilter = "Medium"
+	ReportFilterLow      ReportFilter = "Low"
+	ReportFilterLog      ReportFilter = "Log"
+)

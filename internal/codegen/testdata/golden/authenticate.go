@@ -15,7 +15,7 @@ type AuthenticateResponse struct {
 	XMLName    xml.Name `xml:"authenticate_response"`
 	Status     string   `xml:"status,attr"`
 	StatusText string   `xml:"status_text,attr"`
-	Role       string   `xml:"role"`
+	Role       AuthRole `xml:"role"`
 	Timezone   string   `xml:"timezone"`
 }
 
@@ -29,3 +29,13 @@ type AuthCredentials struct {
 	Username string `xml:"username"`
 	Password string `xml:"password"`
 }
+
+// AuthRole is the <role> value of authenticate. See the GMP protocol docs for details.
+type AuthRole string
+
+const (
+	AuthRoleUser       AuthRole = "User"
+	AuthRoleAdmin      AuthRole = "Admin"
+	AuthRoleSuperAdmin AuthRole = "Super Admin"
+	AuthRoleObserver   AuthRole = "Observer"
+)

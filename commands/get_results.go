@@ -49,9 +49,9 @@ type ResultKeywords struct {
 
 // ResultKeyword is the <keyword> element of get_results. See the GMP protocol docs for details.
 type ResultKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string         `xml:"column"`
+	Relation ResultRelation `xml:"relation"`
+	Value    string         `xml:"value"`
 }
 
 // ResultSort is the <sort> element of get_results. See the GMP protocol docs for details.
@@ -61,8 +61,8 @@ type ResultSort struct {
 
 // ResultField is the <field> element of get_results. See the GMP protocol docs for details.
 type ResultField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string      `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order ResultOrder `xml:"order"`
 }
 
 // Results is the <results> element of get_results. See the GMP protocol docs for details.
@@ -367,3 +367,22 @@ type ResultTickets struct {
 type ResultTicket struct {
 	ID string `xml:"id,attr"`
 }
+
+// ResultRelation is the <relation> value of get_results. See the GMP protocol docs for details.
+type ResultRelation string
+
+const (
+	ResultRelationEq       ResultRelation = "="
+	ResultRelationContains ResultRelation = ":"
+	ResultRelationRegex    ResultRelation = "~"
+	ResultRelationGT       ResultRelation = ">"
+	ResultRelationLT       ResultRelation = "<"
+)
+
+// ResultOrder is the <order> value of get_results. See the GMP protocol docs for details.
+type ResultOrder string
+
+const (
+	ResultOrderAscending  ResultOrder = "ascending"
+	ResultOrderDescending ResultOrder = "descending"
+)

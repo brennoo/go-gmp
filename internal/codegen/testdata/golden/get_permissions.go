@@ -45,9 +45,9 @@ type PermissionKeywords struct {
 
 // PermissionKeyword is the <keyword> element of get_permissions. See the GMP protocol docs for details.
 type PermissionKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string             `xml:"column"`
+	Relation PermissionRelation `xml:"relation"`
+	Value    string             `xml:"value"`
 }
 
 // PermissionSort is the <sort> element of get_permissions. See the GMP protocol docs for details.
@@ -57,8 +57,8 @@ type PermissionSort struct {
 
 // PermissionField is the <field> element of get_permissions. See the GMP protocol docs for details.
 type PermissionField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string          `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order PermissionOrder `xml:"order"`
 }
 
 // Permissions is the <permissions> element of get_permissions. See the GMP protocol docs for details.
@@ -137,3 +137,22 @@ type PermissionTag struct {
 	Value   string `xml:"value"`
 	Comment string `xml:"comment"`
 }
+
+// PermissionRelation is the <relation> value of get_permissions. See the GMP protocol docs for details.
+type PermissionRelation string
+
+const (
+	PermissionRelationEq       PermissionRelation = "="
+	PermissionRelationContains PermissionRelation = ":"
+	PermissionRelationRegex    PermissionRelation = "~"
+	PermissionRelationGT       PermissionRelation = ">"
+	PermissionRelationLT       PermissionRelation = "<"
+)
+
+// PermissionOrder is the <order> value of get_permissions. See the GMP protocol docs for details.
+type PermissionOrder string
+
+const (
+	PermissionOrderAscending  PermissionOrder = "ascending"
+	PermissionOrderDescending PermissionOrder = "descending"
+)

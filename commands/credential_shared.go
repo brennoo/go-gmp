@@ -16,6 +16,36 @@ type CredentialKey struct {
 
 // CredentialPrivacy is the <privacy> element of create_credential and modify_credential. See the GMP protocol docs for details.
 type CredentialPrivacy struct {
-	Algorithm string `xml:"algorithm"`
-	Password  string `xml:"password"`
+	Algorithm CredentialAlgorithm `xml:"algorithm"`
+	Password  string              `xml:"password"`
 }
+
+// CredentialAuthAlgorithm is the <auth_algorithm> value of create_credential, get_credentials and modify_credential. See the GMP protocol docs for details.
+type CredentialAuthAlgorithm string
+
+const (
+	CredentialAuthAlgorithmMD5  CredentialAuthAlgorithm = "md5"
+	CredentialAuthAlgorithmSha1 CredentialAuthAlgorithm = "sha1"
+)
+
+// CredentialAlgorithm is the <algorithm> value of create_credential, get_credentials and modify_credential. See the GMP protocol docs for details.
+type CredentialAlgorithm string
+
+const (
+	CredentialAlgorithmAes CredentialAlgorithm = "aes"
+	CredentialAlgorithmDes CredentialAlgorithm = "des"
+)
+
+// CredentialType is the <type> value of create_credential and get_credentials. See the GMP protocol docs for details.
+type CredentialType string
+
+const (
+	CredentialTypeCc    CredentialType = "cc"
+	CredentialTypeKrb5  CredentialType = "krb5"
+	CredentialTypePgp   CredentialType = "pgp"
+	CredentialTypePw    CredentialType = "pw"
+	CredentialTypeSmime CredentialType = "smime"
+	CredentialTypeSNMP  CredentialType = "snmp"
+	CredentialTypeUp    CredentialType = "up"
+	CredentialTypeUsk   CredentialType = "usk"
+)

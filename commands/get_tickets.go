@@ -45,9 +45,9 @@ type TicketKeywords struct {
 
 // TicketKeyword is the <keyword> element of get_tickets. See the GMP protocol docs for details.
 type TicketKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string         `xml:"column"`
+	Relation TicketRelation `xml:"relation"`
+	Value    string         `xml:"value"`
 }
 
 // TicketSort is the <sort> element of get_tickets. See the GMP protocol docs for details.
@@ -57,8 +57,8 @@ type TicketSort struct {
 
 // TicketField is the <field> element of get_tickets. See the GMP protocol docs for details.
 type TicketField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string      `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order TicketOrder `xml:"order"`
 }
 
 // Tickets is the <tickets> element of get_tickets. See the GMP protocol docs for details.
@@ -155,3 +155,22 @@ type TicketReport struct {
 type TicketFixVerifiedReport struct {
 	ID string `xml:"id,attr"`
 }
+
+// TicketRelation is the <relation> value of get_tickets. See the GMP protocol docs for details.
+type TicketRelation string
+
+const (
+	TicketRelationEq       TicketRelation = "="
+	TicketRelationContains TicketRelation = ":"
+	TicketRelationRegex    TicketRelation = "~"
+	TicketRelationGT       TicketRelation = ">"
+	TicketRelationLT       TicketRelation = "<"
+)
+
+// TicketOrder is the <order> value of get_tickets. See the GMP protocol docs for details.
+type TicketOrder string
+
+const (
+	TicketOrderAscending  TicketOrder = "ascending"
+	TicketOrderDescending TicketOrder = "descending"
+)

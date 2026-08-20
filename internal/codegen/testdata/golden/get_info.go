@@ -47,9 +47,9 @@ type NVTKeywords struct {
 
 // NVTKeyword is the <keyword> element of get_info. See the GMP protocol docs for details.
 type NVTKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string      `xml:"column"`
+	Relation NVTRelation `xml:"relation"`
+	Value    string      `xml:"value"`
 }
 
 // NVTSort is the <sort> element of get_info. See the GMP protocol docs for details.
@@ -59,8 +59,8 @@ type NVTSort struct {
 
 // NVTField is the <field> element of get_info. See the GMP protocol docs for details.
 type NVTField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string   `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order NVTOrder `xml:"order"`
 }
 
 // NVTInfoCount is the <info_count> element of get_info. See the GMP protocol docs for details.
@@ -268,3 +268,22 @@ type NVTRefs struct {
 	RefID string   `xml:"ref_id,attr"`
 	Ref   []string `xml:"ref,omitempty"`
 }
+
+// NVTRelation is the <relation> value of get_info. See the GMP protocol docs for details.
+type NVTRelation string
+
+const (
+	NVTRelationEq       NVTRelation = "="
+	NVTRelationContains NVTRelation = ":"
+	NVTRelationRegex    NVTRelation = "~"
+	NVTRelationGT       NVTRelation = ">"
+	NVTRelationLT       NVTRelation = "<"
+)
+
+// NVTOrder is the <order> value of get_info. See the GMP protocol docs for details.
+type NVTOrder string
+
+const (
+	NVTOrderAscending  NVTOrder = "ascending"
+	NVTOrderDescending NVTOrder = "descending"
+)

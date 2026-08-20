@@ -50,9 +50,9 @@ type ConfigKeywords struct {
 
 // ConfigKeyword is the <keyword> element of get_configs. See the GMP protocol docs for details.
 type ConfigKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string         `xml:"column"`
+	Relation ConfigRelation `xml:"relation"`
+	Value    string         `xml:"value"`
 }
 
 // ConfigSort is the <sort> element of get_configs. See the GMP protocol docs for details.
@@ -62,8 +62,8 @@ type ConfigSort struct {
 
 // ConfigField is the <field> element of get_configs. See the GMP protocol docs for details.
 type ConfigField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string      `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order ConfigOrder `xml:"order"`
 }
 
 // Configs is the <configs> element of get_configs. See the GMP protocol docs for details.
@@ -89,8 +89,8 @@ type Config struct {
 	ModificationTime GMPTime             `xml:"modification_time"`
 	FamilyCount      ConfigFamilyCount   `xml:"family_count"`
 	NVTCount         ConfigNVTCount      `xml:"nvt_count"`
-	Type             string              `xml:"type"`
-	UsageType        string              `xml:"usage_type"`
+	Type             ConfigType          `xml:"type"`
+	UsageType        ConfigUsageType     `xml:"usage_type"`
 	MaxNVTCount      int                 `xml:"max_nvt_count"`
 	KnownNVTCount    int                 `xml:"known_nvt_count"`
 	InUse            GMPBool             `xml:"in_use"`
@@ -214,3 +214,30 @@ type ConfigNVTSelector struct {
 	Type        int     `xml:"type"`
 	FamilyOrNVT string  `xml:"family_or_nvt"`
 }
+
+// ConfigRelation is the <relation> value of get_configs. See the GMP protocol docs for details.
+type ConfigRelation string
+
+const (
+	ConfigRelationEq       ConfigRelation = "="
+	ConfigRelationContains ConfigRelation = ":"
+	ConfigRelationRegex    ConfigRelation = "~"
+	ConfigRelationGT       ConfigRelation = ">"
+	ConfigRelationLT       ConfigRelation = "<"
+)
+
+// ConfigOrder is the <order> value of get_configs. See the GMP protocol docs for details.
+type ConfigOrder string
+
+const (
+	ConfigOrderAscending  ConfigOrder = "ascending"
+	ConfigOrderDescending ConfigOrder = "descending"
+)
+
+// ConfigType is the <type> value of get_configs. See the GMP protocol docs for details.
+type ConfigType string
+
+const (
+	ConfigTypeN0 ConfigType = "0"
+	ConfigTypeN1 ConfigType = "1"
+)

@@ -6,11 +6,11 @@ import "encoding/xml"
 
 // CreateConfig is a create_config command request. See the GMP protocol docs for details.
 type CreateConfig struct {
-	XMLName   xml.Name `xml:"create_config"`
-	Name      string   `xml:"name"`
-	Comment   string   `xml:"comment,omitempty"`
-	UsageType string   `xml:"usage_type,omitempty"`
-	Copy      string   `xml:"copy,omitempty"`
+	XMLName   xml.Name        `xml:"create_config"`
+	Name      string          `xml:"name"`
+	Comment   string          `xml:"comment,omitempty"`
+	UsageType ConfigUsageType `xml:"usage_type,omitempty"`
+	Copy      string          `xml:"copy,omitempty"`
 }
 
 // CreateConfigResponse is a create_config command response. See the GMP protocol docs for details.

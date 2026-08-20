@@ -44,9 +44,9 @@ type UserKeywords struct {
 
 // UserKeyword is the <keyword> element of get_users. See the GMP protocol docs for details.
 type UserKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string       `xml:"column"`
+	Relation UserRelation `xml:"relation"`
+	Value    string       `xml:"value"`
 }
 
 // UserSort is the <sort> element of get_users. See the GMP protocol docs for details.
@@ -56,8 +56,8 @@ type UserSort struct {
 
 // UserField is the <field> element of get_users. See the GMP protocol docs for details.
 type UserField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string    `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order UserOrder `xml:"order"`
 }
 
 // Users is the <users> element of get_users. See the GMP protocol docs for details.
@@ -126,7 +126,7 @@ type UserPermission struct {
 
 // GetUsersSources is the <sources> element of get_users. See the GMP protocol docs for details.
 type GetUsersSources struct {
-	Source []string `xml:"source,omitempty"`
+	Source []UserSource `xml:"source,omitempty"`
 }
 
 // UserTags is the <user_tags> element of get_users. See the GMP protocol docs for details.
@@ -149,3 +149,22 @@ type GetUsersRole struct {
 	Name        string `xml:"name"`
 	Permissions string `xml:"permissions,omitempty"`
 }
+
+// UserRelation is the <relation> value of get_users. See the GMP protocol docs for details.
+type UserRelation string
+
+const (
+	UserRelationEq       UserRelation = "="
+	UserRelationContains UserRelation = ":"
+	UserRelationRegex    UserRelation = "~"
+	UserRelationGT       UserRelation = ">"
+	UserRelationLT       UserRelation = "<"
+)
+
+// UserOrder is the <order> value of get_users. See the GMP protocol docs for details.
+type UserOrder string
+
+const (
+	UserOrderAscending  UserOrder = "ascending"
+	UserOrderDescending UserOrder = "descending"
+)

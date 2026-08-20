@@ -46,9 +46,9 @@ type ScannerKeywords struct {
 
 // ScannerKeyword is the <keyword> element of get_scanners. See the GMP protocol docs for details.
 type ScannerKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string          `xml:"column"`
+	Relation ScannerRelation `xml:"relation"`
+	Value    string          `xml:"value"`
 }
 
 // ScannerSort is the <sort> element of get_scanners. See the GMP protocol docs for details.
@@ -58,8 +58,8 @@ type ScannerSort struct {
 
 // ScannerField is the <field> element of get_scanners. See the GMP protocol docs for details.
 type ScannerField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string       `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order ScannerOrder `xml:"order"`
 }
 
 // Scanners is the <scanners> element of get_scanners. See the GMP protocol docs for details.
@@ -120,26 +120,26 @@ type ScannerPermission struct {
 
 // ScannerCAPubInfo is the <ca_pub_info> element of get_scanners. See the GMP protocol docs for details.
 type ScannerCAPubInfo struct {
-	TimeStatus        string `xml:"time_status"`
-	ActivationTime    string `xml:"activation_time"`
-	ExpirationTime    string `xml:"expiration_time"`
-	Issuer            string `xml:"issuer"`
-	MD5Fingerprint    string `xml:"md5_fingerprint"`
-	SHA256Fingerprint string `xml:"sha256_fingerprint,omitempty"`
-	Subject           string `xml:"subject,omitempty"`
-	Serial            string `xml:"serial,omitempty"`
+	TimeStatus        ScannerTimeStatus `xml:"time_status"`
+	ActivationTime    string            `xml:"activation_time"`
+	ExpirationTime    string            `xml:"expiration_time"`
+	Issuer            string            `xml:"issuer"`
+	MD5Fingerprint    string            `xml:"md5_fingerprint"`
+	SHA256Fingerprint string            `xml:"sha256_fingerprint,omitempty"`
+	Subject           string            `xml:"subject,omitempty"`
+	Serial            string            `xml:"serial,omitempty"`
 }
 
 // ScannerCertificateInfo is the <certificate_info> element of get_scanners. See the GMP protocol docs for details.
 type ScannerCertificateInfo struct {
-	TimeStatus        string `xml:"time_status"`
-	ActivationTime    string `xml:"activation_time"`
-	ExpirationTime    string `xml:"expiration_time"`
-	Issuer            string `xml:"issuer"`
-	MD5Fingerprint    string `xml:"md5_fingerprint"`
-	SHA256Fingerprint string `xml:"sha256_fingerprint,omitempty"`
-	Subject           string `xml:"subject,omitempty"`
-	Serial            string `xml:"serial,omitempty"`
+	TimeStatus        ScannerTimeStatus `xml:"time_status"`
+	ActivationTime    string            `xml:"activation_time"`
+	ExpirationTime    string            `xml:"expiration_time"`
+	Issuer            string            `xml:"issuer"`
+	MD5Fingerprint    string            `xml:"md5_fingerprint"`
+	SHA256Fingerprint string            `xml:"sha256_fingerprint,omitempty"`
+	Subject           string            `xml:"subject,omitempty"`
+	Serial            string            `xml:"serial,omitempty"`
 }
 
 // GetScannersCredential is the <credential> element of get_scanners. See the GMP protocol docs for details.
@@ -182,10 +182,10 @@ type ScannerTasks struct {
 
 // ScannerTask is the <task> element of get_scanners. See the GMP protocol docs for details.
 type ScannerTask struct {
-	ID          string `xml:"id,attr"`
-	Name        string `xml:"name"`
-	UsageType   string `xml:"usage_type"`
-	Permissions string `xml:"permissions,omitempty"`
+	ID          string           `xml:"id,attr"`
+	Name        string           `xml:"name"`
+	UsageType   ScannerUsageType `xml:"usage_type"`
+	Permissions string           `xml:"permissions,omitempty"`
 }
 
 // ScannerInfo is the <info> element of get_scanners. See the GMP protocol docs for details.
@@ -219,3 +219,40 @@ type ScannerProtocol struct {
 type ScannerParams struct {
 	Param []string `xml:"param,omitempty"`
 }
+
+// ScannerRelation is the <relation> value of get_scanners. See the GMP protocol docs for details.
+type ScannerRelation string
+
+const (
+	ScannerRelationEq       ScannerRelation = "="
+	ScannerRelationContains ScannerRelation = ":"
+	ScannerRelationRegex    ScannerRelation = "~"
+	ScannerRelationGT       ScannerRelation = ">"
+	ScannerRelationLT       ScannerRelation = "<"
+)
+
+// ScannerOrder is the <order> value of get_scanners. See the GMP protocol docs for details.
+type ScannerOrder string
+
+const (
+	ScannerOrderAscending  ScannerOrder = "ascending"
+	ScannerOrderDescending ScannerOrder = "descending"
+)
+
+// ScannerTimeStatus is the <time_status> value of get_scanners. See the GMP protocol docs for details.
+type ScannerTimeStatus string
+
+const (
+	ScannerTimeStatusExpired  ScannerTimeStatus = "expired"
+	ScannerTimeStatusInactive ScannerTimeStatus = "inactive"
+	ScannerTimeStatusUnknown  ScannerTimeStatus = "unknown"
+	ScannerTimeStatusValid    ScannerTimeStatus = "valid"
+)
+
+// ScannerUsageType is the <usage_type> value of get_scanners. See the GMP protocol docs for details.
+type ScannerUsageType string
+
+const (
+	ScannerUsageTypeScan   ScannerUsageType = "scan"
+	ScannerUsageTypePolicy ScannerUsageType = "policy"
+)

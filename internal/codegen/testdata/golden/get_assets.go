@@ -49,9 +49,9 @@ type AssetKeywords struct {
 
 // AssetKeyword is the <keyword> element of get_assets. See the GMP protocol docs for details.
 type AssetKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string        `xml:"column"`
+	Relation AssetRelation `xml:"relation"`
+	Value    string        `xml:"value"`
 }
 
 // AssetSort is the <sort> element of get_assets. See the GMP protocol docs for details.
@@ -61,8 +61,8 @@ type AssetSort struct {
 
 // AssetField is the <field> element of get_assets. See the GMP protocol docs for details.
 type AssetField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string     `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order AssetOrder `xml:"order"`
 }
 
 // Assets is the <assets> element of get_assets. See the GMP protocol docs for details.
@@ -240,3 +240,22 @@ type AssetHostsAsset struct {
 type AssetHostsAssetSeverity struct {
 	Value string `xml:"value"`
 }
+
+// AssetRelation is the <relation> value of get_assets. See the GMP protocol docs for details.
+type AssetRelation string
+
+const (
+	AssetRelationEq       AssetRelation = "="
+	AssetRelationContains AssetRelation = ":"
+	AssetRelationRegex    AssetRelation = "~"
+	AssetRelationGT       AssetRelation = ">"
+	AssetRelationLT       AssetRelation = "<"
+)
+
+// AssetOrder is the <order> value of get_assets. See the GMP protocol docs for details.
+type AssetOrder string
+
+const (
+	AssetOrderAscending  AssetOrder = "ascending"
+	AssetOrderDescending AssetOrder = "descending"
+)

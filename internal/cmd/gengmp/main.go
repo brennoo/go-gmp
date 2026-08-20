@@ -103,7 +103,7 @@ func check(manifest codegen.Manifest, o options) error {
 		return fmt.Errorf("-out %s is not a directory", o.out)
 	}
 
-	report, err := codegen.CheckOutput(manifest, o.schema, o.out, codegen.TypeOverrides, codegen.PointerOverrides, codegen.RequiredOverrides, codegen.FieldOverrides, codegen.FieldSuppressions, codegen.CommandWarnings, codegen.DefectAllowlist, codegen.NameOverrides, codegen.FieldTypeOverrides, codegen.CardinalityOverrides)
+	report, err := codegen.CheckOutput(manifest, o.schema, o.out, codegen.TypeOverrides, codegen.PointerOverrides, codegen.RequiredOverrides, codegen.FieldOverrides, codegen.FieldSuppressions, codegen.CommandWarnings, codegen.DefectAllowlist, codegen.NameOverrides, codegen.FieldTypeOverrides, codegen.CardinalityOverrides, codegen.EnumConstantNames)
 	if err != nil {
 		return err
 	}
@@ -137,7 +137,7 @@ func write(manifest codegen.Manifest, o options) error {
 		return fmt.Errorf("loading snapshots from %s: %w", o.schema, err)
 	}
 
-	files, err := codegen.GenerateAll(manifest, cmds, codegen.TypeOverrides, codegen.PointerOverrides, codegen.RequiredOverrides, codegen.FieldOverrides, codegen.FieldSuppressions, codegen.CommandWarnings, codegen.DefectAllowlist, codegen.NameOverrides, codegen.FieldTypeOverrides, codegen.CardinalityOverrides)
+	files, err := codegen.GenerateAll(manifest, cmds, codegen.TypeOverrides, codegen.PointerOverrides, codegen.RequiredOverrides, codegen.FieldOverrides, codegen.FieldSuppressions, codegen.CommandWarnings, codegen.DefectAllowlist, codegen.NameOverrides, codegen.FieldTypeOverrides, codegen.CardinalityOverrides, codegen.EnumConstantNames)
 	if err != nil {
 		return fmt.Errorf("generate: %w", err)
 	}

@@ -48,9 +48,9 @@ type NoteKeywords struct {
 
 // NoteKeyword is the <keyword> element of get_notes. See the GMP protocol docs for details.
 type NoteKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string       `xml:"column"`
+	Relation NoteRelation `xml:"relation"`
+	Value    string       `xml:"value"`
 }
 
 // NoteSort is the <sort> element of get_notes. See the GMP protocol docs for details.
@@ -60,8 +60,8 @@ type NoteSort struct {
 
 // NoteField is the <field> element of get_notes. See the GMP protocol docs for details.
 type NoteField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string    `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order NoteOrder `xml:"order"`
 }
 
 // Notes is the <notes> element of get_notes. See the GMP protocol docs for details.
@@ -358,3 +358,22 @@ type NoteTickets struct {
 type NoteTicket struct {
 	ID string `xml:"id,attr"`
 }
+
+// NoteRelation is the <relation> value of get_notes. See the GMP protocol docs for details.
+type NoteRelation string
+
+const (
+	NoteRelationEq       NoteRelation = "="
+	NoteRelationContains NoteRelation = ":"
+	NoteRelationRegex    NoteRelation = "~"
+	NoteRelationGT       NoteRelation = ">"
+	NoteRelationLT       NoteRelation = "<"
+)
+
+// NoteOrder is the <order> value of get_notes. See the GMP protocol docs for details.
+type NoteOrder string
+
+const (
+	NoteOrderAscending  NoteOrder = "ascending"
+	NoteOrderDescending NoteOrder = "descending"
+)

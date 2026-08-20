@@ -10,10 +10,19 @@ type UserHosts struct {
 
 // UserSources is the <sources> element of create_user and modify_user. See the GMP protocol docs for details.
 type UserSources struct {
-	Source string `xml:"source,omitempty"`
+	Source UserSource `xml:"source,omitempty"`
 }
 
 // UserRole is the <role> element of create_user and modify_user. See the GMP protocol docs for details.
 type UserRole struct {
 	ID string `xml:"id,attr"`
 }
+
+// UserSource is the <source> value of create_user, get_users and modify_user. See the GMP protocol docs for details.
+type UserSource string
+
+const (
+	UserSourceFile          UserSource = "file"
+	UserSourceLdapConnect   UserSource = "ldap_connect"
+	UserSourceRadiusConnect UserSource = "radius_connect"
+)

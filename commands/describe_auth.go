@@ -37,12 +37,22 @@ type AuthConfSetting struct {
 
 // AuthCertificateInfo is the <certificate_info> element of describe_auth. See the GMP protocol docs for details.
 type AuthCertificateInfo struct {
-	TimeStatus        string `xml:"time_status"`
-	ActivationTime    string `xml:"activation_time"`
-	ExpirationTime    string `xml:"expiration_time"`
-	Issuer            string `xml:"issuer"`
-	MD5Fingerprint    string `xml:"md5_fingerprint"`
-	SHA256Fingerprint string `xml:"sha256_fingerprint,omitempty"`
-	Subject           string `xml:"subject,omitempty"`
-	Serial            string `xml:"serial,omitempty"`
+	TimeStatus        AuthTimeStatus `xml:"time_status"`
+	ActivationTime    string         `xml:"activation_time"`
+	ExpirationTime    string         `xml:"expiration_time"`
+	Issuer            string         `xml:"issuer"`
+	MD5Fingerprint    string         `xml:"md5_fingerprint"`
+	SHA256Fingerprint string         `xml:"sha256_fingerprint,omitempty"`
+	Subject           string         `xml:"subject,omitempty"`
+	Serial            string         `xml:"serial,omitempty"`
 }
+
+// AuthTimeStatus is the <time_status> value of describe_auth. See the GMP protocol docs for details.
+type AuthTimeStatus string
+
+const (
+	AuthTimeStatusExpired  AuthTimeStatus = "expired"
+	AuthTimeStatusInactive AuthTimeStatus = "inactive"
+	AuthTimeStatusUnknown  AuthTimeStatus = "unknown"
+	AuthTimeStatusValid    AuthTimeStatus = "valid"
+)

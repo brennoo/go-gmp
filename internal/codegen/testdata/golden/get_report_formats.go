@@ -49,9 +49,9 @@ type ReportFormatKeywords struct {
 
 // ReportFormatKeyword is the <keyword> element of get_report_formats. See the GMP protocol docs for details.
 type ReportFormatKeyword struct {
-	Column   string `xml:"column"`
-	Relation string `xml:"relation"`
-	Value    string `xml:"value"`
+	Column   string               `xml:"column"`
+	Relation ReportFormatRelation `xml:"relation"`
+	Value    string               `xml:"value"`
 }
 
 // ReportFormatSort is the <sort> element of get_report_formats. See the GMP protocol docs for details.
@@ -61,8 +61,8 @@ type ReportFormatSort struct {
 
 // ReportFormatField is the <field> element of get_report_formats. See the GMP protocol docs for details.
 type ReportFormatField struct {
-	Value string `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
-	Order string `xml:"order"`
+	Value string            `xml:",chardata" gmpoverride:"T-18a: sort-field chardata is nested under <field>"`
+	Order ReportFormatOrder `xml:"order"`
 }
 
 // ReportFormats is the <report_formats> element of get_report_formats. See the GMP protocol docs for details.
@@ -96,7 +96,7 @@ type ReportFormat struct {
 	Active                 GMPBool                    `xml:"active"`
 	Predefined             GMPBool                    `xml:"predefined"`
 	Configurable           GMPBool                    `xml:"configurable"`
-	ReportType             string                     `xml:"report_type"`
+	ReportType             ReportFormatReportType     `xml:"report_type"`
 	UserTags               *ReportFormatUserTags      `xml:"user_tags,omitempty"`
 	Alerts                 *ReportFormatAlerts        `xml:"alerts,omitempty"`
 	InvisibleAlerts        *int                       `xml:"invisible_alerts,omitempty"`
@@ -126,9 +126,9 @@ type ReportFormatPermission struct {
 
 // ReportFormatTrust is the <trust> element of get_report_formats. See the GMP protocol docs for details.
 type ReportFormatTrust struct {
-	Value string  `xml:",chardata"`
-	Name  string  `xml:"name,attr"`
-	Time  GMPTime `xml:"time"`
+	Value GetReportFormatsTrust `xml:",chardata"`
+	Name  string                `xml:"name,attr"`
+	Time  GMPTime               `xml:"time"`
 }
 
 // ReportFormatUserTags is the <user_tags> element of get_report_formats. See the GMP protocol docs for details.
@@ -183,10 +183,10 @@ type ReportFormatParam struct {
 
 // ReportFormatType is the <type> element of get_report_formats. See the GMP protocol docs for details.
 type ReportFormatType struct {
-	Value   string               `xml:",chardata"`
-	Min     string               `xml:"min,omitempty"`
-	Max     string               `xml:"max,omitempty"`
-	Options *ReportFormatOptions `xml:"options,omitempty"`
+	Value   ReportFormatParamType `xml:",chardata"`
+	Min     string                `xml:"min,omitempty"`
+	Max     string                `xml:"max,omitempty"`
+	Options *ReportFormatOptions  `xml:"options,omitempty"`
 }
 
 // ReportFormatOptions is the <options> element of get_report_formats. See the GMP protocol docs for details.
@@ -204,3 +204,53 @@ type ReportFormatValueReportFormat struct {
 	ID   string `xml:"id,attr"`
 	Name string `xml:"name"`
 }
+
+// ReportFormatRelation is the <relation> value of get_report_formats. See the GMP protocol docs for details.
+type ReportFormatRelation string
+
+const (
+	ReportFormatRelationEq       ReportFormatRelation = "="
+	ReportFormatRelationContains ReportFormatRelation = ":"
+	ReportFormatRelationRegex    ReportFormatRelation = "~"
+	ReportFormatRelationGT       ReportFormatRelation = ">"
+	ReportFormatRelationLT       ReportFormatRelation = "<"
+)
+
+// ReportFormatOrder is the <order> value of get_report_formats. See the GMP protocol docs for details.
+type ReportFormatOrder string
+
+const (
+	ReportFormatOrderAscending  ReportFormatOrder = "ascending"
+	ReportFormatOrderDescending ReportFormatOrder = "descending"
+)
+
+// GetReportFormatsTrust is the <trust> value of get_report_formats. See the GMP protocol docs for details.
+type GetReportFormatsTrust string
+
+const (
+	GetReportFormatsTrustYes     GetReportFormatsTrust = "yes"
+	GetReportFormatsTrustNo      GetReportFormatsTrust = "no"
+	GetReportFormatsTrustUnknown GetReportFormatsTrust = "unknown"
+)
+
+// ReportFormatReportType is the <report_type> value of get_report_formats. See the GMP protocol docs for details.
+type ReportFormatReportType string
+
+const (
+	ReportFormatReportTypeScan  ReportFormatReportType = "scan"
+	ReportFormatReportTypeAudit ReportFormatReportType = "audit"
+	ReportFormatReportTypeAll   ReportFormatReportType = "all"
+)
+
+// ReportFormatParamType is the <type> value of get_report_formats. See the GMP protocol docs for details.
+type ReportFormatParamType string
+
+const (
+	ReportFormatParamTypeBoolean          ReportFormatParamType = "boolean"
+	ReportFormatParamTypeInteger          ReportFormatParamType = "integer"
+	ReportFormatParamTypeMultiSelection   ReportFormatParamType = "multi_selection"
+	ReportFormatParamTypeSelection        ReportFormatParamType = "selection"
+	ReportFormatParamTypeString           ReportFormatParamType = "string"
+	ReportFormatParamTypeText             ReportFormatParamType = "text"
+	ReportFormatParamTypeReportFormatList ReportFormatParamType = "report_format_list"
+)
