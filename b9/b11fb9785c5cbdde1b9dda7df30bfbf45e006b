@@ -1,0 +1,23 @@
+docs/review-2026-08.md
+  s_853ef9ffb623d6::t_ca092dcf4e112a 5627-5710
+internal/apisnapshot/apisnapshot_test.go
+  s_853ef9ffb623d6::t_309b0590e26de9 1-337
+internal/apisnapshot/testdata/PUBLIC_API.txt
+  s_853ef9ffb623d6::t_cac33bc572c728 1-9385
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "b9b11fb9785c5cbdde1b9dda7df30bfbf45e006b",
+  "prompts": {},
+  "sessions": {
+    "s_853ef9ffb623d6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_853ef9ffb623d6",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
