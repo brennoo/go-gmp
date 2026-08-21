@@ -1,0 +1,26 @@
+.github/workflows/go.yml
+  s_6b74b50f8b69ed::t_a098231ab30803 59
+commands/pagination/iterator_test.go
+  s_6b74b50f8b69ed::t_33c9211d0aa051 34
+client/client_pagination_test.go
+  s_6b74b50f8b69ed::t_5cc52c26e01a75 520-521,526,534-536,538-539,541-544
+  s_6b74b50f8b69ed::t_a69f1f7b1c50d4 518-519,522-524,527-533,537,540
+internal/gmptest/explicit_empty_test.go
+  s_6b74b50f8b69ed::t_e7ea502514685b 18-20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "a7a373c759f0c9396f24ada9f406aea218c67ce8",
+  "prompts": {},
+  "sessions": {
+    "s_6b74b50f8b69ed": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "019fdd9a-6605-7b1e-bab6-fd85490a37f6",
+        "model": "0fe02vv2qtwc"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
