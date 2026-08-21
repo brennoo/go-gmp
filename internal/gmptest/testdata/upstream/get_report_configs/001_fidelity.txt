@@ -1,0 +1,29 @@
+# fidelity: get_report_configs / upstream / 001
+# provenance: command_get_report_configs.xml, command "get_report_configs", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_report_configs_response/report_config/param/value/#text             x2
+  /get_report_configs_response/truncated                                   x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_report_configs_response/filters                                     x1
+  /get_report_configs_response/filters/@id                                 x1
+  /get_report_configs_response/filters/keywords                            x1
+  /get_report_configs_response/filters/term                                x1
+  /get_report_configs_response/report_configs                              x1
+  /get_report_configs_response/report_configs/@max                         x1
+  /get_report_configs_response/report_configs/@start                       x1
+  /get_report_configs_response/sort                                        x1
+  /get_report_configs_response/sort/field                                  x1
+  /get_report_configs_response/sort/field/order                            x1
+
+DUPLICATED
+  (none)

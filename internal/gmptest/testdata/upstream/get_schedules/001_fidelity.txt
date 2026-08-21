@@ -1,0 +1,29 @@
+# fidelity: get_schedules / upstream / 001
+# provenance: command_get_schedules.xml, command "get_schedules", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_schedules_response/schedule/icalendar/truncated                     x1  (+1 descendant paths)
+  /get_schedules_response/truncate                                         x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_schedules_response/filters                                          x1
+  /get_schedules_response/filters/@id                                      x1
+  /get_schedules_response/filters/keywords                                 x1
+  /get_schedules_response/filters/term                                     x1
+  /get_schedules_response/schedules                                        x1
+  /get_schedules_response/schedules/@max                                   x1
+  /get_schedules_response/schedules/@start                                 x1
+  /get_schedules_response/sort                                             x1
+  /get_schedules_response/sort/field                                       x1
+  /get_schedules_response/sort/field/order                                 x1
+
+DUPLICATED
+  (none)

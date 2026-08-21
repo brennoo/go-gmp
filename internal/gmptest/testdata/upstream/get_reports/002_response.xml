@@ -1,0 +1,154 @@
+<get_reports_response status="200" status_text="OK">
+          <report id="f0fdf522-276d-4893-9274-fb8699dc2270" format_id="d5da9f67-8551-4e51-807b-b6a873d70e34" extension="xml" content_type="text/xml">
+            <report id="f0fdf522-276d-4893-9274-fb8699dc2270">
+              <gmp>
+                <version>22.7</version>
+              </gmp>
+              <sort>
+                <field>
+                  type
+                  <order>descending</order>
+                </field>
+              </sort>
+              <filters id="0">
+                <term>first=1 rows=-1 sort=name</term>
+                
+                <filter>Critical</filter>
+                
+                <filter>High</filter>
+                <filter>Medium</filter>
+                <filter>Low</filter>
+                <filter>Log</filter>
+                <keywords>
+                  <keyword>
+                    <column>first</column>
+                    <relation>=</relation>
+                    <value>1</value>
+                  </keyword>
+                  <keyword>
+                    <column>rows</column>
+                    <relation>=</relation>
+                    <value>-1</value>
+                  </keyword>
+                  <keyword>
+                    <column>sort</column>
+                    <relation>=</relation>
+                    <value>name</value>
+                  </keyword>
+                </keywords>
+              </filters>
+              <scan_run_status>Done</scan_run_status>
+              <hosts>
+                <count>1</count>
+              </hosts>
+              <closed_cves>
+                <count>0</count>
+              </closed_cves>
+              <vulns>
+                <count>3</count>
+              </vulns>
+              <os>
+                <count>1</count>
+              </os>
+              <apps>
+                <count>2</count>
+              </apps>
+              <ssl_certs>
+                <count>0</count>
+              </ssl_certs>
+              <result_count>
+                <full>10</full>
+                <filtered>10</filtered>
+                
+                <critical>
+                  <full>0</full>
+                  <filtered>0</filtered>
+                </critical>
+                <hole>
+                  <full>0</full>
+                  <filtered>0</filtered>
+                </hole>
+                <high>
+                  <full>0</full>
+                  <filtered>0</filtered>
+                </high>
+                <info>
+                  <full>7</full>
+                  <filtered>7</filtered>
+                </info>
+                <low>
+                  <full>7</full>
+                  <filtered>7</filtered>
+                </low>
+                <log>
+                  <full>0</full>
+                  <filtered>0</filtered>
+                </log>
+                <warning>
+                  <full>3</full>
+                  <filtered>3</filtered>
+                </warning>
+                <medium>
+                  <full>3</full>
+                  <filtered>3</filtered>
+                </medium>
+                
+                
+              </result_count>
+              <task id="13bb418a-4220-4575-b35b-ec398bff7417">
+                <name>dik mm</name>
+              </task>
+              <scan>
+                <task>
+                </task>
+              </scan>
+              <timestamp>2010-02-02T19:11:21+00:00</timestamp>
+              <scan_start>2010-02-02T19:11:21+00:00</scan_start>
+              <timezone>UTC</timezone>
+              <timezone_abbrev>UTC</timezone_abbrev>
+              <ports start="1" max="-1">
+                <port>
+                  general/tcp
+                  <host>127.0.1.1</host>
+                  <severity>5.0</severity>
+                  <threat>Medium</threat>
+                </port>
+                <truncated>...</truncated>
+              </ports>
+              <results start="1" max="-1">
+                <result id="634f7a2e-8ca1-43b7-b6d7-0d4841449508">
+                  <host>127.0.1.1</host>
+                  <port>general/tcp</port>
+                  <nvt oid="1.3.6.1.4.1.25623.1.0.74">
+                    <name>Test NVT: fields with ISO-8859-1 chars ()</name>
+                    <cvss_base>5.0</cvss_base>
+                    <severities score="50">
+                      <severity>
+                        [...]
+                      </severity>
+                    </severities>
+                    <tags>NOTAGS</tags>
+                    <refs>
+                      <ref id="CVE-2013-1406" type="cve"/>
+                      <ref id="DFN-CERT-2013-0246" type="dfn-cert"/>
+                    </refs>
+                  </nvt>
+                  <threat>Medium</threat>
+                  <description>Test with  umlaut Warning Port 0.</description>
+                </result>
+                <truncated>...</truncated>
+              </results>
+              <host>
+                <ip>127.0.1.1</ip>
+                <asset asset_id="167a7f18-df86-4695-a6ff-2516ffe2ad43"/>
+                <start>2010-02-21T15:35:31Z</start>
+                <end>2010-02-21T16:31:13Z</end>
+                <truncated>...</truncated>
+              </host>
+              <scan_end>2010-02-02T19:11:52+00:00</scan_end>
+              <errors>
+                <count>0</count>
+              </errors>
+            </report>
+          </report>
+        </get_reports_response>

@@ -16,12 +16,12 @@ func TestCreateTicket(t *testing.T) {
 
 	cmd := &commands.CreateTicket{
 		Result: commands.TicketResult{ID: "138c1216-4acb-4ded-bef3-7fab80eac8c7"},
-		Assigned: commands.TicketAssignedTo{
-			User: &commands.TicketUser{ID: "33e92d3e-a379-4c46-a4cf-88c8201ab710"},
+		AssignedTo: commands.TicketAssignedTo{
+			User: commands.TicketUser{ID: "33e92d3e-a379-4c46-a4cf-88c8201ab710"},
 		},
 		OpenNote: "Please fix today.",
 	}
-	resp, err := cli.CreateTicket(cmd)
+	resp, err := cli.CreateTicket(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateTicket: %s", err)
 	}
@@ -53,10 +53,10 @@ func TestGetTickets(t *testing.T) {
 	if resp.StatusText != "OK" {
 		t.Errorf("Expected status_text 'OK', got %s", resp.StatusText)
 	}
-	if len(resp.Tickets) != 1 {
-		t.Fatalf("Expected 1 ticket, got %d", len(resp.Tickets))
+	if len(resp.Ticket) != 1 {
+		t.Fatalf("Expected 1 ticket, got %d", len(resp.Ticket))
 	}
-	ticket := resp.Tickets[0]
+	ticket := resp.Ticket[0]
 	if ticket.ID != "93cd2f71-48c3-4cf2-b542-5b256f59cae0" {
 		t.Errorf("Expected ticket ID '93cd2f71-48c3-4cf2-b542-5b256f59cae0', got %s", ticket.ID)
 	}
@@ -77,12 +77,13 @@ func TestModifyTicket(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
+	closedNote := "Resolved with January update"
 	cmd := &commands.ModifyTicket{
 		TicketID:   "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 		Status:     "Closed",
-		ClosedNote: "Resolved with January update",
+		ClosedNote: &closedNote,
 	}
-	resp, err := cli.ModifyTicket(cmd)
+	resp, err := cli.ModifyTicket(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyTicket: %s", err)
 	}
@@ -100,7 +101,7 @@ func TestDeleteTicket(t *testing.T) {
 		TicketID: "ticket-uuid",
 		Ultimate: true,
 	}
-	resp, err := cli.DeleteTicket(cmd)
+	resp, err := cli.DeleteTicket(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("expected no error, got: %v", err)
 	}

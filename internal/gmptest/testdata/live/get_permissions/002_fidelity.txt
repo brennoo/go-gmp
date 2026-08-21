@@ -1,0 +1,20 @@
+# fidelity: get_permissions / live / 002
+# provenance: read-only: get_permissions with filter="rows=2 first=1"
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_permissions_response/permission/resource/@id                        x2
+  /get_permissions_response/permission/resource/permissions                x2
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

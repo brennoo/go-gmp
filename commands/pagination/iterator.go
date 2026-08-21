@@ -24,6 +24,14 @@ type Iterator[T any] struct {
 	executeAndParse func(cmd interface{}, pageOpts PaginationOptions) (items []T, totalFiltered int, hasMore bool, err error)
 }
 
+// NewFailedIterator returns an iterator that immediately reports err from
+// Next/Err, for a constructor that can fail before any page is ever fetched
+// (e.g. an invalid filter argument) — callers depend on Tasks/Results/...
+// never returning nil, so the error still needs a home.
+func NewFailedIterator[T any](err error) *Iterator[T] {
+	return &Iterator[T]{err: err}
+}
+
 // loadPage fetches the next page using configured functions.
 func (it *Iterator[T]) loadPage() error {
 	// Ensure type-specific functions are provided

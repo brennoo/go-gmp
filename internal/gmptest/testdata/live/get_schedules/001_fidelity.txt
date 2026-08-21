@@ -1,0 +1,19 @@
+# fidelity: get_schedules / live / 001
+# provenance: read-only: get_schedules bare
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

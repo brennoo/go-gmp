@@ -1,0 +1,19 @@
+# fidelity: resume_task / live / 001
+# provenance: expected failure: resume_task on a task that never ran
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

@@ -1,0 +1,19 @@
+# fidelity: modify_tag / live / 001
+# provenance: lifecycle: modify_tag value
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

@@ -1,0 +1,23 @@
+<get_feeds_response status_text="OK" status="200">
+          <feed_owner_set>1</feed_owner_set>
+          <feed_roles_set>1</feed_roles_set>
+          <feed_resources_access>1</feed_resources_access>
+          <feed>
+            <type>NVT</type>
+            <name>Greenbone Security Feed</name>
+            <version>201608180124</version>
+            <description>This script synchronizes an NVT collection with...</description>
+          </feed>
+          <feed>
+            <type>CERT</type>
+            <name>Greenbone CERT Feed</name>
+            <version>201609130000</version>
+            <description>This script synchronizes a CERT collection with...</description>
+          </feed>
+          <feed>
+            <type>SCAP</type>
+            <name>Greenbone SCAP Feed</name>
+            <version>201608172300</version>
+            <description>This script synchronizes a SCAP collection with...</description>
+          </feed>
+        </get_feeds_response>

@@ -1,0 +1,33 @@
+# fidelity: get_configs / upstream / 001
+# provenance: command_get_configs.xml, command "get_configs", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_configs_response/truncated                                          x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_configs_response/config/known_nvt_count                             x1
+  /get_configs_response/config/known_nvt_count/#text                       x1
+  /get_configs_response/config/max_nvt_count                               x1
+  /get_configs_response/config/max_nvt_count/#text                         x1
+  /get_configs_response/config/tasks                                       x1
+  /get_configs_response/configs                                            x1
+  /get_configs_response/configs/@max                                       x1
+  /get_configs_response/configs/@start                                     x1
+  /get_configs_response/filters                                            x1
+  /get_configs_response/filters/@id                                        x1
+  /get_configs_response/filters/keywords                                   x1
+  /get_configs_response/filters/term                                       x1
+  /get_configs_response/sort                                               x1
+  /get_configs_response/sort/field                                         x1
+  /get_configs_response/sort/field/order                                   x1
+
+DUPLICATED
+  (none)

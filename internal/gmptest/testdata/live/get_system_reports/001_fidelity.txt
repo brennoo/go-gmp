@@ -1,0 +1,19 @@
+# fidelity: get_system_reports / live / 001
+# provenance: read-only: get_system_reports bare
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

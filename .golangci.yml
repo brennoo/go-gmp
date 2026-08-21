@@ -4,6 +4,11 @@ run:
   modules-download-mode: readonly
   issues-exit-code: 1
   tests: true
+  # Without this, every file behind `//go:build integration` (internal/gmptest/live.go,
+  # live_test.go) is invisible to the linter: golangci-lint builds the package the same
+  # way `go build` would, and a plain build never sees a tagged file either.
+  build-tags:
+    - integration
 linters:
   default: none
   enable:
@@ -19,6 +24,7 @@ linters:
     - govet
     - misspell
     - nilerr
+    - staticcheck
     - tparallel
     - unparam
     - unused
@@ -45,6 +51,9 @@ linters:
       - linters:
           - dupl
         path: commands/pagination/.*\.go
+      - linters:
+          - dupl
+        path: internal/gmptest/(registry|cases_.*)\.go
       - linters:
           - dupl
           - errcheck

@@ -1,0 +1,22 @@
+# fidelity: get_tickets / upstream / 001
+# provenance: command_get_tickets.xml, command "get_tickets", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_tickets_response/ticket/severity/#text                              "5.0" -> "5"
+
+ADDED
+  /get_tickets_response/ticket/nvt                                         x1
+  /get_tickets_response/ticket/nvt/@oid                                    x1
+  /get_tickets_response/ticket/orphan                                      x1
+  /get_tickets_response/ticket/orphan/#text                                x1
+
+DUPLICATED
+  (none)

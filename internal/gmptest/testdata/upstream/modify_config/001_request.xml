@@ -1,0 +1,7 @@
+<modify_config config_id="254cd3ef-bbe1-4d58-859d-21b8d0c046c6">
+          <preference>
+            <nvt oid="1.3.6.1.4.1.25623.1.0.14259"/>
+            <name>1.3.6.1.4.1.25623.1.0.14259:1:checkbox:UDP port scan</name>
+            <value>eWVz</value>
+          </preference>
+        </modify_config>

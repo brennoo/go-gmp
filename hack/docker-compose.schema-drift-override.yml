@@ -1,0 +1,9 @@
+# Layered onto docker-compose.yml (see compose-lib.sh's dc()) by
+# hack/schema-drift.sh to boot gvmd from a freshly-resolved upstream digest
+# instead of the pinned one — see docs/review-2026-08.md, T-17, for why
+# diffing against the pinned image would never show drift. Every other
+# service (pg-gvm, the data loaders, volumes, CA mounts, depends_on) is
+# inherited from the base file untouched.
+services:
+  gvmd:
+    image: ${SCHEMA_DRIFT_GVMD_IMAGE:?SCHEMA_DRIFT_GVMD_IMAGE must be set}

@@ -1,0 +1,19 @@
+# fidelity: get_vulns / live / 001
+# provenance: read-only: get_vulns bare
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

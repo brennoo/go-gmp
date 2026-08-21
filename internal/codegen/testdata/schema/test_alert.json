@@ -1,0 +1,82 @@
+{
+  "Name": "test_alert",
+  "File": "",
+  "Request": {
+    "Name": "test_alert",
+    "Kind": 0,
+    "Card": 0,
+    "InChoice": false,
+    "Type": "",
+    "Alts": null,
+    "Children": [
+      {
+        "Name": "alert_id",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "uuid",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      }
+    ],
+    "Chardata": false
+  },
+  "Response": {
+    "Name": "test_alert_response",
+    "Kind": 0,
+    "Card": 0,
+    "InChoice": false,
+    "Type": "",
+    "Alts": null,
+    "Children": [
+      {
+        "Name": "status",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "status",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "status_text",
+        "Kind": 1,
+        "Card": 0,
+        "InChoice": false,
+        "Type": "text",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      },
+      {
+        "Name": "status_details",
+        "Kind": 0,
+        "Card": 1,
+        "InChoice": false,
+        "Type": "",
+        "Alts": null,
+        "Children": null,
+        "Chardata": false
+      }
+    ],
+    "Chardata": false
+  },
+  "Defects": [
+    {
+      "Class": "dangling-e",
+      "Path": "/test_alert_response/status_details",
+      "Detail": "no \u003cele\u003e defines this name in scope"
+    }
+  ],
+  "Provenance": {
+    "Method": "served",
+    "Source": "gvmd \u003chelp format=\"XML\" type=\"\"/\u003e response",
+    "SourceRevision": "ghcr.io/brennoo/gvm-mirror/gvmd@sha256:cb82c501ca93809405a8d0ed4c21846703466802ce6462536e985625f102b497",
+    "SourceSHA256": "7f5511852d5e904066c431fb34052ce68b17f026f72423ab2a770d564d42774f",
+    "ParsedSHA256": "7f5511852d5e904066c431fb34052ce68b17f026f72423ab2a770d564d42774f",
+    "DeclaredVersion": "22.7",
+    "ExtractedAt": "2026-08-17T16:29:29.463818Z"
+  }
+}

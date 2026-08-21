@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/xml"
-	"time"
 )
 
 // GetAgents represents a get_agents command request.
@@ -29,8 +28,8 @@ type Agent struct {
 	Owner             *AgentOwner       `xml:"owner,omitempty"`
 	Name              string            `xml:"name"`
 	Comment           string            `xml:"comment,omitempty"`
-	CreationTime      time.Time         `xml:"creation_time,omitempty"`
-	ModificationTime  time.Time         `xml:"modification_time,omitempty"`
+	CreationTime      *GMPTime          `xml:"creation_time,omitempty"`
+	ModificationTime  *GMPTime          `xml:"modification_time,omitempty"`
 	Writable          bool              `xml:"writable,omitempty"`
 	InUse             bool              `xml:"in_use,omitempty"`
 	Permissions       *AgentPermissions `xml:"permissions,omitempty"`
@@ -40,7 +39,7 @@ type Agent struct {
 	MinInterval       int               `xml:"min_interval,omitempty"`
 	HeartbeatInterval int               `xml:"heartbeat_interval,omitempty"`
 	ConnectionStatus  string            `xml:"connection_status,omitempty"`
-	LastUpdate        time.Time         `xml:"last_update,omitempty"`
+	LastUpdate        *GMPTime          `xml:"last_update,omitempty"`
 	Schedule          string            `xml:"schedule,omitempty"`
 	Scanner           *AgentScanner     `xml:"scanner,omitempty"`
 	IP                []string          `xml:"ip,omitempty"`

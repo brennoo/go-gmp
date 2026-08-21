@@ -1,0 +1,19 @@
+# fidelity: modify_tls_certificate / upstream / 001
+# provenance: command_modify_tls_certificate.xml, command "modify_tls_certificate", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"testing"
 
 	"github.com/brennoo/go-gmp/commands"
@@ -17,7 +18,7 @@ func TestCreateRole(t *testing.T) {
 		Name:    "Test Role",
 		Comment: "A test role",
 	}
-	resp, err := cli.CreateRole(cmd)
+	resp, err := cli.CreateRole(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateRole: %s", err)
 	}
@@ -32,7 +33,7 @@ func TestCreateRole(t *testing.T) {
 	cmdFail := &commands.CreateRole{
 		Name: "",
 	}
-	respFail, err := cli.CreateRole(cmdFail)
+	respFail, err := cli.CreateRole(context.Background(), cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateRole (fail): %s", err)
 	}
@@ -54,7 +55,7 @@ func TestModifyRole(t *testing.T) {
 		Comment: "Updated comment",
 		Users:   "user1,user2",
 	}
-	resp, err := cli.ModifyRole(cmd)
+	resp, err := cli.ModifyRole(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyRole: %s", err)
 	}
@@ -70,7 +71,7 @@ func TestModifyRole(t *testing.T) {
 		RoleID: "",
 		Name:   "",
 	}
-	respFail, err := cli.ModifyRole(cmdFail)
+	respFail, err := cli.ModifyRole(context.Background(), cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyRole (fail): %s", err)
 	}
@@ -89,15 +90,15 @@ func TestGetRoles(t *testing.T) {
 	}
 
 	cmd := &commands.GetRoles{}
-	resp, err := cli.GetRoles(cmd)
+	resp, err := cli.GetRoles(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetRoles: %s", err)
 	}
 	if resp.Status != "200" {
 		t.Errorf("Expected status 200, got %s", resp.Status)
 	}
-	if len(resp.Roles) != 1 || resp.Roles[0].Name != "Management" {
-		t.Errorf("Expected role 'Management', got %+v", resp.Roles)
+	if len(resp.Role) != 1 || resp.Role[0].Name != "Management" {
+		t.Errorf("Expected role 'Management', got %+v", resp.Role)
 	}
 }
 
@@ -112,7 +113,7 @@ func TestDeleteRole(t *testing.T) {
 		RoleID:   "b64c81b2-b9de-11e3-a2e9-406186ea4fc5",
 		Ultimate: true,
 	}
-	resp, err := cli.DeleteRole(cmd)
+	resp, err := cli.DeleteRole(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during DeleteRole: %s", err)
 	}
@@ -128,7 +129,7 @@ func TestDeleteRole(t *testing.T) {
 		RoleID:   "",
 		Ultimate: true,
 	}
-	respFail, err := cli.DeleteRole(cmdFail)
+	respFail, err := cli.DeleteRole(context.Background(), cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during DeleteRole (fail): %s", err)
 	}

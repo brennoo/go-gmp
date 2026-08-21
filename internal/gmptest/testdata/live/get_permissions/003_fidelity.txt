@@ -1,0 +1,20 @@
+# fidelity: get_permissions / live / 003
+# provenance: lifecycle: get_permissions for the permission just created
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_permissions_response/permission/resource/@id                        x1
+  /get_permissions_response/permission/resource/permissions                x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

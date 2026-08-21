@@ -1,0 +1,19 @@
+# fidelity: create_override / live / 001
+# provenance: annotations: create_override on the imported result's NVT
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

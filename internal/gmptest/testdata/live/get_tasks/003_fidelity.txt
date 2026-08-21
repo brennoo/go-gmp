@@ -1,0 +1,20 @@
+# fidelity: get_tasks / live / 003
+# provenance: lifecycle: get_tasks for the container task
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_tasks_response/task/scanner/trash                                   x1  (+1 descendant paths)
+  /get_tasks_response/task/trend                                           x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

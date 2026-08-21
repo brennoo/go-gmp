@@ -1,0 +1,11 @@
+{
+  "command": "get_settings",
+  "provenance": "live",
+  "source": "read-only: get_settings bare",
+  "byte_faithful": true,
+  "captured_at": "2026-08-18T14:29:37Z",
+  "gmp_version": "22.7",
+  "gmp_version_source": "captured",
+  "image_digest": "ghcr.io/brennoo/gvm-mirror/gvmd@sha256:cb82c501ca93809405a8d0ed4c21846703466802ce6462536e985625f102b497",
+  "image_digest_source": "resolved"
+}

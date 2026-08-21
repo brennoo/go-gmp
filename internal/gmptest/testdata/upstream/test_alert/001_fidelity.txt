@@ -1,0 +1,19 @@
+# fidelity: test_alert / upstream / 001
+# provenance: command_test_alert.xml, command "test_alert", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

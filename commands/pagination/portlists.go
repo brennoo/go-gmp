@@ -23,15 +23,15 @@ func NewPortListIterator(client Client, ctx context.Context, opts PaginationOpti
 			return client.GetPortListsRaw(ctx, cmd)
 		},
 		func(resp *commands.GetPortListsResponse) []*commands.PortList {
-			items := make([]*commands.PortList, len(resp.PortLists))
-			for i := range resp.PortLists {
-				items[i] = &resp.PortLists[i]
+			items := make([]*commands.PortList, len(resp.PortList))
+			for i := range resp.PortList {
+				items[i] = &resp.PortList[i]
 			}
 			return items
 		},
 		func(resp *commands.GetPortListsResponse) int {
-			if resp.Count != nil {
-				return resp.Count.Filtered
+			if resp.PortListCount != nil {
+				return resp.PortListCount.Filtered
 			}
 			return 0
 		},

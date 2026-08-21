@@ -1,0 +1,24 @@
+# fidelity: get_tasks / live / 002
+# provenance: read-only: get_tasks with filter="rows=2 first=1"
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_tasks_response/task/last_report/report/result_count/hole/@deprecated x2
+  /get_tasks_response/task/last_report/report/result_count/info/@deprecated x2
+  /get_tasks_response/task/last_report/report/result_count/warning/@deprecated x2
+  /get_tasks_response/task/last_report/report/scan_start                   x2  (+1 descendant paths)
+  /get_tasks_response/task/scanner/trash                                   x2  (+1 descendant paths)
+  /get_tasks_response/task/trend                                           x2
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

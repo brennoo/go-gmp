@@ -1,0 +1,19 @@
+# fidelity: create_alert / upstream / 001
+# provenance: command_create_alert.xml, command "create_alert", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

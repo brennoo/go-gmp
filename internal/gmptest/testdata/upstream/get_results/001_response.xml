@@ -1,0 +1,51 @@
+<get_results_response status="200" status_text="OK">
+          <result id="634f7a2e-8ca1-43b7-b6d7-0d4841449508">
+            <owner>
+              <name>admin</name>
+            </owner>
+            <comment/>
+            <creation_time>2014-05-23T09:22:12Z</creation_time>
+            <modification_time>2014-05-23T09:22:12Z</modification_time>
+            <host>127.0.1.1</host>
+            <port>general/tcp</port>
+            <nvt oid="1.3.6.1.4.1.25623.1.0.74">
+              <name>Test NVT: fields with ISO-8859-1 chars</name>
+              <cvss_base>5.0</cvss_base>
+              <severities score="50">
+                <severity>
+                  [...]
+                </severity>
+              </severities>
+              <tags>NOTAGS</tags>
+              <refs>
+                 <ref type="cve" id="CVE-2009-3095"/>
+              </refs>
+            </nvt>
+            <threat>Medium</threat>
+            <description>Test with umlaut.</description>
+          </result>
+          <truncated>...</truncated>
+          <filters id="">
+            <term>first=1 rows=-1 sort=name</term>
+            <keywords>
+              <keyword>
+                <column>first</column>
+                <relation>=</relation>
+                <value>1</value>
+              </keyword>
+              <truncated>...</truncated>
+            </keywords>
+          </filters>
+          <sort>
+            <field>
+              name
+              <order>ascending</order>
+            </field>
+          </sort>
+          <results max="-1" start="1"/>
+          <result_count>
+            124
+            <filtered>124</filtered>
+            <page>124</page>
+          </result_count>
+        </get_results_response>

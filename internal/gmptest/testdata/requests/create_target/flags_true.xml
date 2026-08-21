@@ -1,0 +1,1 @@
+<create_target><name>Corporate LAN</name><allow_simultaneous_ips>1</allow_simultaneous_ips><reverse_lookup_only>1</reverse_lookup_only><reverse_lookup_unify>1</reverse_lookup_unify><hosts>192.0.2.0/24</hosts></create_target>

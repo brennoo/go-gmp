@@ -1,0 +1,19 @@
+# fidelity: delete_note / upstream / 001
+# provenance: command_delete_note.xml, command "delete_note", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

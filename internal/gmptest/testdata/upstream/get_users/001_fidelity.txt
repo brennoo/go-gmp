@@ -1,0 +1,45 @@
+# fidelity: get_users / upstream / 001
+# provenance: command_get_users.xml, command "get_users", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_users_response/filters                                              x1
+  /get_users_response/filters/@id                                          x1
+  /get_users_response/filters/keywords                                     x1
+  /get_users_response/filters/term                                         x1
+  /get_users_response/sort                                                 x1
+  /get_users_response/sort/field                                           x1
+  /get_users_response/sort/field/order                                     x1
+  /get_users_response/user/@id                                             x1
+  /get_users_response/user/comment                                         x1
+  /get_users_response/user/creation_time                                   x1
+  /get_users_response/user/creation_time/#text                             x1
+  /get_users_response/user/groups                                          x1
+  /get_users_response/user/groups/group                                    x1
+  /get_users_response/user/groups/group/@id                                x1
+  /get_users_response/user/groups/group/name                               x1
+  /get_users_response/user/in_use                                          x1
+  /get_users_response/user/in_use/#text                                    x1
+  /get_users_response/user/modification_time                               x1
+  /get_users_response/user/modification_time/#text                         x1
+  /get_users_response/user/owner                                           x1
+  /get_users_response/user/owner/name                                      x1
+  /get_users_response/user/permissions                                     x1
+  /get_users_response/user/writable                                        x1
+  /get_users_response/user/writable/#text                                  x1
+  /get_users_response/users                                                x1
+  /get_users_response/users/@max                                           x1
+  /get_users_response/users/@start                                         x1
+
+DUPLICATED
+  (none)

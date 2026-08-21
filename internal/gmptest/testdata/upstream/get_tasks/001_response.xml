@@ -1,0 +1,77 @@
+<get_tasks_response status="200" status_text="OK">
+          <apply_overrides>0</apply_overrides>
+          <task id="254cd3ef-bbe1-4d58-859d-21b8d0c046c6">
+            <name>Scan Webserver</name>
+            <comment>Scan of the web server.</comment>
+            <creation_time>2013-01-03T13:50:03+01:00</creation_time>
+            <modification_time>2013-01-11T16:03:24+01:00</modification_time>
+            <writable>1</writable>
+            <in_use>0</in_use>
+            <owner>
+              <name>admin</name>
+            </owner>
+            <observers/>
+            <alterable>0</alterable>
+            <config id="daba56c8-73ec-11df-a475-002264764cea">
+              <name>Full and fast</name>
+            </config>
+            <target id="1f28d970-17ef-4c69-ba8a-13827059f2b9">
+              <name>dik</name>
+            </target>
+            <scanner id="34891919-37ff-5c69-1a2a-089e9018308a">
+              <name>foo scanner</name>
+              <type>2</type>
+            </scanner>
+            <status>Done</status>
+            <progress>-1</progress>
+            <report_count>2<finished>2</finished></report_count>
+            <trend/>
+            <schedule id="">
+              <name/>
+              <trash>0</trash>
+            </schedule>
+            <last_report>
+              <report id="f0fdf522-276d-4893-9274-fb8699dc2270">
+                <timestamp>Mon Feb  1 19:11:20 2010</timestamp>
+                <result_count>
+                  
+                  <critical>0</critical>
+                  <hole>0</hole>
+                  <high>0</high>
+                  <info>7</info>
+                  <low>7</low>
+                  <log>0</log>
+                  <warning>3</warning>
+                  <medium>3</medium>
+                  
+                  
+                </result_count>
+                <severity>5.0</severity>
+              </report>
+            </last_report>
+            <alert id="">
+              <name/>
+            </alert>
+            <preferences>
+              <preference>
+                <name>Maximum concurrently executed NVTs per host</name>
+                <scanner_name>max_checks</scanner_name>
+                <value>4</value>
+              </preference>
+              <preference>
+                <name>Maximum concurrently scanned hosts</name>
+                <scanner_name>max_hosts</scanner_name>
+                <value>20</value>
+              </preference>
+              <preference>
+                <name>Add results to Asset Management</name>
+                <scanner_name>in_assets</scanner_name>
+                <value>yes</value>
+              </preference>
+            </preferences>
+          </task>
+          <task id="f14747d3-a4d7-4e79-99bb-a0a1276cb78c">
+            <name>Scan Mailserver</name>
+            <truncated>...</truncated>
+          </task>
+        </get_tasks_response>

@@ -1,0 +1,19 @@
+# fidelity: get_nvts / upstream / 002
+# provenance: command_get_nvts.xml, command "get_nvts", example 2
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

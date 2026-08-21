@@ -17,3 +17,5 @@ vendor/
 
 hack/CA/*.pem
 hack/CA/private/*.pem
+
+.claude/

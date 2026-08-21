@@ -1,0 +1,19 @@
+# fidelity: get_targets / live / 003
+# provenance: lifecycle: get_targets for the target just created
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_targets_response/target/alive_tests/#text                           x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_targets_response/target/port_range                                  x1
+
+DUPLICATED
+  (none)

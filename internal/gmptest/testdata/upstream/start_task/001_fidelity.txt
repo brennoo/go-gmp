@@ -1,0 +1,19 @@
+# fidelity: start_task / upstream / 001
+# provenance: command_start_task.xml, command "start_task", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

@@ -36,7 +36,7 @@ func TestCreatePortList(t *testing.T) {
 		Comment:   "All possible TCP ports",
 		PortRange: "T:1-65535",
 	}
-	resp, err := cli.CreatePortList(cmd)
+	resp, err := cli.CreatePortList(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreatePortList: %s", err)
 	}
@@ -59,7 +59,7 @@ func TestModifyPortList(t *testing.T) {
 		Name:       "PL-WS1",
 		Comment:    "Port List for Web Server 1",
 	}
-	resp, err := cli.ModifyPortList(cmd)
+	resp, err := cli.ModifyPortList(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyPortList: %s", err)
 	}
@@ -78,7 +78,7 @@ func TestDeletePortList(t *testing.T) {
 		PortListID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
 		Ultimate:   true,
 	}
-	resp, err := cli.DeletePortList(cmd)
+	resp, err := cli.DeletePortList(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during DeletePortList: %s", err)
 	}
@@ -94,12 +94,12 @@ func TestCreatePortRange(t *testing.T) {
 	}
 
 	cmd := &commands.CreatePortRange{
-		PortListID: "354cd3ef-bbe1-4d58-859d-21b8d0c046c4",
-		Start:      "777",
-		End:        "779",
-		Type:       "TCP",
+		PortList: commands.PortRangePortList{ID: "354cd3ef-bbe1-4d58-859d-21b8d0c046c4"},
+		Start:    "777",
+		End:      "779",
+		Type:     "TCP",
 	}
-	resp, err := cli.CreatePortRange(cmd)
+	resp, err := cli.CreatePortRange(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreatePortRange: %s", err)
 	}
@@ -120,7 +120,7 @@ func TestDeletePortRange(t *testing.T) {
 	cmd := &commands.DeletePortRange{
 		PortRangeID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
 	}
-	resp, err := cli.DeletePortRange(cmd)
+	resp, err := cli.DeletePortRange(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during DeletePortRange: %s", err)
 	}

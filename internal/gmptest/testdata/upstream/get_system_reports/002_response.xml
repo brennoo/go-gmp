@@ -1,0 +1,9 @@
+<get_system_reports_response status="200" status_text="OK">
+          <system_report>
+            <name>proc</name>
+            <title>Processes</title>
+            <report format="png" duration="86400">
+              iVBORw0KGgoAAAANSUhEUgAAArkAAAE...2bEdAAAAAElFTkSuQmCC
+            </report>
+          </system_report>
+        </get_system_reports_response>

@@ -1,0 +1,1 @@
+<create_scanner><name>Relayed OpenVAS scanner</name><host>scanner.internal.example.com</host><port>9391</port><type>22</type><ca_pub>-----BEGIN CERTIFICATE-----&#xA;MIIB...&#xA;-----END CERTIFICATE-----</ca_pub><credential id="b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e"></credential><relay_host>relay.internal.example.com</relay_host><relay_port>9392</relay_port></create_scanner>

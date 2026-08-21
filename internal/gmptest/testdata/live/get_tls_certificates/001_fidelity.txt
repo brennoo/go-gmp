@@ -1,0 +1,19 @@
+# fidelity: get_tls_certificates / live / 001
+# provenance: read-only: get_tls_certificates bare
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

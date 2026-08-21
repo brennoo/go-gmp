@@ -1,0 +1,6 @@
+<create_filter>
+          <name>Single Targets</name>
+          <comment>Targets with only one host</comment>
+          <term>ips=1 first=1 rows=-2</term>
+          <type>target</type>
+        </create_filter>

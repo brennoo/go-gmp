@@ -1,0 +1,19 @@
+# fidelity: create_user / upstream / 001
+# provenance: command_create_user.xml, command "create_user", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /create_user_response/@id                                                x1
+
+DUPLICATED
+  (none)

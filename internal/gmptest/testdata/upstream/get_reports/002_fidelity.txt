@@ -1,0 +1,93 @@
+# fidelity: get_reports / upstream / 002
+# provenance: command_get_reports.xml, command "get_reports", example 2
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_reports_response/report/report/filters/keywords                     x1  (+7 descendant paths)
+  /get_reports_response/report/report/host/truncated                       x1  (+1 descendant paths)
+  /get_reports_response/report/report/ports/truncated                      x1  (+1 descendant paths)
+  /get_reports_response/report/report/results/result/nvt/severities/severity/#text x1
+  /get_reports_response/report/report/results/truncated                    x1  (+1 descendant paths)
+  /get_reports_response/report/report/scan                                 x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_reports_response/report/report/ports/port/severity/#text            "5.0" -> "5"
+  /get_reports_response/report/report/results/result/nvt/cvss_base/#text   "5.0" -> "5"
+  /get_reports_response/report/report/scan_end/#text                       "2010-02-02T19:11:52+00:00" -> "2010-02-02T19:11:52Z"
+  /get_reports_response/report/report/scan_start/#text                     "2010-02-02T19:11:21+00:00" -> "2010-02-02T19:11:21Z"
+  /get_reports_response/report/report/timestamp/#text                      "2010-02-02T19:11:21+00:00" -> "2010-02-02T19:11:21Z"
+
+ADDED
+  /get_reports_response/report/@config_id                                  x1
+  /get_reports_response/report/comment                                     x1
+  /get_reports_response/report/creation_time                               x1
+  /get_reports_response/report/creation_time/#text                         x1
+  /get_reports_response/report/in_use                                      x1
+  /get_reports_response/report/in_use/#text                                x1
+  /get_reports_response/report/modification_time                           x1
+  /get_reports_response/report/modification_time/#text                     x1
+  /get_reports_response/report/name                                        x1
+  /get_reports_response/report/owner                                       x1
+  /get_reports_response/report/owner/name                                  x1
+  /get_reports_response/report/report/filters/apply_overrides              x1
+  /get_reports_response/report/report/filters/min_qod                      x1
+  /get_reports_response/report/report/filters/notes                        x1
+  /get_reports_response/report/report/filters/overrides                    x1
+  /get_reports_response/report/report/filters/phrase                       x1
+  /get_reports_response/report/report/filters/result_hosts_only            x1
+  /get_reports_response/report/report/host/port_count                      x1
+  /get_reports_response/report/report/host/port_count/page                 x1
+  /get_reports_response/report/report/host/port_count/page/#text           x1
+  /get_reports_response/report/report/report_format                        x1
+  /get_reports_response/report/report/report_format/param                  x1
+  /get_reports_response/report/report/report_format/param/name             x1
+  /get_reports_response/report/report/report_format/param/value            x1
+  /get_reports_response/report/report/results/result/comment               x1
+  /get_reports_response/report/report/results/result/compliance            x1
+  /get_reports_response/report/report/results/result/creation_time         x1
+  /get_reports_response/report/report/results/result/creation_time/#text   x1
+  /get_reports_response/report/report/results/result/host/asset            x1
+  /get_reports_response/report/report/results/result/host/asset/@asset_id  x1
+  /get_reports_response/report/report/results/result/host/hostname         x1
+  /get_reports_response/report/report/results/result/modification_time     x1
+  /get_reports_response/report/report/results/result/modification_time/#text x1
+  /get_reports_response/report/report/results/result/name                  x1
+  /get_reports_response/report/report/results/result/nvt/cpe               x1
+  /get_reports_response/report/report/results/result/nvt/family            x1
+  /get_reports_response/report/report/results/result/nvt/severities/severity/@type x1
+  /get_reports_response/report/report/results/result/nvt/severities/severity/date x1
+  /get_reports_response/report/report/results/result/nvt/severities/severity/date/#text x1
+  /get_reports_response/report/report/results/result/nvt/severities/severity/origin x1
+  /get_reports_response/report/report/results/result/nvt/severities/severity/score x1
+  /get_reports_response/report/report/results/result/nvt/severities/severity/score/#text x1
+  /get_reports_response/report/report/results/result/nvt/severities/severity/value x1
+  /get_reports_response/report/report/results/result/nvt/type              x1
+  /get_reports_response/report/report/results/result/owner                 x1
+  /get_reports_response/report/report/results/result/owner/name            x1
+  /get_reports_response/report/report/results/result/qod                   x1
+  /get_reports_response/report/report/results/result/qod/type              x1
+  /get_reports_response/report/report/results/result/qod/value             x1
+  /get_reports_response/report/report/results/result/qod/value/#text       x1
+  /get_reports_response/report/report/results/result/scan_nvt_version      x1
+  /get_reports_response/report/report/results/result/severity              x1
+  /get_reports_response/report/report/results/result/severity/#text        x1
+  /get_reports_response/report/report/task/comment                         x1
+  /get_reports_response/report/report/task/progress                        x1
+  /get_reports_response/report/report/task/progress/#text                  x1
+  /get_reports_response/report/report/task/target                          x1
+  /get_reports_response/report/report/task/target/comment                  x1
+  /get_reports_response/report/report/task/target/name                     x1
+  /get_reports_response/report/report/task/target/trash                    x1
+  /get_reports_response/report/report/task/target/trash/#text              x1
+  /get_reports_response/report/task                                        x1
+  /get_reports_response/report/task/@id                                    x1
+  /get_reports_response/report/task/name                                   x1
+  /get_reports_response/report/writable                                    x1
+  /get_reports_response/report/writable/#text                              x1
+
+DUPLICATED
+  (none)

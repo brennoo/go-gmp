@@ -17,14 +17,12 @@ func TestTasks(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	// Test basic iteration
 	iter := cli.Tasks(ctx, 10)
 	if iter == nil {
 		t.Fatal("Tasks returned nil iterator")
 	}
 	defer iter.Close()
 
-	// Test iteration
 	if !iter.Next() {
 		t.Fatal("Expected Next() to return true")
 	}
@@ -33,9 +31,7 @@ func TestTasks(t *testing.T) {
 	if task == nil {
 		t.Fatal("Current() returned nil task")
 	}
-	_ = task // Use the variable to avoid unused variable error
-
-	// Test iterator state
+	_ = task
 	if !iter.HasMore() {
 		t.Error("HasMore() should return true")
 	}
@@ -56,14 +52,12 @@ func TestResults(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	// Test basic iteration
 	iter := cli.Results(ctx, 10)
 	if iter == nil {
 		t.Fatal("Results returned nil iterator")
 	}
 	defer iter.Close()
 
-	// Test iteration
 	if !iter.Next() {
 		t.Fatal("Expected Next() to return true")
 	}
@@ -72,9 +66,7 @@ func TestResults(t *testing.T) {
 	if result == nil {
 		t.Fatal("Current() returned nil result")
 	}
-	_ = result // Use the variable to avoid unused variable error
-
-	// Test iterator state
+	_ = result
 	if !iter.HasMore() {
 		t.Error("HasMore() should return true")
 	}
@@ -95,14 +87,12 @@ func TestAssets(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	// Test basic iteration
 	iter := cli.Assets(ctx, 10)
 	if iter == nil {
 		t.Fatal("Assets returned nil iterator")
 	}
 	defer iter.Close()
 
-	// Test iteration
 	if !iter.Next() {
 		t.Fatal("Expected Next() to return true")
 	}
@@ -111,9 +101,7 @@ func TestAssets(t *testing.T) {
 	if asset == nil {
 		t.Fatal("Current() returned nil asset")
 	}
-	_ = asset // Use the variable to avoid unused variable error
-
-	// Test iterator state
+	_ = asset
 	if !iter.HasMore() {
 		t.Error("HasMore() should return true")
 	}
@@ -134,14 +122,12 @@ func TestTargets(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	// Test basic iteration
 	iter := cli.Targets(ctx, 10)
 	if iter == nil {
 		t.Fatal("Targets returned nil iterator")
 	}
 	defer iter.Close()
 
-	// Test iteration
 	if !iter.Next() {
 		t.Fatal("Expected Next() to return true")
 	}
@@ -150,9 +136,7 @@ func TestTargets(t *testing.T) {
 	if target == nil {
 		t.Fatal("Current() returned nil target")
 	}
-	_ = target // Use the variable to avoid unused variable error
-
-	// Test iterator state
+	_ = target
 	if !iter.HasMore() {
 		t.Error("HasMore() should return true")
 	}
@@ -173,14 +157,12 @@ func TestTickets(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	// Test basic iteration
 	iter := cli.Tickets(ctx, 10)
 	if iter == nil {
 		t.Fatal("Tickets returned nil iterator")
 	}
 	defer iter.Close()
 
-	// Test iteration
 	if !iter.Next() {
 		t.Fatal("Expected Next() to return true")
 	}
@@ -189,9 +171,7 @@ func TestTickets(t *testing.T) {
 	if ticket == nil {
 		t.Fatal("Current() returned nil ticket")
 	}
-	_ = ticket // Use the variable to avoid unused variable error
-
-	// Test iterator state
+	_ = ticket
 	if !iter.HasMore() {
 		t.Error("HasMore() should return true")
 	}
@@ -212,14 +192,12 @@ func TestPortLists(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	// Test basic iteration
 	iter := cli.PortLists(ctx, 10)
 	if iter == nil {
 		t.Fatal("PortLists returned nil iterator")
 	}
 	defer iter.Close()
 
-	// Test iteration
 	if !iter.Next() {
 		t.Fatal("Expected Next() to return true")
 	}
@@ -228,9 +206,7 @@ func TestPortLists(t *testing.T) {
 	if portList == nil {
 		t.Fatal("Current() returned nil portList")
 	}
-	_ = portList // Use the variable to avoid unused variable error
-
-	// Test iterator state
+	_ = portList
 	if !iter.HasMore() {
 		t.Error("HasMore() should return true")
 	}
@@ -251,14 +227,12 @@ func TestSettings(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	// Test basic iteration
 	iter := cli.Settings(ctx, 10)
 	if iter == nil {
 		t.Fatal("Settings returned nil iterator")
 	}
 	defer iter.Close()
 
-	// Test iteration
 	if !iter.Next() {
 		t.Fatal("Expected Next() to return true")
 	}
@@ -267,9 +241,7 @@ func TestSettings(t *testing.T) {
 	if setting == nil {
 		t.Fatal("Current() returned nil setting")
 	}
-	_ = setting // Use the variable to avoid unused variable error
-
-	// Test iterator state
+	_ = setting
 	if !iter.HasMore() {
 		t.Error("HasMore() should return true")
 	}
@@ -290,14 +262,12 @@ func TestIteratorWithFilters(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	// Test iterator with filters
 	iter := cli.Tasks(ctx, 5, "status=running", "sort=name")
 	if iter == nil {
 		t.Fatal("GetTasksIter with filters returned nil iterator")
 	}
 	defer iter.Close()
 
-	// Test iteration
 	if !iter.Next() {
 		t.Fatal("Expected Next() to return true")
 	}
@@ -306,7 +276,7 @@ func TestIteratorWithFilters(t *testing.T) {
 	if task == nil {
 		t.Fatal("Current() with filters returned nil task")
 	}
-	_ = task // Use the variable to avoid unused variable error
+	_ = task
 }
 
 func TestIteratorContextCancellation(t *testing.T) {
@@ -315,19 +285,15 @@ func TestIteratorContextCancellation(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
-	// Test context cancellation
 	ctx, cancel := context.WithCancel(context.Background())
-	cancel() // Cancel immediately
-
+	cancel()
 	iter := cli.Tasks(ctx, 10)
 	if iter == nil {
 		t.Fatal("Tasks returned nil iterator")
 	}
 	defer iter.Close()
 
-	// The iterator should handle cancelled context gracefully
-	// We can't easily test the actual cancellation without a real connection,
-	// but we can test that the iterator is created successfully
+	// Without a real connection we can only check that construction succeeds; cancellation handling is untestable here.
 	if iter == nil {
 		t.Fatal("Iterator should be created even with cancelled context")
 	}
@@ -341,16 +307,13 @@ func TestIteratorClose(t *testing.T) {
 
 	ctx := context.Background()
 
-	// Test that Close() doesn't panic
 	iter := cli.Tasks(ctx, 10)
 	if iter == nil {
 		t.Fatal("Tasks returned nil iterator")
 	}
 
-	// Close should not panic
 	iter.Close()
 
-	// Test that HasMore returns false after close
 	if iter.HasMore() {
 		t.Error("HasMore() should return false after Close()")
 	}
@@ -364,13 +327,12 @@ func TestIteratorMethods(t *testing.T) {
 
 	ctx := context.Background()
 
-	// Test that all iterator methods exist and can be called
 	t.Run("Tasks", func(t *testing.T) {
 		iter := cli.Tasks(ctx, 10)
 		if iter == nil {
 			t.Error("Tasks returned nil iterator")
 		} else {
-			iter.Close() // Clean up
+			iter.Close()
 		}
 	})
 
@@ -379,7 +341,7 @@ func TestIteratorMethods(t *testing.T) {
 		if iter == nil {
 			t.Error("Results returned nil iterator")
 		} else {
-			iter.Close() // Clean up
+			iter.Close()
 		}
 	})
 
@@ -388,7 +350,7 @@ func TestIteratorMethods(t *testing.T) {
 		if iter == nil {
 			t.Error("Assets returned nil iterator")
 		} else {
-			iter.Close() // Clean up
+			iter.Close()
 		}
 	})
 
@@ -397,7 +359,7 @@ func TestIteratorMethods(t *testing.T) {
 		if iter == nil {
 			t.Error("Targets returned nil iterator")
 		} else {
-			iter.Close() // Clean up
+			iter.Close()
 		}
 	})
 
@@ -406,7 +368,7 @@ func TestIteratorMethods(t *testing.T) {
 		if iter == nil {
 			t.Error("Tickets returned nil iterator")
 		} else {
-			iter.Close() // Clean up
+			iter.Close()
 		}
 	})
 
@@ -415,7 +377,7 @@ func TestIteratorMethods(t *testing.T) {
 		if iter == nil {
 			t.Error("PortLists returned nil iterator")
 		} else {
-			iter.Close() // Clean up
+			iter.Close()
 		}
 	})
 
@@ -424,7 +386,7 @@ func TestIteratorMethods(t *testing.T) {
 		if iter == nil {
 			t.Error("Settings returned nil iterator")
 		} else {
-			iter.Close() // Clean up
+			iter.Close()
 		}
 	})
 }
@@ -434,7 +396,6 @@ func testIteratorWithFilters(t *testing.T, ctx context.Context, name string,
 	stringFilter string, funcFilter filtering.FilterArg,
 	iteratorFunc func(context.Context, int, ...filtering.FilterArg) interface{},
 ) {
-	// Test with string filter
 	iter := iteratorFunc(ctx, 10, stringFilter)
 	if iter == nil {
 		t.Fatalf("%s with string filters returned nil iterator", name)
@@ -443,7 +404,6 @@ func testIteratorWithFilters(t *testing.T, ctx context.Context, name string,
 		defer closer.Close()
 	}
 
-	// Test with functional filter
 	iter2 := iteratorFunc(ctx, 10, funcFilter)
 	if iter2 == nil {
 		t.Fatalf("%s with functional options returned nil iterator", name)
@@ -499,4 +459,45 @@ func TestIteratorsWithFunctionalFilters(t *testing.T) {
 		func(ctx context.Context, pageSize int, args ...filtering.FilterArg) interface{} {
 			return cli.Settings(ctx, pageSize, args...)
 		})
+}
+
+// TestIteratorConstructorsRejectUnrecognizedFilterArg pins T-29's fail-closed
+// fix: an invalid FilterArg must surface via Next()/Err() rather than being
+// silently dropped, since these constructors return a bare iterator, not
+// (iterator, error).
+func TestIteratorConstructorsRejectUnrecognizedFilterArg(t *testing.T) {
+	cli := New(MockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+	ctx := context.Background()
+	bad := 123 // not string, Option, []string or []Option
+
+	// All 7 iterator types are distinct generic instantiations with no
+	// shared named interface, but all structurally satisfy Next/Err.
+	tests := []struct {
+		name string
+		iter interface {
+			Next() bool
+			Err() error
+		}
+	}{
+		{"Tasks", cli.Tasks(ctx, 10, bad)},
+		{"Results", cli.Results(ctx, 10, bad)},
+		{"Assets", cli.Assets(ctx, 10, bad)},
+		{"Targets", cli.Targets(ctx, 10, bad)},
+		{"Tickets", cli.Tickets(ctx, 10, bad)},
+		{"PortLists", cli.PortLists(ctx, 10, bad)},
+		{"Settings", cli.Settings(ctx, 10, bad)},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.iter.Next() {
+				t.Fatal("expected Next() to be false for an invalid FilterArg")
+			}
+			if tt.iter.Err() == nil {
+				t.Fatal("expected Err() to report the invalid FilterArg")
+			}
+		})
+	}
 }

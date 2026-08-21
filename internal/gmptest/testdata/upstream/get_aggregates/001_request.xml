@@ -1,0 +1,2 @@
+<get_aggregates type="nvt" group_column="family" data_column="severity">
+        </get_aggregates>

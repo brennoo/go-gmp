@@ -1,0 +1,19 @@
+# fidelity: modify_note / live / 001
+# provenance: annotations: modify_note text
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

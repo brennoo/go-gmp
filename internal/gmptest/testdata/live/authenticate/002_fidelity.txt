@@ -1,0 +1,20 @@
+# fidelity: authenticate / live / 002
+# provenance: pre-auth: authenticate with a deliberately wrong password
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /authenticate_response/role                                              x1
+  /authenticate_response/timezone                                          x1
+
+DUPLICATED
+  (none)

@@ -1,0 +1,5 @@
+<get_features_response status_text="OK" status="200">
+          <feature enabled="0">
+            <name>OPENVASD</name>
+          </feature>
+        </get_features_response>

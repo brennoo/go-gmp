@@ -1,0 +1,19 @@
+# fidelity: get_report_formats / live / 003
+# provenance: lifecycle: get_report_formats to choose a format to copy
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_report_formats_response/report_format/trust/@name                   x2
+
+DUPLICATED
+  (none)

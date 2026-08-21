@@ -1,0 +1,19 @@
+# fidelity: create_ticket / live / 001
+# provenance: annotations: create_ticket against the imported result
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

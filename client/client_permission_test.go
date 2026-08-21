@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"testing"
 
 	"github.com/brennoo/go-gmp/commands"
@@ -15,7 +16,7 @@ func TestCreatePermission(t *testing.T) {
 	// Success case
 	cmd := &commands.CreatePermission{
 		Name: "get_targets",
-		Subject: &commands.PermissionSubject{
+		Subject: commands.PermissionSubject{
 			ID:   "66abe5ce-c011-11e3-b96e-406186ea4fc5",
 			Type: "user",
 		},
@@ -24,7 +25,7 @@ func TestCreatePermission(t *testing.T) {
 			Type: "target",
 		},
 	}
-	resp, err := cli.CreatePermission(cmd)
+	resp, err := cli.CreatePermission(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreatePermission: %s", err)
 	}
@@ -38,10 +39,10 @@ func TestCreatePermission(t *testing.T) {
 	// Failure case
 	cmdFail := &commands.CreatePermission{
 		Name:     "",
-		Subject:  &commands.PermissionSubject{},
+		Subject:  commands.PermissionSubject{},
 		Resource: &commands.PermissionResource{},
 	}
-	respFail, err := cli.CreatePermission(cmdFail)
+	respFail, err := cli.CreatePermission(context.Background(), cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreatePermission (fail): %s", err)
 	}
@@ -64,7 +65,7 @@ func TestModifyPermission(t *testing.T) {
 			Type: "user",
 		},
 	}
-	resp, err := cli.ModifyPermission(cmd)
+	resp, err := cli.ModifyPermission(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyPermission: %s", err)
 	}
@@ -80,7 +81,7 @@ func TestModifyPermission(t *testing.T) {
 		PermissionID: "",
 		Subject:      &commands.PermissionSubject{},
 	}
-	respFail, err := cli.ModifyPermission(cmdFail)
+	respFail, err := cli.ModifyPermission(context.Background(), cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyPermission (fail): %s", err)
 	}
@@ -97,15 +98,15 @@ func TestGetPermissions(t *testing.T) {
 
 	// Success case
 	cmd := &commands.GetPermissions{}
-	resp, err := cli.GetPermissions(cmd)
+	resp, err := cli.GetPermissions(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetPermissions: %s", err)
 	}
 	if resp.Status != "200" {
 		t.Errorf("Expected status 200, got %s", resp.Status)
 	}
-	if len(resp.Permissions) != 1 || resp.Permissions[0].Name != "Management" {
-		t.Errorf("Expected permission 'Management', got %+v", resp.Permissions)
+	if len(resp.Permission) != 1 || resp.Permission[0].Name != "Management" {
+		t.Errorf("Expected permission 'Management', got %+v", resp.Permission)
 	}
 }
 
@@ -119,7 +120,7 @@ func TestDeletePermission(t *testing.T) {
 		PermissionID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
 		Ultimate:     true,
 	}
-	resp, err := cli.DeletePermission(cmd)
+	resp, err := cli.DeletePermission(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during DeletePermission: %s", err)
 	}

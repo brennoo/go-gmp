@@ -1,0 +1,60 @@
+# fidelity: get_results / upstream / 002
+# provenance: command_get_results.xml, command "get_results", example 2
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_results_response/filters/keywords/truncated                         x1  (+1 descendant paths)
+  /get_results_response/result/nvt/severities/severity/#text               x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_results_response/result/compliance                                  x1
+  /get_results_response/result/host/asset                                  x1
+  /get_results_response/result/host/asset/@asset_id                        x1
+  /get_results_response/result/host/hostname                               x1
+  /get_results_response/result/name                                        x1
+  /get_results_response/result/nvt/cpe                                     x1
+  /get_results_response/result/nvt/family                                  x1
+  /get_results_response/result/nvt/severities/severity/@type               x1
+  /get_results_response/result/nvt/severities/severity/date                x1
+  /get_results_response/result/nvt/severities/severity/date/#text          x1
+  /get_results_response/result/nvt/severities/severity/origin              x1
+  /get_results_response/result/nvt/severities/severity/score               x1
+  /get_results_response/result/nvt/severities/severity/score/#text         x1
+  /get_results_response/result/nvt/severities/severity/value               x1
+  /get_results_response/result/nvt/type                                    x1
+  /get_results_response/result/overrides/override/active                   x1
+  /get_results_response/result/overrides/override/active/#text             x1
+  /get_results_response/result/overrides/override/creation_time            x1
+  /get_results_response/result/overrides/override/creation_time/#text      x1
+  /get_results_response/result/overrides/override/in_use                   x1
+  /get_results_response/result/overrides/override/in_use/#text             x1
+  /get_results_response/result/overrides/override/modification_time        x1
+  /get_results_response/result/overrides/override/modification_time/#text  x1
+  /get_results_response/result/overrides/override/new_severity             x1
+  /get_results_response/result/overrides/override/new_severity/#text       x1
+  /get_results_response/result/overrides/override/nvt/type                 x1
+  /get_results_response/result/overrides/override/owner                    x1
+  /get_results_response/result/overrides/override/owner/name               x1
+  /get_results_response/result/overrides/override/permissions              x1
+  /get_results_response/result/overrides/override/severity                 x1
+  /get_results_response/result/overrides/override/severity/#text           x1
+  /get_results_response/result/overrides/override/threat                   x1
+  /get_results_response/result/overrides/override/writable                 x1
+  /get_results_response/result/overrides/override/writable/#text           x1
+  /get_results_response/result/qod                                         x1
+  /get_results_response/result/qod/type                                    x1
+  /get_results_response/result/qod/value                                   x1
+  /get_results_response/result/qod/value/#text                             x1
+  /get_results_response/result/scan_nvt_version                            x1
+  /get_results_response/result/severity                                    x1
+  /get_results_response/result/severity/#text                              x1
+
+DUPLICATED
+  (none)

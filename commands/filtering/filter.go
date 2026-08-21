@@ -29,7 +29,6 @@ func NewFilter() *FilterBuilder {
 
 // AddCondition adds a filter condition.
 func (fb *FilterBuilder) AddCondition(column, operator, value string) *FilterBuilder {
-	// Escape value if it contains spaces or special characters
 	escapedValue := escapeValue(value)
 	fb.conditions = append(fb.conditions, fmt.Sprintf("%s%s%s", column, operator, escapedValue))
 	return fb
@@ -67,7 +66,6 @@ func (fb *FilterBuilder) Offset(n int) *FilterBuilder {
 func (fb *FilterBuilder) Build() string {
 	parts := make([]string, 0)
 
-	// Add pagination
 	if fb.offset > 0 {
 		parts = append(parts, fmt.Sprintf("first=%d", fb.offset))
 	}
@@ -75,10 +73,8 @@ func (fb *FilterBuilder) Build() string {
 		parts = append(parts, fmt.Sprintf("rows=%d", fb.limit))
 	}
 
-	// Add conditions
 	parts = append(parts, fb.conditions...)
 
-	// Add sorting
 	if fb.sort != "" {
 		parts = append(parts, fb.sort)
 	}
@@ -167,7 +163,6 @@ func NewTimeFilter(column, operator string, value time.Time) *TimeFilter {
 
 // Build returns the filter string.
 func (tf *TimeFilter) Build() string {
-	// Format time as ISO 8601
 	isoTime := tf.value.Format("2006-01-02T15:04:05Z")
 	return fmt.Sprintf("%s%s%s", tf.column, tf.operator, escapeValue(isoTime))
 }
@@ -219,7 +214,6 @@ func (cf *CompositeFilter) Offset(n int) *CompositeFilter {
 func (cf *CompositeFilter) Build() string {
 	parts := make([]string, 0)
 
-	// Add pagination
 	if cf.offset > 0 {
 		parts = append(parts, fmt.Sprintf("first=%d", cf.offset))
 	}
@@ -227,14 +221,12 @@ func (cf *CompositeFilter) Build() string {
 		parts = append(parts, fmt.Sprintf("rows=%d", cf.limit))
 	}
 
-	// Add filter conditions
 	for _, filter := range cf.filters {
 		if filter != nil {
 			parts = append(parts, filter.Build())
 		}
 	}
 
-	// Add sorting
 	if cf.sort != "" {
 		parts = append(parts, cf.sort)
 	}
@@ -244,7 +236,6 @@ func (cf *CompositeFilter) Build() string {
 
 // escapeValue escapes a value for use in filter strings.
 func escapeValue(value string) string {
-	// If value contains spaces or special characters, wrap in quotes
 	if strings.ContainsAny(value, " \t\n\r\"'=<>!") {
 		return fmt.Sprintf(`"%s"`, strings.ReplaceAll(value, `"`, `\"`))
 	}

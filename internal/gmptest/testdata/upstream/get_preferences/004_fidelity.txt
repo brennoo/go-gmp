@@ -1,0 +1,4 @@
+# fidelity: get_preferences / upstream / 004
+# provenance: command_get_preferences.xml, command "get_preferences", example 4
+decode: error
+error: expected element type <get_preferences_response> but have <get_preferences>

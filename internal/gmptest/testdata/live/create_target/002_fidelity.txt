@@ -1,0 +1,19 @@
+# fidelity: create_target / live / 002
+# provenance: failure: create_target with neither hosts nor asset_hosts
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /create_target_response/@id                                              x1
+
+DUPLICATED
+  (none)

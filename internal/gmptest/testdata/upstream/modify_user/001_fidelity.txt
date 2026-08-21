@@ -1,0 +1,19 @@
+# fidelity: modify_user / upstream / 001
+# provenance: command_modify_user.xml, command "modify_user", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

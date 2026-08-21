@@ -15,15 +15,15 @@ func TestCreateTag(t *testing.T) {
 
 	cmd := &commands.CreateTag{
 		Name: "geo:long",
-		Resources: &commands.CreateTagResources{
+		Resources: commands.TagResources{
 			Type: "target",
-			Resources: []commands.TagResource{
+			Resource: []commands.TagResource{
 				{ID: "b493b7a8-7489-11df-a3ec-002264764cea"},
 			},
 		},
 		Value: "52.2788",
 	}
-	resp, err := cli.CreateTag(cmd)
+	resp, err := cli.CreateTag(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateTag: %s", err)
 	}
@@ -43,9 +43,9 @@ func TestModifyTag(t *testing.T) {
 
 	cmd := &commands.ModifyTag{
 		TagID:  "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
-		Active: false,
+		Active: commands.Bool(false),
 	}
-	resp, err := cli.ModifyTag(cmd)
+	resp, err := cli.ModifyTag(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyTag: %s", err)
 	}
@@ -68,8 +68,8 @@ func TestGetTags(t *testing.T) {
 	if resp.Status != "200" {
 		t.Errorf("Expected status 200, got %s", resp.Status)
 	}
-	if len(resp.Tags) != 1 || resp.Tags[0].Name != "geo:long" {
-		t.Errorf("Expected tag 'geo:long', got %+v", resp.Tags)
+	if len(resp.Tag) != 1 || resp.Tag[0].Name != "geo:long" {
+		t.Errorf("Expected tag 'geo:long', got %+v", resp.Tag)
 	}
 }
 
@@ -83,7 +83,7 @@ func TestDeleteTag(t *testing.T) {
 		TagID:    "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 		Ultimate: true,
 	}
-	resp, err := cli.DeleteTag(cmd)
+	resp, err := cli.DeleteTag(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during DeleteTag: %s", err)
 	}

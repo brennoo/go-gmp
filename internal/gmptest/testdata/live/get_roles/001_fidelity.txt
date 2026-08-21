@@ -1,0 +1,19 @@
+# fidelity: get_roles / live / 001
+# provenance: read-only: get_roles bare
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

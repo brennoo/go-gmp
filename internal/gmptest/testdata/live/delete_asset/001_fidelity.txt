@@ -1,0 +1,19 @@
+# fidelity: delete_asset / live / 001
+# provenance: teardown: delete_asset for the imported report's assets
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

@@ -1,0 +1,21 @@
+# fidelity: get_users / live / 002
+# provenance: read-only: get_users with filter="rows=2 first=1"
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_users_response/user/groups/group                                    x1
+  /get_users_response/user/groups/group/@id                                x1
+  /get_users_response/user/groups/group/name                               x1
+
+DUPLICATED
+  (none)

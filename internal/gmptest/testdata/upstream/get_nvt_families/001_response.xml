@@ -1,0 +1,13 @@
+<get_nvt_families_response status="200" status_text="OK">
+          <families>
+            <family>
+              <name>Credentials</name>
+              <max_nvt_count>8</max_nvt_count>
+            </family>
+            <family>
+              <name>Port scanners</name>
+              <max_nvt_count>12</max_nvt_count>
+            </family>
+            <truncated>...</truncated>
+          </families>
+        </get_nvt_families_response>

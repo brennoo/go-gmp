@@ -1,0 +1,19 @@
+# fidelity: get_credentials / live / 003
+# provenance: lifecycle: get_credentials for the username/password credential
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

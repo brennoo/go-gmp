@@ -1,0 +1,19 @@
+# fidelity: create_task / upstream / 002
+# provenance: command_create_task.xml, command "create_task", example 2
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

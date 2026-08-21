@@ -1,0 +1,19 @@
+# fidelity: create_credential / live / 001
+# provenance: lifecycle: create_credential type=up, password redacted
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

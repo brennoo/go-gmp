@@ -1,0 +1,19 @@
+# fidelity: get_aggregates / live / 003
+# provenance: container task: get_aggregates over results
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

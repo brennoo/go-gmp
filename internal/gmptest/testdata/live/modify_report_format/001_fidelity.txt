@@ -1,0 +1,19 @@
+# fidelity: modify_report_format / live / 001
+# provenance: lifecycle: modify_report_format name
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

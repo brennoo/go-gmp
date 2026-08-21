@@ -1,0 +1,8 @@
+{
+  "command": "create_permission",
+  "provenance": "upstream",
+  "source": "command_create_permission.xml, command \"create_permission\", example 2",
+  "source_upstream_revision": "GMP 22.7 (newest entry in vendor/XML/commands/changes.xml)",
+  "source_license": "AGPL-3.0-or-later, Copyright (C) Greenbone AG",
+  "byte_faithful": false
+}

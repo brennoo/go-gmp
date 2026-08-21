@@ -1,0 +1,30 @@
+# fidelity: get_tags / upstream / 001
+# provenance: command_get_tags.xml, command "get_tags", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_tags_response/tag/comment                                           x1
+  /get_tags_response/tag/resource                                          x1  (+7 descendant paths)
+  /get_tags_response/truncated                                             x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_tags_response/filters                                               x1
+  /get_tags_response/filters/@id                                           x1
+  /get_tags_response/filters/keywords                                      x1
+  /get_tags_response/filters/term                                          x1
+  /get_tags_response/sort                                                  x1
+  /get_tags_response/sort/field                                            x1
+  /get_tags_response/sort/field/order                                      x1
+  /get_tags_response/tags                                                  x1
+  /get_tags_response/tags/@max                                             x1
+  /get_tags_response/tags/@start                                           x1
+
+DUPLICATED
+  (none)

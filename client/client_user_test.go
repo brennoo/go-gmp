@@ -17,9 +17,9 @@ func TestCreateUser(t *testing.T) {
 	cmd := &commands.CreateUser{
 		Name:     "testuser",
 		Password: "testpass",
-		Roles:    []*commands.UserRole{{ID: "role-uuid"}},
+		Role:     []commands.UserRole{{ID: "role-uuid"}},
 	}
-	resp, err := cli.CreateUser(cmd)
+	resp, err := cli.CreateUser(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateUser: %s", err)
 	}
@@ -35,7 +35,7 @@ func TestCreateUser(t *testing.T) {
 		Name:     "",
 		Password: "",
 	}
-	respFail, err := cli.CreateUser(cmdFail)
+	respFail, err := cli.CreateUser(context.Background(), cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateUser (fail): %s", err)
 	}
@@ -51,18 +51,19 @@ func TestModifyUser(t *testing.T) {
 	}
 
 	// Success case
+	comment := "Updated user"
 	cmd := &commands.ModifyUser{
 		UserID:  "user-uuid",
 		Name:    "testuser",
 		NewName: "newuser",
-		Comment: "Updated user",
+		Comment: &comment,
 		Password: &commands.UserPassword{
-			Modify: "1",
-			Text:   "newpass",
+			Modify: commands.Bool(true),
+			Value:  "newpass",
 		},
-		Roles: []*commands.UserRole{{ID: "role-uuid"}},
+		Role: []commands.UserRole{{ID: "role-uuid"}},
 	}
-	resp, err := cli.ModifyUser(cmd)
+	resp, err := cli.ModifyUser(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyUser: %s", err)
 	}
@@ -75,7 +76,7 @@ func TestModifyUser(t *testing.T) {
 		UserID: "",
 		Name:   "",
 	}
-	respFail, err := cli.ModifyUser(cmdFail)
+	respFail, err := cli.ModifyUser(context.Background(), cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyUser (fail): %s", err)
 	}
@@ -99,8 +100,8 @@ func TestGetUsers(t *testing.T) {
 	if resp.Status != "200" {
 		t.Errorf("Expected status 200, got %s", resp.Status)
 	}
-	if len(resp.Users) != 1 || resp.Users[0].Name != "foobar" {
-		t.Errorf("Expected user 'foobar', got %+v", resp.Users)
+	if len(resp.User) != 1 || resp.User[0].Name != "foobar" {
+		t.Errorf("Expected user 'foobar', got %+v", resp.User)
 	}
 
 	// Failure case (simulate by using a special test flag)
@@ -124,7 +125,7 @@ func TestDeleteUser(t *testing.T) {
 	cmd := &commands.DeleteUser{
 		Name: "foobar",
 	}
-	resp, err := cli.DeleteUser(cmd)
+	resp, err := cli.DeleteUser(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during DeleteUser: %s", err)
 	}
@@ -136,7 +137,7 @@ func TestDeleteUser(t *testing.T) {
 	cmdFail := &commands.DeleteUser{
 		Name: "",
 	}
-	respFail, err := cli.DeleteUser(cmdFail)
+	respFail, err := cli.DeleteUser(context.Background(), cmdFail)
 	if err != nil {
 		t.Fatalf("Unexpected error during DeleteUser (fail): %s", err)
 	}

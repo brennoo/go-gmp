@@ -1,0 +1,19 @@
+# fidelity: get_credentials / live / 004
+# provenance: lifecycle: get_credentials for the client-certificate credential
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_credentials_response/credential/login                               x1
+
+DUPLICATED
+  (none)

@@ -1,0 +1,19 @@
+# fidelity: create_permission / live / 001
+# provenance: lifecycle: create_permission granting get_tasks to the created user
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

@@ -1,6 +1,9 @@
 package filtering
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 // BuildFilter creates a filter string from a list of options.
 func BuildFilter(opts ...Option) string {
@@ -54,7 +57,7 @@ type FilterArg interface{}
 
 // BuildFilterFromArgs creates a filter string from mixed arguments.
 // It accepts both string filters and functional options.
-func BuildFilterFromArgs(args ...FilterArg) string {
+func BuildFilterFromArgs(args ...FilterArg) (string, error) {
 	var stringFilters []string
 	var opts []Option
 
@@ -69,6 +72,12 @@ func BuildFilterFromArgs(args ...FilterArg) string {
 			stringFilters = append(stringFilters, v...)
 		case []Option:
 			opts = append(opts, v...)
+		default:
+			// A value of any other type compiles (FilterArg is interface{})
+			// but was never going to filter anything; erroring here is the
+			// difference between a caller finding out now and a request
+			// silently going out unfiltered.
+			return "", fmt.Errorf("filtering: unsupported FilterArg type %T — want string, Option, []string or []Option", v)
 		}
 	}
 
@@ -85,8 +94,8 @@ func BuildFilterFromArgs(args ...FilterArg) string {
 
 	// Combine all parts
 	if len(filterParts) == 0 {
-		return ""
+		return "", nil
 	}
 
-	return strings.Join(filterParts, " ")
+	return strings.Join(filterParts, " "), nil
 }

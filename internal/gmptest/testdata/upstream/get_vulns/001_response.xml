@@ -1,0 +1,51 @@
+<get_vulns_response status="200" status_text="OK">
+          <vuln id="1.3.6.1.4.1.25623.1.0.808160">
+            <name>7Zip UDF CInArchive::ReadFileItem Code Execution Vulnerability</name>
+            <type>nvt</type>
+            <creation_time>2016-06-13T12:57:54+01:00</creation_time>
+            <modification_time>2016-12-07T07:43:41+01:00</modification_time>
+            <severity>6.8</severity>
+            <qod>97</qod>
+            <results>
+              <count>12</count>
+              <oldest>2017-03-21T09:27:44+01:00</oldest>
+              <newest>2017-03-21T09:46:42+01:00</newest>
+            </results>
+            <hosts>
+              <count>1</count>
+            </hosts>
+          </vuln>
+          <truncate>...</truncate>
+          <filters id="0">
+            <term>rows=10 first=1 sort=name</term>
+            <keywords>
+              <keyword>
+                <column>rows</column>
+                <relation>=</relation>
+                <value>10</value>
+              </keyword>
+              <keyword>
+                <column>first</column>
+                <relation>=</relation>
+                <value>1</value>
+              </keyword>
+              <keyword>
+                <column>sort</column>
+                <relation>=</relation>
+                <value>name</value>
+              </keyword>
+            </keywords>
+          </filters>
+          <sort>
+            <field>
+              name
+              <order>ascending</order>
+            </field>
+          </sort>
+          <vulns start="1" max="10"/>
+          <vuln_count>
+            1648
+            <filtered>1396</filtered>
+            <page>10</page>
+          </vuln_count>
+        </get_vulns_response>

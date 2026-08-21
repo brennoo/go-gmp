@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"testing"
 
 	"github.com/brennoo/go-gmp/commands"
@@ -17,7 +18,7 @@ func TestCreateSchedule(t *testing.T) {
 		Timezone:  "America/New_York",
 		ICalendar: "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//XXX//NONSGML//EN\nBEGIN:VEVENT\nDTSTART;TZID=\"America/New_York\":20221214T000100\nRRULE:FREQ=MONTHLY;BYDAY=3WE;\nEND:VEVENT\nEND:VCALENDAR",
 	}
-	resp, err := cli.CreateSchedule(cmd)
+	resp, err := cli.CreateSchedule(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateSchedule: %s", err)
 	}
@@ -42,7 +43,7 @@ func TestModifySchedule(t *testing.T) {
 		ScheduleID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 		Name:       "Weekly Scan",
 	}
-	resp, err := cli.ModifySchedule(cmd)
+	resp, err := cli.ModifySchedule(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifySchedule: %s", err)
 	}
@@ -63,7 +64,7 @@ func TestGetSchedules(t *testing.T) {
 	cmd := &commands.GetSchedules{
 		ScheduleID: "ddda859a-45be-4c58-85b3-517c66230232",
 	}
-	resp, err := cli.GetSchedules(cmd)
+	resp, err := cli.GetSchedules(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetSchedules: %s", err)
 	}
@@ -73,14 +74,14 @@ func TestGetSchedules(t *testing.T) {
 	if resp.StatusText != "OK" {
 		t.Errorf("Expected status text 'OK', got '%s'", resp.StatusText)
 	}
-	if len(resp.Schedules) != 1 {
-		t.Errorf("Expected 1 schedule, got %d", len(resp.Schedules))
+	if len(resp.Schedule) != 1 {
+		t.Errorf("Expected 1 schedule, got %d", len(resp.Schedule))
 	}
-	if resp.Schedules[0].Name != "Every day" {
-		t.Errorf("Expected schedule name 'Every day', got '%s'", resp.Schedules[0].Name)
+	if resp.Schedule[0].Name != "Every day" {
+		t.Errorf("Expected schedule name 'Every day', got '%s'", resp.Schedule[0].Name)
 	}
-	if resp.Schedules[0].Timezone != "UTC" {
-		t.Errorf("Expected timezone 'UTC', got '%s'", resp.Schedules[0].Timezone)
+	if resp.Schedule[0].Timezone != "UTC" {
+		t.Errorf("Expected timezone 'UTC', got '%s'", resp.Schedule[0].Timezone)
 	}
 }
 
@@ -94,7 +95,7 @@ func TestDeleteSchedule(t *testing.T) {
 		ScheduleID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
 		Ultimate:   false,
 	}
-	resp, err := cli.DeleteSchedule(cmd)
+	resp, err := cli.DeleteSchedule(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during DeleteSchedule: %s", err)
 	}

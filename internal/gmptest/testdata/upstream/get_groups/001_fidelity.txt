@@ -1,0 +1,22 @@
+# fidelity: get_groups / upstream / 001
+# provenance: command_get_groups.xml, command "get_groups", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_groups_response/filters/keywords/truncated                          x1  (+1 descendant paths)
+  /get_groups_response/truncated                                           x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_groups_response/group/owner                                         x1
+  /get_groups_response/group/owner/name                                    x1
+  /get_groups_response/group/permissions                                   x1
+
+DUPLICATED
+  (none)

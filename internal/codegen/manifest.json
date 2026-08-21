@@ -1,0 +1,296 @@
+{
+  "families": [
+    {
+      "name": "note",
+      "commands": [
+        "create_note",
+        "delete_note",
+        "get_notes",
+        "modify_note"
+      ]
+    },
+    {
+      "name": "override",
+      "commands": [
+        "create_override",
+        "delete_override",
+        "get_overrides",
+        "modify_override"
+      ]
+    },
+    {
+      "name": "role",
+      "commands": [
+        "create_role",
+        "delete_role",
+        "get_roles",
+        "modify_role"
+      ]
+    },
+    {
+      "name": "group",
+      "commands": [
+        "create_group",
+        "delete_group",
+        "get_groups",
+        "modify_group"
+      ]
+    },
+    {
+      "name": "tag",
+      "commands": [
+        "create_tag",
+        "delete_tag",
+        "get_tags",
+        "modify_tag"
+      ]
+    },
+    {
+      "name": "schedule",
+      "commands": [
+        "create_schedule",
+        "delete_schedule",
+        "get_schedules",
+        "modify_schedule"
+      ]
+    },
+    {
+      "name": "alert",
+      "commands": [
+        "create_alert",
+        "delete_alert",
+        "get_alerts",
+        "modify_alert",
+        "test_alert"
+      ]
+    },
+    {
+      "name": "filter",
+      "commands": [
+        "create_filter",
+        "delete_filter",
+        "get_filters",
+        "modify_filter"
+      ]
+    },
+    {
+      "name": "tls_certificate",
+      "commands": [
+        "create_tls_certificate",
+        "get_tls_certificates",
+        "modify_tls_certificate"
+      ]
+    },
+    {
+      "name": "permission",
+      "commands": [
+        "create_permission",
+        "delete_permission",
+        "get_permissions",
+        "modify_permission"
+      ]
+    },
+    {
+      "name": "ticket",
+      "commands": [
+        "create_ticket",
+        "delete_ticket",
+        "get_tickets",
+        "modify_ticket"
+      ]
+    },
+    {
+      "name": "credential",
+      "commands": [
+        "create_credential",
+        "delete_credential",
+        "get_credentials",
+        "modify_credential"
+      ]
+    },
+    {
+      "name": "port_list",
+      "commands": [
+        "create_port_list",
+        "delete_port_list",
+        "get_port_lists",
+        "modify_port_list"
+      ]
+    },
+    {
+      "name": "asset",
+      "commands": [
+        "create_asset",
+        "delete_asset",
+        "get_assets",
+        "modify_asset"
+      ]
+    },
+    {
+      "name": "report_format",
+      "commands": [
+        "create_report_format",
+        "delete_report_format",
+        "get_report_formats",
+        "modify_report_format",
+        "verify_report_format"
+      ]
+    },
+    {
+      "name": "report_config",
+      "commands": [
+        "create_report_config",
+        "delete_report_config",
+        "get_report_configs",
+        "modify_report_config"
+      ]
+    },
+    {
+      "name": "user",
+      "commands": [
+        "create_user",
+        "delete_user",
+        "get_users",
+        "modify_user"
+      ]
+    },
+    {
+      "name": "target",
+      "commands": [
+        "create_target",
+        "delete_target",
+        "get_targets",
+        "modify_target"
+      ]
+    },
+    {
+      "name": "task",
+      "commands": [
+        "create_task",
+        "delete_task",
+        "get_tasks",
+        "modify_task",
+        "move_task",
+        "resume_task",
+        "start_task",
+        "stop_task"
+      ]
+    },
+    {
+      "name": "scanner",
+      "commands": [
+        "create_scanner",
+        "delete_scanner",
+        "get_scanners",
+        "modify_scanner",
+        "verify_scanner"
+      ]
+    },
+    {
+      "name": "config",
+      "commands": [
+        "create_config",
+        "delete_config",
+        "get_configs",
+        "modify_config",
+        "sync_config"
+      ]
+    },
+    {
+      "name": "port_range",
+      "commands": [
+        "create_port_range",
+        "delete_port_range"
+      ]
+    },
+    {
+      "name": "report",
+      "commands": [
+        "create_report",
+        "delete_report",
+        "get_reports"
+      ]
+    },
+    {
+      "name": "trash",
+      "commands": [
+        "empty_trashcan",
+        "restore"
+      ]
+    },
+    {
+      "name": "nvt",
+      "commands": [
+        "get_info",
+        "get_nvt_families",
+        "get_nvts",
+        "get_preferences"
+      ]
+    },
+    {
+      "name": "auth",
+      "commands": [
+        "authenticate",
+        "describe_auth",
+        "modify_auth"
+      ]
+    },
+    {
+      "name": "aggregate",
+      "commands": [
+        "get_aggregates"
+      ]
+    },
+    {
+      "name": "license",
+      "commands": [
+        "get_license",
+        "modify_license"
+      ]
+    },
+    {
+      "name": "settings",
+      "commands": [
+        "get_resource_names",
+        "get_settings",
+        "modify_setting"
+      ]
+    },
+    {
+      "name": "version",
+      "commands": [
+        "get_version"
+      ]
+    },
+    {
+      "name": "feed",
+      "commands": [
+        "get_feeds"
+      ]
+    },
+    {
+      "name": "feature",
+      "commands": [
+        "get_features"
+      ]
+    },
+    {
+      "name": "system_report",
+      "commands": [
+        "get_system_reports"
+      ]
+    },
+    {
+      "name": "vuln",
+      "commands": [
+        "get_vulns"
+      ]
+    },
+    {
+      "name": "result",
+      "commands": [
+        "get_results"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+<create_schedule>
+          <name>On the third Wednesday of every month</name>
+          <timezone>America/New_York</timezone>
+          <icalendar>
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//XXX//NONSGML//EN
+BEGIN:VEVENT
+DTSTART;TZID="America/New_York":20221214T000100
+RRULE:FREQ=MONTHLY;BYDAY=3WE;
+END:VEVENT
+END:VCALENDAR
+          </icalendar>
+        </create_schedule>

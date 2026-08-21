@@ -1,0 +1,4 @@
+# fidelity: help / live / 001
+# provenance: pre-auth: help before authenticate, which gvmd should refuse
+decode: error
+error: expected element type <help_response> but have <gmp_response>

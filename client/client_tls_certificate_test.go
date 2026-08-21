@@ -17,7 +17,7 @@ func TestCreateTLSCertificate(t *testing.T) {
 		Name:        "Example Certificate",
 		Certificate: "MIIDNjCCAp+gAwIBAgIBATANBgkqhkiG9w0BAQQFADCBqTELM[...]",
 	}
-	resp, err := cli.CreateTLSCertificate(cmd)
+	resp, err := cli.CreateTLSCertificate(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateTLSCertificate: %s", err)
 	}
@@ -38,11 +38,12 @@ func TestModifyTLSCertificate(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
+	name := "Renamed Example Certificate"
 	cmd := &commands.ModifyTLSCertificate{
 		TLSCertificateID: "8a925978-59d0-494b-a837-40b271569727",
-		Name:             "Renamed Example Certificate",
+		Name:             &name,
 	}
-	resp, err := cli.ModifyTLSCertificate(cmd)
+	resp, err := cli.ModifyTLSCertificate(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyTLSCertificate: %s", err)
 	}
@@ -71,10 +72,10 @@ func TestGetTLSCertificates(t *testing.T) {
 	if resp.StatusText != "OK" {
 		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
 	}
-	if len(resp.TLSCertificates) != 1 {
-		t.Fatalf("Expected 1 TLS certificate, got %d", len(resp.TLSCertificates))
+	if len(resp.TLSCertificate) != 1 {
+		t.Fatalf("Expected 1 TLS certificate, got %d", len(resp.TLSCertificate))
 	}
-	cert := resp.TLSCertificates[0]
+	cert := resp.TLSCertificate[0]
 	if cert.ID != "ba36ed15-92fa-4ae0-af53-bad8ce472f18" {
 		t.Fatalf("Unexpected certificate ID. Expected: ba36ed15-92fa-4ae0-af53-bad8ce472f18 Got: %s", cert.ID)
 	}

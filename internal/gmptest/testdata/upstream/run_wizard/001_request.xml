@@ -1,0 +1,9 @@
+<run_wizard>
+          <name>quick_first_scan</name>
+          <params>
+            <param>
+              <name>hosts</name>
+              <value>localhost</value>
+            </param>
+          </params>
+        </run_wizard>

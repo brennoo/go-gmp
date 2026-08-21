@@ -1,0 +1,8 @@
+{
+  "command": "empty_trashcan",
+  "provenance": "upstream",
+  "source": "command_empty_trashcan.xml, command \"empty_trashcan\", example 1",
+  "source_upstream_revision": "GMP 22.7 (newest entry in vendor/XML/commands/changes.xml)",
+  "source_license": "AGPL-3.0-or-later, Copyright (C) Greenbone AG",
+  "byte_faithful": false
+}

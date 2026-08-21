@@ -1,0 +1,19 @@
+# fidelity: get_settings / live / 003
+# provenance: lifecycle: get_settings for the Rows Per Page setting
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

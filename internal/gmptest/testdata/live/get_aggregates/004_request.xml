@@ -1,0 +1,1 @@
+<get_aggregates type="result" group_column="severity"><sort field="severity" order="descending"></sort><data_column>severity</data_column><text_column>name</text_column></get_aggregates>

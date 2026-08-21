@@ -1,7 +1,9 @@
 package commands
 
 import (
+	"bytes"
 	"errors"
+	"fmt"
 	"testing"
 )
 
@@ -135,6 +137,45 @@ func TestValidateResponse_EdgeCases(t *testing.T) {
 	}
 }
 
+func TestErrorFromDocument_RootMismatchWithError(t *testing.T) {
+	// gvmd's actual shape for this case, captured live: an unrelated command
+	// name rejected under a generic root instead of the caller's typed one.
+	doc := []byte(`<gmp_response status="400" status_text="Bogus command name"/>`)
+	ge := ErrorFromDocument(doc)
+	if ge == nil {
+		t.Fatalf("expected a *GMPError, got nil")
+	}
+	if ge.Type != ErrorTypeInvalidRequest || ge.Status != "400" || ge.StatusText != "Bogus command name" {
+		t.Fatalf("got %+v, want status=400 statusText=%q type=%v", ge, "Bogus command name", ErrorTypeInvalidRequest)
+	}
+}
+
+func TestErrorFromDocument_EnvelopeWithoutError(t *testing.T) {
+	// Correct root, but the status does not indicate an error: must not be
+	// misreported as an error.
+	doc := []byte(`<gmp_response status="200" status_text="OK"/>`)
+	if ge := ErrorFromDocument(doc); ge != nil {
+		t.Fatalf("expected nil for a non-error status, got %+v", ge)
+	}
+}
+
+func TestErrorFromDocument_UndecodableDocument(t *testing.T) {
+	if ge := ErrorFromDocument([]byte("not xml at all")); ge != nil {
+		t.Fatalf("expected nil for a document that does not decode, got %+v", ge)
+	}
+}
+
+func TestErrorFromDocument_RejectsNonGenericRootEvenWithErrorStatus(t *testing.T) {
+	// A root that is not gvmd's generic envelope must be rejected outright,
+	// regardless of what its status attribute says. Accepting any root would
+	// also match a document that decoded under its own correctly-typed root
+	// but failed deeper in — an unrelated bug this must not paper over.
+	doc := []byte(`<typed_response status="400" status_text="Bad request"/>`)
+	if ge := ErrorFromDocument(doc); ge != nil {
+		t.Fatalf("expected nil for a non-generic root, got %+v", ge)
+	}
+}
+
 func TestErrorType_String(t *testing.T) {
 	testCases := []struct {
 		errorType ErrorType
@@ -143,7 +184,6 @@ func TestErrorType_String(t *testing.T) {
 		{ErrorTypeUnknown, "unknown"},
 		{ErrorTypeAuthentication, "authentication"},
 		{ErrorTypeNotFound, "not_found"},
-		{ErrorTypeNetwork, "network"},
 		{ErrorTypePermission, "permission"},
 		{ErrorTypeInvalidRequest, "invalid_request"},
 		{ErrorTypeServerError, "server_error"},
@@ -158,82 +198,130 @@ func TestErrorType_String(t *testing.T) {
 }
 
 func TestGMPError_Error(t *testing.T) {
-	// Test with message
-	err1 := &GMPError{
-		Type:       ErrorTypeAuthentication,
-		Status:     "401",
-		StatusText: "Unauthorized",
-		Message:    "Custom error message",
-	}
-	expected1 := "Custom error message"
-	if got := err1.Error(); got != expected1 {
-		t.Errorf("GMPError.Error() with message = %q, want %q", got, expected1)
-	}
-
-	// Test without message
-	err2 := &GMPError{
+	err := &GMPError{
 		Type:       ErrorTypeNotFound,
 		Status:     "404",
 		StatusText: "Not Found",
-		Message:    "",
 	}
-	expected2 := "GMP error [not_found]: Not Found (status: 404)"
-	if got := err2.Error(); got != expected2 {
-		t.Errorf("GMPError.Error() without message = %q, want %q", got, expected2)
-	}
-}
-
-func TestGMPError_Unwrap(t *testing.T) {
-	err := &GMPError{}
-	if got := err.Unwrap(); got != nil {
-		t.Errorf("GMPError.Unwrap() = %v, want nil", got)
+	expected := "GMP error [not_found]: Not Found (status: 404)"
+	if got := err.Error(); got != expected {
+		t.Errorf("GMPError.Error() = %q, want %q", got, expected)
 	}
 }
 
-func TestNetworkError_Error(t *testing.T) {
-	// Test with cause
+func TestRequestEncodingError_Error(t *testing.T) {
 	cause := errors.New("underlying error")
-	err1 := &NetworkError{
-		Type:    ErrorTypeNetwork,
-		Message: "Network error",
-		Cause:   cause,
-	}
-	expected1 := "underlying error"
-	if got := err1.Error(); got != expected1 {
-		t.Errorf("NetworkError.Error() with cause = %q, want %q", got, expected1)
-	}
-
-	// Test without cause but with message
-	err2 := &NetworkError{
-		Type:    ErrorTypeInvalidRequest,
-		Message: "Invalid request",
-		Cause:   nil,
-	}
-	expected2 := "Invalid request"
-	if got := err2.Error(); got != expected2 {
-		t.Errorf("NetworkError.Error() without cause = %q, want %q", got, expected2)
-	}
-
-	// Test without cause and without message
-	err3 := &NetworkError{
-		Type:    ErrorTypeNetwork,
-		Message: "",
-		Cause:   nil,
-	}
-	expected3 := "network"
-	if got := err3.Error(); got != expected3 {
-		t.Errorf("NetworkError.Error() without cause and message = %q, want %q", got, expected3)
+	err := &RequestEncodingError{Cause: cause}
+	expected := "encode request: underlying error"
+	if got := err.Error(); got != expected {
+		t.Errorf("RequestEncodingError.Error() = %q, want %q", got, expected)
 	}
 }
 
-func TestNetworkError_Unwrap(t *testing.T) {
+func TestRequestEncodingError_Unwrap(t *testing.T) {
 	cause := errors.New("underlying error")
-	err := &NetworkError{
-		Type:  ErrorTypeNetwork,
-		Cause: cause,
-	}
+	err := &RequestEncodingError{Cause: cause}
 	if got := err.Unwrap(); !errors.Is(got, cause) {
-		t.Errorf("NetworkError.Unwrap() = %v, want %v", got, cause)
+		t.Errorf("RequestEncodingError.Unwrap() = %v, want %v", got, cause)
+	}
+}
+
+func TestRequestEncodingError_ErrorsIs(t *testing.T) {
+	sentinel := errors.New("sentinel")
+	err := fmt.Errorf("wrapped: %w", &RequestEncodingError{Cause: sentinel})
+	if !errors.Is(err, sentinel) {
+		t.Errorf("expected errors.Is to reach sentinel through RequestEncodingError")
+	}
+}
+
+func TestProtocolError_Error(t *testing.T) {
+	cause := errors.New("underlying error")
+	err := &ProtocolError{Cause: cause}
+	expected := "decode response: underlying error"
+	if got := err.Error(); got != expected {
+		t.Errorf("ProtocolError.Error() = %q, want %q", got, expected)
+	}
+}
+
+func TestProtocolError_Unwrap(t *testing.T) {
+	cause := errors.New("underlying error")
+	err := &ProtocolError{Cause: cause}
+	if got := err.Unwrap(); !errors.Is(got, cause) {
+		t.Errorf("ProtocolError.Unwrap() = %v, want %v", got, cause)
+	}
+}
+
+func TestProtocolError_ErrorsIs(t *testing.T) {
+	sentinel := errors.New("sentinel")
+	err := fmt.Errorf("wrapped: %w", &ProtocolError{Cause: sentinel})
+	if !errors.Is(err, sentinel) {
+		t.Errorf("expected errors.Is to reach sentinel through ProtocolError")
+	}
+}
+
+func TestTransportError_Error(t *testing.T) {
+	cause := errors.New("underlying error")
+	err := &TransportError{Cause: cause}
+	expected := "transport: underlying error"
+	if got := err.Error(); got != expected {
+		t.Errorf("TransportError.Error() = %q, want %q", got, expected)
+	}
+}
+
+func TestTransportError_Unwrap(t *testing.T) {
+	cause := errors.New("underlying error")
+	err := &TransportError{Cause: cause}
+	if got := err.Unwrap(); !errors.Is(got, cause) {
+		t.Errorf("TransportError.Unwrap() = %v, want %v", got, cause)
+	}
+}
+
+func TestTransportError_ErrorsIs(t *testing.T) {
+	sentinel := errors.New("sentinel")
+	err := fmt.Errorf("wrapped: %w", &TransportError{Cause: sentinel})
+	if !errors.Is(err, sentinel) {
+		t.Errorf("expected errors.Is to reach sentinel through TransportError")
+	}
+}
+
+// A nil Cause must render as "<nil>" rather than panic, which is why Error()
+// uses fmt.Sprintf("%v", ...) instead of e.Cause.Error().
+func TestNewTypes_NilCauseDoesNotPanic(t *testing.T) {
+	if got := (&RequestEncodingError{}).Error(); got != "encode request: <nil>" {
+		t.Errorf("RequestEncodingError.Error() with nil cause = %q", got)
+	}
+	if got := (&ProtocolError{}).Error(); got != "decode response: <nil>" {
+		t.Errorf("ProtocolError.Error() with nil cause = %q", got)
+	}
+	if got := (&TransportError{}).Error(); got != "transport: <nil>" {
+		t.Errorf("TransportError.Error() with nil cause = %q", got)
+	}
+}
+
+func TestNewProtocolError_TruncatesAndCopies(t *testing.T) {
+	source := make([]byte, maxRetainedDocument+1000)
+	for i := range source {
+		source[i] = byte('a' + i%26)
+	}
+	cause := errors.New("decode failed")
+
+	err := NewProtocolError(source, cause)
+
+	if len(err.Document) != maxRetainedDocument {
+		t.Fatalf("expected Document to be truncated to %d bytes, got %d", maxRetainedDocument, len(err.Document))
+	}
+	if err.DocumentSize != len(source) {
+		t.Fatalf("expected DocumentSize %d, got %d", len(source), err.DocumentSize)
+	}
+
+	// Genuine copy: mutating the source after the fact must not affect Document.
+	before := make([]byte, len(err.Document))
+	copy(before, err.Document)
+	for i := range source {
+		source[i] = 0
+	}
+	if !bytes.Equal(before, err.Document) {
+		t.Fatalf("expected Document to be unaffected by mutating the source slice")
 	}
 }
 

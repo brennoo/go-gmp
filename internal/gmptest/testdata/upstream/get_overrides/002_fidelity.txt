@@ -1,0 +1,72 @@
+# fidelity: get_overrides / upstream / 002
+# provenance: command_get_overrides.xml, command "get_overrides", example 2
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_overrides_response/override/end_time                                x1
+  /get_overrides_response/truncated                                        x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_overrides_response/override/new_severity/#text                      "2.0" -> "2"
+
+ADDED
+  /get_overrides_response/filters                                          x1
+  /get_overrides_response/filters/@id                                      x1
+  /get_overrides_response/filters/keywords                                 x1
+  /get_overrides_response/filters/term                                     x1
+  /get_overrides_response/override/nvt/type                                x1
+  /get_overrides_response/override/owner                                   x1
+  /get_overrides_response/override/owner/name                              x1
+  /get_overrides_response/override/permissions                             x1
+  /get_overrides_response/override/result/comment                          x1
+  /get_overrides_response/override/result/compliance                       x1
+  /get_overrides_response/override/result/creation_time                    x1
+  /get_overrides_response/override/result/creation_time/#text              x1
+  /get_overrides_response/override/result/description                      x1
+  /get_overrides_response/override/result/host                             x1
+  /get_overrides_response/override/result/host/asset                       x1
+  /get_overrides_response/override/result/host/asset/@asset_id             x1
+  /get_overrides_response/override/result/host/hostname                    x1
+  /get_overrides_response/override/result/modification_time                x1
+  /get_overrides_response/override/result/modification_time/#text          x1
+  /get_overrides_response/override/result/name                             x1
+  /get_overrides_response/override/result/nvt                              x1
+  /get_overrides_response/override/result/nvt/@oid                         x1
+  /get_overrides_response/override/result/nvt/cpe                          x1
+  /get_overrides_response/override/result/nvt/cvss_base                    x1
+  /get_overrides_response/override/result/nvt/cvss_base/#text              x1
+  /get_overrides_response/override/result/nvt/family                       x1
+  /get_overrides_response/override/result/nvt/name                         x1
+  /get_overrides_response/override/result/nvt/severities                   x1
+  /get_overrides_response/override/result/nvt/severities/@score            x1
+  /get_overrides_response/override/result/nvt/tags                         x1
+  /get_overrides_response/override/result/nvt/type                         x1
+  /get_overrides_response/override/result/owner                            x1
+  /get_overrides_response/override/result/owner/name                       x1
+  /get_overrides_response/override/result/port                             x1
+  /get_overrides_response/override/result/qod                              x1
+  /get_overrides_response/override/result/qod/type                         x1
+  /get_overrides_response/override/result/qod/value                        x1
+  /get_overrides_response/override/result/qod/value/#text                  x1
+  /get_overrides_response/override/result/scan_nvt_version                 x1
+  /get_overrides_response/override/result/severity                         x1
+  /get_overrides_response/override/result/severity/#text                   x1
+  /get_overrides_response/override/result/threat                           x1
+  /get_overrides_response/override/severity                                x1
+  /get_overrides_response/override/severity/#text                          x1
+  /get_overrides_response/override/task/trash                              x1
+  /get_overrides_response/override/task/trash/#text                        x1
+  /get_overrides_response/override/text/@excerpt                           x1
+  /get_overrides_response/overrides                                        x1
+  /get_overrides_response/overrides/@max                                   x1
+  /get_overrides_response/overrides/@start                                 x1
+  /get_overrides_response/sort                                             x1
+  /get_overrides_response/sort/field                                       x1
+  /get_overrides_response/sort/field/order                                 x1
+
+DUPLICATED
+  (none)

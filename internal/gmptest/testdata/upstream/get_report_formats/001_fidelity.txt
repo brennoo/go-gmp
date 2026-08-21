@@ -1,0 +1,39 @@
+# fidelity: get_report_formats / upstream / 001
+# provenance: command_get_report_formats.xml, command "get_report_formats", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_report_formats_response/report_format/description/truncated         x1  (+1 descendant paths)
+  /get_report_formats_response/truncated                                   x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_report_formats_response/report_format/trust/time/#text              "Thu Dec  2 13:22:26 2010" -> "2010-12-02T13:22:26Z"
+
+ADDED
+  /get_report_formats_response/filters                                     x1
+  /get_report_formats_response/filters/@id                                 x1
+  /get_report_formats_response/filters/keywords                            x1
+  /get_report_formats_response/filters/term                                x1
+  /get_report_formats_response/report_format/comment                       x1
+  /get_report_formats_response/report_format/configurable                  x1
+  /get_report_formats_response/report_format/configurable/#text            x1
+  /get_report_formats_response/report_format/owner                         x1
+  /get_report_formats_response/report_format/owner/name                    x1
+  /get_report_formats_response/report_format/permissions                   x1
+  /get_report_formats_response/report_format/predefined                    x1
+  /get_report_formats_response/report_format/predefined/#text              x1
+  /get_report_formats_response/report_format/report_type                   x1
+  /get_report_formats_response/report_format/trust/@name                   x1
+  /get_report_formats_response/report_formats                              x1
+  /get_report_formats_response/report_formats/@max                         x1
+  /get_report_formats_response/report_formats/@start                       x1
+  /get_report_formats_response/sort                                        x1
+  /get_report_formats_response/sort/field                                  x1
+  /get_report_formats_response/sort/field/order                            x1
+
+DUPLICATED
+  (none)

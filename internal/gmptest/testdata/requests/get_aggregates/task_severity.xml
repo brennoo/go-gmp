@@ -1,0 +1,1 @@
+<get_aggregates type="task" data_column="high" group_column="severity" sort_field="severity" sort_order="descending"></get_aggregates>

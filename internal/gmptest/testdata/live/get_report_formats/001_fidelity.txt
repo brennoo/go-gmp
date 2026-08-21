@@ -1,0 +1,19 @@
+# fidelity: get_report_formats / live / 001
+# provenance: read-only: get_report_formats bare
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_report_formats_response/report_format/trust/@name                   x5
+
+DUPLICATED
+  (none)

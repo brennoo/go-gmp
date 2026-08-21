@@ -1,0 +1,4 @@
+# fidelity: modify_agents / live / 001
+# provenance: expected failure: modify_agents with no agents
+decode: error
+error: expected element type <modify_agents_response> but have <gmp_response>

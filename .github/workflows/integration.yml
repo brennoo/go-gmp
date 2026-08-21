@@ -1,0 +1,161 @@
+name: Integration (live gvmd)
+
+# workflow_dispatch only, on purpose.
+#
+# There is no `schedule:` trigger here and one must not be added until a manual
+# run has been measured. Two things are unknown:
+#
+#   1. Disk. A GitHub-hosted ubuntu-latest runner has roughly 14 GB free before
+#      reclamation. The Greenbone stack pulls the gvmd image plus five one-shot
+#      data-loader images, then ingests the SCAP and CERT feeds into Postgres.
+#      Nobody has measured the total, and it may simply not fit. The reclaim
+#      step below buys back ~25 GB; the `df -h` output on either side of the
+#      run is the actual measurement this workflow exists to produce.
+#   2. Time. A cold first boot has been observed at 20-45 minutes locally. The
+#      readiness ladder budgets an hour. GitHub's job limit is six.
+#
+# Volume caching is not a way out: actions/cache caps at 10 GB per repository,
+# well under the feed data, so every run is a cold boot. The honest options once
+# the numbers exist are a cold weekly boot, or a self-hosted runner where the
+# Docker volumes simply persist between runs.
+#
+# Also worth knowing before adding one: GitHub disables `schedule:` triggers
+# after 60 days of no repository activity. A quiet period silently stops a
+# scheduled job and nothing notifies anyone, so a scheduled integration run
+# fails open rather than closed and cannot be the only thing exercising this
+# code. The per-PR `go build -tags integration` and `go vet -tags integration`
+# steps in go.yml are what actually stop the harness rotting.
+on:
+  workflow_dispatch:
+    inputs:
+      scan_data:
+        description: "Also start vulnerability-tests (needed for get_nvts to return anything; more disk, longer boot)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    # Well under GitHub's six-hour ceiling but comfortably above the readiness
+    # ladder's own one-hour budget, so a job that fails does so because the
+    # ladder gave up and said why, not because the runner was killed.
+    timeout-minutes: 120
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Disk before reclamation
+        run: df -h
+
+      # Disk is the binding constraint, so this runs before anything is pulled.
+      # These are the preinstalled ubuntu-latest toolchains that nothing in this
+      # repository uses; removing them is worth roughly 25 GB.
+      - name: Reclaim disk
+        run: |
+          set -eux
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf "${AGENT_TOOLSDIRECTORY:-/opt/hostedtoolcache}"
+          sudo docker image prune --all --force
+
+      - name: Disk after reclamation
+        run: df -h
+
+      - name: Generate a throwaway admin password
+        # Not a secret in any meaningful sense: it belongs to an admin user on a
+        # container destroyed with the runner, and hack/gvmd-up.sh documents
+        # 'admin' as its default anyway. Generated per run so nothing that ends
+        # up in a log is reusable, masked so it should not end up in one.
+        run: |
+          set -eu
+          password="$(openssl rand -hex 16)"
+          echo "::add-mask::$password"
+          echo "GVMD_ADMIN_PASSWORD=$password" >> "$GITHUB_ENV"
+
+      - name: Bring up gvmd
+        env:
+          SCAN_DATA: ${{ inputs.scan_data && '1' || '0' }}
+        run: |
+          set -eu
+          start=$(date +%s)
+          hack/gvmd-up.sh
+          echo "TIMING gvmd-up.sh: $(( $(date +%s) - start ))s"
+
+      - name: Disk after bring-up
+        if: always()
+        run: df -h
+
+      - name: Read the server certificate's CN
+        # gvm-manage-certs sets the CN to whatever `hostname` reported inside
+        # the container that generated it, and almost certainly leaves 127.0.0.1
+        # out of the SAN, so TLS verification needs the name read back off the
+        # certificate rather than guessed.
+        run: |
+          set -eu
+          cn="$(openssl x509 -in hack/CA/servercert.pem -noout -subject -nameopt multiline \
+                | sed -n 's/^[[:space:]]*commonName[[:space:]]*=[[:space:]]*//p')"
+          if [ -z "$cn" ]; then
+            echo "Could not read a commonName from hack/CA/servercert.pem" >&2
+            openssl x509 -in hack/CA/servercert.pem -noout -text >&2 || true
+            exit 1
+          fi
+          echo "GMP_SERVERNAME=$cn" >> "$GITHUB_ENV"
+
+      # The readiness ladder and the read-only suite. Deliberately not
+      # -capture: capture creates and deletes resources, writes fixtures into
+      # the working tree, and handles real credential material. It stays a
+      # deliberate, human-reviewed local operation. An auto-committing bot is
+      # exactly how an unredacted credential reaches git history, which is why
+      # this job has read-only `contents` permission, never commits, and
+      # verifies below that it wrote nothing.
+      - name: Run the integration suite
+        run: |
+          set -eu
+          start=$(date +%s)
+          go test -tags integration -v -count=1 ./internal/gmptest/... \
+            -gmp.addr=127.0.0.1:9390 \
+            -gmp.user=admin \
+            -gmp.pass="$GVMD_ADMIN_PASSWORD" \
+            -gmp.cafile=hack/CA/cacert.pem \
+            -gmp.servername="$GMP_SERVERNAME" \
+            -timeout 110m
+          echo "TIMING integration suite: $(( $(date +%s) - start ))s"
+
+      - name: Disk after the run
+        if: always()
+        run: df -h
+
+      - name: gvmd logs
+        if: always()
+        # The compose file pins its own project name and resolves its bind
+        # mounts relative to itself, so -f is all this needs.
+        run: docker compose -f hack/docker-compose.yml logs --tail=400 gvmd || true
+
+      - name: Confirm no fixtures were written
+        if: always()
+        # Belt and braces for the rule above. If a future change makes the
+        # tagged suite write to the corpus, this fails the job rather than
+        # letting it quietly become normal.
+        run: |
+          set -eu
+          changed="$(git status --porcelain -- internal/gmptest/testdata)"
+          if [ -n "$changed" ]; then
+            echo "The integration job modified the fixture corpus, which it must never do:"
+            echo "$changed"
+            exit 1
+          fi
+
+      - name: Tear down
+        if: always()
+        run: hack/gvmd-down.sh --purge || true

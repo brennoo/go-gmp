@@ -1,0 +1,19 @@
+# fidelity: get_report_formats / live / 006
+# provenance: container task: get_report_formats to find the native XML format
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_report_formats_response/report_format/trust/@name                   x6
+
+DUPLICATED
+  (none)

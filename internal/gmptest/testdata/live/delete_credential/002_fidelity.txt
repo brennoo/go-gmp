@@ -1,0 +1,19 @@
+# fidelity: delete_credential / live / 002
+# provenance: teardown: delete_credential ultimate
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

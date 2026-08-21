@@ -1,0 +1,19 @@
+# fidelity: verify_report_format / upstream / 001
+# provenance: command_verify_report_format.xml, command "verify_report_format", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

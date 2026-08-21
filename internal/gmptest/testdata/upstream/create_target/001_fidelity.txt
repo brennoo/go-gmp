@@ -1,0 +1,19 @@
+# fidelity: create_target / upstream / 001
+# provenance: command_create_target.xml, command "create_target", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

@@ -1,0 +1,4 @@
+<create_role>
+          <name>SCAP Observer</name>
+          <users>sarah, bob</users>
+        </create_role>

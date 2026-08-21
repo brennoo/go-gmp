@@ -1,0 +1,19 @@
+# fidelity: get_aggregates / live / 004
+# provenance: container task: get_aggregates with sort/data_column/text_column
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

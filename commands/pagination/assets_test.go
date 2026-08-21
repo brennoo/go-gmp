@@ -17,7 +17,7 @@ func TestAssetIterator(t *testing.T) {
 	iterator := NewAssetIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 2})
 
 	// Test iteration
-	var assets []*commands.Asset
+	var assets []*commands.GetAssetsAsset
 	for iterator.Next() {
 		asset := iterator.Current()
 		assets = append(assets, asset)

@@ -1,0 +1,37 @@
+# fidelity: get_assets / upstream / 001
+# provenance: command_get_assets.xml, command "get_assets", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_assets_response/asset/esxi_credential                               x1  (+2 descendant paths)
+  /get_assets_response/asset/hosts                                         x1  (+1 descendant paths)
+  /get_assets_response/asset/max_hosts                                     x1  (+1 descendant paths)
+  /get_assets_response/asset/smb_credential                                x1  (+2 descendant paths)
+  /get_assets_response/asset/ssh_credential                                x1  (+2 descendant paths)
+  /get_assets_response/truncated                                           x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_assets_response/asset/in_use/#text                                  "7" -> "1"
+
+ADDED
+  /get_assets_response/asset/owner                                         x1
+  /get_assets_response/asset/owner/name                                    x1
+  /get_assets_response/asset/permissions                                   x1
+  /get_assets_response/asset/type                                          x1
+  /get_assets_response/assets                                              x1
+  /get_assets_response/assets/@max                                         x1
+  /get_assets_response/assets/@start                                       x1
+  /get_assets_response/filters                                             x1
+  /get_assets_response/filters/@id                                         x1
+  /get_assets_response/filters/keywords                                    x1
+  /get_assets_response/filters/term                                        x1
+  /get_assets_response/sort                                                x1
+  /get_assets_response/sort/field                                          x1
+  /get_assets_response/sort/field/order                                    x1
+
+DUPLICATED
+  (none)

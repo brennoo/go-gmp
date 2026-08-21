@@ -9,6 +9,13 @@ A Go client for the Greenbone Management Protocol (GMP) to interact with Greenbo
 > [!CAUTION]
 > Expect breaking changes as the library matures.
 
+## GMP version compatibility
+
+This library is developed and tested against [GMP 22.6](https://docs.greenbone.net/API/GMP/gmp-22.6.html),
+as exposed by the `gvmd:stable` image pulled in `hack/docker-compose.yml`. Other GMP/gvmd versions
+are untested — they may work, since GMP has historically been backward-compatible in the areas this
+library touches, but that has not been verified.
+
 ## Requirements
 
 - Go 1.23+
@@ -35,8 +42,10 @@ import (
 func main() {
 	ctx := context.Background()
 
-	// Connect
-	conn, err := connections.NewTLSConnection("gmp.example.com:9390", true)
+	// Connect, verifying the server certificate against a trusted CA.
+	conn, err := connections.NewTLSConnection(ctx, "gmp.example.com:9390",
+		connections.WithRootCAFile("/path/to/ca.pem"),
+	)
 	if err != nil {
 		log.Fatalf("failed to connect: %v", err)
 	}
@@ -44,7 +53,7 @@ func main() {
 
 	// Authenticate
 	cli := client.New(conn)
-	_, err := cli.Authenticate(&commands.Authenticate{
+	_, err = cli.Authenticate(ctx, &commands.Authenticate{
 		Credentials: &commands.AuthenticateCredentials{
 			Username: "admin",
 			Password: "secret",
@@ -64,6 +73,23 @@ func main() {
 	}
 }
 ```
+
+`NewTLSConnection` verifies the server certificate and requires TLS 1.3 by default. For a server
+with a certificate that isn't in the system trust store, pass its CA certificate with
+`connections.WithRootCAFile`. For a server that only supports TLS 1.2, opt in explicitly with
+`connections.WithMinVersion(tls.VersionTLS12)`.
+
+> [!WARNING]
+> `connections.WithInsecureSkipVerify()` disables certificate verification entirely and must
+> only be used for local development against a server with a self-signed certificate — never in
+> production:
+>
+> ```go
+> conn, err := connections.NewTLSConnection(ctx, "localhost:9390",
+> 	connections.WithInsecureSkipVerify(),
+> )
+> ```
+
 ## Filtering
 
 The library provides two filtering approaches:
@@ -126,61 +152,109 @@ if err := taskIter.Err(); err != nil {
 
 ## Error Handling
 
-The library provides structured error handling using Go's `errors.As` pattern for better error management and debugging.
+The library provides structured error handling using Go's `errors.As` and `errors.Is`. Every
+error returned by a `Client` or `Connection` method, or by an iterator's `Err()`, is one of five
+kinds:
 
-### Error Types
+| Type | Means | Connection usable after? | Retry? |
+|------|-------|---------------------------|--------|
+| `*commands.GMPError` | The server accepted and framed the request but reported a failure status | Yes | Depends on the status (`gmpErr.Type`) |
+| `*commands.TransportError` | The transport did not complete the transaction: a socket/framing failure, or the request was refused outright | **Check `ConnectionUsable`** — false means reconnect; true means the request was refused before the socket was touched and the connection is fine | Only after reconnecting, if unusable |
+| `*commands.ProtocolError` | The response framed cleanly but failed to decode (schema/version drift) | Yes | No — deterministic, retrying won't change the outcome |
+| `*commands.RequestEncodingError` | The command itself could not be marshalled to XML | Yes | No — this is a caller bug (bad field value/type) |
+| `*commands.ConnectionNotInitializedError` | A `Connection` was built as a bare struct literal instead of by a constructor, so it has no socket | n/a — it never had one | No — this is a caller bug |
 
-The library defines several error types:
+### GMP status classification (`GMPError.Type`)
 
-- `GMPError` - Server-side errors from the GMP protocol
-- `NetworkError` - Client-side network and transport errors
+`GMPError.Type` further classifies **server-reported statuses only** — it says nothing about
+transport or protocol errors, which have no status to classify:
 
-### GMP Error Types
-
-| Error Type | Description | HTTP Status |
-|------------|-------------|-------------|
+| Error Type | Description | HTTP-like Status |
+|------------|-------------|-------------------|
 | `ErrorTypeAuthentication` | Authentication failed | 401 |
 | `ErrorTypeNotFound` | Resource not found | 404 |
 | `ErrorTypePermission` | Insufficient permissions | 403 |
 | `ErrorTypeInvalidRequest` | Invalid request format | 400 |
 | `ErrorTypeServerError` | Server internal error | 500+ |
-| `ErrorTypeNetwork` | Network/transport error | N/A |
 
-### Basic Error Handling
+### Matching errors
+
+Switch on the kinds with `errors.As`, and only look at `gmpErr.Type` inside the `GMPError` arm.
+`ConnectionNotInitializedError` is omitted below: it can only result from constructing a `Connection`
+incorrectly, so it is a bug to fix rather than a condition to handle.
 
 ```go
 import (
 	"errors"
 	"log"
+
 	"github.com/brennoo/go-gmp/commands"
 )
 
 tasksResp, err := cli.GetTasks(ctx)
 if err != nil {
 	var gmpErr *commands.GMPError
-	if errors.As(err, &gmpErr) {
+	var transportErr *commands.TransportError
+	var protocolErr *commands.ProtocolError
+	var encodingErr *commands.RequestEncodingError
+	switch {
+	case errors.As(err, &gmpErr):
 		switch gmpErr.Type {
 		case commands.ErrorTypeAuthentication:
 			log.Fatal("Authentication failed:", gmpErr.StatusText)
 		case commands.ErrorTypeNotFound:
 			log.Println("No tasks found, continuing...")
 			return nil // Not necessarily an error
-		case commands.ErrorTypeNetwork:
-			log.Println("Network error, will retry...")
-			// Implement retry logic
 		default:
 			log.Printf("GMP error: %v", gmpErr)
 		}
-	} else {
-		// Handle non-GMP errors
+	case errors.As(err, &transportErr):
+		if transportErr.ConnectionUsable {
+			// Refused before the socket was touched — usually an already-cancelled
+			// context. Connections are shared, so do not discard this one.
+			log.Println("Request refused, connection still usable:", transportErr)
+		} else {
+			log.Println("Connection is gone, reconnect:", transportErr)
+			// Dial a new Connection; this one cannot be revived.
+		}
+	case errors.As(err, &protocolErr):
+		log.Printf("Protocol error (schema drift?), connection still usable: %v", protocolErr)
+	case errors.As(err, &encodingErr):
+		log.Printf("Command failed to encode, this is a bug in the caller: %v", encodingErr)
+	default:
 		log.Printf("Unexpected error: %v", err)
 	}
 }
 ```
 
-### Error Handling with Iterators
+### Matching through the wrap chain
 
-When using iterators for pagination, structured error handling provides better control:
+`GMPError` is a leaf error and does not implement `Unwrap` — the server's status is the entire
+failure, with nothing underneath. `TransportError`, `ProtocolError` and `RequestEncodingError` all
+implement `Unwrap`, so `errors.Is` and `errors.As` reach through them to whatever caused the
+failure:
+
+```go
+if errors.Is(err, context.DeadlineExceeded) {
+	// The context passed to the call timed out.
+}
+if errors.Is(err, context.Canceled) {
+	// The context passed to the call was cancelled.
+}
+if errors.Is(err, connections.ErrConnectionBroken) {
+	// A previous transaction poisoned this Connection; it must be replaced.
+}
+
+var netErr net.Error
+if errors.As(err, &netErr) && netErr.Timeout() {
+	// The underlying socket operation itself timed out.
+}
+```
+
+### Iterators
+
+An iterator's `Err()` method returns the error that stopped iteration, once `Next()` returns
+`false`:
 
 ```go
 taskIter := cli.Tasks(ctx, 10)
@@ -190,27 +264,13 @@ for taskIter.Next() {
 	task := taskIter.Current()
 	fmt.Printf("Task: %s\n", task.Name)
 }
-
 if err := taskIter.Err(); err != nil {
-	var gmpErr *commands.GMPError
-	if errors.As(err, &gmpErr) {
-		switch gmpErr.Type {
-		case commands.ErrorTypeAuthentication:
-			log.Fatal("Authentication failed:", gmpErr.StatusText)
-		case commands.ErrorTypeNotFound:
-			log.Println("No tasks found, continuing...")
-		case commands.ErrorTypeNetwork:
-			log.Println("Network error, will retry...")
-			// Implement retry logic here
-		default:
-			log.Printf("GMP error: %v", gmpErr)
-		}
-	} else {
-		// Handle non-GMP errors (e.g., network issues)
-		log.Printf("Unexpected error: %v", err)
-	}
+	log.Printf("Error: %v", err)
 }
 ```
+
+`Err()` returns the same error kinds described above, so the matching pattern is identical
+to a one-shot call.
 
 ## Raw XML
 
@@ -218,12 +278,26 @@ Send custom or unsupported commands:
 
 ```go
 raw := `<get_custom_resource foo="bar"/>`
-resp, err := cli.RawXML(raw)
+resp, err := cli.RawXML(ctx, raw)
 ```
 
 ## Extending
 
 All GMP commands are available as typed structs matching the protocol XML. Add new commands by following the existing pattern.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for how to build, test and lint the project, and how to
+run a local Greenbone stack for manual testing. Outstanding work is tracked in
+[GitHub Issues](https://github.com/brennoo/go-gmp/issues).
+
+## Security
+
+See [SECURITY.md](SECURITY.md) for how to report a vulnerability in this library.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a history of notable changes, including breaking ones.
 
 ## See Also
 

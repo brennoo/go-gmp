@@ -1,0 +1,19 @@
+# fidelity: delete_filter / live / 002
+# provenance: teardown: delete_filter ultimate
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

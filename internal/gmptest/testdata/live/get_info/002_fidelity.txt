@@ -1,0 +1,21 @@
+# fidelity: get_info / live / 002
+# provenance: read-only: get_info with filter="rows=2 first=1"
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_info_response/info/in_use                                           x2  (+1 descendant paths)
+  /get_info_response/info/writable                                         x2  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_info_response/details                                               x1
+  /get_info_response/details/#text                                         x1
+
+DUPLICATED
+  (none)

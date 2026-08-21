@@ -1,0 +1,19 @@
+# fidelity: modify_group / upstream / 001
+# provenance: command_modify_group.xml, command "modify_group", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

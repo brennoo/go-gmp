@@ -1,0 +1,19 @@
+# fidelity: modify_credential / live / 001
+# provenance: lifecycle: modify_credential, new password redacted
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

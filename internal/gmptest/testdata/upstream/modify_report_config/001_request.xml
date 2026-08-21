@@ -1,0 +1,7 @@
+<modify_report_config>
+          <name>Renamed config</name>
+          <param>
+            <name>Node Distance</name>
+            <value use_default="1"/>
+          </param>
+        </modify_report_config>

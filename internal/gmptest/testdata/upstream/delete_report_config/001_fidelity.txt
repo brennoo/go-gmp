@@ -1,0 +1,19 @@
+# fidelity: delete_report_config / upstream / 001
+# provenance: command_delete_report_config.xml, command "delete_report_config", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

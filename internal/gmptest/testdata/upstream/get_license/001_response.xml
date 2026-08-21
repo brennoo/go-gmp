@@ -1,0 +1,28 @@
+<get_license_response status="200" status_text="OK">
+          <license>
+            <status>active</status>
+            <content>
+              <meta>
+                <id>4711</id>
+                <version>1.0.0</version>
+                <comment>Test License</comment>
+                <type>trial</type>
+                <customer_name>Jane Doe</customer_name>
+                <created>2021-08-27T06:05:21Z</created>
+                <begins>2021-08-27T07:05:21Z</begins>
+                <expires>2021-09-04T07:05:21Z</expires>
+              </meta>
+              <appliance>
+                <model>trial</model>
+                <model_type>virtual</model_type>
+                <sensor>0</sensor>
+              </appliance>
+              <keys>
+                <key name="feed">*base64 GSF key*</key>
+              </keys>
+              <signatures>
+                <signature name="license">*base64 signature*</signature>
+              </signatures>
+            </content>
+          </license>
+        </get_license_response>

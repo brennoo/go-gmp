@@ -15,13 +15,13 @@ func TestCreateAsset(t *testing.T) {
 	}
 
 	cmd := &commands.CreateAsset{
-		Asset: &commands.AssetInput{
+		Asset: &commands.Asset{
 			Name:    "Test Asset",
 			Comment: "A test asset",
 			Type:    "host",
 		},
 	}
-	resp, err := cli.CreateAsset(cmd)
+	resp, err := cli.CreateAsset(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateAsset: %s", err)
 	}
@@ -45,10 +45,10 @@ func TestCreateAssetWithReport(t *testing.T) {
 	cmdWithReport := &commands.CreateAsset{
 		Report: &commands.AssetReport{
 			ID:     "report-id",
-			Filter: &commands.AssetFilter{Term: "term"},
+			Filter: commands.AssetFilter{Term: "term"},
 		},
 	}
-	resp, err := cli.CreateAsset(cmdWithReport)
+	resp, err := cli.CreateAsset(context.Background(), cmdWithReport)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateAsset (report): %s", err)
 	}
@@ -73,7 +73,7 @@ func TestModifyAsset(t *testing.T) {
 		AssetID: "914b59f8-25f5-4c8f-832c-2379cd625236",
 		Comment: "New comment",
 	}
-	resp, err := cli.ModifyAsset(cmd)
+	resp, err := cli.ModifyAsset(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyAsset: %s", err)
 	}
@@ -102,11 +102,11 @@ func TestGetAssets(t *testing.T) {
 	if resp.StatusText != "OK" {
 		t.Fatalf("Unexpected status text. Expected: OK Got: %s", resp.StatusText)
 	}
-	if len(resp.Assets) != 2 {
-		t.Fatalf("Expected 2 assets, got %d", len(resp.Assets))
+	if len(resp.Asset) != 2 {
+		t.Fatalf("Expected 2 assets, got %d", len(resp.Asset))
 	}
 	// Check first asset
-	asset := resp.Assets[0]
+	asset := resp.Asset[0]
 	if asset.ID != "asset-1" {
 		t.Fatalf("Unexpected asset ID. Expected: asset-1 Got: %s", asset.ID)
 	}
@@ -124,7 +124,7 @@ func TestDeleteAsset(t *testing.T) {
 	cmd := &commands.DeleteAsset{
 		AssetID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
 	}
-	resp, err := cli.DeleteAsset(cmd)
+	resp, err := cli.DeleteAsset(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during DeleteAsset: %s", err)
 	}

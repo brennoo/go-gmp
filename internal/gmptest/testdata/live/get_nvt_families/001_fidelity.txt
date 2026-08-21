@@ -1,0 +1,19 @@
+# fidelity: get_nvt_families / live / 001
+# provenance: read-only: get_nvt_families bare
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

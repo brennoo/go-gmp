@@ -1,0 +1,19 @@
+# fidelity: get_report_formats / live / 007
+# provenance: expected failure: get_report_formats to pick one to verify
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_report_formats_response/report_format/trust/@name                   x6
+
+DUPLICATED
+  (none)

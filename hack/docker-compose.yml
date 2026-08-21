@@ -2,43 +2,43 @@ name: greenbone-community-edition
 
 services:
   vulnerability-tests:
-    image: registry.community.greenbone.net/community/vulnerability-tests
+    image: ghcr.io/brennoo/gvm-mirror/vulnerability-tests@sha256:b986fac3152ce2cd936d195f57fe581c00c97ca08abd05f1846e905c70ba0936 # nightly
     environment:
       FEED_RELEASE: "24.10"
     volumes:
       - vt_data_vol:/mnt
 
   notus-data:
-    image: registry.community.greenbone.net/community/notus-data
+    image: ghcr.io/brennoo/gvm-mirror/notus-data@sha256:7b16eba4e5a736d8e1e29dfc12a706b69c1d3d6e5a3207759d572bbf58b299c1 # nightly
     volumes:
       - notus_data_vol:/mnt
 
   scap-data:
-    image: registry.community.greenbone.net/community/scap-data
+    image: ghcr.io/brennoo/gvm-mirror/scap-data@sha256:3e1783c9c0d4241510135a723e42ef2493284c24d7a71ed83a9b8582e8572153 # main
     volumes:
       - scap_data_vol:/mnt
 
   cert-bund-data:
-    image: registry.community.greenbone.net/community/cert-bund-data
+    image: ghcr.io/brennoo/gvm-mirror/cert-bund-data@sha256:6ac392f2c772094f0aef9107a8b34f7e4e01bb9343e11cfbdd0e42c66db3134f # nightly
     volumes:
       - cert_data_vol:/mnt
 
   dfn-cert-data:
-    image: registry.community.greenbone.net/community/dfn-cert-data
+    image: ghcr.io/brennoo/gvm-mirror/dfn-cert-data@sha256:49389ee0052bec723838c3d4a3e10add7f163a77da8f99248bc8d3a3813a7c36 # sha256-49389ee0052bec723838c3d4a3e10add7f163a77da8f99248bc8d3a3813a7c36
     volumes:
       - cert_data_vol:/mnt
     depends_on:
       - cert-bund-data
 
   data-objects:
-    image: registry.community.greenbone.net/community/data-objects
+    image: ghcr.io/brennoo/gvm-mirror/data-objects@sha256:51546e3ae0c9677f45a1637c07af8d92b44537585e729777a5cc4fba096aa82a # nightly
     environment:
       FEED_RELEASE: "24.10"
     volumes:
       - data_objects_vol:/mnt
 
   report-formats:
-    image: registry.community.greenbone.net/community/report-formats
+    image: ghcr.io/brennoo/gvm-mirror/report-formats@sha256:2e89ff3f264d3d8dbdf77cfd8f716bf9b3d706b17b69028f148d1611b7ed36a7 # nightly
     environment:
       FEED_RELEASE: "24.10"
     volumes:
@@ -47,33 +47,33 @@ services:
       - data-objects
 
   gpg-data:
-    image: registry.community.greenbone.net/community/gpg-data
+    image: ghcr.io/brennoo/gvm-mirror/gpg-data@sha256:d0d7c84f76038e6934e750f09bb1501c74c59b943f51ba694c708df495047539 # latest
     volumes:
       - gpg_data_vol:/mnt
 
   redis-server:
-    image: registry.community.greenbone.net/community/redis-server
+    image: ghcr.io/brennoo/gvm-mirror/redis-server@sha256:6da6a7c7221aa3ab231961fd6ca001d552b6a2c7727ac6201c6d8a360baa963a # latest
     restart: on-failure
     volumes:
       - redis_socket_vol:/run/redis/
 
   pg-gvm:
-    image: registry.community.greenbone.net/community/pg-gvm:stable
+    image: ghcr.io/brennoo/gvm-mirror/pg-gvm@sha256:b81bc5d7a750203ea25c6e4dd086751ecee8e388d1cb2501c60b3805e0056204 # v22.6.18
     restart: on-failure
     volumes:
       - psql_data_vol:/var/lib/postgresql
       - psql_socket_vol:/var/run/postgresql
 
   gvmd:
-    image: registry.community.greenbone.net/community/gvmd:stable
+    image: ghcr.io/brennoo/gvm-mirror/gvmd@sha256:cb82c501ca93809405a8d0ed4c21846703466802ce6462536e985625f102b497 # v26.36.1
     restart: on-failure
     environment:
       GVMD_ARGS: "--listen=0.0.0.0 --port=9390 -f -v --gnutls-priorities=SECURE256:-VERS-TLS-ALL:+VERS-TLS1.2:+VERS-TLS1.3 --max-email-message-size=26214400"
     ports:
       - 127.0.0.1:9390:9390
     volumes:
-      - $PWD/CA/private:/var/lib/gvm/private/CA
-      - $PWD/CA:/var/lib/gvm/CA
+      - ./CA/private:/var/lib/gvm/private/CA
+      - ./CA:/var/lib/gvm/CA
       - gvmd_data_vol:/var/lib/gvm
       - scap_data_vol:/var/lib/gvm/scap-data/
       - cert_data_vol:/var/lib/gvm/cert-data
@@ -98,7 +98,7 @@ services:
         condition: service_completed_successfully
 
   gsa:
-    image: registry.community.greenbone.net/community/gsa:stable
+    image: ghcr.io/brennoo/gvm-mirror/gsa@sha256:6e342f5454ef34db1462b2abc1eebc65f1951ddeeb7477e67a9a335ee82caee1 # v28.2.0
     restart: on-failure
     ports:
       - 127.0.0.1:443:443
@@ -106,15 +106,15 @@ services:
       - GSAD_ARGS=--mlisten gvmd --no-redirect --http-sts --gnutls-priorities=SECURE256:-VERS-TLS-ALL:+VERS-TLS1.2:+VERS-TLS1.3
     volumes:
       - gvmd_socket_vol:/run/gvmd
-      - $PWD/CA/private:/var/lib/gvm/private/CA
-      - $PWD/CA:/var/lib/gvm/CA
+      - ./CA/private:/var/lib/gvm/private/CA
+      - ./CA:/var/lib/gvm/CA
     depends_on:
       - gvmd
   # Sets log level of openvas to the set LOG_LEVEL within the env
   # and changes log output to /var/log/openvas instead /var/log/gvm
   # to reduce likelyhood of unwanted log interferences
   configure-openvas:
-    image: registry.community.greenbone.net/community/openvas-scanner:stable
+    image: ghcr.io/brennoo/gvm-mirror/openvas-scanner@sha256:ad3331443d8d4e2516e0087389961ac65f508ce4fab89104150f1e8e20cc4668 # v23.50.15
     volumes:
       - openvas_data_vol:/mnt
       - openvas_log_data_vol:/var/log/openvas
@@ -131,7 +131,7 @@ services:
 
   # shows logs of openvas
   openvas:
-    image: registry.community.greenbone.net/community/openvas-scanner:stable
+    image: ghcr.io/brennoo/gvm-mirror/openvas-scanner@sha256:ad3331443d8d4e2516e0087389961ac65f508ce4fab89104150f1e8e20cc4668 # v23.50.15
     restart: on-failure
     volumes:
       - openvas_data_vol:/etc/openvas
@@ -147,7 +147,7 @@ services:
         condition: service_completed_successfully
 
   openvasd:
-    image: registry.community.greenbone.net/community/openvas-scanner:stable
+    image: ghcr.io/brennoo/gvm-mirror/openvas-scanner@sha256:ad3331443d8d4e2516e0087389961ac65f508ce4fab89104150f1e8e20cc4668 # v23.50.15
     restart: on-failure
     environment:
       # `service_notus` is set to disable everything but notus,
@@ -176,7 +176,7 @@ services:
           - openvasd
 
   ospd-openvas:
-    image: registry.community.greenbone.net/community/ospd-openvas:stable
+    image: ghcr.io/brennoo/gvm-mirror/ospd-openvas@sha256:39775048190f97c06789e7b20a953145b9bbd53a64c8ba890ecf5ff00f564479 # sha256-39775048190f97c06789e7b20a953145b9bbd53a64c8ba890ecf5ff00f564479
     restart: on-failure
     hostname: ospd-openvas.local
     cap_add:
@@ -215,7 +215,7 @@ services:
         condition: service_completed_successfully
 
   gvm-tools:
-    image: registry.community.greenbone.net/community/gvm-tools
+    image: ghcr.io/brennoo/gvm-mirror/gvm-tools@sha256:e5257e43fa164dea118c2b96477381a7d03b9fc46ab71e4ae7bf56d2919ef9b7 # v26.0.7
     volumes:
       - gvmd_socket_vol:/run/gvmd
       - ospd_openvas_socket_vol:/run/ospd

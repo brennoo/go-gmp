@@ -1,0 +1,1 @@
+<run_wizard read_only="0"><name>quick_first_scan</name><params><param><name>hosts</name><value>192.0.2.0/24</value></param></params></run_wizard>

@@ -1,0 +1,1 @@
+<modify_auth><group name="method:file"><auth_conf_setting><key>enable</key><value>[REDACTED-BY-GO-GMP-CAPTURE]</value></auth_conf_setting><auth_conf_setting><key>order</key><value>[REDACTED-BY-GO-GMP-CAPTURE]</value></auth_conf_setting></group></modify_auth>

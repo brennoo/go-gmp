@@ -1,0 +1,19 @@
+# fidelity: get_groups / live / 003
+# provenance: lifecycle: get_groups for the group just created
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

@@ -3,6 +3,7 @@ package main
 //nolint:errcheck // Ignoring Close errors in example
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -12,8 +13,12 @@ import (
 )
 
 func main() {
-	// Connect to GMP over TLS
-	gmpConn, err := connections.NewTLSConnection("localhost:9390", true) // true = skip cert verification for demo
+	ctx := context.Background()
+
+	// Connect to GMP over TLS.
+	// WithInsecureSkipVerify disables certificate verification and must not be used in
+	// production; use connections.WithRootCAFile with a trusted CA instead.
+	gmpConn, err := connections.NewTLSConnection(ctx, "localhost:9390", connections.WithInsecureSkipVerify())
 	if err != nil {
 		log.Fatalf("failed to connect to GMP: %v", err)
 	}
@@ -22,8 +27,8 @@ func main() {
 	cli := client.New(gmpConn)
 
 	// Authenticate as admin:admin
-	auth := &commands.Authenticate{Credentials: &commands.AuthenticateCredentials{Username: "admin", Password: "admin"}}
-	respAuth, err := cli.Authenticate(auth)
+	auth := &commands.Authenticate{Credentials: commands.AuthCredentials{Username: "admin", Password: "admin"}}
+	respAuth, err := cli.Authenticate(ctx, auth)
 	if err != nil {
 		log.Fatalf("Authentication failed: %v", err)
 	}
@@ -38,13 +43,13 @@ func main() {
 		Login:         "username",
 		Password:      "password",
 		Type:          "ssh",
-		KDCs:          &commands.CreateCredentialKDCs{KDC: []string{"kdc1.example.com", "kdc2.example.com"}},
-		Key:           &commands.CreateCredentialKey{Phrase: "passphrase", Private: "private-key", Public: "public-key"},
-		Privacy:       &commands.CreateCredentialPrivacy{Algorithm: "AES", Password: "snmp-password"},
-		AllowInsecure: false,
+		Kdcs:          &commands.CredentialKdcs{Kdc: []string{"kdc1.example.com", "kdc2.example.com"}},
+		Key:           &commands.CredentialKey{Phrase: "passphrase", Private: "private-key", Public: "public-key"},
+		Privacy:       &commands.CredentialPrivacy{Algorithm: "AES", Password: "snmp-password"},
+		AllowInsecure: commands.Bool(false),
 	}
 
-	resp, err := cli.CreateCredential(cmd)
+	resp, err := cli.CreateCredential(ctx, cmd)
 	if err != nil {
 		log.Fatalf("CreateCredential failed: %v", err)
 	}

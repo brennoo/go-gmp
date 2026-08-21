@@ -1,0 +1,19 @@
+# fidelity: get_filters / live / 003
+# provenance: lifecycle: get_filters for the filter just created
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

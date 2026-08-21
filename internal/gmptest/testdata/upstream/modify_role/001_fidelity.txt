@@ -1,0 +1,19 @@
+# fidelity: modify_role / upstream / 001
+# provenance: command_modify_role.xml, command "modify_role", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

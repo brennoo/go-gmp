@@ -1,0 +1,4 @@
+# fidelity: get_info / upstream / 001
+# provenance: command_get_info.xml, command "get_info", example 1
+decode: error
+error: strconv.ParseInt: parsing "": invalid syntax

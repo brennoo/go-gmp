@@ -1,0 +1,19 @@
+# fidelity: run_wizard / live / 001
+# provenance: expected failure: run_wizard for a wizard that does not exist
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

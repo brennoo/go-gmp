@@ -1,0 +1,10 @@
+<modify_config config_id="254cd3ef-bbe1-4d58-859d-21b8d0c046c6">
+          <family_selection>
+            <growing>1</growing>
+            <family>
+              <name>Debian Local Security Checks</name>
+              <all>1</all>
+              <growing>1</growing>
+            </family>
+          </family_selection>
+        </modify_config>

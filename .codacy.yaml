@@ -1,50 +1,55 @@
 engines:
-  duplication:
-    exclude_paths:
-      - "**/*_test.go"
-      - "commands/filtering/options.go"
-      - "commands/filtering/options_test.go"
-  complexity:
-    exclude_paths:
-      - "**/*_test.go"
-      - "commands/filtering/options.go"
-      - "commands/filtering/options_test.go"
-  file-structure:
-    exclude_paths:
-      - "**/*_test.go"
-      - "commands/filtering/options.go"
-      - "commands/filtering/options_test.go"
-      - "commands/pagination/common_test.go"
-  function-cognitive-complexity:
-    exclude_paths:
-      - "**/*_test.go"
-      - "commands/filtering/options.go"
-      - "commands/filtering/options_test.go"
-      - "commands/pagination/common_test.go"
-  function-length:
-    exclude_paths:
-      - "**/*_test.go"
-      - "commands/filtering/options.go"
-      - "commands/filtering/options_test.go"
-      - "commands/pagination/common_test.go"
-  line-length:
-    exclude_paths:
-      - "**/*_test.go"
-      - "commands/filtering/options.go"
-      - "commands/filtering/options_test.go"
-  method-complexity:
+  lizard:
     exclude_paths:
       - "**/*_test.go"
       - "commands/filtering/options.go"
       - "commands/filtering/options_test.go"
       - "commands/getstatus_comprehensive_test.go"
-      - "commands/pagination/common_test.go"
-  method-length:
+      - "commands/get_info.go"
+      - "commands/get_filters.go"
+      - "commands/report_shared.go"
+      - "commands/*_shared.go"
+      # Declarative request-fixture registries; length tracks fixture count, not logic.
+      - "internal/gmptest/cases_*.go"
+      # Codegen entry points thread ~10 independent override tables by design (see overrides.go).
+      - "internal/codegen/generate.go"
+      - "internal/codegen/validate.go"
+      - "internal/codegen/check.go"
+      - "internal/codegen/overrides.go"
+      - "internal/cmd/mirrorimages/mirrorimages.go"
+  opengrep:
     exclude_paths:
-      - "**/*_test.go"
-      - "commands/filtering/options.go"
-      - "commands/filtering/options_test.go"
-      - "commands/getstatus_comprehensive_test.go"
-      - "commands/pagination/common_test.go"
+      # Dev/build/test tooling: exec/file-I/O with fixed, non-attacker-controlled args, already `nolint:gosec`-reviewed.
+      - "internal/cmd/gengmp/main_test.go"
+      - "internal/cmd/mirrorimages/mirrorimages.go"
+      - "internal/cmd/mirrorimages/mirrorimages_test.go"
+      - "internal/cmd/schemadrift/schemadrift_test.go"
+      - "internal/codegen/check.go"
+      - "internal/codegen/check_test.go"
+      - "internal/codegen/enum_test.go"
+      - "internal/codegen/generate_test.go"
+      - "internal/codegen/snapshot.go"
+      - "internal/codegen/validate.go"
+      - "internal/codegen/validate_test.go"
+      - "internal/dockerstack/dockerstack.go"
+      - "internal/gmptest/capture_test.go"
+      - "internal/gmptest/fixture.go"
+      - "internal/gmptest/golden_request_test.go"
+      - "internal/gmptest/golden_response_test.go"
+      - "internal/gmptest/transcribe_test.go"
+      - "internal/gmptest/update_test.go"
+      - "internal/mirror/mirror.go"
+      - "internal/mirror/mirror_test.go"
+      - "internal/schema/conform.go"
+      - "internal/schema/parse.go"
+      - "internal/schema/provenance_test.go"
+      # Deliberately exercises insecure TLS configs to prove the client rejects/handles them; not production code.
+      - "connections/conn_tls_test.go"
+  trivy:
+    exclude_paths:
+      # Inert scaffolding module, never built or imported; see its own doc comment.
+      - "internal/gmptest/testdata/upstream/**"
 exclude_paths:
   - "examples/**"
+  # Byte-identical copy of commands/*.go, committed as the generator's own regression golden.
+  - "internal/codegen/testdata/golden/**"

@@ -1,0 +1,23 @@
+# fidelity: get_tls_certificates / upstream / 001
+# provenance: command_get_tls_certificates.xml, command "get_tls_certificates", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_tls_certificates_response/tls_certificate/last_seen                 x1
+  /get_tls_certificates_response/tls_certificate/last_seen/#text           x1
+  /get_tls_certificates_response/tls_certificate/serial                    x1
+  /get_tls_certificates_response/tls_certificate/sha256_fingerprint        x1
+  /get_tls_certificates_response/tls_certificate/time_status               x1
+
+DUPLICATED
+  (none)

@@ -1,0 +1,27 @@
+<get_assets_response status="200" status_text="OK">
+          <asset id="1f28d970-17ef-4c69-ba8a-13827059f2b9">
+            <name>dik</name>
+            <comment>dik mm</comment>
+            <creation_time>2018-08-29T20:21:33Z</creation_time>
+            <modification_time>2018-08-29T20:21:33Z</modification_time>
+            <writable>0</writable>
+            <in_use>4</in_use>
+            <hosts>dik.example.org</hosts>
+            <max_hosts>1</max_hosts>
+            <ssh_credential id="58ff2793-2dc7-43fe-85f9-20bfac5a87e4">
+              <name>mm</name>
+            </ssh_credential>
+            <smb_credential id="">
+              <name/>
+            </smb_credential>
+            <esxi_credential id="">
+              <name/>
+            </esxi_credential>
+            <tasks>
+              <task id="13bb418a-4220-4575-b35b-ec398bff7417">
+                <name>dik mm</name>
+              </task>
+              <truncated>...</truncated>
+            </tasks>
+          </asset>
+        </get_assets_response>

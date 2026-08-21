@@ -1,0 +1,1 @@
+<create_credential><name>Hardened login credential</name><allow_insecure>0</allow_insecure><login>svc-scan</login><password>s3cr3t-password</password><type>up</type></create_credential>

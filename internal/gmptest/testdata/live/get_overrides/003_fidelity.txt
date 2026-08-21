@@ -1,0 +1,19 @@
+# fidelity: get_overrides / live / 003
+# provenance: annotations: get_overrides for the override just created
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_overrides_response/override/severity/#text                          x1
+
+DUPLICATED
+  (none)

@@ -1,0 +1,5 @@
+<create_user>
+          <name>foobar</name>
+          <password>f00bar</password>
+          <role id="8d453140-b74d-11e2-b0be-406186ea4fc5"/>
+        </create_user>

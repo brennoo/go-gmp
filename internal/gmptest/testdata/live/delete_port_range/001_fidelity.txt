@@ -1,0 +1,19 @@
+# fidelity: delete_port_range / live / 001
+# provenance: lifecycle: delete_port_range
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

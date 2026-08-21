@@ -1,0 +1,19 @@
+# fidelity: create_permission / upstream / 001
+# provenance: command_create_permission.xml, command "create_permission", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

@@ -1,0 +1,19 @@
+# fidelity: get_system_reports / upstream / 001
+# provenance: command_get_system_reports.xml, command "get_system_reports", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

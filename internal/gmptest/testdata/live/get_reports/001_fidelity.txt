@@ -1,0 +1,37 @@
+# fidelity: get_reports / live / 001
+# provenance: read-only: get_reports bare
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_reports_response/report/report/filters/@id                          x5
+  /get_reports_response/report/report/filters/keywords                     x5  (+7 descendant paths)
+  /get_reports_response/report/report/ports/count                          x5  (+1 descendant paths)
+  /get_reports_response/report/report/result_count/false_positive          x5  (+4 descendant paths)
+  /get_reports_response/report/report/result_count/hole/@deprecated        x5
+  /get_reports_response/report/report/result_count/info/@deprecated        x5
+  /get_reports_response/report/report/result_count/warning/@deprecated     x5
+  /get_reports_response/report/report/task/target/@id                      x5
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_reports_response/report/report/filters/apply_overrides              x5
+  /get_reports_response/report/report/filters/min_qod                      x5
+  /get_reports_response/report/report/filters/notes                        x5
+  /get_reports_response/report/report/filters/overrides                    x5
+  /get_reports_response/report/report/filters/phrase                       x5
+  /get_reports_response/report/report/filters/result_hosts_only            x5
+  /get_reports_response/report/report/ports/@max                           x5
+  /get_reports_response/report/report/ports/@start                         x5
+  /get_reports_response/report/report/report_format                        x5
+  /get_reports_response/report/report/report_format/param                  x5
+  /get_reports_response/report/report/report_format/param/name             x5
+  /get_reports_response/report/report/report_format/param/value            x5
+
+DUPLICATED
+  (none)

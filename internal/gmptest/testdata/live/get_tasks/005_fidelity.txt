@@ -1,0 +1,29 @@
+# fidelity: get_tasks / live / 005
+# provenance: failure: get_tasks for a well-formed but nonexistent UUID
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_tasks_response/apply_overrides                                      x1
+  /get_tasks_response/filters                                              x1
+  /get_tasks_response/filters/@id                                          x1
+  /get_tasks_response/filters/keywords                                     x1
+  /get_tasks_response/filters/term                                         x1
+  /get_tasks_response/sort                                                 x1
+  /get_tasks_response/sort/field                                           x1
+  /get_tasks_response/sort/field/order                                     x1
+  /get_tasks_response/tasks                                                x1
+  /get_tasks_response/tasks/@max                                           x1
+  /get_tasks_response/tasks/@start                                         x1
+
+DUPLICATED
+  (none)

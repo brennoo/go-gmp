@@ -1,0 +1,19 @@
+# fidelity: get_port_lists / live / 002
+# provenance: read-only: get_port_lists with filter="rows=2 first=1"
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

@@ -1,0 +1,8 @@
+<modify_auth>
+          <group name="Foo">
+            <auth_conf_setting>
+              <key>Bar</key>
+              <value>Baz</value>
+            </auth_conf_setting>
+          </group>
+        </modify_auth>

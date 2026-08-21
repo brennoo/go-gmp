@@ -16,7 +16,6 @@ import (
 	"github.com/brennoo/go-gmp/connections"
 )
 
-// Configuration constants.
 const (
 	gvmdHost     = "localhost:9390"
 	username     = "admin"
@@ -37,10 +36,12 @@ type GMPClient struct {
 }
 
 // NewGMPClient creates a new GMP client with TLS connection.
-func NewGMPClient(host string) (*GMPClient, error) {
+func NewGMPClient(ctx context.Context, host string) (*GMPClient, error) {
 	log.Printf("Connecting to GVMD at %s...", host)
 
-	conn, err := connections.NewTLSConnection(host, true)
+	// WithInsecureSkipVerify disables certificate verification and must not be used in
+	// production; use connections.WithRootCAFile with a trusted CA instead.
+	conn, err := connections.NewTLSConnection(ctx, host, connections.WithInsecureSkipVerify())
 	if err != nil {
 		return nil, fmt.Errorf("failed to create TLS connection: %w", err)
 	}
@@ -58,13 +59,13 @@ func (g *GMPClient) Close() error {
 	return g.conn.Close()
 }
 
-// Authenticate authenticates with the GMP server with retry logic.
+// Authenticate authenticates with the GMP server.
 func (g *GMPClient) Authenticate(ctx context.Context, username, password string) error {
 	log.Printf("Authenticating as user: %s", username)
 
-	auth := &commands.Authenticate{Credentials: &commands.AuthenticateCredentials{Username: username, Password: password}}
+	auth := &commands.Authenticate{Credentials: commands.AuthCredentials{Username: username, Password: password}}
 
-	resp, err := g.client.Authenticate(auth)
+	resp, err := g.client.Authenticate(ctx, auth)
 	if err != nil {
 		return fmt.Errorf("authentication failed: %w", err)
 	}
@@ -132,12 +133,12 @@ func (g *GMPClient) GetPortList(ctx context.Context, name string) (string, error
 		return "", fmt.Errorf("get port lists failed with status %s: %s", resp.Status, resp.StatusText)
 	}
 
-	if len(resp.PortLists) == 0 {
+	if len(resp.PortList) == 0 {
 		return "", fmt.Errorf("port list '%s' not found", name)
 	}
 
-	log.Printf("Found port list: %s (ID: %s)", resp.PortLists[0].Name, resp.PortLists[0].ID)
-	return resp.PortLists[0].ID, nil
+	log.Printf("Found port list: %s (ID: %s)", resp.PortList[0].Name, resp.PortList[0].ID)
+	return resp.PortList[0].ID, nil
 }
 
 // GetTarget retrieves a target by name.
@@ -170,7 +171,7 @@ func (g *GMPClient) DeleteTarget(ctx context.Context, targetID string) error {
 		Ultimate: true, // Delete permanently, not just to trash
 	}
 
-	resp, err := g.client.DeleteTarget(cmd)
+	resp, err := g.client.DeleteTarget(ctx, cmd)
 	if err != nil {
 		return fmt.Errorf("failed to delete target: %w", err)
 	}
@@ -187,13 +188,11 @@ func (g *GMPClient) DeleteTarget(ctx context.Context, targetID string) error {
 func (g *GMPClient) DeleteTargetWithDependencies(ctx context.Context, targetID string) error {
 	log.Printf("Deleting target with dependencies: %s", targetID)
 
-	// First, get the target to see if it's in use
 	target, err := g.GetTargetByID(ctx, targetID)
 	if err != nil {
 		return fmt.Errorf("failed to get target info: %w", err)
 	}
 
-	// If target has tasks, delete them first
 	if target.Tasks != nil && len(target.Tasks.Task) > 0 {
 		log.Printf("Target has %d associated tasks, deleting them first", len(target.Tasks.Task))
 		for _, task := range target.Tasks.Task {
@@ -204,7 +203,6 @@ func (g *GMPClient) DeleteTargetWithDependencies(ctx context.Context, targetID s
 		}
 	}
 
-	// Now delete the target
 	return g.DeleteTarget(ctx, targetID)
 }
 
@@ -230,7 +228,7 @@ func (g *GMPClient) GetTargetByID(ctx context.Context, targetID string) (*comman
 }
 
 // GetTask retrieves a task by name.
-func (g *GMPClient) GetTask(ctx context.Context, name string) (*commands.GetTasksResponseTask, error) {
+func (g *GMPClient) GetTask(ctx context.Context, name string) (*commands.Task, error) {
 	log.Printf("Getting task: %s", name)
 
 	resp, err := g.client.GetTasks(ctx, fmt.Sprintf(`name="%s"`, name))
@@ -259,7 +257,7 @@ func (g *GMPClient) DeleteTask(ctx context.Context, taskID string) error {
 		Ultimate: true,
 	}
 
-	resp, err := g.client.DeleteTask(cmd)
+	resp, err := g.client.DeleteTask(ctx, cmd)
 	if err != nil {
 		return fmt.Errorf("failed to delete task: %w", err)
 	}
@@ -290,7 +288,7 @@ func (g *GMPClient) CreateTarget(ctx context.Context, name, hosts, portListID st
 		PortList: &commands.TargetPortList{ID: portListID},
 	}
 
-	resp, err := g.client.CreateTarget(cmd)
+	resp, err := g.client.CreateTarget(ctx, cmd)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create target: %w", err)
 	}
@@ -317,18 +315,18 @@ func (g *GMPClient) CreateTask(ctx context.Context, name, configID, targetID, sc
 
 	cmd := &commands.CreateTask{
 		Name: name,
-		Config: &commands.TaskConfig{
+		Config: commands.TaskConfig{
 			ID: configID,
 		},
-		Target: &commands.TaskTarget{
+		Target: commands.TaskTarget{
 			ID: targetID,
 		},
-		Scanner: &commands.TaskScanner{
+		Scanner: commands.TaskScanner{
 			ID: scannerID,
 		},
 	}
 
-	resp, err := g.client.CreateTask(cmd)
+	resp, err := g.client.CreateTask(ctx, cmd)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create task: %w", err)
 	}
@@ -349,7 +347,7 @@ func (g *GMPClient) StartTask(ctx context.Context, taskID string) error {
 		TaskID: taskID,
 	}
 
-	resp, err := g.client.StartTask(cmd)
+	resp, err := g.client.StartTask(ctx, cmd)
 	if err != nil {
 		return fmt.Errorf("failed to start task: %w", err)
 	}
@@ -410,15 +408,16 @@ func (g *GMPClient) getTaskProgress(ctx context.Context, taskID string) (int, er
 		return 0, fmt.Errorf("task not found")
 	}
 
-	progress := resp.Task[0].Progress
-	return progress, nil
+	if resp.Task[0].Progress == nil {
+		return -1, nil
+	}
+	return *resp.Task[0].Progress, nil
 }
 
 // PrintResultsWithIterator prints all results using an iterator.
 func (g *GMPClient) PrintResultsWithIterator(ctx context.Context, taskID string) error {
 	log.Printf("Getting results for task: %s using iterator", taskID)
 
-	// Create an iterator for results
 	resultIter := g.client.Results(ctx, 50, taskID)
 	defer resultIter.Close()
 
@@ -426,7 +425,6 @@ func (g *GMPClient) PrintResultsWithIterator(ctx context.Context, taskID string)
 	log.Println("Scanning results...")
 	log.Println("=" + strings.Repeat("=", 80))
 
-	// Iterate through all results
 	for resultIter.Next() {
 		result := resultIter.Current()
 		resultCount++
@@ -444,7 +442,6 @@ func (g *GMPClient) PrintResultsWithIterator(ctx context.Context, taskID string)
 		fmt.Println()
 	}
 
-	// Check for errors
 	if err := resultIter.Err(); err != nil {
 		return fmt.Errorf("error during iteration: %w", err)
 	}
@@ -463,15 +460,13 @@ func (g *GMPClient) PrintResultsWithIterator(ctx context.Context, taskID string)
 func (g *GMPClient) PrintResultsWithFiltering(ctx context.Context, taskID string) error {
 	log.Printf("Getting results for task: %s using filtering system", taskID)
 
-	// Create filter options for high and critical severity results
 	opts := []filtering.Option{
 		filtering.WithTask(taskID),
 		filtering.WithSeverityGreaterThanOrEqual(7.0), // High and Critical
 		filtering.WithSortDesc(filtering.SortByResultSeverity),
-		filtering.WithLimit(20), // Limit to top 20 results
+		filtering.WithLimit(20),
 	}
 
-	// Use the new filtering method
 	var args []filtering.FilterArg
 	for _, opt := range opts {
 		args = append(args, opt)
@@ -485,10 +480,10 @@ func (g *GMPClient) PrintResultsWithFiltering(ctx context.Context, taskID string
 		return fmt.Errorf("get results failed with status %s: %s", resp.Status, resp.StatusText)
 	}
 
-	log.Printf("Found %d high/critical results (showing top 20)", len(resp.Results))
+	log.Printf("Found %d high/critical results (showing top 20)", len(resp.Result))
 	log.Println("=" + strings.Repeat("=", 80))
 
-	for i, result := range resp.Results {
+	for i, result := range resp.Result {
 		fmt.Printf("[%d] %s (Severity: %.1f)\n", i+1, result.Name, result.Severity)
 		if result.Description != "" {
 			fmt.Printf("     Description: %s\n", result.Description)
@@ -509,14 +504,12 @@ func (g *GMPClient) PrintResultsWithFiltering(ctx context.Context, taskID string
 func (g *GMPClient) PrintTasksWithFiltering(ctx context.Context) error {
 	log.Println("Getting tasks using filtering system")
 
-	// Create filter options for running tasks
 	opts := []filtering.Option{
 		filtering.WithStatus(filtering.StatusRunning),
 		filtering.WithSortDesc(filtering.SortByCreated),
-		filtering.WithLimit(10), // Show last 10 running tasks
+		filtering.WithLimit(10),
 	}
 
-	// Use the new filtering method
 	var args []filtering.FilterArg
 	for _, opt := range opts {
 		args = append(args, opt)
@@ -546,58 +539,48 @@ func (g *GMPClient) PrintTasksWithFiltering(ctx context.Context) error {
 }
 
 func main() {
-	// Create context with timeout
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()
 
-	// Create GMP client
-	gmpClient, err := NewGMPClient(gvmdHost)
+	gmpClient, err := NewGMPClient(ctx, gvmdHost)
 	if err != nil {
 		log.Fatalf("Failed to create GMP client: %v", err)
 	}
 	defer gmpClient.Close() //nolint:errcheck // Ignoring close error
 
-	// Authenticate
 	if err := gmpClient.Authenticate(ctx, username, password); err != nil {
 		log.Fatalf("Authentication failed: %v", err)
 	}
 
-	// Get scanner
 	scanner, err := gmpClient.GetScanner(ctx, scannerName)
 	if err != nil {
 		log.Fatalf("Failed to get scanner: %v", err)
 	}
 
-	// Get configuration
 	configID, err := gmpClient.GetConfig(ctx, configName)
 	if err != nil {
 		log.Fatalf("Failed to get configuration: %v", err)
 	}
 
-	// Get port list
 	portListID, err := gmpClient.GetPortList(ctx, portListName)
 	if err != nil {
 		log.Fatalf("Failed to get port list: %v", err)
 	}
 
-	// Create target
 	target, err := gmpClient.CreateTarget(ctx, targetName, targetHosts, portListID)
 	if err != nil {
 		log.Fatalf("Failed to create target: %v", err)
 	}
 
-	// Create task
 	task, err := gmpClient.CreateTask(ctx, taskName, configID, target.ID, scanner.ID)
 	if err != nil {
 		log.Fatalf("Failed to create task: %v", err)
 	}
 
-	// Start task
 	if err := gmpClient.StartTask(ctx, task.ID); err != nil {
 		log.Fatalf("Failed to start task: %v", err)
 	}
 
-	// Wait for completion
 	if err := gmpClient.WaitForTaskCompletion(ctx, task.ID); err != nil {
 		log.Fatalf("Task failed or timed out: %v", err)
 	}

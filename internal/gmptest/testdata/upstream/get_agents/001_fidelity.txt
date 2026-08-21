@@ -1,0 +1,24 @@
+# fidelity: get_agents / upstream / 001
+# provenance: command_get_agents.xml, command "get_agents", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_agents_response/agent/heartbeat_interval                            x1  (+1 descendant paths)
+  /get_agents_response/agent/in_use                                        x1  (+1 descendant paths)
+  /get_agents_response/agent_count                                         x1  (+4 descendant paths)
+  /get_agents_response/agents                                              x1  (+2 descendant paths)
+  /get_agents_response/filters                                             x1  (+11 descendant paths)
+  /get_agents_response/sort                                                x1  (+4 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_agents_response/agent/writable/#text                                "1" -> "true"
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

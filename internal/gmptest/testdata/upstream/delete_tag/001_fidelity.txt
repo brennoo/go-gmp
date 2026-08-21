@@ -1,0 +1,19 @@
+# fidelity: delete_tag / upstream / 001
+# provenance: command_delete_tag.xml, command "delete_tag", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

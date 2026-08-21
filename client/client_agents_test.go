@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"testing"
 
 	"github.com/brennoo/go-gmp/commands"
@@ -16,13 +17,13 @@ func TestModifyAgents(t *testing.T) {
 		Agents: []commands.Agent{
 			{ID: "fb6451bf-ec5a-45a8-8bab-5cf4b862e51b"},
 		},
-		Authorized:        1,
-		MinInterval:       1000,
-		HeartbeatInterval: 0,
+		Authorized:        commands.Int(1),
+		MinInterval:       commands.Int(1000),
+		HeartbeatInterval: commands.Int(0),
 		Schedule:          "@every 12h",
 		Comment:           "example update",
 	}
-	resp, err := cli.ModifyAgents(cmd)
+	resp, err := cli.ModifyAgents(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyAgents: %s", err)
 	}
@@ -41,7 +42,7 @@ func TestGetAgents(t *testing.T) {
 	}
 
 	cmd := &commands.GetAgents{}
-	resp, err := cli.GetAgents(cmd)
+	resp, err := cli.GetAgents(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during GetAgents: %s", err)
 	}
@@ -74,7 +75,7 @@ func TestDeleteAgents(t *testing.T) {
 			{ID: "c6f1cdc3-8c2c-4b2e-9f43-139d23c7cfd4"},
 		},
 	}
-	resp, err := cli.DeleteAgents(cmd)
+	resp, err := cli.DeleteAgents(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during DeleteAgents: %s", err)
 	}

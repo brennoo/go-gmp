@@ -1,0 +1,23 @@
+# fidelity: get_configs / live / 002
+# provenance: read-only: get_configs with filter="rows=2 first=1"
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_configs_response/config/known_nvt_count                             x2
+  /get_configs_response/config/known_nvt_count/#text                       x2
+  /get_configs_response/config/max_nvt_count                               x2
+  /get_configs_response/config/max_nvt_count/#text                         x2
+  /get_configs_response/config/tasks                                       x2
+
+DUPLICATED
+  (none)

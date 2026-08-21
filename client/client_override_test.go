@@ -15,11 +15,11 @@ func TestCreateOverride(t *testing.T) {
 
 	cmd := &commands.CreateOverride{
 		Text:      "This is actually of little concern.",
-		NVT:       &commands.OverrideNVT{OID: "1.3.6.1.4.1.25623.1.0.10330"},
+		NVT:       commands.OverrideNVT{OID: "1.3.6.1.4.1.25623.1.0.10330"},
 		NewThreat: "Low",
-		Result:    "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
+		Result:    &commands.OverrideResult{ID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"},
 	}
-	resp, err := cli.CreateOverride(cmd)
+	resp, err := cli.CreateOverride(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateOverride: %s", err)
 	}
@@ -44,7 +44,7 @@ func TestDeleteOverride(t *testing.T) {
 		OverrideID: "267a3405-e84a-47da-97b2-5fa0d2e8995e",
 		Ultimate:   false,
 	}
-	resp, err := cli.DeleteOverride(cmd)
+	resp, err := cli.DeleteOverride(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during DeleteOverride: %s", err)
 	}
@@ -74,11 +74,31 @@ func TestGetOverrides(t *testing.T) {
 	if resp.StatusText != "OK" {
 		t.Errorf("Expected status text OK, got %s", resp.StatusText)
 	}
-	if len(resp.Overrides) != 1 {
-		t.Errorf("Expected 1 override, got %d", len(resp.Overrides))
+	if len(resp.Override) != 1 {
+		t.Errorf("Expected 1 override, got %d", len(resp.Override))
 	}
-	if resp.Overrides[0].ID != "b76b81a7-9df8-42df-afff-baa9d4620128" {
-		t.Errorf("Expected override ID b76b81a7-9df8-42df-afff-baa9d4620128, got %s", resp.Overrides[0].ID)
+	if resp.Override[0].ID != "b76b81a7-9df8-42df-afff-baa9d4620128" {
+		t.Errorf("Expected override ID b76b81a7-9df8-42df-afff-baa9d4620128, got %s", resp.Override[0].ID)
+	}
+}
+
+// TestGetOverridesRejectsTypedRequestStruct pins T-29's fail-closed fix.
+// GetOverrides takes ...filtering.FilterArg, not *commands.GetOverrides;
+// passing the request struct compiles (FilterArg is interface{}) but used to
+// be silently dropped from the filter, sending an unfiltered query with no
+// error at all — exactly the mistake T-28's TestExplicitEmptySemantics made
+// independently against GetOverrides/GetConfigs/GetPortLists before noticing
+// the resulting query was unfiltered.
+func TestGetOverridesRejectsTypedRequestStruct(t *testing.T) {
+	cli := New(MockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	ctx := context.Background()
+	_, err := cli.GetOverrides(ctx, &commands.GetOverrides{OverrideID: "b76b81a7-9df8-42df-afff-baa9d4620128"})
+	if err == nil {
+		t.Fatal("GetOverrides succeeded with a *commands.GetOverrides FilterArg; want an unsupported-type error")
 	}
 }
 
@@ -93,7 +113,7 @@ func TestModifyOverride(t *testing.T) {
 		Text:       "This issue is less important in our setup.",
 		NewThreat:  "Low",
 	}
-	resp, err := cli.ModifyOverride(cmd)
+	resp, err := cli.ModifyOverride(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyOverride: %s", err)
 	}

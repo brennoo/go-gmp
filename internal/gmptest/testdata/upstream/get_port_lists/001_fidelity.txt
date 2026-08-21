@@ -1,0 +1,35 @@
+# fidelity: get_port_lists / upstream / 001
+# provenance: command_get_port_lists.xml, command "get_port_lists", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_port_lists_response/filters                                         x1
+  /get_port_lists_response/filters/@id                                     x1
+  /get_port_lists_response/filters/keywords                                x1
+  /get_port_lists_response/filters/term                                    x1
+  /get_port_lists_response/port_list/owner                                 x1
+  /get_port_lists_response/port_list/owner/name                            x1
+  /get_port_lists_response/port_list/permissions                           x1
+  /get_port_lists_response/port_list/port_ranges/port_range/@id            x1
+  /get_port_lists_response/port_list/port_ranges/port_range/comment        x1
+  /get_port_lists_response/port_list/predefined                            x1
+  /get_port_lists_response/port_list/predefined/#text                      x1
+  /get_port_lists_response/port_lists                                      x1
+  /get_port_lists_response/port_lists/@max                                 x1
+  /get_port_lists_response/port_lists/@start                               x1
+  /get_port_lists_response/sort                                            x1
+  /get_port_lists_response/sort/field                                      x1
+  /get_port_lists_response/sort/field/order                                x1
+
+DUPLICATED
+  (none)

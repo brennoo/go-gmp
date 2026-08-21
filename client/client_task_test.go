@@ -16,7 +16,7 @@ func TestCreateTask(t *testing.T) {
 
 	cmd := &commands.CreateTask{}
 	cmd.Name = "New Task"
-	_, err := cli.CreateTask(cmd)
+	_, err := cli.CreateTask(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateTask: %s", err)
 	}
@@ -28,10 +28,11 @@ func TestModifyTask(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
+	comment := "Modified Task Comment"
 	cmd := &commands.ModifyTask{}
 	cmd.TaskID = "e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31"
-	cmd.Comment = "Modified Task Comment"
-	_, err := cli.ModifyTask(cmd)
+	cmd.Comment = &comment
+	_, err := cli.ModifyTask(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyTask: %s", err)
 	}
@@ -86,7 +87,7 @@ func TestStartTask(t *testing.T) {
 
 	cmd := &commands.StartTask{}
 	cmd.TaskID = "e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31"
-	_, err := cli.StartTask(cmd)
+	_, err := cli.StartTask(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during StartTask: %s", err)
 	}
@@ -100,7 +101,7 @@ func TestStopTask(t *testing.T) {
 
 	cmd := &commands.StopTask{}
 	cmd.TaskID = "e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31"
-	_, err := cli.StopTask(cmd)
+	_, err := cli.StopTask(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during StopTask: %s", err)
 	}
@@ -114,7 +115,7 @@ func TestDeleteTask(t *testing.T) {
 
 	cmd := &commands.DeleteTask{}
 	cmd.TaskID = "e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31"
-	_, err := cli.DeleteTask(cmd)
+	_, err := cli.DeleteTask(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during DeleteTask: %s", err)
 	}
@@ -130,7 +131,7 @@ func TestResumeTask(t *testing.T) {
 	cmd := &commands.ResumeTask{
 		TaskID: taskID,
 	}
-	resp, err := cli.ResumeTask(cmd)
+	resp, err := cli.ResumeTask(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -149,7 +150,7 @@ func TestMoveTask(t *testing.T) {
 		TaskID:  "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 		SlaveID: "97390ade-e075-11df-9973-002264764cea",
 	}
-	_, err := cli.MoveTask(cmd)
+	_, err := cli.MoveTask(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during MoveTask: %s", err)
 	}

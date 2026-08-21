@@ -1,0 +1,25 @@
+# fidelity: get_tasks / upstream / 003
+# provenance: command_get_tasks.xml, command "get_tasks", example 3
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_tasks_response/filters/keywords/truncated                           x1  (+1 descendant paths)
+  /get_tasks_response/task/config/type                                     x1  (+1 descendant paths)
+  /get_tasks_response/task/hosts_ordering                                  x1
+  /get_tasks_response/task/last_report/report/scan_start                   x1  (+1 descendant paths)
+  /get_tasks_response/task/preferences/truncated                           x1  (+1 descendant paths)
+  /get_tasks_response/task/scanner/trash                                   x1  (+1 descendant paths)
+  /get_tasks_response/task/trend                                           x1
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_tasks_response/task/last_report/report/severity/#text               "9.0" -> "9"
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

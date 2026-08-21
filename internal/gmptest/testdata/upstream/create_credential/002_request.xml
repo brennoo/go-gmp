@@ -1,0 +1,9 @@
+<create_credential>
+          <name>Email public key</name>
+          <type>pgp</type>
+          <key>
+            <public>-----BEGIN PGP PUBLIC KEY BLOCK-----
+              [...]
+            </public>
+          </key>
+        </create_credential>

@@ -1,0 +1,19 @@
+# fidelity: create_group / upstream / 001
+# provenance: command_create_group.xml, command "create_group", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

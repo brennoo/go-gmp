@@ -1,0 +1,19 @@
+# fidelity: describe_auth / live / 001
+# provenance: read-only: describe_auth, auth_conf_setting values redacted
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

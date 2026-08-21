@@ -1,0 +1,8 @@
+<create_permission>
+          <name>get_targets</name>
+          <resource id="b493b7a8-7489-11df-a3ec-002264764cea">
+          </resource>
+          <subject id="66abe5ce-c011-11e3-b96e-406186ea4fc5">
+            <type>user</type>
+          </subject>
+        </create_permission>

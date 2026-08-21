@@ -1,0 +1,1 @@
+<create_alert><name>go-gmp-fixture-20260818t142925-27c948-alert</name><condition>Always</condition><event>Task run status changed<data>Done<name>status</name></data></event><method>Syslog</method><filter id="c85780c0-e828-4fa0-998d-8ad442025cc0"></filter><comment>Created by go-gmp fixture capture. Safe to delete.</comment></create_alert>

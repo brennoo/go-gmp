@@ -1,0 +1,53 @@
+# fidelity: get_scanners / upstream / 001
+# provenance: command_get_scanners.xml, command "get_scanners", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_scanners_response/scanner/key_pub                                   x1  (+1 descendant paths)
+  /get_scanners_response/scanner/tasks/truncated                           x1  (+1 descendant paths)
+  /get_scanners_response/truncate                                          x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_scanners_response/filters                                           x1
+  /get_scanners_response/filters/@id                                       x1
+  /get_scanners_response/filters/keywords                                  x1
+  /get_scanners_response/filters/term                                      x1
+  /get_scanners_response/scanner/ca_pub_info                               x1
+  /get_scanners_response/scanner/ca_pub_info/activation_time               x1
+  /get_scanners_response/scanner/ca_pub_info/expiration_time               x1
+  /get_scanners_response/scanner/ca_pub_info/issuer                        x1
+  /get_scanners_response/scanner/ca_pub_info/md5_fingerprint               x1
+  /get_scanners_response/scanner/ca_pub_info/time_status                   x1
+  /get_scanners_response/scanner/certificate_info                          x1
+  /get_scanners_response/scanner/certificate_info/activation_time          x1
+  /get_scanners_response/scanner/certificate_info/expiration_time          x1
+  /get_scanners_response/scanner/certificate_info/issuer                   x1
+  /get_scanners_response/scanner/certificate_info/md5_fingerprint          x1
+  /get_scanners_response/scanner/certificate_info/time_status              x1
+  /get_scanners_response/scanner/credential                                x1
+  /get_scanners_response/scanner/credential/@id                            x1
+  /get_scanners_response/scanner/credential/name                           x1
+  /get_scanners_response/scanner/credential/trash                          x1
+  /get_scanners_response/scanner/credential/trash/#text                    x1
+  /get_scanners_response/scanner/owner                                     x1
+  /get_scanners_response/scanner/owner/name                                x1
+  /get_scanners_response/scanner/permissions                               x1
+  /get_scanners_response/scanner/relay_host                                x1
+  /get_scanners_response/scanner/relay_port                                x1
+  /get_scanners_response/scanner/tasks/task/usage_type                     x1
+  /get_scanners_response/scanners                                          x1
+  /get_scanners_response/scanners/@max                                     x1
+  /get_scanners_response/scanners/@start                                   x1
+  /get_scanners_response/sort                                              x1
+  /get_scanners_response/sort/field                                        x1
+  /get_scanners_response/sort/field/order                                  x1
+
+DUPLICATED
+  (none)

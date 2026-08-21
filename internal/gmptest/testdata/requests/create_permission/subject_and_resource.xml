@@ -1,0 +1,1 @@
+<create_permission><name>get_tasks</name><subject id="d290f1ee-6c54-4b01-90e6-d701748f0851"><type>role</type></subject><resource id="e512e2ca-9d0e-4bf3-bc73-7fbe6e9bbf31"><type>task</type></resource></create_permission>

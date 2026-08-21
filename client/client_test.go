@@ -70,7 +70,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.ModifyTask); ok {
-		if cmd.Comment == "Modified Task Comment" {
+		if cmd.Comment != nil && *cmd.Comment == "Modified Task Comment" {
 			(*response.(*commands.ModifyTaskResponse)).Status = "200"
 		} else {
 			(*response.(*commands.ModifyTaskResponse)).Status = "400"
@@ -147,7 +147,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 			resp.StatusText = "OK"
 			if cmd.Filter != "" {
 				// Return mock data for pagination
-				resp.PortLists = []commands.PortList{
+				resp.PortList = []commands.PortList{
 					{
 						ID:   "portlist-1",
 						Name: "Test Port List 1",
@@ -157,7 +157,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 						Name: "Test Port List 2",
 					},
 				}
-				resp.Count = &commands.PortListCount{
+				resp.PortListCount = &commands.PortListCount{
 					Filtered: 2,
 					Page:     1,
 				}
@@ -182,7 +182,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 			resp.StatusText = "OK"
 			if cmd.Filter != "" {
 				// Return mock data for pagination
-				resp.Task = []commands.GetTasksResponseTask{
+				resp.Task = []commands.Task{
 					{
 						ID:     "task-1",
 						Name:   "Test Task 1",
@@ -194,7 +194,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 						Status: "Running",
 					},
 				}
-				resp.TaskCount = commands.GetTasksResponseTaskCount{
+				resp.TaskCount = &commands.TaskCount{
 					Filtered: 2,
 					Page:     1,
 				}
@@ -227,7 +227,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 			resp.StatusText = "OK"
 			if cmd.Filter != "" {
 				// Return mock data for pagination
-				resp.Results = []commands.Result{
+				resp.Result = []commands.Result{
 					{
 						ID:       "result-1",
 						Name:     "Test Result 1",
@@ -239,7 +239,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 						Severity: 5.0,
 					},
 				}
-				resp.Count = &commands.ResultsCount{
+				resp.ResultCount = &commands.ResultCount{
 					Filtered: 2,
 					Page:     1,
 				}
@@ -331,21 +331,21 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 			resp.StatusText = "OK"
 			if cmd.Filter != "" {
 				// Return mock data for pagination
-				resp.Assets = []commands.Asset{
+				resp.Asset = []commands.GetAssetsAsset{
 					{
 						ID:               "asset-1",
 						Name:             "Test Asset 1",
 						Comment:          "Test comment",
-						CreationTime:     time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
-						ModificationTime: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
+						CreationTime:     commands.GMPTime{Time: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC)},
+						ModificationTime: commands.GMPTime{Time: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC)},
 						Type:             "host",
 					},
 					{
 						ID:               "asset-2",
 						Name:             "Test Asset 2",
 						Comment:          "Test comment 2",
-						CreationTime:     time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
-						ModificationTime: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
+						CreationTime:     commands.GMPTime{Time: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC)},
+						ModificationTime: commands.GMPTime{Time: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC)},
 						Type:             "host",
 					},
 				}
@@ -355,13 +355,13 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 				}
 			} else {
 				// Return original data for specific asset ID
-				resp.Assets = []commands.Asset{
+				resp.Asset = []commands.GetAssetsAsset{
 					{
 						ID:               "b493b7a8-7489-11df-a3ec-002264764cea",
 						Name:             "Localhost",
 						Comment:          "",
-						CreationTime:     time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
-						ModificationTime: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
+						CreationTime:     commands.GMPTime{Time: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC)},
+						ModificationTime: commands.GMPTime{Time: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC)},
 						Type:             "host",
 					},
 				}
@@ -403,13 +403,13 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		if cmd.ScheduleID == "ddda859a-45be-4c58-85b3-517c66230232" {
 			(*response.(*commands.GetSchedulesResponse)).Status = "200"
 			(*response.(*commands.GetSchedulesResponse)).StatusText = "OK"
-			(*response.(*commands.GetSchedulesResponse)).Schedules = []commands.Schedule{
+			(*response.(*commands.GetSchedulesResponse)).Schedule = []commands.Schedule{
 				{
 					ID:               "ddda859a-45be-4c58-85b3-517c66230232",
 					Name:             "Every day",
 					Comment:          "",
-					CreationTime:     time.Date(2020, 6, 3, 16, 27, 5, 0, time.UTC),
-					ModificationTime: time.Date(2020, 6, 3, 16, 27, 5, 0, time.UTC),
+					CreationTime:     commands.GMPTime{Time: time.Date(2020, 6, 3, 16, 27, 5, 0, time.UTC)},
+					ModificationTime: commands.GMPTime{Time: time.Date(2020, 6, 3, 16, 27, 5, 0, time.UTC)},
 					Writable:         true,
 					InUse:            false,
 					ICalendar:        "DTSTART:20200603T162600Z DURATION:PT0S RRULE:FREQ=DAILY",
@@ -431,7 +431,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.CreateOverride); ok {
-		if cmd.Text == "This is actually of little concern." && cmd.NVT.OID == "1.3.6.1.4.1.25623.1.0.10330" && cmd.NewThreat == "Low" && cmd.Result == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+		if cmd.Text == "This is actually of little concern." && cmd.NVT.OID == "1.3.6.1.4.1.25623.1.0.10330" && cmd.NewThreat == "Low" && cmd.Result != nil && cmd.Result.ID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
 			(*response.(*commands.CreateOverrideResponse)).Status = "201"
 			(*response.(*commands.CreateOverrideResponse)).StatusText = "OK, resource created"
 			(*response.(*commands.CreateOverrideResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
@@ -453,15 +453,15 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		if cmd.OverrideID == "b76b81a7-9df8-42df-afff-baa9d4620128" {
 			(*response.(*commands.GetOverridesResponse)).Status = "200"
 			(*response.(*commands.GetOverridesResponse)).StatusText = "OK"
-			(*response.(*commands.GetOverridesResponse)).Overrides = []commands.Override{
+			(*response.(*commands.GetOverridesResponse)).Override = []commands.Override{
 				{
 					ID:          "b76b81a7-9df8-42df-afff-baa9d4620128",
-					Text:        &commands.OverrideText{Text: "This is the full text of the override."},
+					Text:        commands.OverrideText{Value: "This is the full text of the override."},
 					NewThreat:   "Log",
 					NewSeverity: 0.0,
 					Orphan:      true,
 					Active:      true,
-					NVT:         &commands.OverrideNVT{OID: "1.3.6.1.4.1.25623.1.0.75", Name: "Test NVT: long lines"},
+					NVT:         commands.GetOverridesNVT{OID: "1.3.6.1.4.1.25623.1.0.75", Name: "Test NVT: long lines"},
 				},
 			}
 		} else {
@@ -479,7 +479,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.CreateReport); ok {
-		if cmd.Report != nil && cmd.Report.ID == "report-uuid" && cmd.Task != nil && cmd.Task.ID == "task-uuid" {
+		if cmd.Report.ID == "report-uuid" && cmd.Task.ID == "task-uuid" {
 			(*response.(*commands.CreateReportResponse)).Status = "201"
 			(*response.(*commands.CreateReportResponse)).StatusText = "OK, resource created"
 			(*response.(*commands.CreateReportResponse)).ID = "created-report-id"
@@ -493,18 +493,18 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		if cmd.ReportID == "report-uuid" && cmd.FormatID == "format-uuid" {
 			(*response.(*commands.GetReportsResponse)).Status = "200"
 			(*response.(*commands.GetReportsResponse)).StatusText = "OK"
-			(*response.(*commands.GetReportsResponse)).Reports = []commands.Report{
+			(*response.(*commands.GetReportsResponse)).Report = []commands.Report{
 				{
 					ID:               "report-uuid",
 					FormatID:         "format-uuid",
 					Extension:        "xml",
 					ContentType:      "text/xml",
 					Name:             "Test Report",
-					Owner:            &commands.ReportOwner{Name: "admin"},
-					CreationTime:     time.Date(2024, 1, 23, 9, 43, 3, 0, time.UTC),
-					ModificationTime: time.Date(2024, 1, 26, 14, 11, 54, 0, time.UTC),
-					Writable:         true,
-					InUse:            false,
+					Owner:            commands.ReportOwner{Name: "admin"},
+					CreationTime:     commands.GMPTime{Time: time.Date(2024, 1, 23, 9, 43, 3, 0, time.UTC)},
+					ModificationTime: commands.GMPTime{Time: time.Date(2024, 1, 26, 14, 11, 54, 0, time.UTC)},
+					Writable:         commands.GMPBool(true),
+					InUse:            commands.GMPBool(false),
 				},
 			}
 		} else {
@@ -551,7 +551,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		if cmd.ReportFormatID == "format-uuid" {
 			(*response.(*commands.GetReportFormatsResponse)).Status = "200"
 			(*response.(*commands.GetReportFormatsResponse)).StatusText = "OK"
-			(*response.(*commands.GetReportFormatsResponse)).ReportFormats = []commands.ReportFormat{
+			(*response.(*commands.GetReportFormatsResponse)).ReportFormat = []commands.ReportFormat{
 				{
 					ID:               "format-uuid",
 					Name:             "HTML",
@@ -559,8 +559,8 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 					ContentType:      "text/html",
 					Summary:          "Single page HTML report.",
 					Description:      "A single HTML page listing results of a scan.",
-					CreationTime:     time.Date(2013, 1, 31, 16, 46, 32, 0, time.FixedZone("+01:00", 3600)),
-					ModificationTime: time.Date(2013, 1, 31, 16, 46, 32, 0, time.FixedZone("+01:00", 3600)),
+					CreationTime:     commands.GMPTime{Time: time.Date(2013, 1, 31, 16, 46, 32, 0, time.FixedZone("+01:00", 3600))},
+					ModificationTime: commands.GMPTime{Time: time.Date(2013, 1, 31, 16, 46, 32, 0, time.FixedZone("+01:00", 3600))},
 					Writable:         true,
 					InUse:            false,
 					Active:           true,
@@ -604,7 +604,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.ModifyReportConfig); ok {
-		if len(cmd.Params) > 0 && cmd.Params[0].Name == "Node Distance" && cmd.Params[0].UsingDefault == true {
+		if len(cmd.Param) > 0 && cmd.Param[0].Name == "Node Distance" && cmd.Param[0].Value.UseDefault != nil && bool(*cmd.Param[0].Value.UseDefault) {
 			(*response.(*commands.ModifyReportConfigResponse)).Status = "200"
 			(*response.(*commands.ModifyReportConfigResponse)).StatusText = "OK"
 			(*response.(*commands.ModifyReportConfigResponse)).ID = "modified-config-id"
@@ -622,38 +622,38 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		if cmd.ReportConfigID == "config-uuid" {
 			(*response.(*commands.GetReportConfigsResponse)).Status = "200"
 			(*response.(*commands.GetReportConfigsResponse)).StatusText = "OK"
-			(*response.(*commands.GetReportConfigsResponse)).ReportConfigs = []commands.ReportConfig{
+			(*response.(*commands.GetReportConfigsResponse)).ReportConfig = []commands.ReportConfig{
 				{
 					ID:               "config-uuid",
 					Name:             "Test config",
-					Owner:            &commands.ReportConfigOwner{Name: "admin"},
+					Owner:            commands.ReportConfigOwner{Name: "admin"},
 					Comment:          "Test comment",
-					CreationTime:     time.Date(2024, 1, 23, 9, 43, 3, 0, time.UTC),
-					ModificationTime: time.Date(2024, 1, 26, 14, 11, 54, 0, time.UTC),
+					CreationTime:     commands.GMPTime{Time: time.Date(2024, 1, 23, 9, 43, 3, 0, time.UTC)},
+					ModificationTime: commands.GMPTime{Time: time.Date(2024, 1, 26, 14, 11, 54, 0, time.UTC)},
 					Writable:         true,
 					InUse:            false,
-					Permissions: &commands.ReportConfigPermissions{
-						Permissions: []commands.ReportConfigPermission{{Name: "Everything"}},
+					Permissions: commands.ReportConfigPermissions{
+						Permission: []commands.ReportConfigPermission{{Name: "Everything"}},
 					},
-					ReportFormat: &commands.ReportConfigReportFormat{
+					ReportFormat: commands.GetReportConfigsReportFormat{
 						ID:   "format-uuid",
 						Name: "Topology SVG",
 					},
-					Params: []commands.ReportConfigParam{
+					Param: []commands.GetReportConfigsParam{
 						{
 							UsingDefault: false,
 							Name:         "Graph Type",
-							Type:         "selection",
-							Value:        "dot",
-							Default:      "twopi",
-							Options:      []string{"circo", "dot", "twopi"},
+							Type:         commands.ReportConfigType{Value: "selection"},
+							Value:        commands.ReportConfigParamValue{},
+							Default:      commands.ReportConfigDefault{Value: "twopi"},
+							Options:      &commands.ReportConfigOptions{Option: []string{"circo", "dot", "twopi"}},
 						},
 						{
 							UsingDefault: true,
 							Name:         "Node Distance",
-							Type:         "integer<min>1</min><max>20</max>",
-							Value:        "8",
-							Default:      "8",
+							Type:         commands.ReportConfigType{Value: "integer", Min: "1", Max: "20"},
+							Value:        commands.ReportConfigParamValue{},
+							Default:      commands.ReportConfigDefault{Value: "8"},
 						},
 					},
 				},
@@ -678,21 +678,21 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		if cmd.Name == "proc" {
 			(*response.(*commands.GetSystemReportsResponse)).Status = "200"
 			(*response.(*commands.GetSystemReportsResponse)).StatusText = "OK"
-			(*response.(*commands.GetSystemReportsResponse)).SystemReports = []commands.SystemReport{
+			(*response.(*commands.GetSystemReportsResponse)).SystemReport = []commands.SystemReport{
 				{
 					Name:  "proc",
 					Title: "Processes",
 					Report: &commands.SystemReportReport{
 						Format:   "png",
-						Duration: 86400,
+						Duration: "86400",
 						Value:    "iVBORw0KGgoAAAANSUhEUgAAArkAAAE...2bEdAAAAAElFTkSuQmCC",
 					},
 				},
 			}
-		} else if cmd.Brief {
+		} else if cmd.Brief != nil && bool(*cmd.Brief) {
 			(*response.(*commands.GetSystemReportsResponse)).Status = "200"
 			(*response.(*commands.GetSystemReportsResponse)).StatusText = "OK"
-			(*response.(*commands.GetSystemReportsResponse)).SystemReports = []commands.SystemReport{
+			(*response.(*commands.GetSystemReportsResponse)).SystemReport = []commands.SystemReport{
 				{Name: "proc", Title: "Processes"},
 				{Name: "load", Title: "System Load"},
 			}
@@ -724,10 +724,11 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.GetCredentials); ok {
-		if cmd.CredentialID == "" {
+		switch cmd.CredentialID {
+		case "":
 			(*response.(*commands.GetCredentialsResponse)).Status = "200"
 			(*response.(*commands.GetCredentialsResponse)).StatusText = "OK"
-			(*response.(*commands.GetCredentialsResponse)).Credentials = []commands.Credential{
+			(*response.(*commands.GetCredentialsResponse)).Credential = []commands.Credential{
 				{
 					ID:       "cred-uuid-1",
 					Name:     "sally",
@@ -736,7 +737,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 					InUse:    false,
 					Type:     "usk",
 					FullType: "username + SSH key",
-					Formats:  &commands.CredentialFormats{Formats: []string{"key", "rpm", "deb"}},
+					Formats:  commands.CredentialFormats{Format: []commands.CredentialFormat{"key", "rpm", "deb"}},
 				},
 				{
 					ID:       "cred-uuid-2",
@@ -746,13 +747,13 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 					InUse:    true,
 					Type:     "up",
 					FullType: "username + password",
-					Formats:  &commands.CredentialFormats{Formats: []string{"exe"}},
+					Formats:  commands.CredentialFormats{Format: []commands.CredentialFormat{"exe"}},
 				},
 			}
-		} else if cmd.CredentialID == "cred-uuid-1" {
+		case "cred-uuid-1":
 			(*response.(*commands.GetCredentialsResponse)).Status = "200"
 			(*response.(*commands.GetCredentialsResponse)).StatusText = "OK"
-			(*response.(*commands.GetCredentialsResponse)).Credentials = []commands.Credential{
+			(*response.(*commands.GetCredentialsResponse)).Credential = []commands.Credential{
 				{
 					ID:       "cred-uuid-1",
 					Name:     "sally",
@@ -761,10 +762,10 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 					InUse:    false,
 					Type:     "usk",
 					FullType: "username + SSH key",
-					Formats:  &commands.CredentialFormats{Formats: []string{"key", "rpm", "deb"}},
+					Formats:  commands.CredentialFormats{Format: []commands.CredentialFormat{"key", "rpm", "deb"}},
 				},
 			}
-		} else {
+		default:
 			(*response.(*commands.GetCredentialsResponse)).Status = "404"
 			(*response.(*commands.GetCredentialsResponse)).StatusText = "Not found"
 		}
@@ -781,7 +782,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.CreateScanner); ok {
-		if cmd.Name == "Default Scanner" && cmd.Host == "localhost" && cmd.Port == 9391 && cmd.Type == "2" && cmd.CAPub != "" && cmd.Credential != nil && cmd.Credential.ID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+		if cmd.Name == "Default Scanner" && cmd.Host == "localhost" && cmd.Port == "9391" && cmd.Type == "2" && cmd.CAPub != "" && cmd.Credential.ID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
 			(*response.(*commands.CreateScannerResponse)).Status = "201"
 			(*response.(*commands.CreateScannerResponse)).StatusText = "OK, resource created"
 			(*response.(*commands.CreateScannerResponse)).ID = "814cd30f-dee1-4d58-851d-21b8d0c048e3"
@@ -792,7 +793,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.ModifyScanner); ok {
-		if cmd.ScannerID == "scanner-uuid" && cmd.Name == "Updated Scanner" {
+		if cmd.ScannerID == "scanner-uuid" && cmd.Name != nil && *cmd.Name == "Updated Scanner" {
 			(*response.(*commands.ModifyScannerResponse)).Status = "200"
 			(*response.(*commands.ModifyScannerResponse)).StatusText = "OK"
 		} else {
@@ -854,7 +855,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.CreatePortRange); ok {
-		if cmd.PortListID == "354cd3ef-bbe1-4d58-859d-21b8d0c046c4" && cmd.Start == "777" && cmd.End == "779" && cmd.Type == "TCP" {
+		if cmd.PortList.ID == "354cd3ef-bbe1-4d58-859d-21b8d0c046c4" && cmd.Start == "777" && cmd.End == "779" && cmd.Type == "TCP" {
 			(*response.(*commands.CreatePortRangeResponse)).Status = "201"
 			(*response.(*commands.CreatePortRangeResponse)).StatusText = "OK, resource created"
 			(*response.(*commands.CreatePortRangeResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
@@ -878,10 +879,10 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp := response.(*commands.DescribeAuthResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.Groups = []commands.AuthGroup{
+		resp.Group = []commands.AuthGroup{
 			{
 				Name: "method:file",
-				Settings: []commands.AuthSetting{
+				AuthConfSetting: []commands.AuthConfSetting{
 					{Key: "enable", Value: "true"},
 					{Key: "order", Value: "1"},
 				},
@@ -908,18 +909,18 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 			resp := response.(*commands.GetInfoResponse)
 			resp.Status = "200"
 			resp.StatusText = "OK"
-			resp.Infos = []commands.Info{{ID: "CVE-2011-0018", Name: "CVE-2011-0018"}}
-			resp.Filters = commands.InfoFilters{ID: "(null)", Term: ""}
-			resp.Sort = commands.InfoSort{Value: "", Field: commands.InfoSortField{Order: "ascending"}}
-			resp.InfoCount = commands.InfoCount{Filtered: 1, Page: 1}
+			resp.Info = []commands.NVTInfo{{Name: "CVE-2011-0018"}}
+			resp.Filters = commands.NVTFilters{ID: "(null)", Term: ""}
+			resp.Sort = commands.NVTSort{Field: commands.NVTField{Order: "ascending"}}
+			resp.InfoCount = &commands.NVTInfoCount{Filtered: 1, Page: 1}
 			resp.Details = false
 		} else {
 			resp := response.(*commands.GetInfoResponse)
 			resp.Status = "404"
 			resp.StatusText = "Not found"
-			resp.Filters = commands.InfoFilters{ID: "(null)", Term: ""}
-			resp.Sort = commands.InfoSort{Value: "", Field: commands.InfoSortField{Order: "ascending"}}
-			resp.InfoCount = commands.InfoCount{Filtered: 0, Page: 0}
+			resp.Filters = commands.NVTFilters{ID: "(null)", Term: ""}
+			resp.Sort = commands.NVTSort{Field: commands.NVTField{Order: "ascending"}}
+			resp.InfoCount = &commands.NVTInfoCount{Filtered: 0, Page: 0}
 			resp.Details = false
 		}
 	}
@@ -941,7 +942,9 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 
 	if cmd, ok := command.(*commands.ModifyAgents); ok {
 		if len(cmd.Agents) == 1 && cmd.Agents[0].ID == "fb6451bf-ec5a-45a8-8bab-5cf4b862e51b" &&
-			cmd.Authorized == 1 && cmd.MinInterval == 1000 && cmd.HeartbeatInterval == 0 &&
+			cmd.Authorized != nil && *cmd.Authorized == 1 &&
+			cmd.MinInterval != nil && *cmd.MinInterval == 1000 &&
+			cmd.HeartbeatInterval != nil && *cmd.HeartbeatInterval == 0 &&
 			cmd.Schedule == "@every 12h" && cmd.Comment == "example update" {
 			(*response.(*commands.ModifyAgentsResponse)).Status = "200"
 			(*response.(*commands.ModifyAgentsResponse)).StatusText = "OK"
@@ -974,7 +977,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.ModifyAuth); ok {
-		if cmd.Group.Name == "method:file" && len(cmd.Group.Settings) > 0 && cmd.Group.Settings[0].Key == "enable" {
+		if cmd.Group.Name == "method:file" && len(cmd.Group.AuthConfSetting) > 0 && cmd.Group.AuthConfSetting[0].Key == "enable" {
 			(*response.(*commands.ModifyAuthResponse)).Status = "200"
 			(*response.(*commands.ModifyAuthResponse)).StatusText = "OK"
 		} else {
@@ -1007,7 +1010,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp := response.(*commands.GetFiltersResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.Filters = []commands.Filter{
+		resp.Filter = []commands.Filter{
 			{
 				ID:               "b493b7a8-7489-11df-a3ec-001164764cea",
 				Name:             "Single Targets",
@@ -1016,8 +1019,8 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 				Type:             "target",
 				InUse:            true,
 				Writable:         true,
-				CreationTime:     time.Date(2015, 7, 15, 15, 5, 55, 0, time.UTC),
-				ModificationTime: time.Date(2015, 7, 15, 15, 5, 55, 0, time.UTC),
+				CreationTime:     commands.GMPTime{Time: time.Date(2015, 7, 15, 15, 5, 55, 0, time.UTC)},
+				ModificationTime: commands.GMPTime{Time: time.Date(2015, 7, 15, 15, 5, 55, 0, time.UTC)},
 			},
 		}
 	}
@@ -1056,13 +1059,13 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	if _, ok := command.(*commands.GetGroups); ok {
 		(*response.(*commands.GetGroupsResponse)).Status = "200"
 		(*response.(*commands.GetGroupsResponse)).StatusText = "OK"
-		(*response.(*commands.GetGroupsResponse)).Groups = []commands.Group{
+		(*response.(*commands.GetGroupsResponse)).Group = []commands.Group{
 			{
 				ID:               "b493b7a8-7489-11df-a3ec-002264764cea",
 				Name:             "Management",
 				Comment:          "Managers",
-				CreationTime:     time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
-				ModificationTime: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
+				CreationTime:     commands.GMPTime{Time: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC)},
+				ModificationTime: commands.GMPTime{Time: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC)},
 				Writable:         true,
 				InUse:            false,
 				Users:            "sarah, frank",
@@ -1087,7 +1090,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp.FeedOwnerSet = true
 		resp.FeedRolesSet = true
 		resp.FeedResourcesAccess = true
-		resp.Feeds = []commands.Feed{
+		resp.Feed = []commands.Feed{
 			{
 				Type:        "NVT",
 				Name:        "Greenbone Security Feed",
@@ -1123,29 +1126,29 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp := response.(*commands.GetLicenseResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.License = &commands.License{
+		resp.License = commands.License{
 			Status: "active",
-			Content: &commands.LicenseContent{
-				Meta: &commands.LicenseMeta{
+			Content: commands.LicenseContent{
+				Meta: commands.LicenseMeta{
 					ID:           "4711",
 					Version:      "1.0.0",
 					Comment:      "Test License",
 					Type:         "trial",
 					CustomerName: "Jane Doe",
-					Created:      time.Date(2021, 8, 27, 6, 5, 21, 0, time.UTC),
-					Begins:       time.Date(2021, 8, 27, 7, 5, 21, 0, time.UTC),
-					Expires:      time.Date(2021, 9, 4, 7, 5, 21, 0, time.UTC),
+					Created:      commands.GMPTime{Time: time.Date(2021, 8, 27, 6, 5, 21, 0, time.UTC)},
+					Begins:       commands.GMPTime{Time: time.Date(2021, 8, 27, 7, 5, 21, 0, time.UTC)},
+					Expires:      commands.GMPTime{Time: time.Date(2021, 9, 4, 7, 5, 21, 0, time.UTC)},
 				},
-				Appliance: &commands.LicenseAppliance{
+				Appliance: commands.LicenseAppliance{
 					Model:     "trial",
 					ModelType: "virtual",
 					Sensor:    false,
 				},
-				Keys: &commands.LicenseKeys{
-					Keys: []commands.LicenseKey{{Name: "feed", Value: "*base64 GSF key*"}},
+				Keys: commands.LicenseKeys{
+					Key: []commands.LicenseKey{{Name: "feed", Value: "*base64 GSF key*"}},
 				},
-				Signatures: &commands.LicenseSignatures{
-					Signatures: []commands.LicenseSignature{{Name: "license", Value: "*base64 signature*"}},
+				Signatures: commands.LicenseSignatures{
+					Signature: []commands.LicenseSignature{{Name: "license", Value: "*base64 signature*"}},
 				},
 			},
 		}
@@ -1167,7 +1170,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp.StatusText = "OK"
 		if cmd.Filter != "" {
 			// Return mock data for pagination
-			resp.SettingsList = []commands.Setting{
+			resp.Setting = []commands.SettingsSetting{
 				{
 					ID:    "setting-1",
 					Name:  "Test Setting 1",
@@ -1179,19 +1182,17 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 					Value: "value2",
 				},
 			}
-			resp.SettingCount = &commands.SettingCount{
+			resp.SettingCount = commands.SettingsSettingCount{
 				Filtered: 2,
 				Page:     1,
 			}
 		} else {
 			// Return original data for specific requests
-			resp.Settings = &commands.Settings{
-				Setting: []commands.Setting{{
-					ID:    "5f5a8712-8017-11e1-8556-406186ea4fc5",
-					Name:  "Rows Per Page",
-					Value: "15",
-				}},
-			}
+			resp.Setting = []commands.SettingsSetting{{
+				ID:    "5f5a8712-8017-11e1-8556-406186ea4fc5",
+				Name:  "Rows Per Page",
+				Value: "15",
+			}}
 		}
 	}
 
@@ -1200,7 +1201,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp.Status = "200"
 		resp.StatusText = "OK"
 		resp.Type = "os"
-		resp.Resources = []commands.Resource{
+		resp.Resource = []commands.SettingsResource{
 			{ID: "5b6b6aef-b320-42ca-899f-3161ee2a4195", Name: "cpe:/h:hp:jetdirect"},
 			{ID: "5be25864-9249-431e-8a91-039e334371ad", Name: "cpe:/o:canonical:ubuntu_linux:18.04"},
 		}
@@ -1210,24 +1211,25 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp := response.(*commands.GetAggregatesResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.Aggregate = &commands.Aggregate{
+		resp.Aggregate = []commands.Aggregate{{
 			DataType:    "nvt",
-			DataColumn:  "severity",
+			DataColumn:  []string{"severity"},
 			GroupColumn: "family",
-			Groups: []commands.AggregateGroup{
+			Group: []commands.AggregateGroup{
 				{Value: "AIX Local Security Checks", Count: 1, CCount: 1, Min: "3.3", Max: "3.3", Mean: "3.3", Sum: "3.3", CSum: "3.3"},
 				{Value: "Brute force attacks", Count: 8, CCount: 9, Min: "0", Max: "7.8", Mean: "6.275", Sum: "50.2", CSum: "53.5"},
 			},
-		}
+		}}
 	}
 
 	if _, ok := command.(*commands.GetFeatures); ok {
 		resp := response.(*commands.GetFeaturesResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.Features = []commands.Feature{{
-			Enabled: false,
-			Name:    "OPENVASD",
+		resp.Feature = []commands.Feature{{
+			CompiledIn: false,
+			Enabled:    false,
+			Name:       "OPENVASD",
 		}}
 	}
 
@@ -1257,7 +1259,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.CreateNote); ok {
-		if cmd.Text == "This issue should be resolved after the upgrade." && cmd.NVT != nil && cmd.NVT.OID == "1.3.6.1.4.1.25623.1.0.10330" && cmd.Result != nil && cmd.Result.ID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
+		if cmd.Text == "This issue should be resolved after the upgrade." && cmd.NVT.OID == "1.3.6.1.4.1.25623.1.0.10330" && cmd.Result != nil && cmd.Result.ID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" {
 			(*response.(*commands.CreateNoteResponse)).Status = "202"
 			(*response.(*commands.CreateNoteResponse)).StatusText = "OK, resource created"
 			(*response.(*commands.CreateNoteResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
@@ -1280,17 +1282,21 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	if _, ok := command.(*commands.GetNotes); ok {
 		(*response.(*commands.GetNotesResponse)).Status = "200"
 		(*response.(*commands.GetNotesResponse)).StatusText = "OK"
-		(*response.(*commands.GetNotesResponse)).Notes = []commands.Note{
+		// Note.Text is a struct carrying only the schema-declared @excerpt
+		// attribute: the schema DSL has no way to declare an element that has
+		// both attributes and text, so the generated type cannot hold the
+		// note body. The rest of the note is asserted in TestGetNotes.
+		(*response.(*commands.GetNotesResponse)).Note = []commands.Note{
 			{
 				ID:               "b76b81a7-9df8-42df-afff-baa9d4620128",
-				NVT:              &commands.NoteNVT{OID: "1.3.6.1.4.1.25623.1.0.75", Name: "Test NVT: long lines"},
-				CreationTime:     time.Date(2013, 1, 9, 9, 47, 41, 0, time.FixedZone("+01:00", 3600)),
-				ModificationTime: time.Date(2013, 1, 9, 9, 47, 41, 0, time.FixedZone("+01:00", 3600)),
-				Writable:         true,
-				InUse:            false,
-				Active:           true,
-				Orphan:           true,
-				Text:             "This is the full text of the note.",
+				NVT:              commands.GetNotesNVT{OID: "1.3.6.1.4.1.25623.1.0.75", Name: "Test NVT: long lines"},
+				CreationTime:     commands.GMPTime{Time: time.Date(2013, 1, 9, 9, 47, 41, 0, time.FixedZone("+01:00", 3600))},
+				ModificationTime: commands.GMPTime{Time: time.Date(2013, 1, 9, 9, 47, 41, 0, time.FixedZone("+01:00", 3600))},
+				Writable:         commands.GMPBool(true),
+				InUse:            commands.GMPBool(false),
+				Active:           commands.GMPBool(true),
+				Orphan:           commands.GMPBool(true),
+				Text:             commands.NoteText{Excerpt: commands.GMPBool(false)},
 			},
 		}
 	}
@@ -1306,37 +1312,36 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.GetNVTs); ok {
-		if cmd.Details == "1" {
+		if cmd.Details != nil && bool(*cmd.Details) {
 			(*response.(*commands.GetNVTsResponse)).Status = "200"
 			(*response.(*commands.GetNVTsResponse)).StatusText = "OK"
-			(*response.(*commands.GetNVTsResponse)).NVTs = []commands.NVT{
+			(*response.(*commands.GetNVTsResponse)).NVT = []commands.GetNVTsNVT{
 				{
 					OID:              "1.3.6.1.4.1.25623.1.7.13005",
 					Name:             "Services",
-					CreationTime:     time.Date(2011, 1, 14, 10, 12, 23, 0, time.FixedZone("+01:00", 3600)),
-					ModificationTime: time.Date(2012, 9, 19, 20, 56, 15, 0, time.FixedZone("+02:00", 7200)),
-					Category:         3,
+					CreationTime:     &commands.GMPTime{Time: time.Date(2011, 1, 14, 10, 12, 23, 0, time.FixedZone("+01:00", 3600))},
+					ModificationTime: &commands.GMPTime{Time: time.Date(2012, 9, 19, 20, 56, 15, 0, time.FixedZone("+02:00", 7200))},
+					Category:         "3",
 					Family:           "Service detection",
-					CvssBase:         0,
+					CVSSBase:         "0",
 					Severities:       &commands.NVTSeverities{Score: 0.0},
-					Refs:             "",
 					Tags:             "NOTAG",
-					PreferenceCount:  -1,
-					Timeout:          0,
+					PreferenceCount:  "-1",
+					Timeout:          "0",
 				},
 				{
 					OID:              "1.3.6.1.4.1.25623.1.7.13006",
 					Name:             "FooBar 21",
-					CreationTime:     time.Date(2011, 1, 14, 10, 12, 23, 0, time.FixedZone("+01:00", 3600)),
-					ModificationTime: time.Date(2012, 9, 19, 20, 56, 15, 0, time.FixedZone("+02:00", 7200)),
-					Category:         3,
+					CreationTime:     &commands.GMPTime{Time: time.Date(2011, 1, 14, 10, 12, 23, 0, time.FixedZone("+01:00", 3600))},
+					ModificationTime: &commands.GMPTime{Time: time.Date(2012, 9, 19, 20, 56, 15, 0, time.FixedZone("+02:00", 7200))},
+					Category:         "3",
 					Family:           "Service detection",
 				},
 			}
-		} else if cmd.NvtOID == "1.3.6.1.4.1.25623.1.0.10330" {
+		} else if cmd.NVTOID == "1.3.6.1.4.1.25623.1.0.10330" {
 			(*response.(*commands.GetNVTsResponse)).Status = "200"
 			(*response.(*commands.GetNVTsResponse)).StatusText = "OK"
-			(*response.(*commands.GetNVTsResponse)).NVTs = []commands.NVT{
+			(*response.(*commands.GetNVTsResponse)).NVT = []commands.GetNVTsNVT{
 				{
 					OID:  "1.3.6.1.4.1.25623.1.0.10330",
 					Name: "Services",
@@ -1351,20 +1356,22 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	if _, ok := command.(*commands.GetNVTFamilies); ok {
 		(*response.(*commands.GetNVTFamiliesResponse)).Status = "200"
 		(*response.(*commands.GetNVTFamiliesResponse)).StatusText = "OK"
-		(*response.(*commands.GetNVTFamiliesResponse)).Families = []commands.NVTFamily{
-			{
-				Name:        "Credentials",
-				MaxNVTCount: 8,
-			},
-			{
-				Name:        "Port scanners",
-				MaxNVTCount: 12,
+		(*response.(*commands.GetNVTFamiliesResponse)).Families = commands.NVTFamilies{
+			Family: []commands.NVTFamily{
+				{
+					Name:        "Credentials",
+					MaxNVTCount: 8,
+				},
+				{
+					Name:        "Port scanners",
+					MaxNVTCount: 12,
+				},
 			},
 		}
 	}
 
 	if cmd, ok := command.(*commands.CreatePermission); ok {
-		if cmd.Name == "get_targets" && cmd.Subject != nil && cmd.Subject.ID == "66abe5ce-c011-11e3-b96e-406186ea4fc5" && cmd.Subject.Type == "user" && cmd.Resource != nil && cmd.Resource.ID == "b493b7a8-7489-11df-a3ec-002264764cea" {
+		if cmd.Name == "get_targets" && cmd.Subject.ID == "66abe5ce-c011-11e3-b96e-406186ea4fc5" && cmd.Subject.Type == "user" && cmd.Resource != nil && cmd.Resource.ID == "b493b7a8-7489-11df-a3ec-002264764cea" {
 			(*response.(*commands.CreatePermissionResponse)).Status = "201"
 			(*response.(*commands.CreatePermissionResponse)).StatusText = "OK, resource created"
 			(*response.(*commands.CreatePermissionResponse)).ID = "created-permission-id"
@@ -1385,13 +1392,13 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	if _, ok := command.(*commands.GetPermissions); ok {
 		(*response.(*commands.GetPermissionsResponse)).Status = "200"
 		(*response.(*commands.GetPermissionsResponse)).StatusText = "OK"
-		(*response.(*commands.GetPermissionsResponse)).Permissions = []commands.Permission{
+		(*response.(*commands.GetPermissionsResponse)).Permission = []commands.Permission{
 			{
 				ID:               "b493b7a8-7489-11df-a3ec-002264764cea",
 				Name:             "Management",
 				Comment:          "Managers",
-				CreationTime:     time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
-				ModificationTime: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
+				CreationTime:     commands.GMPTime{Time: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC)},
+				ModificationTime: commands.GMPTime{Time: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC)},
 				Writable:         true,
 				InUse:            false,
 			},
@@ -1433,17 +1440,17 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		if mockFail, ok := any(cmd).(interface{ Fail() bool }); ok && mockFail.Fail() {
 			(*response.(*commands.GetRolesResponse)).Status = "400"
 			(*response.(*commands.GetRolesResponse)).StatusText = "Bad request"
-			(*response.(*commands.GetRolesResponse)).Roles = nil
+			(*response.(*commands.GetRolesResponse)).Role = nil
 		} else {
 			(*response.(*commands.GetRolesResponse)).Status = "200"
 			(*response.(*commands.GetRolesResponse)).StatusText = "OK"
-			(*response.(*commands.GetRolesResponse)).Roles = []commands.Role{
+			(*response.(*commands.GetRolesResponse)).Role = []commands.Role{
 				{
 					ID:               "b493b7a8-7489-11df-a3ec-002264764cea",
 					Name:             "Management",
 					Comment:          "Managers",
-					CreationTime:     time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
-					ModificationTime: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC),
+					CreationTime:     commands.GMPTime{Time: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC)},
+					ModificationTime: commands.GMPTime{Time: time.Date(2018, 8, 29, 20, 21, 33, 0, time.UTC)},
 					Writable:         true,
 					InUse:            false,
 					Users:            "sarah, frank",
@@ -1462,7 +1469,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.CreateTag); ok {
-		if cmd.Name == "geo:long" && cmd.Resources != nil && len(cmd.Resources.Resources) > 0 && cmd.Resources.Resources[0].ID == "b493b7a8-7489-11df-a3ec-002264764cea" {
+		if cmd.Name == "geo:long" && len(cmd.Resources.Resource) > 0 && cmd.Resources.Resource[0].ID == "b493b7a8-7489-11df-a3ec-002264764cea" {
 			(*response.(*commands.CreateTagResponse)).Status = "201"
 			(*response.(*commands.CreateTagResponse)).StatusText = "OK, resource created"
 			(*response.(*commands.CreateTagResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
@@ -1473,7 +1480,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.ModifyTag); ok {
-		if cmd.TagID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" && cmd.Active == false {
+		if cmd.TagID == "254cd3ef-bbe1-4d58-859d-21b8d0c046c6" && cmd.Active != nil && !bool(*cmd.Active) {
 			(*response.(*commands.ModifyTagResponse)).Status = "200"
 			(*response.(*commands.ModifyTagResponse)).StatusText = "OK"
 		} else {
@@ -1485,23 +1492,25 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	if _, ok := command.(*commands.GetTags); ok {
 		(*response.(*commands.GetTagsResponse)).Status = "200"
 		(*response.(*commands.GetTagsResponse)).StatusText = "OK"
-		(*response.(*commands.GetTagsResponse)).Tags = []commands.Tag{
+		(*response.(*commands.GetTagsResponse)).Tag = []commands.Tag{
 			{
 				ID:               "254cd3ef-bbe1-4d58-859d-21b8d0c046c6",
 				Name:             "geo:long",
 				Comment:          "",
-				CreationTime:     time.Date(2016, 3, 3, 11, 46, 56, 0, time.UTC),
-				ModificationTime: time.Date(2016, 3, 3, 11, 46, 56, 0, time.UTC),
-				Writable:         true,
-				InUse:            false,
+				CreationTime:     &commands.GMPTime{Time: time.Date(2016, 3, 3, 11, 46, 56, 0, time.UTC)},
+				ModificationTime: &commands.GMPTime{Time: time.Date(2016, 3, 3, 11, 46, 56, 0, time.UTC)},
+				Writable:         commands.Bool(true),
+				InUse:            commands.Bool(false),
 				Value:            "52.2788",
-				Active:           true,
-				Resources: []commands.TagResource{
-					{
-						ID:    "b493b7a8-7489-11df-a3ec-002264764cea",
-						Type:  "target",
-						Name:  "Server 1",
-						Trash: false,
+				Active:           commands.Bool(true),
+				Resources: &commands.GetTagsResources{
+					Type: "target",
+					Resource: []commands.TagResourcesResource{
+						{
+							ID:    "b493b7a8-7489-11df-a3ec-002264764cea",
+							Name:  "Server 1",
+							Trash: false,
+						},
 					},
 				},
 			},
@@ -1519,7 +1528,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.CreateTicket); ok {
-		if cmd.Result.ID == "138c1216-4acb-4ded-bef3-7fab80eac8c7" && cmd.Assigned.User.ID == "33e92d3e-a379-4c46-a4cf-88c8201ab710" {
+		if cmd.Result.ID == "138c1216-4acb-4ded-bef3-7fab80eac8c7" && cmd.AssignedTo.User.ID == "33e92d3e-a379-4c46-a4cf-88c8201ab710" {
 			(*response.(*commands.CreateTicketResponse)).Status = "201"
 			(*response.(*commands.CreateTicketResponse)).StatusText = "OK, resource created"
 			(*response.(*commands.CreateTicketResponse)).ID = "254cd3ef-bbe1-4d58-859d-21b8d0c046c6"
@@ -1534,7 +1543,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp.StatusText = "OK"
 		if cmd.Filter != "" {
 			// Return mock data for pagination
-			resp.Tickets = []commands.Ticket{
+			resp.Ticket = []commands.Ticket{
 				{
 					ID:     "ticket-1",
 					Name:   "Test Ticket 1",
@@ -1548,13 +1557,13 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 			}
 		} else {
 			// Return original data for specific requests
-			resp.Tickets = []commands.Ticket{
+			resp.Ticket = []commands.Ticket{
 				{
 					ID:               "93cd2f71-48c3-4cf2-b542-5b256f59cae0",
 					Name:             "OpenSSH Denial of Service Vulnerability - Jan16",
 					Comment:          "",
-					CreationTime:     time.Date(2018, 11, 29, 16, 18, 56, 0, time.UTC),
-					ModificationTime: time.Date(2018, 11, 29, 16, 18, 56, 0, time.UTC),
+					CreationTime:     commands.GMPTime{Time: time.Date(2018, 11, 29, 16, 18, 56, 0, time.UTC)},
+					ModificationTime: commands.GMPTime{Time: time.Date(2018, 11, 29, 16, 18, 56, 0, time.UTC)},
 					Writable:         true,
 					InUse:            false,
 					Status:           "Open",
@@ -1563,7 +1572,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 			}
 		}
 		resp.TicketCount = &commands.TicketCount{
-			Filtered: len(resp.Tickets),
+			Filtered: len(resp.Ticket),
 			Page:     1,
 		}
 	}
@@ -1600,7 +1609,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.ModifyTLSCertificate); ok {
-		if cmd.TLSCertificateID == "8a925978-59d0-494b-a837-40b271569727" && cmd.Name == "Renamed Example Certificate" {
+		if cmd.TLSCertificateID == "8a925978-59d0-494b-a837-40b271569727" && cmd.Name != nil && *cmd.Name == "Renamed Example Certificate" {
 			(*response.(*commands.ModifyTLSCertificateResponse)).Status = "200"
 			(*response.(*commands.ModifyTLSCertificateResponse)).StatusText = "OK"
 		} else {
@@ -1613,17 +1622,17 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp := response.(*commands.GetTLSCertificatesResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
-		resp.TLSCertificates = []commands.TLSCertificate{
+		resp.TLSCertificate = []commands.TLSCertificate{
 			{
 				ID:    "ba36ed15-92fa-4ae0-af53-bad8ce472f18",
-				Owner: &commands.TLSCertificateOwner{Name: "admin"},
+				Owner: commands.TLSCertificateOwner{Name: "admin"},
 				Name:  "Example Certificate",
 			},
 		}
 	}
 
 	if cmd, ok := command.(*commands.CreateUser); ok {
-		if cmd.Name == "testuser" && cmd.Password == "testpass" && len(cmd.Roles) > 0 && cmd.Roles[0].ID == "role-uuid" {
+		if cmd.Name == "testuser" && cmd.Password == "testpass" && len(cmd.Role) > 0 && cmd.Role[0].ID == "role-uuid" {
 			(*response.(*commands.CreateUserResponse)).Status = "201"
 			(*response.(*commands.CreateUserResponse)).StatusText = "OK, resource created"
 			(*response.(*commands.CreateUserResponse)).ID = "created-user-id"
@@ -1633,7 +1642,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	}
 
 	if cmd, ok := command.(*commands.ModifyUser); ok {
-		if cmd.UserID == "user-uuid" && cmd.Name == "testuser" && cmd.NewName == "newuser" && cmd.Comment == "Updated user" && cmd.Password != nil && cmd.Password.Modify == "1" && cmd.Password.Text == "newpass" && len(cmd.Roles) > 0 && cmd.Roles[0].ID == "role-uuid" {
+		if cmd.UserID == "user-uuid" && cmd.Name == "testuser" && cmd.NewName == "newuser" && cmd.Comment != nil && *cmd.Comment == "Updated user" && cmd.Password != nil && cmd.Password.Modify != nil && *cmd.Password.Modify == true && cmd.Password.Value == "newpass" && len(cmd.Role) > 0 && cmd.Role[0].ID == "role-uuid" {
 			(*response.(*commands.ModifyUserResponse)).Status = "200"
 			(*response.(*commands.ModifyUserResponse)).StatusText = "OK"
 		} else {
@@ -1643,12 +1652,12 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 	if _, ok := command.(*commands.GetUsers); ok {
 		(*response.(*commands.GetUsersResponse)).Status = "200"
 		(*response.(*commands.GetUsersResponse)).StatusText = "OK"
-		(*response.(*commands.GetUsersResponse)).Users = []commands.User{
+		(*response.(*commands.GetUsersResponse)).User = []commands.User{
 			{
 				Name:    "foobar",
-				Role:    &commands.UserRole{ID: "8d453140-b74d-11e2-b0be-406186ea4fc5", Name: "User"},
-				Hosts:   &commands.UserHosts{Allow: "2"},
-				Sources: &commands.UserSources{Source: []string{"file"}},
+				Role:    []commands.GetUsersRole{{ID: "8d453140-b74d-11e2-b0be-406186ea4fc5", Name: "User"}},
+				Hosts:   commands.GetUsersHosts{Allow: "2"},
+				Sources: commands.GetUsersSources{Source: []commands.UserSource{"file"}},
 			},
 		}
 	}
@@ -1679,12 +1688,12 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp.StatusText = "OK"
 		if cmd.Filter != "" {
 			// Return mock data for pagination
-			resp.Task = []commands.GetTasksResponseTask{
+			resp.Task = []commands.Task{
 				{ID: "task-1", Name: "Test Task 1"},
 				{ID: "task-2", Name: "Test Task 2"},
 				{ID: "task-3", Name: "Test Task 3"},
 			}
-			resp.TaskCount = commands.GetTasksResponseTaskCount{Filtered: 3}
+			resp.TaskCount = &commands.TaskCount{Filtered: 3}
 		}
 	}
 
@@ -1694,12 +1703,12 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp.StatusText = "OK"
 		if cmd.Filter != "" {
 			// Return mock data for pagination
-			resp.Results = []commands.Result{
+			resp.Result = []commands.Result{
 				{ID: "result-1", Name: "Test Result 1"},
 				{ID: "result-2", Name: "Test Result 2"},
 				{ID: "result-3", Name: "Test Result 3"},
 			}
-			resp.Count = &commands.ResultsCount{Filtered: 3}
+			resp.ResultCount = &commands.ResultCount{Filtered: 3}
 		}
 	}
 
@@ -1709,7 +1718,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp.StatusText = "OK"
 		if cmd.Filter != "" {
 			// Return mock data for pagination
-			resp.Assets = []commands.Asset{
+			resp.Asset = []commands.GetAssetsAsset{
 				{ID: "asset-1", Name: "Test Asset 1"},
 				{ID: "asset-2", Name: "Test Asset 2"},
 			}
@@ -1723,7 +1732,7 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp.StatusText = "OK"
 		if cmd.Filter != "" {
 			// Return mock data for pagination
-			resp.Tickets = []commands.Ticket{
+			resp.Ticket = []commands.Ticket{
 				{ID: "ticket-1", Name: "Test Ticket 1"},
 				{ID: "ticket-2", Name: "Test Ticket 2"},
 				{ID: "ticket-3", Name: "Test Ticket 3"},
@@ -1738,12 +1747,12 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp.StatusText = "OK"
 		if cmd.Filter != "" {
 			// Return mock data for pagination
-			resp.PortLists = []commands.PortList{
+			resp.PortList = []commands.PortList{
 				{ID: "portlist-1", Name: "Test PortList 1"},
 				{ID: "portlist-2", Name: "Test PortList 2"},
 				{ID: "portlist-3", Name: "Test PortList 3"},
 			}
-			resp.Count = &commands.PortListCount{Filtered: 3}
+			resp.PortListCount = &commands.PortListCount{Filtered: 3}
 		}
 	}
 
@@ -1753,12 +1762,12 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		resp.StatusText = "OK"
 		if cmd.Filter != "" {
 			// Return mock data for pagination
-			resp.SettingsList = []commands.Setting{
+			resp.Setting = []commands.SettingsSetting{
 				{ID: "setting-1", Name: "Test Setting 1"},
 				{ID: "setting-2", Name: "Test Setting 2"},
 				{ID: "setting-3", Name: "Test Setting 3"},
 			}
-			resp.SettingCount = &commands.SettingCount{Filtered: 3}
+			resp.SettingCount = commands.SettingsSettingCount{Filtered: 3}
 		}
 	}
 

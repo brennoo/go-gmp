@@ -23,15 +23,15 @@ func NewResultIterator(client Client, ctx context.Context, opts PaginationOption
 			return client.GetResultsRaw(ctx, cmd)
 		},
 		func(resp *commands.GetResultsResponse) []*commands.Result {
-			items := make([]*commands.Result, len(resp.Results))
-			for i := range resp.Results {
-				items[i] = &resp.Results[i]
+			items := make([]*commands.Result, len(resp.Result))
+			for i := range resp.Result {
+				items[i] = &resp.Result[i]
 			}
 			return items
 		},
 		func(resp *commands.GetResultsResponse) int {
-			if resp.Count != nil {
-				return resp.Count.Filtered
+			if resp.ResultCount != nil {
+				return resp.ResultCount.Filtered
 			}
 			return 0
 		},

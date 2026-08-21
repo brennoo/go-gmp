@@ -1,0 +1,19 @@
+# fidelity: get_credentials / live / 001
+# provenance: read-only: get_credentials bare
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

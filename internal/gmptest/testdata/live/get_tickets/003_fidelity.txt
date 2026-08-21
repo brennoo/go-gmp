@@ -1,0 +1,22 @@
+# fidelity: get_tickets / live / 003
+# provenance: annotations: get_tickets for the ticket just created
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_tickets_response/ticket/assigned_to/user/name                       x1  (+1 descendant paths)
+  /get_tickets_response/ticket/report/timestamp                            x1  (+1 descendant paths)
+  /get_tickets_response/ticket/task/name                                   x1  (+1 descendant paths)
+  /get_tickets_response/ticket/task/trash                                  x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  /get_tickets_response/ticket/severity/#text                              "5.0" -> "5"
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

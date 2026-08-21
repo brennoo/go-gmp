@@ -1,0 +1,723 @@
+package codegen
+
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"go/format"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"runtime"
+	"strings"
+
+	"github.com/brennoo/go-gmp/commands"
+	"github.com/brennoo/go-gmp/internal/schema"
+)
+
+// This file is the pre-swap validation step: before generated files replace
+// their hand-written counterparts in commands/, this proves the replacement
+// is a match-or-improve on schema conformance, using the same
+// schema.Comparer/schema.ModelOf machinery internal/schema/conformance_test.go
+// already trusts for the hand-written commands.
+//
+// schema.ModelOf needs a real reflect.Type, so the generated code must
+// actually be compiled and reflected somewhere — but its types collide by
+// name with the hand-written ones ("before" and "after" both declare `type
+// Note struct`, ...), so they can't share one build. GeneratedGoRoots works
+// around this by writing Generate's output into a throwaway directory (not a
+// throwaway module — still part of this module, so it can import
+// internal/schema, which a foreign module could not) under
+// internal/codegen/testdata, then generating a tiny `package main` next to it
+// that imports that directory, calls schema.ModelOf on each command's zero
+// value, and prints the result as JSON for this process to decode via `go
+// run`. Everything stays in one module, so no go.mod/replace scaffolding is
+// needed, and it is a real out-of-process reflection of the real generated
+// source rather than a self-comparison of the schema against itself.
+const modulePath = "github.com/brennoo/go-gmp"
+
+// ErrNoGoToolchain is returned by GeneratedGoRoots when no "go" binary is on
+// PATH. Callers that can skip (tests) should check for it with errors.Is.
+var ErrNoGoToolchain = errors.New("codegen: no go toolchain on PATH")
+
+// CommandRoots is one command's reflected request/response shape.
+type CommandRoots struct {
+	Request  schema.GoRoot
+	Response schema.GoRoot
+}
+
+// BeforeGoRoots reflects the commands/ types as they stand right now, for
+// every family the manifest names. Unlike the generated side, this needs no
+// subprocess: commands is a normal, non-internal package, and internal/codegen
+// already depends on it for exactly this purpose, so schema.ModelOf can be
+// called on it directly, in-process, the same way conformance_test.go calls it
+// on gmptest.Registry's entries.
+//
+// "Before" means different things per family, deliberately. For an adopted
+// family (note, override, role, group, tag, schedule, alert, filter,
+// tls_certificate, permission, ticket, credential, port_list, asset,
+// report_format, report_config, user, target, task, scanner, config) these
+// types are already the generator's output, so the comparison is a drift
+// detector on the committed files. A family entering review-only mode
+// instead compares against its still-hand-written originals — the pre-swap
+// gate every adopted family went through before adoption.
+//
+// The map is written out by hand rather than derived from the manifest because
+// reflection needs the concrete types: adding a family here is the one place
+// that cannot be manifest-driven, and Validate fails loudly on a command it
+// has no entry for rather than silently skipping it.
+func BeforeGoRoots() map[string]CommandRoots {
+	return map[string]CommandRoots{
+		"create_note": {
+			Request:  schema.ModelOf(&commands.CreateNote{}),
+			Response: schema.ModelOf(&commands.CreateNoteResponse{}),
+		},
+		"modify_note": {
+			Request:  schema.ModelOf(&commands.ModifyNote{}),
+			Response: schema.ModelOf(&commands.ModifyNoteResponse{}),
+		},
+		"get_notes": {
+			Request:  schema.ModelOf(&commands.GetNotes{}),
+			Response: schema.ModelOf(&commands.GetNotesResponse{}),
+		},
+		"delete_note": {
+			Request:  schema.ModelOf(&commands.DeleteNote{}),
+			Response: schema.ModelOf(&commands.DeleteNoteResponse{}),
+		},
+		"create_override": {
+			Request:  schema.ModelOf(&commands.CreateOverride{}),
+			Response: schema.ModelOf(&commands.CreateOverrideResponse{}),
+		},
+		"modify_override": {
+			Request:  schema.ModelOf(&commands.ModifyOverride{}),
+			Response: schema.ModelOf(&commands.ModifyOverrideResponse{}),
+		},
+		"get_overrides": {
+			Request:  schema.ModelOf(&commands.GetOverrides{}),
+			Response: schema.ModelOf(&commands.GetOverridesResponse{}),
+		},
+		"delete_override": {
+			Request:  schema.ModelOf(&commands.DeleteOverride{}),
+			Response: schema.ModelOf(&commands.DeleteOverrideResponse{}),
+		},
+		"create_role": {
+			Request:  schema.ModelOf(&commands.CreateRole{}),
+			Response: schema.ModelOf(&commands.CreateRoleResponse{}),
+		},
+		"modify_role": {
+			Request:  schema.ModelOf(&commands.ModifyRole{}),
+			Response: schema.ModelOf(&commands.ModifyRoleResponse{}),
+		},
+		"get_roles": {
+			Request:  schema.ModelOf(&commands.GetRoles{}),
+			Response: schema.ModelOf(&commands.GetRolesResponse{}),
+		},
+		"delete_role": {
+			Request:  schema.ModelOf(&commands.DeleteRole{}),
+			Response: schema.ModelOf(&commands.DeleteRoleResponse{}),
+		},
+		"create_group": {
+			Request:  schema.ModelOf(&commands.CreateGroup{}),
+			Response: schema.ModelOf(&commands.CreateGroupResponse{}),
+		},
+		"modify_group": {
+			Request:  schema.ModelOf(&commands.ModifyGroup{}),
+			Response: schema.ModelOf(&commands.ModifyGroupResponse{}),
+		},
+		"get_groups": {
+			Request:  schema.ModelOf(&commands.GetGroups{}),
+			Response: schema.ModelOf(&commands.GetGroupsResponse{}),
+		},
+		"delete_group": {
+			Request:  schema.ModelOf(&commands.DeleteGroup{}),
+			Response: schema.ModelOf(&commands.DeleteGroupResponse{}),
+		},
+		"create_tag": {
+			Request:  schema.ModelOf(&commands.CreateTag{}),
+			Response: schema.ModelOf(&commands.CreateTagResponse{}),
+		},
+		"modify_tag": {
+			Request:  schema.ModelOf(&commands.ModifyTag{}),
+			Response: schema.ModelOf(&commands.ModifyTagResponse{}),
+		},
+		"get_tags": {
+			Request:  schema.ModelOf(&commands.GetTags{}),
+			Response: schema.ModelOf(&commands.GetTagsResponse{}),
+		},
+		"delete_tag": {
+			Request:  schema.ModelOf(&commands.DeleteTag{}),
+			Response: schema.ModelOf(&commands.DeleteTagResponse{}),
+		},
+		"create_schedule": {
+			Request:  schema.ModelOf(&commands.CreateSchedule{}),
+			Response: schema.ModelOf(&commands.CreateScheduleResponse{}),
+		},
+		"modify_schedule": {
+			Request:  schema.ModelOf(&commands.ModifySchedule{}),
+			Response: schema.ModelOf(&commands.ModifyScheduleResponse{}),
+		},
+		"get_schedules": {
+			Request:  schema.ModelOf(&commands.GetSchedules{}),
+			Response: schema.ModelOf(&commands.GetSchedulesResponse{}),
+		},
+		"delete_schedule": {
+			Request:  schema.ModelOf(&commands.DeleteSchedule{}),
+			Response: schema.ModelOf(&commands.DeleteScheduleResponse{}),
+		},
+		"create_alert": {
+			Request:  schema.ModelOf(&commands.CreateAlert{}),
+			Response: schema.ModelOf(&commands.CreateAlertResponse{}),
+		},
+		"modify_alert": {
+			Request:  schema.ModelOf(&commands.ModifyAlert{}),
+			Response: schema.ModelOf(&commands.ModifyAlertResponse{}),
+		},
+		"get_alerts": {
+			Request:  schema.ModelOf(&commands.GetAlerts{}),
+			Response: schema.ModelOf(&commands.GetAlertsResponse{}),
+		},
+		"delete_alert": {
+			Request:  schema.ModelOf(&commands.DeleteAlert{}),
+			Response: schema.ModelOf(&commands.DeleteAlertResponse{}),
+		},
+		"test_alert": {
+			Request:  schema.ModelOf(&commands.TestAlert{}),
+			Response: schema.ModelOf(&commands.TestAlertResponse{}),
+		},
+		"create_filter": {
+			Request:  schema.ModelOf(&commands.CreateFilter{}),
+			Response: schema.ModelOf(&commands.CreateFilterResponse{}),
+		},
+		"modify_filter": {
+			Request:  schema.ModelOf(&commands.ModifyFilter{}),
+			Response: schema.ModelOf(&commands.ModifyFilterResponse{}),
+		},
+		"get_filters": {
+			Request:  schema.ModelOf(&commands.GetFilters{}),
+			Response: schema.ModelOf(&commands.GetFiltersResponse{}),
+		},
+		"delete_filter": {
+			Request:  schema.ModelOf(&commands.DeleteFilter{}),
+			Response: schema.ModelOf(&commands.DeleteFilterResponse{}),
+		},
+		"create_tls_certificate": {
+			Request:  schema.ModelOf(&commands.CreateTLSCertificate{}),
+			Response: schema.ModelOf(&commands.CreateTLSCertificateResponse{}),
+		},
+		"modify_tls_certificate": {
+			Request:  schema.ModelOf(&commands.ModifyTLSCertificate{}),
+			Response: schema.ModelOf(&commands.ModifyTLSCertificateResponse{}),
+		},
+		"get_tls_certificates": {
+			Request:  schema.ModelOf(&commands.GetTLSCertificates{}),
+			Response: schema.ModelOf(&commands.GetTLSCertificatesResponse{}),
+		},
+		"create_permission": {
+			Request:  schema.ModelOf(&commands.CreatePermission{}),
+			Response: schema.ModelOf(&commands.CreatePermissionResponse{}),
+		},
+		"modify_permission": {
+			Request:  schema.ModelOf(&commands.ModifyPermission{}),
+			Response: schema.ModelOf(&commands.ModifyPermissionResponse{}),
+		},
+		"get_permissions": {
+			Request:  schema.ModelOf(&commands.GetPermissions{}),
+			Response: schema.ModelOf(&commands.GetPermissionsResponse{}),
+		},
+		"delete_permission": {
+			Request:  schema.ModelOf(&commands.DeletePermission{}),
+			Response: schema.ModelOf(&commands.DeletePermissionResponse{}),
+		},
+		"create_ticket": {
+			Request:  schema.ModelOf(&commands.CreateTicket{}),
+			Response: schema.ModelOf(&commands.CreateTicketResponse{}),
+		},
+		"modify_ticket": {
+			Request:  schema.ModelOf(&commands.ModifyTicket{}),
+			Response: schema.ModelOf(&commands.ModifyTicketResponse{}),
+		},
+		"get_tickets": {
+			Request:  schema.ModelOf(&commands.GetTickets{}),
+			Response: schema.ModelOf(&commands.GetTicketsResponse{}),
+		},
+		"delete_ticket": {
+			Request:  schema.ModelOf(&commands.DeleteTicket{}),
+			Response: schema.ModelOf(&commands.DeleteTicketResponse{}),
+		},
+		"create_credential": {
+			Request:  schema.ModelOf(&commands.CreateCredential{}),
+			Response: schema.ModelOf(&commands.CreateCredentialResponse{}),
+		},
+		"modify_credential": {
+			Request:  schema.ModelOf(&commands.ModifyCredential{}),
+			Response: schema.ModelOf(&commands.ModifyCredentialResponse{}),
+		},
+		"get_credentials": {
+			Request:  schema.ModelOf(&commands.GetCredentials{}),
+			Response: schema.ModelOf(&commands.GetCredentialsResponse{}),
+		},
+		"delete_credential": {
+			Request:  schema.ModelOf(&commands.DeleteCredential{}),
+			Response: schema.ModelOf(&commands.DeleteCredentialResponse{}),
+		},
+		"create_port_list": {
+			Request:  schema.ModelOf(&commands.CreatePortList{}),
+			Response: schema.ModelOf(&commands.CreatePortListResponse{}),
+		},
+		"modify_port_list": {
+			Request:  schema.ModelOf(&commands.ModifyPortList{}),
+			Response: schema.ModelOf(&commands.ModifyPortListResponse{}),
+		},
+		"get_port_lists": {
+			Request:  schema.ModelOf(&commands.GetPortLists{}),
+			Response: schema.ModelOf(&commands.GetPortListsResponse{}),
+		},
+		"delete_port_list": {
+			Request:  schema.ModelOf(&commands.DeletePortList{}),
+			Response: schema.ModelOf(&commands.DeletePortListResponse{}),
+		},
+		"create_asset": {
+			Request:  schema.ModelOf(&commands.CreateAsset{}),
+			Response: schema.ModelOf(&commands.CreateAssetResponse{}),
+		},
+		"modify_asset": {
+			Request:  schema.ModelOf(&commands.ModifyAsset{}),
+			Response: schema.ModelOf(&commands.ModifyAssetResponse{}),
+		},
+		"get_assets": {
+			Request:  schema.ModelOf(&commands.GetAssets{}),
+			Response: schema.ModelOf(&commands.GetAssetsResponse{}),
+		},
+		"delete_asset": {
+			Request:  schema.ModelOf(&commands.DeleteAsset{}),
+			Response: schema.ModelOf(&commands.DeleteAssetResponse{}),
+		},
+		"create_report_format": {
+			Request:  schema.ModelOf(&commands.CreateReportFormat{}),
+			Response: schema.ModelOf(&commands.CreateReportFormatResponse{}),
+		},
+		"modify_report_format": {
+			Request:  schema.ModelOf(&commands.ModifyReportFormat{}),
+			Response: schema.ModelOf(&commands.ModifyReportFormatResponse{}),
+		},
+		"get_report_formats": {
+			Request:  schema.ModelOf(&commands.GetReportFormats{}),
+			Response: schema.ModelOf(&commands.GetReportFormatsResponse{}),
+		},
+		"delete_report_format": {
+			Request:  schema.ModelOf(&commands.DeleteReportFormat{}),
+			Response: schema.ModelOf(&commands.DeleteReportFormatResponse{}),
+		},
+		"verify_report_format": {
+			Request:  schema.ModelOf(&commands.VerifyReportFormat{}),
+			Response: schema.ModelOf(&commands.VerifyReportFormatResponse{}),
+		},
+		"create_report_config": {
+			Request:  schema.ModelOf(&commands.CreateReportConfig{}),
+			Response: schema.ModelOf(&commands.CreateReportConfigResponse{}),
+		},
+		"modify_report_config": {
+			Request:  schema.ModelOf(&commands.ModifyReportConfig{}),
+			Response: schema.ModelOf(&commands.ModifyReportConfigResponse{}),
+		},
+		"get_report_configs": {
+			Request:  schema.ModelOf(&commands.GetReportConfigs{}),
+			Response: schema.ModelOf(&commands.GetReportConfigsResponse{}),
+		},
+		"delete_report_config": {
+			Request:  schema.ModelOf(&commands.DeleteReportConfig{}),
+			Response: schema.ModelOf(&commands.DeleteReportConfigResponse{}),
+		},
+		"create_user": {
+			Request:  schema.ModelOf(&commands.CreateUser{}),
+			Response: schema.ModelOf(&commands.CreateUserResponse{}),
+		},
+		"modify_user": {
+			Request:  schema.ModelOf(&commands.ModifyUser{}),
+			Response: schema.ModelOf(&commands.ModifyUserResponse{}),
+		},
+		"get_users": {
+			Request:  schema.ModelOf(&commands.GetUsers{}),
+			Response: schema.ModelOf(&commands.GetUsersResponse{}),
+		},
+		"delete_user": {
+			Request:  schema.ModelOf(&commands.DeleteUser{}),
+			Response: schema.ModelOf(&commands.DeleteUserResponse{}),
+		},
+		"create_target": {
+			Request:  schema.ModelOf(&commands.CreateTarget{}),
+			Response: schema.ModelOf(&commands.CreateTargetResponse{}),
+		},
+		"modify_target": {
+			Request:  schema.ModelOf(&commands.ModifyTarget{}),
+			Response: schema.ModelOf(&commands.ModifyTargetResponse{}),
+		},
+		"get_targets": {
+			Request:  schema.ModelOf(&commands.GetTargets{}),
+			Response: schema.ModelOf(&commands.GetTargetsResponse{}),
+		},
+		"delete_target": {
+			Request:  schema.ModelOf(&commands.DeleteTarget{}),
+			Response: schema.ModelOf(&commands.DeleteTargetResponse{}),
+		},
+		"create_task": {
+			Request:  schema.ModelOf(&commands.CreateTask{}),
+			Response: schema.ModelOf(&commands.CreateTaskResponse{}),
+		},
+		"modify_task": {
+			Request:  schema.ModelOf(&commands.ModifyTask{}),
+			Response: schema.ModelOf(&commands.ModifyTaskResponse{}),
+		},
+		"get_tasks": {
+			Request:  schema.ModelOf(&commands.GetTasks{}),
+			Response: schema.ModelOf(&commands.GetTasksResponse{}),
+		},
+		"delete_task": {
+			Request:  schema.ModelOf(&commands.DeleteTask{}),
+			Response: schema.ModelOf(&commands.DeleteTaskResponse{}),
+		},
+		"move_task": {
+			Request:  schema.ModelOf(&commands.MoveTask{}),
+			Response: schema.ModelOf(&commands.MoveTaskResponse{}),
+		},
+		"resume_task": {
+			Request:  schema.ModelOf(&commands.ResumeTask{}),
+			Response: schema.ModelOf(&commands.ResumeTaskResponse{}),
+		},
+		"start_task": {
+			Request:  schema.ModelOf(&commands.StartTask{}),
+			Response: schema.ModelOf(&commands.StartTaskResponse{}),
+		},
+		"stop_task": {
+			Request:  schema.ModelOf(&commands.StopTask{}),
+			Response: schema.ModelOf(&commands.StopTaskResponse{}),
+		},
+		"create_scanner": {
+			Request:  schema.ModelOf(&commands.CreateScanner{}),
+			Response: schema.ModelOf(&commands.CreateScannerResponse{}),
+		},
+		"modify_scanner": {
+			Request:  schema.ModelOf(&commands.ModifyScanner{}),
+			Response: schema.ModelOf(&commands.ModifyScannerResponse{}),
+		},
+		"get_scanners": {
+			Request:  schema.ModelOf(&commands.GetScanners{}),
+			Response: schema.ModelOf(&commands.GetScannersResponse{}),
+		},
+		"delete_scanner": {
+			Request:  schema.ModelOf(&commands.DeleteScanner{}),
+			Response: schema.ModelOf(&commands.DeleteScannerResponse{}),
+		},
+		"verify_scanner": {
+			Request:  schema.ModelOf(&commands.VerifyScanner{}),
+			Response: schema.ModelOf(&commands.VerifyScannerResponse{}),
+		},
+		"create_config": {
+			Request:  schema.ModelOf(&commands.CreateConfig{}),
+			Response: schema.ModelOf(&commands.CreateConfigResponse{}),
+		},
+		"modify_config": {
+			Request:  schema.ModelOf(&commands.ModifyConfig{}),
+			Response: schema.ModelOf(&commands.ModifyConfigResponse{}),
+		},
+		"get_configs": {
+			Request:  schema.ModelOf(&commands.GetConfigs{}),
+			Response: schema.ModelOf(&commands.GetConfigsResponse{}),
+		},
+		"sync_config": {
+			Request:  schema.ModelOf(&commands.SyncConfig{}),
+			Response: schema.ModelOf(&commands.SyncConfigResponse{}),
+		},
+		"delete_config": {
+			Request:  schema.ModelOf(&commands.DeleteConfig{}),
+			Response: schema.ModelOf(&commands.DeleteConfigResponse{}),
+		},
+		"create_port_range": {
+			Request:  schema.ModelOf(&commands.CreatePortRange{}),
+			Response: schema.ModelOf(&commands.CreatePortRangeResponse{}),
+		},
+		"delete_port_range": {
+			Request:  schema.ModelOf(&commands.DeletePortRange{}),
+			Response: schema.ModelOf(&commands.DeletePortRangeResponse{}),
+		},
+		"create_report": {
+			Request:  schema.ModelOf(&commands.CreateReport{}),
+			Response: schema.ModelOf(&commands.CreateReportResponse{}),
+		},
+		"delete_report": {
+			Request:  schema.ModelOf(&commands.DeleteReport{}),
+			Response: schema.ModelOf(&commands.DeleteReportResponse{}),
+		},
+		"get_reports": {
+			Request:  schema.ModelOf(&commands.GetReports{}),
+			Response: schema.ModelOf(&commands.GetReportsResponse{}),
+		},
+		"empty_trashcan": {
+			Request:  schema.ModelOf(&commands.EmptyTrashcan{}),
+			Response: schema.ModelOf(&commands.EmptyTrashcanResponse{}),
+		},
+		"restore": {
+			Request:  schema.ModelOf(&commands.Restore{}),
+			Response: schema.ModelOf(&commands.RestoreResponse{}),
+		},
+		"get_nvts": {
+			Request:  schema.ModelOf(&commands.GetNVTs{}),
+			Response: schema.ModelOf(&commands.GetNVTsResponse{}),
+		},
+		"get_nvt_families": {
+			Request:  schema.ModelOf(&commands.GetNVTFamilies{}),
+			Response: schema.ModelOf(&commands.GetNVTFamiliesResponse{}),
+		},
+		"get_preferences": {
+			Request:  schema.ModelOf(&commands.GetPreferences{}),
+			Response: schema.ModelOf(&commands.GetPreferencesResponse{}),
+		},
+		"get_info": {
+			Request:  schema.ModelOf(&commands.GetInfo{}),
+			Response: schema.ModelOf(&commands.GetInfoResponse{}),
+		},
+		"authenticate": {
+			Request:  schema.ModelOf(&commands.Authenticate{}),
+			Response: schema.ModelOf(&commands.AuthenticateResponse{}),
+		},
+		"describe_auth": {
+			Request:  schema.ModelOf(&commands.DescribeAuth{}),
+			Response: schema.ModelOf(&commands.DescribeAuthResponse{}),
+		},
+		"modify_auth": {
+			Request:  schema.ModelOf(&commands.ModifyAuth{}),
+			Response: schema.ModelOf(&commands.ModifyAuthResponse{}),
+		},
+		"get_aggregates": {
+			Request:  schema.ModelOf(&commands.GetAggregates{}),
+			Response: schema.ModelOf(&commands.GetAggregatesResponse{}),
+		},
+		"get_license": {
+			Request:  schema.ModelOf(&commands.GetLicense{}),
+			Response: schema.ModelOf(&commands.GetLicenseResponse{}),
+		},
+		"modify_license": {
+			Request:  schema.ModelOf(&commands.ModifyLicense{}),
+			Response: schema.ModelOf(&commands.ModifyLicenseResponse{}),
+		},
+		"get_settings": {
+			Request:  schema.ModelOf(&commands.GetSettings{}),
+			Response: schema.ModelOf(&commands.GetSettingsResponse{}),
+		},
+		"modify_setting": {
+			Request:  schema.ModelOf(&commands.ModifySetting{}),
+			Response: schema.ModelOf(&commands.ModifySettingResponse{}),
+		},
+		"get_resource_names": {
+			Request:  schema.ModelOf(&commands.GetResourceNames{}),
+			Response: schema.ModelOf(&commands.GetResourceNamesResponse{}),
+		},
+		"get_version": {
+			Request:  schema.ModelOf(&commands.GetVersion{}),
+			Response: schema.ModelOf(&commands.GetVersionResponse{}),
+		},
+		"get_feeds": {
+			Request:  schema.ModelOf(&commands.GetFeeds{}),
+			Response: schema.ModelOf(&commands.GetFeedsResponse{}),
+		},
+		"get_features": {
+			Request:  schema.ModelOf(&commands.GetFeatures{}),
+			Response: schema.ModelOf(&commands.GetFeaturesResponse{}),
+		},
+		"get_system_reports": {
+			Request:  schema.ModelOf(&commands.GetSystemReports{}),
+			Response: schema.ModelOf(&commands.GetSystemReportsResponse{}),
+		},
+		"get_vulns": {
+			Request:  schema.ModelOf(&commands.GetVulns{}),
+			Response: schema.ModelOf(&commands.GetVulnsResponse{}),
+		},
+		"get_results": {
+			Request:  schema.ModelOf(&commands.GetResults{}),
+			Response: schema.ModelOf(&commands.GetResultsResponse{}),
+		},
+	}
+}
+
+// packageDir is internal/codegen's own directory, resolved once from the
+// running binary's source location rather than from the process's current
+// working directory. Working-directory-relative paths ("../..", "testdata")
+// only resolve correctly when something happens to run from this package's
+// directory (true for `go test ./internal/codegen`, not guaranteed for a
+// caller elsewhere in the tree), so anything that needs to find this
+// package's testdata directory from outside a test binary needs this instead.
+func packageDir() (string, error) {
+	_, file, _, ok := runtime.Caller(0)
+	if !ok {
+		return "", fmt.Errorf("codegen: runtime.Caller could not resolve this file's path")
+	}
+	return filepath.Dir(file), nil
+}
+
+// GeneratedGoRoots runs Generate(cmds, ov) — one family's commands, the unit
+// Generate is scoped to, see GenerateAll — and reflects its output the way
+// BeforeGoRoots reflects the hand-written types, via the out-of-process
+// mechanism this file's package doc explains. The temporary directory it
+// creates under testdata/ is removed before it returns, on both the success
+// and the error path.
+func GeneratedGoRoots(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, ro map[string]RequiredOverride, fo map[string][]FieldOverride, fs map[string][]FieldSuppression, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry, no map[string]NameOverride, tov map[string][]FieldTypeOverride, family string, co map[string]CardinalityOverride, ec map[string]EnumConstantName) (map[string]CommandRoots, error) {
+	goBin, err := exec.LookPath("go")
+	if err != nil {
+		return nil, fmt.Errorf("%w (%w)", ErrNoGoToolchain, err)
+	}
+
+	files, err := Generate(cmds, ov, pf, ro, fo, fs, cw, da, no, tov, family, co, ec, map[string]bool{})
+	if err != nil {
+		return nil, fmt.Errorf("codegen: generate: %w", err)
+	}
+
+	pkgDir, err := packageDir()
+	if err != nil {
+		return nil, err
+	}
+	moduleRoot := filepath.Dir(filepath.Dir(pkgDir)) // .../internal/codegen -> .../internal -> module root
+
+	scratch, err := os.MkdirTemp(filepath.Join(pkgDir, "testdata"), "genreflect-")
+	if err != nil {
+		return nil, fmt.Errorf("codegen: creating scratch dir: %w", err)
+	}
+	defer os.RemoveAll(scratch) //nolint:errcheck // best-effort cleanup of a throwaway dir
+
+	genDir := filepath.Join(scratch, "gen")
+	mainDir := filepath.Join(scratch, "main")
+	if err := os.MkdirAll(genDir, 0o750); err != nil {
+		return nil, fmt.Errorf("codegen: creating scratch gen dir: %w", err)
+	}
+	if err := os.MkdirAll(mainDir, 0o750); err != nil {
+		return nil, fmt.Errorf("codegen: creating scratch main dir: %w", err)
+	}
+
+	// Unlike TestGeneratedCodeCompiles, the generated files' package clause
+	// (package commands) does not need rewriting: genDir is a distinct
+	// import path from the real commands/, so there is no declaration
+	// collision, only a same-named package living at a different path — Go
+	// does not require a package's name to match its directory or import
+	// path.
+	if err := writeScratchPackage(genDir, files); err != nil {
+		return nil, err
+	}
+
+	rel, err := filepath.Rel(moduleRoot, scratch)
+	if err != nil {
+		return nil, fmt.Errorf("codegen: relativizing scratch dir: %w", err)
+	}
+	genImportPath := modulePath + "/" + filepath.ToSlash(filepath.Join(rel, "gen"))
+
+	src, err := reflectHelperSource(cmds, genImportPath)
+	if err != nil {
+		return nil, err
+	}
+	if err := writeFile(filepath.Join(mainDir, "main.go"), src); err != nil {
+		return nil, fmt.Errorf("codegen: writing the reflect helper: %w", err)
+	}
+
+	pattern := "./" + filepath.ToSlash(filepath.Join(rel, "main"))
+	cmd := exec.CommandContext(context.Background(), goBin, "run", pattern) //nolint:gosec // goBin is from exec.LookPath, pattern is built from a temp dir this function created
+	cmd.Dir = moduleRoot
+	// GOWORK=off keeps a developer's workspace file from redirecting module
+	// resolution; GOFLAGS is cleared so an inherited -mod flag cannot apply.
+	// Both mirror TestGeneratedCodeCompiles.
+	cmd.Env = append(os.Environ(), "GOWORK=off", "GOFLAGS=")
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	if err := cmd.Run(); err != nil {
+		return nil, fmt.Errorf("codegen: reflect helper failed: %w\n%s", err, stderr.String())
+	}
+
+	var decoded map[string]struct {
+		Request  schema.GoRoot `json:"request"`
+		Response schema.GoRoot `json:"response"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &decoded); err != nil {
+		return nil, fmt.Errorf("codegen: decoding the reflect helper's output: %w\n%s", err, stdout.String())
+	}
+
+	out := make(map[string]CommandRoots, len(decoded))
+	for name, r := range decoded {
+		out[name] = CommandRoots{Request: r.Request, Response: r.Response}
+	}
+	return out, nil
+}
+
+// reflectHelperSource generates the tiny `package main` GeneratedGoRoots runs:
+// it imports the just-written generated package under genImportPath, calls
+// schema.ModelOf on every command's request and response zero value — the
+// same function, not a reimplementation of it — and JSON-encodes the result
+// to stdout.
+func reflectHelperSource(cmds []schema.Command, genImportPath string) (string, error) {
+	var b strings.Builder
+	b.WriteString("// Code generated by internal/codegen for validation. DO NOT EDIT.\n\n")
+	b.WriteString("package main\n\n")
+	b.WriteString("import (\n")
+	b.WriteString("\t\"encoding/json\"\n")
+	b.WriteString("\t\"os\"\n\n")
+	fmt.Fprintf(&b, "\tgen %q\n", genImportPath)
+	b.WriteString("\t\"github.com/brennoo/go-gmp/internal/schema\"\n")
+	b.WriteString(")\n\n")
+	b.WriteString("type roots struct {\n")
+	b.WriteString("\tRequest  schema.GoRoot `json:\"request\"`\n")
+	b.WriteString("\tResponse schema.GoRoot `json:\"response\"`\n")
+	b.WriteString("}\n\n")
+	b.WriteString("func main() {\n")
+	b.WriteString("\tout := map[string]roots{}\n")
+	for i := range cmds {
+		name := cmds[i].Name
+		reqType := goName(name)
+		respType := reqType + "Response"
+		fmt.Fprintf(&b, "\tout[%q] = roots{Request: schema.ModelOf(&gen.%s{}), Response: schema.ModelOf(&gen.%s{})}\n",
+			name, reqType, respType)
+	}
+	b.WriteString("\tif err := json.NewEncoder(os.Stdout).Encode(out); err != nil {\n")
+	b.WriteString("\t\tpanic(err)\n")
+	b.WriteString("\t}\n")
+	b.WriteString("}\n")
+
+	formatted, err := format.Source([]byte(b.String()))
+	if err != nil {
+		return "", fmt.Errorf("codegen: reflect helper source does not parse: %w\n%s", err, b.String())
+	}
+	return string(formatted), nil
+}
+
+// Validate builds the before/after schema-conformance comparison for cmds —
+// normally the 3-command note family LoadSnapshots returns — as one
+// schema.Result per command against the current hand-written commands/
+// types and one against what Generate(cmds, ov) would produce. Both sides
+// are produced by schema.Comparer.Compare, the same function
+// TestConformanceReport uses for all 122 commands: nothing here
+// reimplements its diff logic.
+//
+// dropped is the fidelity corpus's per-command dropped-path set
+// (schema.LoadDroppedPaths); passing nil just means no [fidelity]
+// cross-reference, not an error.
+func Validate(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, ro map[string]RequiredOverride, fo map[string][]FieldOverride, fs map[string][]FieldSuppression, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry, no map[string]NameOverride, tov map[string][]FieldTypeOverride, dropped map[string]map[string]bool, family string, co map[string]CardinalityOverride, ec map[string]EnumConstantName) (before, after []schema.Result, err error) {
+	beforeRoots := BeforeGoRoots()
+	afterRoots, err := GeneratedGoRoots(cmds, ov, pf, ro, fo, fs, cw, da, no, tov, family, co, ec)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	cmp := &schema.Comparer{Dropped: dropped}
+	for i := range cmds {
+		cmd := cmds[i]
+		br, ok := beforeRoots[cmd.Name]
+		if !ok {
+			return nil, nil, fmt.Errorf("codegen: BeforeGoRoots has no hand-written model for %s", cmd.Name)
+		}
+		ar, ok := afterRoots[cmd.Name]
+		if !ok {
+			return nil, nil, fmt.Errorf("codegen: the reflect helper reported no model for %s", cmd.Name)
+		}
+		before = append(before, cmp.Compare(cmd, br.Request, br.Response))
+		after = append(after, cmp.Compare(cmd, ar.Request, ar.Response))
+	}
+	return before, after, nil
+}

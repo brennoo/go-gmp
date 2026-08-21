@@ -1,0 +1,6 @@
+<create_credential>
+          <name>cluster sally</name>
+          <login>sally</login>
+          <password>secret</password>
+          <comment>Sally's login to the cluster.</comment>
+        </create_credential>

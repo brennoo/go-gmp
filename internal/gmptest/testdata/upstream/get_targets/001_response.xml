@@ -1,0 +1,22 @@
+<get_targets_response status="200" status_text="OK">
+          <target id="b493b7a8-7489-11df-a3ec-002264764cea">
+            <name>Localhost</name>
+            <comment/>
+            <creation_time>2018-08-29T20:21:33Z</creation_time>
+            <modification_time>2018-08-29T20:21:33Z</modification_time>
+            <writable>0</writable>
+            <in_use>7</in_use>
+            <hosts>localhost</hosts>
+            <max_hosts>1</max_hosts>
+            <ssh_credential id="">
+              <name/>
+            </ssh_credential>
+            <smb_credential id="">
+              <name/>
+            </smb_credential>
+            <esxi_credential id="">
+              <name/>
+            </esxi_credential>
+          </target>
+          <truncated>...</truncated>
+        </get_targets_response>

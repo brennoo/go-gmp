@@ -1,0 +1,19 @@
+# fidelity: create_port_list / upstream / 001
+# provenance: command_create_port_list.xml, command "create_port_list", example 1
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

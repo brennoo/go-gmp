@@ -1,0 +1,60 @@
+# fidelity: get_notes / upstream / 002
+# provenance: command_get_notes.xml, command "get_notes", example 2
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_notes_response/note/end_time                                        x1
+  /get_notes_response/note/result/nvt/cve                                  x1
+  /get_notes_response/truncated                                            x1  (+1 descendant paths)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /get_notes_response/filters                                              x1
+  /get_notes_response/filters/@id                                          x1
+  /get_notes_response/filters/keywords                                     x1
+  /get_notes_response/filters/term                                         x1
+  /get_notes_response/note/nvt/type                                        x1
+  /get_notes_response/note/owner                                           x1
+  /get_notes_response/note/owner/name                                      x1
+  /get_notes_response/note/permissions                                     x1
+  /get_notes_response/note/result/comment                                  x1
+  /get_notes_response/note/result/compliance                               x1
+  /get_notes_response/note/result/creation_time                            x1
+  /get_notes_response/note/result/creation_time/#text                      x1
+  /get_notes_response/note/result/host/asset                               x1
+  /get_notes_response/note/result/host/asset/@asset_id                     x1
+  /get_notes_response/note/result/host/hostname                            x1
+  /get_notes_response/note/result/modification_time                        x1
+  /get_notes_response/note/result/modification_time/#text                  x1
+  /get_notes_response/note/result/name                                     x1
+  /get_notes_response/note/result/nvt/cpe                                  x1
+  /get_notes_response/note/result/nvt/family                               x1
+  /get_notes_response/note/result/nvt/tags                                 x1
+  /get_notes_response/note/result/nvt/type                                 x1
+  /get_notes_response/note/result/owner                                    x1
+  /get_notes_response/note/result/owner/name                               x1
+  /get_notes_response/note/result/qod                                      x1
+  /get_notes_response/note/result/qod/type                                 x1
+  /get_notes_response/note/result/qod/value                                x1
+  /get_notes_response/note/result/qod/value/#text                          x1
+  /get_notes_response/note/result/scan_nvt_version                         x1
+  /get_notes_response/note/result/severity                                 x1
+  /get_notes_response/note/result/severity/#text                           x1
+  /get_notes_response/note/task/trash                                      x1
+  /get_notes_response/note/task/trash/#text                                x1
+  /get_notes_response/note/text/@excerpt                                   x1
+  /get_notes_response/notes                                                x1
+  /get_notes_response/notes/@max                                           x1
+  /get_notes_response/notes/@start                                         x1
+  /get_notes_response/sort                                                 x1
+  /get_notes_response/sort/field                                           x1
+  /get_notes_response/sort/field/order                                     x1
+
+DUPLICATED
+  (none)

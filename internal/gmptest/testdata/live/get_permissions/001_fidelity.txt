@@ -1,0 +1,20 @@
+# fidelity: get_permissions / live / 001
+# provenance: read-only: get_permissions bare
+decode: ok
+namespaces-seen:
+
+DROPPED
+  /get_permissions_response/permission/resource/@id                        x11
+  /get_permissions_response/permission/resource/permissions                x11
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

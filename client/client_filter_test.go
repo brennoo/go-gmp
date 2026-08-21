@@ -19,7 +19,7 @@ func TestCreateFilter(t *testing.T) {
 		Term:    "ips=1 first=1 rows=-2",
 		Type:    "target",
 	}
-	resp, err := cli.CreateFilter(cmd)
+	resp, err := cli.CreateFilter(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during CreateFilter: %s", err)
 	}
@@ -40,11 +40,12 @@ func TestModifyFilter(t *testing.T) {
 		t.Fatalf("Client is nil")
 	}
 
+	term := "name=local"
 	cmd := &commands.ModifyFilter{
 		FilterID: "254cd3ef-bbe1-4d58-859d-21b8d0c046c7",
-		Term:     "name=local",
+		Term:     &term,
 	}
-	resp, err := cli.ModifyFilter(cmd)
+	resp, err := cli.ModifyFilter(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyFilter: %s", err)
 	}
@@ -73,10 +74,10 @@ func TestGetFilters(t *testing.T) {
 	if resp.StatusText != "OK" {
 		t.Errorf("Expected status_text 'OK', got %s", resp.StatusText)
 	}
-	if len(resp.Filters) != 1 {
-		t.Fatalf("Expected 1 filter, got %d", len(resp.Filters))
+	if len(resp.Filter) != 1 {
+		t.Fatalf("Expected 1 filter, got %d", len(resp.Filter))
 	}
-	f := resp.Filters[0]
+	f := resp.Filter[0]
 	if f.ID != "b493b7a8-7489-11df-a3ec-001164764cea" {
 		t.Errorf("Expected filter ID 'b493b7a8-7489-11df-a3ec-001164764cea', got %s", f.ID)
 	}
@@ -104,7 +105,7 @@ func TestDeleteFilter(t *testing.T) {
 		FilterID: "b493b7a8-7489-11df-a3ec-001164764cea",
 		Ultimate: false,
 	}
-	resp, err := cli.DeleteFilter(cmd)
+	resp, err := cli.DeleteFilter(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during DeleteFilter: %s", err)
 	}

@@ -1,0 +1,19 @@
+# fidelity: get_schedules / live / 003
+# provenance: lifecycle: get_schedules for the schedule just created
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

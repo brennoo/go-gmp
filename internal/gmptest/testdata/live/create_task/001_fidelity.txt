@@ -1,0 +1,19 @@
+# fidelity: create_task / live / 001
+# provenance: lifecycle: create_task, typed request (expected to fail: Scanner has no omitempty, so it always sends an empty scanner id gvmd now rejects)
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  /create_task_response/@id                                                x1
+
+DUPLICATED
+  (none)

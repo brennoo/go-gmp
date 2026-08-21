@@ -1,0 +1,19 @@
+# fidelity: create_credential / live / 002
+# provenance: lifecycle: create_credential type=cc with a generated certificate and private key
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

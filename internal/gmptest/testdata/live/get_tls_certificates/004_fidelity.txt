@@ -1,0 +1,19 @@
+# fidelity: get_tls_certificates / live / 004
+# provenance: lifecycle: get_tls_certificates with include_certificate_data, certificate redacted
+decode: ok
+namespaces-seen:
+
+DROPPED
+  (none)
+
+TRUNCATED
+  (none)
+
+CHANGED
+  (none)
+
+ADDED
+  (none)
+
+DUPLICATED
+  (none)

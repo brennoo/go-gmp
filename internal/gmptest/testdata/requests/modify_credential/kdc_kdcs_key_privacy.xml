@@ -1,0 +1,1 @@
+<modify_credential credential_id="cred-1"><kdc>kdc0.example.com</kdc><kdcs><kdc>kdc1.example.com</kdc><kdc>kdc2.example.com</kdc></kdcs><key><phrase>phrase1</phrase><private>priv1</private><public>pub1</public></key><privacy><algorithm>aes</algorithm><password>privpass</password></privacy></modify_credential>

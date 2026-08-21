@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"testing"
 
 	"github.com/brennoo/go-gmp/commands"
@@ -13,12 +14,12 @@ func TestAuthenticate(t *testing.T) {
 	}
 
 	cmd := &commands.Authenticate{
-		Credentials: &commands.AuthenticateCredentials{
+		Credentials: commands.AuthCredentials{
 			Username: "openvas",
 			Password: "123",
 		},
 	}
-	_, err := cli.Authenticate(cmd)
+	_, err := cli.Authenticate(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during Authenticate: %s", err)
 	}
@@ -31,25 +32,25 @@ func TestDescribeAuth(t *testing.T) {
 	}
 
 	cmd := &commands.DescribeAuth{}
-	resp, err := cli.DescribeAuth(cmd)
+	resp, err := cli.DescribeAuth(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during DescribeAuth: %s", err)
 	}
-	if len(resp.Groups) != 1 {
-		t.Fatalf("Expected 1 group, got %d", len(resp.Groups))
+	if len(resp.Group) != 1 {
+		t.Fatalf("Expected 1 group, got %d", len(resp.Group))
 	}
-	group := resp.Groups[0]
+	group := resp.Group[0]
 	if group.Name != "method:file" {
 		t.Fatalf("Unexpected group name. Expected: method:file Got: %s", group.Name)
 	}
-	if len(group.Settings) != 2 {
-		t.Fatalf("Expected 2 auth_conf_setting, got %d", len(group.Settings))
+	if len(group.AuthConfSetting) != 2 {
+		t.Fatalf("Expected 2 auth_conf_setting, got %d", len(group.AuthConfSetting))
 	}
-	if group.Settings[0].Key != "enable" || group.Settings[0].Value != "true" {
-		t.Fatalf("Unexpected first setting: %+v", group.Settings[0])
+	if group.AuthConfSetting[0].Key != "enable" || group.AuthConfSetting[0].Value != "true" {
+		t.Fatalf("Unexpected first setting: %+v", group.AuthConfSetting[0])
 	}
-	if group.Settings[1].Key != "order" || group.Settings[1].Value != "1" {
-		t.Fatalf("Unexpected second setting: %+v", group.Settings[1])
+	if group.AuthConfSetting[1].Key != "order" || group.AuthConfSetting[1].Value != "1" {
+		t.Fatalf("Unexpected second setting: %+v", group.AuthConfSetting[1])
 	}
 }
 
@@ -60,15 +61,15 @@ func TestModifyAuth(t *testing.T) {
 	}
 
 	cmd := &commands.ModifyAuth{
-		Group: commands.AuthGroup{
+		Group: commands.ModifyAuthGroup{
 			Name: "method:file",
-			Settings: []commands.AuthSetting{
+			AuthConfSetting: []commands.AuthGroupAuthConfSetting{
 				{Key: "enable", Value: "true"},
 				{Key: "order", Value: "1"},
 			},
 		},
 	}
-	_, err := cli.ModifyAuth(cmd)
+	_, err := cli.ModifyAuth(context.Background(), cmd)
 	if err != nil {
 		t.Fatalf("Unexpected error during ModifyAuth: %s", err)
 	}
