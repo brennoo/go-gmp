@@ -1,0 +1,35 @@
+client/client.go
+  s_f236d870768b4a::t_a585452b2dce53 5,46-49,63-66,108-111,129-132,150-153,175-178,192-195,241-244,286-289,451-454,504-507,521-524,538-541,583-586,660-663,705-708,734-737,750-753,764-767,778-781,792-795,806-809,820-823,834-837
+client/client_override_test.go
+  s_f236d870768b4a::t_3a23cb081b57c2 85-104
+client/client_pagination_test.go
+  s_f236d870768b4a::t_668f1144602f62 503-590
+commands/filtering/builder.go
+  s_f236d870768b4a::t_688cbbf5e9653e 3-6,60,75-80,97,100
+commands/filtering/builder_test.go
+  s_f236d870768b4a::t_34b72b7fb2e67f 10-13,19-22,29-32,39-42,49-52,59-62,69-72,108-133,139-142,148-151,160-163,170-173,182,190-192
+commands/pagination/iterator.go
+  s_f236d870768b4a::t_8bd122be73c348 27-34
+commands/pagination/iterator_test.go
+  s_f236d870768b4a::t_4aff262a12491c 25-41
+docs/review-2026-08.md
+  s_f236d870768b4a::t_7ccb4a3a5e6689 5851-5854,5858,5861-5862,5864-5865,5867-5872,5875-5963
+internal/apisnapshot/testdata/PUBLIC_API.txt
+  s_f236d870768b4a::t_299a5e47ced3ee 25,8150,9315-9316
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "a203059d0c149fff9a58154e2a3a3e01460d673d",
+  "prompts": {},
+  "sessions": {
+    "s_f236d870768b4a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_f236d870768b4a",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
