@@ -9,11 +9,10 @@ import (
 	"os"
 
 	"github.com/brennoo/go-gmp/internal/dockerstack"
-	"github.com/brennoo/go-gmp/internal/mirror"
 )
 
 func main() {
-	if err := run(context.Background(), os.Args[1:], mirror.Exec, dialLive, dockerstack.ImageDigest, os.Stdout, os.Stderr); err != nil {
+	if err := run(context.Background(), os.Args[1:], Exec, dialLive, dockerstack.ImageDigest, os.Stdout, os.Stderr); err != nil {
 		fmt.Fprintf(os.Stderr, "schemadrift: %v\n", err)
 		os.Exit(1)
 	}

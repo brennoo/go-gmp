@@ -13,7 +13,6 @@ import (
 	"github.com/brennoo/go-gmp/commands"
 	"github.com/brennoo/go-gmp/connections"
 	"github.com/brennoo/go-gmp/internal/codegen"
-	"github.com/brennoo/go-gmp/internal/mirror"
 	"github.com/brennoo/go-gmp/internal/schema"
 )
 
@@ -63,17 +62,17 @@ func dialLive(ctx context.Context, opts dialOptions) (gmp.Connection, error) {
 }
 
 // findLockEntry returns the lock file entry identifying gvmd.
-func findLockEntry(lockFile, sourceRepository string) (mirror.LockEntry, error) {
-	lock, err := mirror.ReadLock(lockFile)
+func findLockEntry(lockFile, sourceRepository string) (lockEntry, error) {
+	l, err := readLock(lockFile)
 	if err != nil {
-		return mirror.LockEntry{}, fmt.Errorf("reading lock file %s: %w", lockFile, err)
+		return lockEntry{}, fmt.Errorf("reading lock file %s: %w", lockFile, err)
 	}
-	for _, e := range lock.Entries {
+	for _, e := range l.Entries {
 		if e.SourceRepository == sourceRepository {
 			return e, nil
 		}
 	}
-	return mirror.LockEntry{}, fmt.Errorf("lock file %s has no entry for source repository %q", lockFile, sourceRepository)
+	return lockEntry{}, fmt.Errorf("lock file %s has no entry for source repository %q", lockFile, sourceRepository)
 }
 
 // digestHex returns the sha256 hex suffix of a "repo@sha256:hex" reference,
@@ -136,7 +135,7 @@ func parseFlags(args []string) (flags, error) {
 // digest (-resolve-only, used to pick which image a candidate stack should
 // boot) or dials the already-running candidate stack, extracts its served
 // schema, and reports drift against the committed snapshots.
-func run(ctx context.Context, args []string, runner mirror.Runner, dial dialFunc, imageDigest imageDigestFunc, stdout, _ io.Writer) error {
+func run(ctx context.Context, args []string, runner Runner, dial dialFunc, imageDigest imageDigestFunc, stdout, _ io.Writer) error {
 	f, err := parseFlags(args)
 	if err != nil {
 		return err
@@ -156,11 +155,11 @@ func run(ctx context.Context, args []string, runner mirror.Runner, dial dialFunc
 // runResolveOnly prints entry's fresh upstream digest, resolved from its
 // SourceChannel — used to pick which image a candidate stack should boot,
 // never the currently pinned one, which would never show drift.
-func runResolveOnly(ctx context.Context, runner mirror.Runner, entry mirror.LockEntry, stdout io.Writer) error {
+func runResolveOnly(ctx context.Context, runner Runner, entry lockEntry, stdout io.Writer) error {
 	if _, err := exec.LookPath("skopeo"); err != nil {
 		return fmt.Errorf("skopeo not found in PATH: %w", err)
 	}
-	digest, err := mirror.ResolveDigest(ctx, runner, entry.SourceChannel)
+	digest, err := resolveDigest(ctx, runner, entry.SourceChannel)
 	if err != nil {
 		return err
 	}
@@ -170,7 +169,7 @@ func runResolveOnly(ctx context.Context, runner mirror.Runner, entry mirror.Lock
 
 // runReport dials the already-running candidate stack, extracts its served
 // schema, and reports drift against the committed snapshots.
-func runReport(ctx context.Context, f flags, dial dialFunc, imageDigest imageDigestFunc, entry mirror.LockEntry, stdout io.Writer) error {
+func runReport(ctx context.Context, f flags, dial dialFunc, imageDigest imageDigestFunc, entry lockEntry, stdout io.Writer) error {
 	conn, err := dial(ctx, f.dial)
 	if err != nil {
 		return err
