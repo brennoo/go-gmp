@@ -39,7 +39,6 @@ func TestGetStatusMethods(t *testing.T) {
 		{"CreateUserResponse", &CreateUserResponse{Status: "201", StatusText: "Created"}, "201", "Created"},
 
 		// Delete operations
-		{"DeleteAgentsResponse", &DeleteAgentsResponse{Status: "200", StatusText: "OK"}, "200", "OK"},
 		{"DeleteAlertResponse", &DeleteAlertResponse{Status: "200", StatusText: "OK"}, "200", "OK"},
 		{"DeleteAssetResponse", &DeleteAssetResponse{Status: "200", StatusText: "OK"}, "200", "OK"},
 		{"DeleteConfigResponse", &DeleteConfigResponse{Status: "200", StatusText: "OK"}, "200", "OK"},
@@ -64,7 +63,6 @@ func TestGetStatusMethods(t *testing.T) {
 		{"DeleteUserResponse", &DeleteUserResponse{Status: "200", StatusText: "OK"}, "200", "OK"},
 
 		// Get operations
-		{"GetAgentsResponse", &GetAgentsResponse{Status: "200", StatusText: "OK"}, "200", "OK"},
 		{"GetAggregatesResponse", &GetAggregatesResponse{Status: "200", StatusText: "OK"}, "200", "OK"},
 		{"GetAlertsResponse", &GetAlertsResponse{Status: "200", StatusText: "OK"}, "200", "OK"},
 		{"GetConfigsResponse", &GetConfigsResponse{Status: "200", StatusText: "OK"}, "200", "OK"},
@@ -99,7 +97,6 @@ func TestGetStatusMethods(t *testing.T) {
 		{"HelpResponse", &HelpResponse{Status: "200", StatusText: "OK"}, "200", "OK"},
 
 		// Modify operations
-		{"ModifyAgentsResponse", &ModifyAgentsResponse{Status: "200", StatusText: "OK"}, "200", "OK"},
 		{"ModifyAlertResponse", &ModifyAlertResponse{Status: "200", StatusText: "OK"}, "200", "OK"},
 		{"ModifyAssetResponse", &ModifyAssetResponse{Status: "200", StatusText: "OK"}, "200", "OK"},
 		{"ModifyAuthResponse", &ModifyAuthResponse{Status: "200", StatusText: "OK"}, "200", "OK"},

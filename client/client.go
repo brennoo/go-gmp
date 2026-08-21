@@ -458,18 +458,6 @@ func (cli *client) GetTLSCertificates(ctx context.Context, args ...filtering.Fil
 	return cli.GetTLSCertificatesRaw(ctx, cmd)
 }
 
-func (cli *client) ModifyAgents(ctx context.Context, cmd *commands.ModifyAgents) (*commands.ModifyAgentsResponse, error) {
-	return execute[commands.ModifyAgentsResponse](ctx, cli.conn, cmd)
-}
-
-func (cli *client) GetAgents(ctx context.Context, cmd *commands.GetAgents) (*commands.GetAgentsResponse, error) {
-	return execute[commands.GetAgentsResponse](ctx, cli.conn, cmd)
-}
-
-func (cli *client) DeleteAgents(ctx context.Context, cmd *commands.DeleteAgents) (*commands.DeleteAgentsResponse, error) {
-	return execute[commands.DeleteAgentsResponse](ctx, cli.conn, cmd)
-}
-
 func (cli *client) GetNVTs(ctx context.Context, cmd *commands.GetNVTs) (*commands.GetNVTsResponse, error) {
 	return execute[commands.GetNVTsResponse](ctx, cli.conn, cmd)
 }

@@ -10,9 +10,9 @@
 # 'added' is elements the round trip invents (non-pointer fields without
 # omitempty, zero time.Time) and is not loss.
 
-fixtures: 344   clean: 271   with-loss: 61   decode-errors: 12   advisory: 0
-commands with loss: 28 of 122
-distinct dropped paths: 102
+fixtures: 338   clean: 269   with-loss: 60   decode-errors: 9   advisory: 0
+commands with loss: 27 of 119
+distinct dropped paths: 96
 
 ## Per fixture
 
@@ -74,8 +74,6 @@ create_tls_certificate       live      001 clean         dropped=0   truncated=0
 create_tls_certificate       upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 create_user                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_user                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=1
-delete_agents                live      001 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0
-delete_agents                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 delete_alert                 live      001 clean         dropped=0   truncated=0   changed=0   added=0
 delete_alert                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 delete_asset                 live      001 clean         dropped=0   truncated=0   changed=0   added=0
@@ -127,8 +125,6 @@ describe_auth                live      003 clean         dropped=0   truncated=0
 describe_auth                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 empty_trashcan               live      001 clean         dropped=0   truncated=0   changed=0   added=0
 empty_trashcan               upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
-get_agents                   live      001 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0
-get_agents                   upstream  001 ok            dropped=6   truncated=0   changed=1   added=0
 get_aggregates               live      001 clean         dropped=0   truncated=0   changed=0   added=0
 get_aggregates               live      002 clean         dropped=0   truncated=0   changed=0   added=0
 get_aggregates               live      003 clean         dropped=0   truncated=0   changed=0   added=0
@@ -288,8 +284,6 @@ help                         live      001 DECODE-ERROR  dropped=0   truncated=0
 help                         live      002 clean         dropped=0   truncated=0   changed=0   added=0
 help                         upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 help                         upstream  002 clean         dropped=0   truncated=0   changed=0   added=0
-modify_agents                live      001 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0
-modify_agents                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_alert                 live      001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_alert                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_asset                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
