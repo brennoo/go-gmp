@@ -1,0 +1,19 @@
+SECURITY.md
+  s_6b74b50f8b69ed::t_9c6e2451aa9088 3-4,6,8-9,11-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "2ce752d2097c7cc295a556a91de36026ada02ede",
+  "prompts": {},
+  "sessions": {
+    "s_6b74b50f8b69ed": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "019fdd9a-6605-7b1e-bab6-fd85490a37f6",
+        "model": "0fe02vv2qtwc"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
