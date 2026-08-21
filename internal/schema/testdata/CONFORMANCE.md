@@ -33,25 +33,25 @@ optionality is trusted and request-side is not.
 
 ## Totals
 
-commands compared:            122
+commands compared:            119
 fully conformant:             100
-with actionable findings:     22
-actionable findings:          72  (request 46, response 26)
-suppressed findings:          160
-confirmed by fidelity corpus: 6
-in the schema, not in Go:     0
+with actionable findings:     19
+actionable findings:          27  (request 7, response 20)
+suppressed findings:          143
+confirmed by fidelity corpus: 2
+in the schema, not in Go:     3  (delete_agents, get_agents, modify_agents)
 in Go, not in the schema:     0
 
 ### Findings by category
 
                  actionable suppressed
-  MISSING                12         25
-  EXTRA                  55         72
+  MISSING                 5         25
+  EXTRA                  19         72
   CARDINALITY             0          2
   KIND                    0          0
-  OMITEMPTY               0         61
-  TYPE                    5          0
-  SCHEMA-DEFECT         128          0
+  OMITEMPTY               0         44
+  TYPE                    3          0
+  SCHEMA-DEFECT         105          0
 
 ### Schema defects by class
 
@@ -75,15 +75,11 @@ taken against upstream main (155 commands). Two reasons, both expected:
   empty-pattern       44 sites in 23 commands
   no-pattern          17 sites in 4 commands
   recursion-cut       12 sites in 1 commands
-  type-for-t          23 sites in 1 commands
   undefined-type       3 sites in 3 commands
   unsupported-r        3 sites in 3 commands
 
 ### Commands by actionable findings
 
-  delete_agents                18   EXTRA=18
-  modify_agents                18   EXTRA=18
-  get_agents                    9   MISSING=7  TYPE=2
   create_report                 3   EXTRA=3
   get_reports                   3   EXTRA=3
   get_credentials               2   EXTRA=2
@@ -101,7 +97,8 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_results                   1   EXTRA=1
   get_system_reports            1   TYPE=1
   get_targets                   1   EXTRA=1
-  ... and 2 more with fewer
+  get_tasks                     1   MISSING=1
+  help                          1   MISSING=1
 
 ### Confirmed by both oracles
 
@@ -114,10 +111,6 @@ never carry this mark. That is a gap in the cross-reference, not evidence that
 requests are in better shape — get_notes models none of its seven request
 attributes, and one of its own captured request fixtures uses three of them.
 
-  get_agents               /get_agents_response/agent_count
-  get_agents               /get_agents_response/agents
-  get_agents               /get_agents_response/filters
-  get_agents               /get_agents_response/sort
   get_report_configs       /get_report_configs_response/report_config/param/value/@using_default
   get_tasks                /get_tasks_response/task/hosts_ordering
 
@@ -274,47 +267,6 @@ conformant
 
 conformant
 
-### delete_agents  (command_delete_agents.xml)
-
-EXTRA=18
-
-  EXTRA         request  /delete_agents/agents/agent/agent_id
-                Go field AgentID string has no counterpart in the schema
-  EXTRA         request  /delete_agents/agents/agent/authorized
-                Go field Authorized int has no counterpart in the schema
-  EXTRA         request  /delete_agents/agents/agent/comment
-                Go field Comment string has no counterpart in the schema
-  EXTRA         request  /delete_agents/agents/agent/connection_status
-                Go field ConnectionStatus string has no counterpart in the schema
-  EXTRA         request  /delete_agents/agents/agent/creation_time
-                Go field CreationTime *commands.GMPTime has no counterpart in the schema
-  EXTRA         request  /delete_agents/agents/agent/heartbeat_interval
-                Go field HeartbeatInterval int has no counterpart in the schema
-  EXTRA         request  /delete_agents/agents/agent/hostname
-                Go field Hostname string has no counterpart in the schema
-  EXTRA         request  /delete_agents/agents/agent/in_use
-                Go field InUse bool has no counterpart in the schema
-  EXTRA         request  /delete_agents/agents/agent/ip
-                Go field IP []string has no counterpart in the schema
-  EXTRA         request  /delete_agents/agents/agent/last_update
-                Go field LastUpdate *commands.GMPTime has no counterpart in the schema
-  EXTRA         request  /delete_agents/agents/agent/min_interval
-                Go field MinInterval int has no counterpart in the schema
-  EXTRA         request  /delete_agents/agents/agent/modification_time
-                Go field ModificationTime *commands.GMPTime has no counterpart in the schema
-  EXTRA         request  /delete_agents/agents/agent/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /delete_agents/agents/agent/owner
-                Go field Owner *commands.AgentOwner has no counterpart in the schema
-  EXTRA         request  /delete_agents/agents/agent/permissions
-                Go field Permissions *commands.AgentPermissions has no counterpart in the schema
-  EXTRA         request  /delete_agents/agents/agent/scanner
-                Go field Scanner *commands.AgentScanner has no counterpart in the schema
-  EXTRA         request  /delete_agents/agents/agent/schedule
-                Go field Schedule string has no counterpart in the schema
-  EXTRA         request  /delete_agents/agents/agent/writable
-                Go field Writable bool has no counterpart in the schema
-
 ### delete_alert  (command_delete_alert.xml)
 
 conformant
@@ -434,109 +386,6 @@ SCHEMA-DEFECT=1
 
   SCHEMA-DEFECT request  /empty_trashcan
                 empty-pattern: pattern declares no content
-
-### get_agents  (command_get_agents.xml)
-
-MISSING=7  OMITEMPTY=17  TYPE=2  SCHEMA-DEFECT=23
-
-  MISSING       request  /get_agents/@agent_id
-                optional attr agent_id is not modelled
-  MISSING       request  /get_agents/@filt_id
-                optional attr filt_id is not modelled
-  MISSING       request  /get_agents/@filter
-                optional attr filter is not modelled
-  MISSING       response /get_agents_response/agent_count
-                required elem agent_count is not modelled  [fidelity]
-  MISSING       response /get_agents_response/agents
-                required elem agents is not modelled  [fidelity]
-  MISSING       response /get_agents_response/filters
-                required elem filters is not modelled  [fidelity]
-  MISSING       response /get_agents_response/sort
-                required elem sort is not modelled  [fidelity]
-  OMITEMPTY     response /get_agents_response/agent/agent_id
-                schema says required, AgentID is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_agents_response/agent/authorized
-                schema says required, Authorized is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_agents_response/agent/comment
-                schema says required, Comment is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_agents_response/agent/connection_status
-                schema says required, ConnectionStatus is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_agents_response/agent/creation_time
-                schema says required, CreationTime is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_agents_response/agent/heartbeat_interval
-                schema says required, HeartbeatInterval is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_agents_response/agent/hostname
-                schema says required, Hostname is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_agents_response/agent/in_use
-                schema says required, InUse is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_agents_response/agent/last_update
-                schema says required, LastUpdate is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_agents_response/agent/min_interval
-                schema says required, MinInterval is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_agents_response/agent/modification_time
-                schema says required, ModificationTime is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_agents_response/agent/owner
-                schema says required, Owner is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_agents_response/agent/permissions
-                schema says required, Permissions is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_agents_response/agent/scanner
-                schema says required, Scanner is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_agents_response/agent/scanner/@id
-                schema says optional, ID string has no omitempty and is always emitted  [suppressed: inert on decode; shows up as 'added' in the fidelity corpus]
-  OMITEMPTY     response /get_agents_response/agent/schedule
-                schema says required, Schedule is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  OMITEMPTY     response /get_agents_response/agent/writable
-                schema says required, Writable is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
-  TYPE          response /get_agents_response/agent/in_use
-                schema type boolean is text ("" is true), Go InUse is bool: '7' fails to decode and '1' re-emits as 'true'
-  TYPE          response /get_agents_response/agent/writable
-                schema type boolean is text ("" is true), Go Writable is bool: '7' fails to decode and '1' re-emits as 'true'
-  SCHEMA-DEFECT response /get_agents_response/agent/agent_id
-                type-for-t: <type> used where <t> was meant: text
-  SCHEMA-DEFECT response /get_agents_response/agent/authorized
-                type-for-t: <type> used where <t> was meant: integer
-  SCHEMA-DEFECT response /get_agents_response/agent/comment
-                type-for-t: <type> used where <t> was meant: text
-  SCHEMA-DEFECT response /get_agents_response/agent/connection_status
-                type-for-t: <type> used where <t> was meant: text
-  SCHEMA-DEFECT response /get_agents_response/agent/creation_time
-                type-for-t: <type> used where <t> was meant: iso_time
-  SCHEMA-DEFECT response /get_agents_response/agent/heartbeat_interval
-                type-for-t: <type> used where <t> was meant: integer
-  SCHEMA-DEFECT response /get_agents_response/agent/hostname
-                type-for-t: <type> used where <t> was meant: text
-  SCHEMA-DEFECT response /get_agents_response/agent/in_use
-                type-for-t: <type> used where <t> was meant: boolean
-  SCHEMA-DEFECT response /get_agents_response/agent/ip
-                type-for-t: <type> used where <t> was meant: text
-  SCHEMA-DEFECT response /get_agents_response/agent/last_update
-                type-for-t: <type> used where <t> was meant: iso_time
-  SCHEMA-DEFECT response /get_agents_response/agent/min_interval
-                type-for-t: <type> used where <t> was meant: integer
-  SCHEMA-DEFECT response /get_agents_response/agent/modification_time
-                type-for-t: <type> used where <t> was meant: iso_time
-  SCHEMA-DEFECT response /get_agents_response/agent/name
-                type-for-t: <type> used where <t> was meant: name
-  SCHEMA-DEFECT response /get_agents_response/agent/owner/name
-                type-for-t: <type> used where <t> was meant: name
-  SCHEMA-DEFECT response /get_agents_response/agent/permissions/permission/name
-                type-for-t: <type> used where <t> was meant: name
-  SCHEMA-DEFECT response /get_agents_response/agent/scanner/name
-                type-for-t: <type> used where <t> was meant: name
-  SCHEMA-DEFECT response /get_agents_response/agent/schedule
-                type-for-t: <type> used where <t> was meant: text
-  SCHEMA-DEFECT response /get_agents_response/agent/writable
-                type-for-t: <type> used where <t> was meant: boolean
-  SCHEMA-DEFECT response /get_agents_response/agent_count/filtered
-                type-for-t: <type> used where <t> was meant: integer
-  SCHEMA-DEFECT response /get_agents_response/agent_count/page
-                type-for-t: <type> used where <t> was meant: integer
-  SCHEMA-DEFECT response /get_agents_response/filters/keywords/keyword/column
-                type-for-t: <type> used where <t> was meant: text
-  SCHEMA-DEFECT response /get_agents_response/filters/keywords/keyword/value
-                type-for-t: <type> used where <t> was meant: text
-  SCHEMA-DEFECT response /get_agents_response/filters/term
-                type-for-t: <type> used where <t> was meant: text
 
 ### get_aggregates  (command_get_aggregates.xml)
 
@@ -1180,47 +1029,6 @@ MISSING=1  SCHEMA-DEFECT=12
                 recursion-cut: g reaches itself; the walk is cut here
   SCHEMA-DEFECT response /help_response/schema/protocol/command/response/o/g/o
                 recursion-cut: o reaches itself; the walk is cut here
-
-### modify_agents  (command_modify_agents.xml)
-
-EXTRA=18
-
-  EXTRA         request  /modify_agents/agents/agent/agent_id
-                Go field AgentID string has no counterpart in the schema
-  EXTRA         request  /modify_agents/agents/agent/authorized
-                Go field Authorized int has no counterpart in the schema
-  EXTRA         request  /modify_agents/agents/agent/comment
-                Go field Comment string has no counterpart in the schema
-  EXTRA         request  /modify_agents/agents/agent/connection_status
-                Go field ConnectionStatus string has no counterpart in the schema
-  EXTRA         request  /modify_agents/agents/agent/creation_time
-                Go field CreationTime *commands.GMPTime has no counterpart in the schema
-  EXTRA         request  /modify_agents/agents/agent/heartbeat_interval
-                Go field HeartbeatInterval int has no counterpart in the schema
-  EXTRA         request  /modify_agents/agents/agent/hostname
-                Go field Hostname string has no counterpart in the schema
-  EXTRA         request  /modify_agents/agents/agent/in_use
-                Go field InUse bool has no counterpart in the schema
-  EXTRA         request  /modify_agents/agents/agent/ip
-                Go field IP []string has no counterpart in the schema
-  EXTRA         request  /modify_agents/agents/agent/last_update
-                Go field LastUpdate *commands.GMPTime has no counterpart in the schema
-  EXTRA         request  /modify_agents/agents/agent/min_interval
-                Go field MinInterval int has no counterpart in the schema
-  EXTRA         request  /modify_agents/agents/agent/modification_time
-                Go field ModificationTime *commands.GMPTime has no counterpart in the schema
-  EXTRA         request  /modify_agents/agents/agent/name
-                Go field Name string has no counterpart in the schema
-  EXTRA         request  /modify_agents/agents/agent/owner
-                Go field Owner *commands.AgentOwner has no counterpart in the schema
-  EXTRA         request  /modify_agents/agents/agent/permissions
-                Go field Permissions *commands.AgentPermissions has no counterpart in the schema
-  EXTRA         request  /modify_agents/agents/agent/scanner
-                Go field Scanner *commands.AgentScanner has no counterpart in the schema
-  EXTRA         request  /modify_agents/agents/agent/schedule
-                Go field Schedule string has no counterpart in the schema
-  EXTRA         request  /modify_agents/agents/agent/writable
-                Go field Writable bool has no counterpart in the schema
 
 ### modify_alert  (command_modify_alert.xml)
 

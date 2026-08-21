@@ -940,7 +940,7 @@ func newScriptedConn(t *testing.T, response string) *Connection {
 
 // TestExecuteRootMismatchRecoversGMPError is the T-7b regression test: gvmd
 // reported this exact document live (see
-// internal/gmptest/testdata/live/sync_config and /get_agents).
+// internal/gmptest/testdata/live/sync_config).
 func TestExecuteRootMismatchRecoversGMPError(t *testing.T) {
 	conn := newScriptedConn(t, `<gmp_response status="400" status_text="Bogus command name"/>`)
 

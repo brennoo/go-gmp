@@ -285,20 +285,6 @@ resp, err := cli.RawXML(ctx, raw)
 
 All GMP commands are available as typed structs matching the protocol XML. Add new commands by following the existing pattern.
 
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for how to build, test and lint the project, and how to
-run a local Greenbone stack for manual testing. Outstanding work is tracked in
-[GitHub Issues](https://github.com/brennoo/go-gmp/issues).
-
-## Security
-
-See [SECURITY.md](SECURITY.md) for how to report a vulnerability in this library.
-
-## Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) for a history of notable changes, including breaking ones.
-
 ## See Also
 
 - [Greenbone GMP Protocol Documentation](https://docs.greenbone.net/API/GMP/gmp-22.6.html)

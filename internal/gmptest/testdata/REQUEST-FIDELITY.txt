@@ -8,8 +8,8 @@
 # silently fails to ever emit).
 # Regenerate with: go test ./internal/gmptest -run TestRequestRoundTrip -update
 
-requests-compared: 344   clean: 331   with-loss: 11   decode-errors: 2   advisory: 0   skipped-no-request: 0
-commands with a recorded request: 122 of 122   commands with loss: 10
+requests-compared: 338   clean: 325   with-loss: 11   decode-errors: 2   advisory: 0   skipped-no-request: 0
+commands with a recorded request: 119 of 119   commands with loss: 10
 
 ## Per fixture
 
@@ -71,8 +71,6 @@ create_tls_certificate       live      001 clean         dropped=0   truncated=0
 create_tls_certificate       upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 create_user                  live      001 clean         dropped=0   truncated=0   changed=0   added=0
 create_user                  upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
-delete_agents                live      001 clean         dropped=0   truncated=0   changed=0   added=0
-delete_agents                upstream  001 clean         dropped=0   truncated=0   changed=0   added=1
 delete_alert                 live      001 clean         dropped=0   truncated=0   changed=0   added=0
 delete_alert                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=1
 delete_asset                 live      001 clean         dropped=0   truncated=0   changed=0   added=0
@@ -124,8 +122,6 @@ describe_auth                live      003 clean         dropped=0   truncated=0
 describe_auth                upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 empty_trashcan               live      001 clean         dropped=0   truncated=0   changed=0   added=0
 empty_trashcan               upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
-get_agents                   live      001 clean         dropped=0   truncated=0   changed=0   added=0
-get_agents                   upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 get_aggregates               live      001 clean         dropped=0   truncated=0   changed=0   added=0
 get_aggregates               live      002 clean         dropped=0   truncated=0   changed=0   added=0
 get_aggregates               live      003 clean         dropped=0   truncated=0   changed=0   added=0
@@ -285,8 +281,6 @@ help                         live      001 clean         dropped=0   truncated=0
 help                         live      002 clean         dropped=0   truncated=0   changed=0   added=0
 help                         upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 help                         upstream  002 clean         dropped=0   truncated=0   changed=0   added=0
-modify_agents                live      001 clean         dropped=0   truncated=0   changed=0   added=0
-modify_agents                upstream  001 clean         dropped=0   truncated=0   changed=0   added=1
 modify_alert                 live      001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_alert                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0
 modify_asset                 upstream  001 clean         dropped=0   truncated=0   changed=0   added=0

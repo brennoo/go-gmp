@@ -1,4 +1,0 @@
-# fidelity: get_agents / live / 001
-# provenance: read-only: get_agents bare
-decode: error
-error: expected element type <get_agents_response> but have <gmp_response>

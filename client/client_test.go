@@ -940,42 +940,6 @@ func (m *mockConn) Execute(ctx context.Context, command interface{}, response in
 		(*response.(*commands.SyncConfigResponse)).StatusText = "OK, request submitted"
 	}
 
-	if cmd, ok := command.(*commands.ModifyAgents); ok {
-		if len(cmd.Agents) == 1 && cmd.Agents[0].ID == "fb6451bf-ec5a-45a8-8bab-5cf4b862e51b" &&
-			cmd.Authorized != nil && *cmd.Authorized == 1 &&
-			cmd.MinInterval != nil && *cmd.MinInterval == 1000 &&
-			cmd.HeartbeatInterval != nil && *cmd.HeartbeatInterval == 0 &&
-			cmd.Schedule == "@every 12h" && cmd.Comment == "example update" {
-			(*response.(*commands.ModifyAgentsResponse)).Status = "200"
-			(*response.(*commands.ModifyAgentsResponse)).StatusText = "OK"
-		} else {
-			(*response.(*commands.ModifyAgentsResponse)).Status = "400"
-			(*response.(*commands.ModifyAgentsResponse)).StatusText = "Bad request"
-		}
-	}
-
-	if _, ok := command.(*commands.GetAgents); ok {
-		resp := response.(*commands.GetAgentsResponse)
-		resp.Status = "200"
-		resp.StatusText = "OK"
-		resp.Agents = []commands.Agent{
-			{
-				ID:      "62462fe0-5834-4630-afc2-0d040c63487c",
-				AgentID: "GAT-29-p0MPX0FT",
-			},
-		}
-	}
-
-	if cmd, ok := command.(*commands.DeleteAgents); ok {
-		if len(cmd.Agents) == 1 && cmd.Agents[0].ID == "c6f1cdc3-8c2c-4b2e-9f43-139d23c7cfd4" {
-			(*response.(*commands.DeleteAgentsResponse)).Status = "200"
-			(*response.(*commands.DeleteAgentsResponse)).StatusText = "OK"
-		} else {
-			(*response.(*commands.DeleteAgentsResponse)).Status = "404"
-			(*response.(*commands.DeleteAgentsResponse)).StatusText = "Not found"
-		}
-	}
-
 	if cmd, ok := command.(*commands.ModifyAuth); ok {
 		if cmd.Group.Name == "method:file" && len(cmd.Group.AuthConfSetting) > 0 && cmd.Group.AuthConfSetting[0].Key == "enable" {
 			(*response.(*commands.ModifyAuthResponse)).Status = "200"

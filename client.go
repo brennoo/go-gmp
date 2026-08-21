@@ -144,11 +144,6 @@ type Client interface {
 	ModifyTLSCertificate(ctx context.Context, cmd *commands.ModifyTLSCertificate) (resp *commands.ModifyTLSCertificateResponse, err error)
 	GetTLSCertificates(ctx context.Context, args ...filtering.FilterArg) (*commands.GetTLSCertificatesResponse, error)
 
-	// Agents
-	ModifyAgents(ctx context.Context, cmd *commands.ModifyAgents) (resp *commands.ModifyAgentsResponse, err error)
-	GetAgents(ctx context.Context, cmd *commands.GetAgents) (resp *commands.GetAgentsResponse, err error)
-	DeleteAgents(ctx context.Context, cmd *commands.DeleteAgents) (resp *commands.DeleteAgentsResponse, err error)
-
 	// Feeds, Licenses, Features, Aggregates, Resource Names
 	GetNVTs(ctx context.Context, cmd *commands.GetNVTs) (resp *commands.GetNVTsResponse, err error)
 	GetNVTFamilies(ctx context.Context, cmd *commands.GetNVTFamilies) (resp *commands.GetNVTFamiliesResponse, err error)

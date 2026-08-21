@@ -1222,8 +1222,6 @@ func (r *captureRun) captureExpectedFailures(st *captureState) {
 		&commands.SyncConfig{})
 	r.send("modify_license", "expected failure: modify_license without an Enterprise appliance",
 		&commands.ModifyLicense{})
-	r.send("modify_agents", "expected failure: modify_agents with no agents", &commands.ModifyAgents{})
-	r.send("delete_agents", "expected failure: delete_agents with no agents", &commands.DeleteAgents{})
 	r.sendRaw("run_wizard", "expected failure: run_wizard for a wizard that does not exist",
 		`<run_wizard><name>go-gmp-fixture-no-such-wizard</name></run_wizard>`)
 

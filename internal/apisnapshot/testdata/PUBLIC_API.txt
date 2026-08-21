@@ -22,7 +22,7 @@ without a matching Client entry is a compile error, not something this
 golden needs to also catch.
 
 total packages: 6
-total exported declarations: 1817
+total exported declarations: 1803
 
 ## github.com/brennoo/go-gmp
 
@@ -132,9 +132,6 @@ type Client interface {
 	CreateTLSCertificate(ctx context.Context, cmd *commands.CreateTLSCertificate) (resp *commands.CreateTLSCertificateResponse, err error)
 	ModifyTLSCertificate(ctx context.Context, cmd *commands.ModifyTLSCertificate) (resp *commands.ModifyTLSCertificateResponse, err error)
 	GetTLSCertificates(ctx context.Context, args ...filtering.FilterArg) (*commands.GetTLSCertificatesResponse, error)
-	ModifyAgents(ctx context.Context, cmd *commands.ModifyAgents) (resp *commands.ModifyAgentsResponse, err error)
-	GetAgents(ctx context.Context, cmd *commands.GetAgents) (resp *commands.GetAgentsResponse, err error)
-	DeleteAgents(ctx context.Context, cmd *commands.DeleteAgents) (resp *commands.DeleteAgentsResponse, err error)
 	GetNVTs(ctx context.Context, cmd *commands.GetNVTs) (resp *commands.GetNVTsResponse, err error)
 	GetNVTFamilies(ctx context.Context, cmd *commands.GetNVTFamilies) (resp *commands.GetNVTFamiliesResponse, err error)
 	GetFeeds(ctx context.Context, cmd *commands.GetFeeds) (resp *commands.GetFeedsResponse, err error)
@@ -170,45 +167,6 @@ type Connection interface {
 func New(conn gmp.Connection) gmp.Client
 
 ## github.com/brennoo/go-gmp/commands
-
-type Agent struct {
-	ID                string            `xml:"id,attr"`
-	Owner             *AgentOwner       `xml:"owner,omitempty"`
-	Name              string            `xml:"name"`
-	Comment           string            `xml:"comment,omitempty"`
-	CreationTime      *GMPTime          `xml:"creation_time,omitempty"`
-	ModificationTime  *GMPTime          `xml:"modification_time,omitempty"`
-	Writable          bool              `xml:"writable,omitempty"`
-	InUse             bool              `xml:"in_use,omitempty"`
-	Permissions       *AgentPermissions `xml:"permissions,omitempty"`
-	Hostname          string            `xml:"hostname,omitempty"`
-	AgentID           string            `xml:"agent_id,omitempty"`
-	Authorized        int               `xml:"authorized,omitempty"`
-	MinInterval       int               `xml:"min_interval,omitempty"`
-	HeartbeatInterval int               `xml:"heartbeat_interval,omitempty"`
-	ConnectionStatus  string            `xml:"connection_status,omitempty"`
-	LastUpdate        *GMPTime          `xml:"last_update,omitempty"`
-	Schedule          string            `xml:"schedule,omitempty"`
-	Scanner           *AgentScanner     `xml:"scanner,omitempty"`
-	IP                []string          `xml:"ip,omitempty"`
-}
-
-type AgentOwner struct {
-	Name string `xml:"name"`
-}
-
-type AgentPermission struct {
-	Name string `xml:"name"`
-}
-
-type AgentPermissions struct {
-	Permission []AgentPermission `xml:"permission"`
-}
-
-type AgentScanner struct {
-	ID   string `xml:"id,attr"`
-	Name string `xml:"name"`
-}
 
 type Aggregate struct {
 	DataType       string              `xml:"data_type"`
@@ -1624,19 +1582,6 @@ type Credentials struct {
 	Max   int `xml:"max,attr"`
 }
 
-type DeleteAgents struct {
-	XMLName xml.Name `xml:"delete_agents"`
-	Agents  []Agent  `xml:"agents>agent"`
-}
-
-type DeleteAgentsResponse struct {
-	XMLName    xml.Name `xml:"delete_agents_response"`
-	Status     string   `xml:"status,attr"`
-	StatusText string   `xml:"status_text,attr"`
-}
-
-func (r *DeleteAgentsResponse) GetStatus() (string, string)
-
 type DeleteAlert struct {
 	XMLName  xml.Name `xml:"delete_alert"`
 	AlertID  string   `xml:"alert_id,attr"`
@@ -2141,19 +2086,6 @@ func (e *GMPError) Error() string
 type GMPTime struct{ time.Time }
 
 func (t *GMPTime) UnmarshalText(data []byte) error
-
-type GetAgents struct {
-	XMLName xml.Name `xml:"get_agents"`
-}
-
-type GetAgentsResponse struct {
-	XMLName    xml.Name `xml:"get_agents_response"`
-	Status     string   `xml:"status,attr"`
-	StatusText string   `xml:"status_text,attr"`
-	Agents     []Agent  `xml:"agent"`
-}
-
-func (r *GetAgentsResponse) GetStatus() (string, string)
 
 type GetAggregates struct {
 	XMLName        xml.Name        `xml:"get_aggregates"`
@@ -3457,24 +3389,6 @@ type LicenseSignature struct {
 type LicenseSignatures struct {
 	Signature []LicenseSignature `xml:"signature,omitempty"`
 }
-
-type ModifyAgents struct {
-	XMLName           xml.Name `xml:"modify_agents"`
-	Agents            []Agent  `xml:"agents>agent"`
-	Authorized        *int     `xml:"authorized,omitempty"`
-	MinInterval       *int     `xml:"min_interval,omitempty"`
-	HeartbeatInterval *int     `xml:"heartbeat_interval,omitempty"`
-	Schedule          string   `xml:"schedule,omitempty"`
-	Comment           string   `xml:"comment,omitempty"`
-}
-
-type ModifyAgentsResponse struct {
-	XMLName    xml.Name `xml:"modify_agents_response"`
-	Status     string   `xml:"status,attr"`
-	StatusText string   `xml:"status_text,attr"`
-}
-
-func (r *ModifyAgentsResponse) GetStatus() (string, string)
 
 type ModifyAlert struct {
 	XMLName   xml.Name        `xml:"modify_alert"`
