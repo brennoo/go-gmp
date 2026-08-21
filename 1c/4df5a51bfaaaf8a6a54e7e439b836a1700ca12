@@ -1,0 +1,35 @@
+internal/codegen/overrides.go
+  s_c9bed58e301d01::t_7b3966037d63fd 1235-1238,1240-1242
+commands/modify_override.go
+  s_cb73edec8e345b::t_5b2522fc0aeaf4 9
+docs/review-2026-08.md
+  s_cb73edec8e345b::t_31ffae06ee80a8 5711-5888
+internal/codegen/testdata/golden/modify_override.go
+  s_cb73edec8e345b::t_891f2bb9211087 9
+internal/gmptest/explicit_empty_test.go
+  s_cb73edec8e345b::t_2252e607fe9b24 7,35-101,135,149,182,196,223-225,228,234,239-240,251,257,262,298-299,304,309-310,321-322,327,332,367-371,374-376,381,386,390-392,397,402,432-434,439,444,448-450,455,460,490,492,497,502,506,508,513,518,547,553,558,562,568,573
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "1c4df5a51bfaaaf8a6a54e7e439b836a1700ca12",
+  "prompts": {},
+  "sessions": {
+    "s_c9bed58e301d01": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "01a023e5-bccd-739e-80f4-2d7e57d91903",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    },
+    "s_cb73edec8e345b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_cb73edec8e345b",
+        "model": "unknown"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
