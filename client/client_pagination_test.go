@@ -500,3 +500,91 @@ func TestIteratorsWithFunctionalFilters(t *testing.T) {
 			return cli.Settings(ctx, pageSize, args...)
 		})
 }
+
+// TestIteratorConstructorsRejectUnrecognizedFilterArg pins T-29's fail-closed
+// fix for the iterator constructors: an invalid FilterArg must not
+// silently drop the filter, and — since these methods return a bare
+// *pagination.XIterator, not (iterator, error) — the constructor must still
+// never return nil; the error is surfaced via Next()/Err() on a
+// pagination.NewFailedIterator instead.
+func TestIteratorConstructorsRejectUnrecognizedFilterArg(t *testing.T) {
+	cli := New(MockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+	ctx := context.Background()
+	bad := 123 // not string, Option, []string or []Option
+
+	t.Run("Tasks", func(t *testing.T) {
+		iter := cli.Tasks(ctx, 10, bad)
+		if iter == nil {
+			t.Fatal("Tasks returned nil iterator")
+		}
+		if iter.Next() {
+			t.Fatal("expected Next() to be false for an invalid FilterArg")
+		}
+		if iter.Err() == nil {
+			t.Fatal("expected Err() to report the invalid FilterArg")
+		}
+	})
+
+	t.Run("Results", func(t *testing.T) {
+		iter := cli.Results(ctx, 10, bad)
+		if iter.Next() {
+			t.Fatal("expected Next() to be false for an invalid FilterArg")
+		}
+		if iter.Err() == nil {
+			t.Fatal("expected Err() to report the invalid FilterArg")
+		}
+	})
+
+	t.Run("Assets", func(t *testing.T) {
+		iter := cli.Assets(ctx, 10, bad)
+		if iter.Next() {
+			t.Fatal("expected Next() to be false for an invalid FilterArg")
+		}
+		if iter.Err() == nil {
+			t.Fatal("expected Err() to report the invalid FilterArg")
+		}
+	})
+
+	t.Run("Targets", func(t *testing.T) {
+		iter := cli.Targets(ctx, 10, bad)
+		if iter.Next() {
+			t.Fatal("expected Next() to be false for an invalid FilterArg")
+		}
+		if iter.Err() == nil {
+			t.Fatal("expected Err() to report the invalid FilterArg")
+		}
+	})
+
+	t.Run("Tickets", func(t *testing.T) {
+		iter := cli.Tickets(ctx, 10, bad)
+		if iter.Next() {
+			t.Fatal("expected Next() to be false for an invalid FilterArg")
+		}
+		if iter.Err() == nil {
+			t.Fatal("expected Err() to report the invalid FilterArg")
+		}
+	})
+
+	t.Run("PortLists", func(t *testing.T) {
+		iter := cli.PortLists(ctx, 10, bad)
+		if iter.Next() {
+			t.Fatal("expected Next() to be false for an invalid FilterArg")
+		}
+		if iter.Err() == nil {
+			t.Fatal("expected Err() to report the invalid FilterArg")
+		}
+	})
+
+	t.Run("Settings", func(t *testing.T) {
+		iter := cli.Settings(ctx, 10, bad)
+		if iter.Next() {
+			t.Fatal("expected Next() to be false for an invalid FilterArg")
+		}
+		if iter.Err() == nil {
+			t.Fatal("expected Err() to report the invalid FilterArg")
+		}
+	})
+}

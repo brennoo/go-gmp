@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/brennoo/go-gmp"
 	"github.com/brennoo/go-gmp/commands"
@@ -42,7 +43,10 @@ func (cli *client) GetConfigsRaw(ctx context.Context, cmd *commands.GetConfigs) 
 
 // GetConfigs retrieves configs with optional filters.
 func (cli *client) GetConfigs(ctx context.Context, args ...filtering.FilterArg) (*commands.GetConfigsResponse, error) {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetConfigs: %w", err)
+	}
 	cmd := &commands.GetConfigs{
 		Filter: filter,
 	}
@@ -56,7 +60,10 @@ func (cli *client) GetScannersRaw(ctx context.Context, cmd *commands.GetScanners
 
 // GetScanners retrieves scanners with optional filters.
 func (cli *client) GetScanners(ctx context.Context, args ...filtering.FilterArg) (*commands.GetScannersResponse, error) {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetScanners: %w", err)
+	}
 	cmd := &commands.GetScanners{
 		Filter: filter,
 	}
@@ -98,7 +105,10 @@ func (cli *client) GetTargetsRaw(ctx context.Context, cmd *commands.GetTargets) 
 
 // GetTargets retrieves targets with optional filters.
 func (cli *client) GetTargets(ctx context.Context, args ...filtering.FilterArg) (*commands.GetTargetsResponse, error) {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetTargets: %w", err)
+	}
 	cmd := &commands.GetTargets{
 		Filter: filter,
 	}
@@ -116,7 +126,10 @@ func (cli *client) GetPortListsRaw(ctx context.Context, cmd *commands.GetPortLis
 
 // GetPortLists retrieves port lists with optional filters.
 func (cli *client) GetPortLists(ctx context.Context, args ...filtering.FilterArg) (*commands.GetPortListsResponse, error) {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetPortLists: %w", err)
+	}
 	cmd := &commands.GetPortLists{
 		Filter: filter,
 	}
@@ -134,7 +147,10 @@ func (cli *client) GetTasksRaw(ctx context.Context, cmd *commands.GetTasks) (*co
 
 // GetTasks retrieves tasks with optional filters.
 func (cli *client) GetTasks(ctx context.Context, args ...filtering.FilterArg) (*commands.GetTasksResponse, error) {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetTasks: %w", err)
+	}
 	cmd := &commands.GetTasks{
 		Filter: filter,
 	}
@@ -156,7 +172,10 @@ func (cli *client) GetResultsRaw(ctx context.Context, cmd *commands.GetResults) 
 
 // GetResults retrieves results with optional filters.
 func (cli *client) GetResults(ctx context.Context, args ...filtering.FilterArg) (*commands.GetResultsResponse, error) {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetResults: %w", err)
+	}
 	cmd := &commands.GetResults{
 		Filter: filter,
 	}
@@ -170,7 +189,10 @@ func (cli *client) GetVulnsRaw(ctx context.Context, cmd *commands.GetVulns) (*co
 
 // GetVulns retrieves vulnerabilities with optional filters.
 func (cli *client) GetVulns(ctx context.Context, args ...filtering.FilterArg) (*commands.GetVulnsResponse, error) {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetVulns: %w", err)
+	}
 	cmd := &commands.GetVulns{
 		Filter: filter,
 	}
@@ -216,7 +238,10 @@ func (cli *client) GetAssetsRaw(ctx context.Context, cmd *commands.GetAssets) (*
 
 // GetAssets retrieves assets with optional filters.
 func (cli *client) GetAssets(ctx context.Context, args ...filtering.FilterArg) (*commands.GetAssetsResponse, error) {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetAssets: %w", err)
+	}
 	cmd := &commands.GetAssets{
 		Filter: filter,
 	}
@@ -258,7 +283,10 @@ func (cli *client) GetOverridesRaw(ctx context.Context, cmd *commands.GetOverrid
 
 // GetOverrides retrieves overrides with optional filters.
 func (cli *client) GetOverrides(ctx context.Context, args ...filtering.FilterArg) (*commands.GetOverridesResponse, error) {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetOverrides: %w", err)
+	}
 	cmd := &commands.GetOverrides{
 		Filter: filter,
 	}
@@ -420,7 +448,10 @@ func (cli *client) GetTLSCertificatesRaw(ctx context.Context, cmd *commands.GetT
 
 // GetTLSCertificates retrieves TLS certificates with optional filters.
 func (cli *client) GetTLSCertificates(ctx context.Context, args ...filtering.FilterArg) (*commands.GetTLSCertificatesResponse, error) {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetTLSCertificates: %w", err)
+	}
 	cmd := &commands.GetTLSCertificates{
 		Filter: filter,
 	}
@@ -470,7 +501,10 @@ func (cli *client) GetSettingsRaw(ctx context.Context, cmd *commands.GetSettings
 
 // GetSettings retrieves settings with optional filters.
 func (cli *client) GetSettings(ctx context.Context, args ...filtering.FilterArg) (*commands.GetSettingsResponse, error) {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetSettings: %w", err)
+	}
 	cmd := &commands.GetSettings{
 		Filter: filter,
 	}
@@ -484,7 +518,10 @@ func (cli *client) GetResourceNamesRaw(ctx context.Context, cmd *commands.GetRes
 
 // GetResourceNames retrieves resource names with optional filters.
 func (cli *client) GetResourceNames(ctx context.Context, args ...filtering.FilterArg) (*commands.GetResourceNamesResponse, error) {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetResourceNames: %w", err)
+	}
 	cmd := &commands.GetResourceNames{
 		Filter: filter,
 	}
@@ -498,7 +535,10 @@ func (cli *client) GetAggregatesRaw(ctx context.Context, cmd *commands.GetAggreg
 
 // GetAggregates retrieves aggregates with optional filters.
 func (cli *client) GetAggregates(ctx context.Context, args ...filtering.FilterArg) (*commands.GetAggregatesResponse, error) {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetAggregates: %w", err)
+	}
 	cmd := &commands.GetAggregates{
 		Filter: filter,
 	}
@@ -540,7 +580,10 @@ func (cli *client) GetUsersRaw(ctx context.Context, cmd *commands.GetUsers) (*co
 
 // GetUsers retrieves users with optional filters.
 func (cli *client) GetUsers(ctx context.Context, args ...filtering.FilterArg) (*commands.GetUsersResponse, error) {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetUsers: %w", err)
+	}
 	cmd := &commands.GetUsers{
 		Filter: filter,
 	}
@@ -614,7 +657,10 @@ func (cli *client) GetTagsRaw(ctx context.Context, cmd *commands.GetTags) (*comm
 
 // GetTags retrieves tags with optional filters.
 func (cli *client) GetTags(ctx context.Context, args ...filtering.FilterArg) (*commands.GetTagsResponse, error) {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetTags: %w", err)
+	}
 	cmd := &commands.GetTags{
 		Filter: filter,
 	}
@@ -656,7 +702,10 @@ func (cli *client) GetFiltersRaw(ctx context.Context, cmd *commands.GetFilters) 
 
 // GetFilters retrieves filters with optional filters.
 func (cli *client) GetFilters(ctx context.Context, args ...filtering.FilterArg) (*commands.GetFiltersResponse, error) {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetFilters: %w", err)
+	}
 	cmd := &commands.GetFilters{
 		Filter: filter,
 	}
@@ -682,7 +731,10 @@ func (cli *client) GetTicketsRaw(ctx context.Context, cmd *commands.GetTickets) 
 
 // GetTickets retrieves tickets with optional filters.
 func (cli *client) GetTickets(ctx context.Context, args ...filtering.FilterArg) (*commands.GetTicketsResponse, error) {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetTickets: %w", err)
+	}
 	cmd := &commands.GetTickets{
 		Filter: filter,
 	}
@@ -695,7 +747,10 @@ func (cli *client) DeleteTicket(ctx context.Context, cmd *commands.DeleteTicket)
 
 // Tasks returns an iterator for tasks.
 func (cli *client) Tasks(ctx context.Context, pageSize int, args ...filtering.FilterArg) *pagination.TaskIterator {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return pagination.NewFailedIterator[*commands.Task](fmt.Errorf("Tasks: %w", err))
+	}
 	var filters []string
 	if filter != "" {
 		filters = []string{filter}
@@ -706,7 +761,10 @@ func (cli *client) Tasks(ctx context.Context, pageSize int, args ...filtering.Fi
 
 // Results returns an iterator for results.
 func (cli *client) Results(ctx context.Context, pageSize int, args ...filtering.FilterArg) *pagination.ResultIterator {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return pagination.NewFailedIterator[*commands.Result](fmt.Errorf("Results: %w", err))
+	}
 	var filters []string
 	if filter != "" {
 		filters = []string{filter}
@@ -717,7 +775,10 @@ func (cli *client) Results(ctx context.Context, pageSize int, args ...filtering.
 
 // Assets returns an iterator for assets.
 func (cli *client) Assets(ctx context.Context, pageSize int, args ...filtering.FilterArg) *pagination.AssetIterator {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return pagination.NewFailedIterator[*commands.GetAssetsAsset](fmt.Errorf("Assets: %w", err))
+	}
 	var filters []string
 	if filter != "" {
 		filters = []string{filter}
@@ -728,7 +789,10 @@ func (cli *client) Assets(ctx context.Context, pageSize int, args ...filtering.F
 
 // Targets returns an iterator for targets.
 func (cli *client) Targets(ctx context.Context, pageSize int, args ...filtering.FilterArg) *pagination.TargetIterator {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return pagination.NewFailedIterator[*commands.Target](fmt.Errorf("Targets: %w", err))
+	}
 	var filters []string
 	if filter != "" {
 		filters = []string{filter}
@@ -739,7 +803,10 @@ func (cli *client) Targets(ctx context.Context, pageSize int, args ...filtering.
 
 // Tickets returns an iterator for tickets.
 func (cli *client) Tickets(ctx context.Context, pageSize int, args ...filtering.FilterArg) *pagination.TicketIterator {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return pagination.NewFailedIterator[*commands.Ticket](fmt.Errorf("Tickets: %w", err))
+	}
 	var filters []string
 	if filter != "" {
 		filters = []string{filter}
@@ -750,7 +817,10 @@ func (cli *client) Tickets(ctx context.Context, pageSize int, args ...filtering.
 
 // PortLists returns an iterator for port lists.
 func (cli *client) PortLists(ctx context.Context, pageSize int, args ...filtering.FilterArg) *pagination.PortListIterator {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return pagination.NewFailedIterator[*commands.PortList](fmt.Errorf("PortLists: %w", err))
+	}
 	var filters []string
 	if filter != "" {
 		filters = []string{filter}
@@ -761,7 +831,10 @@ func (cli *client) PortLists(ctx context.Context, pageSize int, args ...filterin
 
 // Settings returns an iterator for settings.
 func (cli *client) Settings(ctx context.Context, pageSize int, args ...filtering.FilterArg) *pagination.SettingsIterator {
-	filter := filtering.BuildFilterFromArgs(args...)
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return pagination.NewFailedIterator[*commands.SettingsSetting](fmt.Errorf("Settings: %w", err))
+	}
 	var filters []string
 	if filter != "" {
 		filters = []string{filter}

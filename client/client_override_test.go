@@ -82,6 +82,26 @@ func TestGetOverrides(t *testing.T) {
 	}
 }
 
+// TestGetOverridesRejectsTypedRequestStruct pins T-29's fail-closed fix.
+// GetOverrides takes ...filtering.FilterArg, not *commands.GetOverrides;
+// passing the request struct compiles (FilterArg is interface{}) but used to
+// be silently dropped from the filter, sending an unfiltered query with no
+// error at all — exactly the mistake T-28's TestExplicitEmptySemantics made
+// independently against GetOverrides/GetConfigs/GetPortLists before noticing
+// the resulting query was unfiltered.
+func TestGetOverridesRejectsTypedRequestStruct(t *testing.T) {
+	cli := New(MockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	ctx := context.Background()
+	_, err := cli.GetOverrides(ctx, &commands.GetOverrides{OverrideID: "b76b81a7-9df8-42df-afff-baa9d4620128"})
+	if err == nil {
+		t.Fatal("GetOverrides succeeded with a *commands.GetOverrides FilterArg; want an unsupported-type error")
+	}
+}
+
 func TestModifyOverride(t *testing.T) {
 	cli := New(MockedConnection())
 	if cli == nil {

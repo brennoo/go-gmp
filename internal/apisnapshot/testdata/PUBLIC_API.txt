@@ -22,7 +22,7 @@ without a matching Client entry is a compile error, not something this
 golden needs to also catch.
 
 total packages: 6
-total exported declarations: 1816
+total exported declarations: 1817
 
 ## github.com/brennoo/go-gmp
 
@@ -8147,7 +8147,7 @@ func BuildConsolidatedFilter(stringFilters []string, opts ...Option) string
 
 func BuildFilter(opts ...Option) string
 
-func BuildFilterFromArgs(args ...FilterArg) string
+func BuildFilterFromArgs(args ...FilterArg) (string, error)
 
 func BuildFilterWithPagination(page, pageSize int, opts ...Option) string
 
@@ -9311,6 +9311,8 @@ func (it *Iterator[T]) Next() bool
 func (it *Iterator[T]) Total() int
 
 func NewAssetIterator(client Client, ctx context.Context, opts PaginationOptions, filters ...string) *AssetIterator
+
+func NewFailedIterator[T any](err error) *Iterator[T]
 
 func NewPortListIterator(client Client, ctx context.Context, opts PaginationOptions, filters ...string) *PortListIterator
 

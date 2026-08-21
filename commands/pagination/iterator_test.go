@@ -22,6 +22,23 @@ func TestIterator_RequiresFactoryFunctions(t *testing.T) {
 	}
 }
 
+// Test NewFailedIterator reports the given error immediately, without
+// touching the client — the shape T-29's fail-closed FilterArg fix needs
+// for a constructor that can fail before any page is ever fetched.
+func TestNewFailedIterator(t *testing.T) {
+	wantErr := errors.New("invalid filter argument")
+	it := NewFailedIterator[*struct{}](wantErr)
+	if it.Next() {
+		t.Fatalf("expected Next() to be false")
+	}
+	if it.Err() != wantErr {
+		t.Fatalf("Err() = %v, want %v", it.Err(), wantErr)
+	}
+	if it.HasMore() {
+		t.Fatalf("expected HasMore() to be false")
+	}
+}
+
 // Test Close stops iteration and HasMore immediately.
 func TestIterator_CloseStopsImmediately(t *testing.T) {
 	cli := &testClient{}
