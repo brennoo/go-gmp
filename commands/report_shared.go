@@ -253,7 +253,7 @@ type ReportNVT struct {
 	Severities ReportSeverities `xml:"severities"`
 	CPE        string           `xml:"cpe"`
 	Tags       string           `xml:"tags"`
-	Refs       ReportRefs       `xml:"refs"`
+	Refs       *ReportRefs      `xml:"refs,omitempty"`
 	EPSS       *ReportEPSS      `xml:"epss,omitempty"`
 }
 

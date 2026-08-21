@@ -810,6 +810,9 @@ func (g *gen) validateFieldTypeOverrides() error {
 			if _, err := parser.ParseExpr(e.GoType); err != nil {
 				return fmt.Errorf("codegen: FieldTypeOverrides[%q][%d]: GoType %q is not a valid Go type expression: %w", key, i, e.GoType, err)
 			}
+			if e.Pointer && strings.HasPrefix(e.GoType, "*") {
+				return fmt.Errorf("codegen: FieldTypeOverrides[%q][%d]: Pointer is set but GoType %q is already a pointer", key, i, e.GoType)
+			}
 			na := nameAttr{name: e.Name, attr: e.Attr}
 			if seen[na] {
 				return fmt.Errorf("codegen: FieldTypeOverrides[%q]: duplicate wire name %q (attr=%v)", key, e.Name, e.Attr)
@@ -1708,13 +1711,15 @@ type field struct {
 // RequiredOverrides; it is "" when n belongs to a nested struct (emitStruct),
 // since a shape shared by more than one command has no single owner for
 // either table to key on — see PointerOverrides' doc comment.
-func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool, typeOv map[fieldKey]string) (field, error) {
+func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool, typeOv map[fieldKey]typeOverride) (field, error) {
 	base, err := g.goTypeOf(n)
 	if err != nil {
 		return field{}, err
 	}
+	forcedPointer := false
 	if t, ok := typeOv[fieldKey{name: n.Name, attr: n.Kind == schema.KindAttribute}]; ok {
-		base = t
+		base = t.goType
+		forcedPointer = t.pointer
 	}
 	goType, opts := base, ""
 	var overrideReason string
@@ -1735,7 +1740,7 @@ func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool, type
 		opts = ",omitempty"
 	case n.Card == schema.CardRequired:
 		var err error
-		goType, opts, overrideReason, err = g.requiredFieldType(command, n, base)
+		goType, opts, overrideReason, err = g.requiredFieldType(command, n, base, forcedPointer)
 		if err != nil {
 			return field{}, err
 		}
@@ -1744,6 +1749,14 @@ func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool, type
 	overrideReason, err = g.withChardataRelocationReason(command, n, overrideReason)
 	if err != nil {
 		return field{}, err
+	}
+	if n.PatchReason != "" {
+		if overrideReason != "" {
+			return field{}, fmt.Errorf(
+				"codegen: %s.%s: has both a SchemaPatch reason and another override/relocation reason; "+
+					"ambiguous which gmpoverride tag to emit", command, n.Name)
+		}
+		overrideReason = n.PatchReason
 	}
 
 	tag := n.Name
@@ -1765,7 +1778,14 @@ func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool, type
 // wrapper struct's own zero value (all-zero Value/Filtered/Page) is otherwise
 // indistinguishable from "genuinely absent," fabricating an element the wire
 // never sent.
-func (g *gen) requiredFieldType(command string, n *schema.Node, base string) (goType, opts, overrideReason string, err error) {
+//
+// forcedPointer is FieldTypeOverrides[...].Pointer for this field: the same
+// structured-pointer exception RequiredOverrides applies via the "command"
+// case above, reached here instead because the field belongs to a nested,
+// structurally-deduplicated shape with no single owning command for
+// RequiredOverrides' "<command>.<field>" key to name (see get_results/
+// get_reports/create_report/get_notes/get_overrides' shared NVT struct).
+func (g *gen) requiredFieldType(command string, n *schema.Node, base string, forcedPointer bool) (goType, opts, overrideReason string, err error) {
 	goType = base
 	key := command + "." + n.Name
 	if _, ok := g.ro[key]; ok {
@@ -1778,6 +1798,17 @@ func (g *gen) requiredFieldType(command string, n *schema.Node, base string) (go
 					"non-string scalar field", key, base)
 		}
 		g.roConsumed[key] = true
+		opts = ",omitempty"
+	}
+	if forcedPointer {
+		if len(n.Children) == 0 {
+			return "", "", "", fmt.Errorf(
+				"codegen: FieldTypeOverrides[%q]: Pointer is only evidenced for structured fields, "+
+					"got a scalar leaf (Go type %q); a scalar's own zero value is either always meaningful "+
+					"(pointerScalars) or always equivalent to absence, so no live evidence yet justifies "+
+					"this exception for one", key, base)
+		}
+		goType = "*" + base
 		opts = ",omitempty"
 	}
 	// CardinalityOverrides names this field as one the schema declares
@@ -2040,6 +2071,15 @@ type fieldKey struct {
 	attr bool
 }
 
+// typeOverride is fieldTypeOverridesFor's per-field resolution: the retyped
+// Go type, and whether FieldTypeOverride.Pointer additionally forces it to a
+// pointer with omitempty despite the schema marking the field required — see
+// FieldTypeOverride's doc comment.
+type typeOverride struct {
+	goType  string
+	pointer bool
+}
+
 // envelopeAttrs are the response attributes emitRequest/emitResponse already
 // declare by hand, and must not be declared a second time from the schema.
 var envelopeAttrs = map[fieldKey]bool{
@@ -2249,11 +2289,11 @@ func fieldKeySetEqual(a, b map[fieldKey]bool) bool {
 // discipline: every use must resolve to the same retype set, or a correction
 // on one use could leak onto a structurally-deduplicated sibling use that had
 // none.
-func (g *gen) fieldTypeOverridesFor(st *structType) (map[fieldKey]string, error) {
+func (g *gen) fieldTypeOverridesFor(st *structType) (map[fieldKey]typeOverride, error) {
 	seen := map[string]bool{}
 	haveFirst := false
 	var firstKey string
-	var first map[fieldKey]string
+	var first map[fieldKey]typeOverride
 
 	for _, u := range st.uses {
 		key := fieldOverrideKey(u.command, u.path, st.node.Name)
@@ -2262,11 +2302,11 @@ func (g *gen) fieldTypeOverridesFor(st *structType) (map[fieldKey]string, error)
 		}
 		seen[key] = true
 
-		res := map[fieldKey]string{}
+		res := map[fieldKey]typeOverride{}
 		if entries, ok := g.tov[key]; ok {
 			g.tovConsumed[key] = true
 			for _, e := range entries {
-				res[fieldKey{name: e.Name, attr: e.Attr}] = e.GoType
+				res[fieldKey{name: e.Name, attr: e.Attr}] = typeOverride{goType: e.GoType, pointer: e.Pointer}
 			}
 		}
 
@@ -2286,7 +2326,7 @@ func (g *gen) fieldTypeOverridesFor(st *structType) (map[fieldKey]string, error)
 
 // fieldTypeSetEqual compares two fieldTypeOverridesFor results for value
 // equality, mirroring fieldKeySetEqual's role for fieldSuppressionsFor.
-func fieldTypeSetEqual(a, b map[fieldKey]string) bool {
+func fieldTypeSetEqual(a, b map[fieldKey]typeOverride) bool {
 	if len(a) != len(b) {
 		return false
 	}
@@ -2403,7 +2443,7 @@ func ownerOfUses(uses []use) string {
 // field routing rejects two fields with an identical explicit tag outright.
 // Attribute names cannot collide this way: a start tag cannot declare one
 // attribute twice.
-func (g *gen) emitFields(kids []*schema.Node, used map[string]bool, skip map[fieldKey]bool, typeOv map[fieldKey]string, command string) ([]field, bool, error) {
+func (g *gen) emitFields(kids []*schema.Node, used map[string]bool, skip map[fieldKey]bool, typeOv map[fieldKey]typeOverride, command string) ([]field, bool, error) {
 	var fields []field
 	seen := map[string]bool{}
 	collided := false
@@ -2430,6 +2470,14 @@ func (g *gen) emitFields(kids []*schema.Node, used map[string]bool, skip map[fie
 
 func writeField(b *strings.Builder, f field) {
 	switch {
+	case f.wireTag != "" && f.overrideReason != "":
+		// A collision-group member (get_info's schema-patched wrapper
+		// sibling) that also needs a suppression reason: gmpwire and
+		// gmpoverride are independent tag keys — internal/schema/gomodel.go's
+		// leafNode reads gmpoverride unconditionally, regardless of which
+		// path (xml or gmpwire) supplied the field's name/opts — so both can
+		// coexist on one field without either shadowing the other.
+		fmt.Fprintf(b, "%s %s `xml:%q gmpwire:%q gmpoverride:%q`\n", f.name, f.goType, f.tag, f.wireTag, f.overrideReason)
 	case f.wireTag != "":
 		// gmpwire carries this field's real wire identity for
 		// internal/schema/gomodel.go's addField to recover by reflection —
@@ -2610,13 +2658,19 @@ func (g *gen) emitCollisionUnmarshal(b *strings.Builder, typeName string, hasXML
 		}
 		fmt.Fprintf(b, "idx, err := %s(t.Attr)\n", classifyFuncName(typeName, name))
 		b.WriteString("if err != nil {\nreturn err\n}\n")
-		fmt.Fprintf(b, "if seen%s[idx] {\n", goName(name))
-		fmt.Fprintf(b, "return errors.New(%q)\n", fmt.Sprintf("%s: unexpected extra <%s> element", typeName, name))
-		b.WriteString("}\n")
-		fmt.Fprintf(b, "seen%s[idx] = true\n", goName(name))
 		b.WriteString("switch idx {\n")
 		for i, f := range fs {
 			fmt.Fprintf(b, "case %d:\n", i)
+			// A slice member (get_info's repeated data-item variant, alongside
+			// its singular pagination-wrapper sibling) legitimately occurs more
+			// than once; only a non-slice member's second occurrence is a real
+			// defect worth failing closed on.
+			if !strings.HasPrefix(f.goType, "[]") {
+				fmt.Fprintf(b, "if seen%s[%d] {\n", goName(name), i)
+				fmt.Fprintf(b, "return errors.New(%q)\n", fmt.Sprintf("%s: unexpected extra <%s> element", typeName, name))
+				b.WriteString("}\n")
+				fmt.Fprintf(b, "seen%s[%d] = true\n", goName(name), i)
+			}
 			b.WriteString(decodeInto("r."+f.name, f))
 		}
 		b.WriteString("}\n")

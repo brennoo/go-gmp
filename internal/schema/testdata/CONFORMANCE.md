@@ -36,8 +36,8 @@ optionality is trusted and request-side is not.
 commands compared:            122
 fully conformant:             100
 with actionable findings:     22
-actionable findings:          73  (request 46, response 27)
-suppressed findings:          153
+actionable findings:          72  (request 46, response 26)
+suppressed findings:          160
 confirmed by fidelity corpus: 6
 in the schema, not in Go:     0
 in Go, not in the schema:     0
@@ -46,10 +46,10 @@ in Go, not in the schema:     0
 
                  actionable suppressed
   MISSING                12         25
-  EXTRA                  56         70
+  EXTRA                  55         72
   CARDINALITY             0          2
   KIND                    0          0
-  OMITEMPTY               0         56
+  OMITEMPTY               0         61
   TYPE                    5          0
   SCHEMA-DEFECT         128          0
 
@@ -88,7 +88,6 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_reports                   3   EXTRA=3
   get_credentials               2   EXTRA=2
   get_info                      2   EXTRA=1  TYPE=1
-  get_results                   2   EXTRA=2
   get_scanners                  2   EXTRA=2
   modify_target                 2   MISSING=1  EXTRA=1
   create_target                 1   EXTRA=1
@@ -99,6 +98,7 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_overrides                 1   EXTRA=1
   get_report_configs            1   MISSING=1
   get_resource_names            1   TYPE=1
+  get_results                   1   EXTRA=1
   get_system_reports            1   TYPE=1
   get_targets                   1   EXTRA=1
   ... and 2 more with fewer
@@ -182,7 +182,7 @@ conformant
 
 ### create_report  (command_create_report.xml)
 
-EXTRA=3  OMITEMPTY=2  SCHEMA-DEFECT=12
+EXTRA=3  OMITEMPTY=3  SCHEMA-DEFECT=12
 
   EXTRA         request  /create_report/report/report/cves
                 Go field CVEs *commands.ReportCVEs has no counterpart in the schema
@@ -194,6 +194,8 @@ EXTRA=3  OMITEMPTY=2  SCHEMA-DEFECT=12
                 schema says required, Max is tagged omitempty  [suppressed: inside <or>; only one branch is ever present]
   OMITEMPTY     request  /create_report/report/report/hosts/@start
                 schema says required, Start is tagged omitempty  [suppressed: inside <or>; only one branch is ever present]
+  OMITEMPTY     request  /create_report/report/report/results/result/nvt/refs
+                schema says required, Refs is tagged omitempty  [suppressed: request-side over-constraint]
   SCHEMA-DEFECT request  /create_report/report/name
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT request  /create_report/report/report/apps/count
@@ -669,10 +671,12 @@ MISSING=1  EXTRA=2  OMITEMPTY=1
 
 ### get_info  (command_get_info.xml)
 
-MISSING=1  EXTRA=3  OMITEMPTY=1  TYPE=1  SCHEMA-DEFECT=1
+MISSING=1  EXTRA=4  OMITEMPTY=1  TYPE=1  SCHEMA-DEFECT=1
 
   MISSING       response /get_info_response/sort/#text
                 schema also declares character data (text) here; Go commands.NVTSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
+  EXTRA         response /get_info_response/info
+                Go field Info2 *commands.GetInfoInfo has no counterpart in the schema  [suppressed: T-26: get_info's pagination wrapper (<info start max>) shares its element name with the data item but is schema-undeclared — see docs/review-2026-08.md's T-26 entry]
   EXTRA         response /get_info_response/info/web_application_vt
                 Go field WebApplicationVT *commands.NVTWebApplicationVT has no counterpart in the schema
   EXTRA         response /get_info_response/info_count/#text
@@ -695,7 +699,7 @@ SCHEMA-DEFECT=1
 
 ### get_notes  (command_get_notes.xml)
 
-MISSING=1  EXTRA=3  OMITEMPTY=1  SCHEMA-DEFECT=3
+MISSING=1  EXTRA=3  OMITEMPTY=2  SCHEMA-DEFECT=3
 
   MISSING       response /get_notes_response/sort/#text
                 schema also declares character data (text) here; Go commands.NoteSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
@@ -705,6 +709,8 @@ MISSING=1  EXTRA=3  OMITEMPTY=1  SCHEMA-DEFECT=3
                 Go *commands.NoteCount has a `,chardata` field; schema declares no character data here  [suppressed: T-23: count-wrapper chardata total is schema-undeclared]
   EXTRA         response /get_notes_response/sort/field/#text
                 Go commands.NoteField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
+  OMITEMPTY     response /get_notes_response/note/result/nvt/refs
+                schema says required, Refs is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
   OMITEMPTY     response /get_notes_response/note_count
                 schema says required, NoteCount is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
   SCHEMA-DEFECT response /get_notes_response/note/active
@@ -733,7 +739,7 @@ EXTRA=1  CARDINALITY=1  OMITEMPTY=2
 
 ### get_overrides  (command_get_overrides.xml)
 
-MISSING=1  EXTRA=3  OMITEMPTY=1  SCHEMA-DEFECT=3
+MISSING=1  EXTRA=3  OMITEMPTY=2  SCHEMA-DEFECT=3
 
   MISSING       response /get_overrides_response/sort/#text
                 schema also declares character data (text) here; Go commands.OverrideSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
@@ -743,6 +749,8 @@ MISSING=1  EXTRA=3  OMITEMPTY=1  SCHEMA-DEFECT=3
                 Go *commands.OverrideCount has a `,chardata` field; schema declares no character data here  [suppressed: T-23: count-wrapper chardata total is schema-undeclared]
   EXTRA         response /get_overrides_response/sort/field/#text
                 Go commands.OverrideField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
+  OMITEMPTY     response /get_overrides_response/override/result/nvt/refs
+                schema says required, Refs is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
   OMITEMPTY     response /get_overrides_response/override_count
                 schema says required, OverrideCount is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
   SCHEMA-DEFECT response /get_overrides_response/override/active
@@ -824,7 +832,7 @@ MISSING=1  EXTRA=3  OMITEMPTY=1
 
 ### get_reports  (command_get_reports.xml)
 
-MISSING=1  EXTRA=5  OMITEMPTY=2  SCHEMA-DEFECT=12
+MISSING=1  EXTRA=5  OMITEMPTY=3  SCHEMA-DEFECT=12
 
   MISSING       response /get_reports_response/sort/#text
                 schema also declares character data (text) here; Go *commands.GetReportsSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
@@ -842,6 +850,8 @@ MISSING=1  EXTRA=5  OMITEMPTY=2  SCHEMA-DEFECT=12
                 schema says required, Max is tagged omitempty  [suppressed: inside <or>; only one branch is ever present]
   OMITEMPTY     response /get_reports_response/report/report/hosts/@start
                 schema says required, Start is tagged omitempty  [suppressed: inside <or>; only one branch is ever present]
+  OMITEMPTY     response /get_reports_response/report/report/results/result/nvt/refs
+                schema says required, Refs is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
   SCHEMA-DEFECT response /get_reports_response/report/name
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_reports_response/report/report/apps/count
@@ -878,18 +888,20 @@ TYPE=1  SCHEMA-DEFECT=1
 
 ### get_results  (command_get_results.xml)
 
-MISSING=1  EXTRA=4  SCHEMA-DEFECT=4
+MISSING=1  EXTRA=4  OMITEMPTY=1  SCHEMA-DEFECT=4
 
   MISSING       response /get_results_response/sort/#text
                 schema also declares character data (text) here; Go commands.ResultSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
   EXTRA         response /get_results_response/result/nvt/solution
-                Go field Solution *commands.ResultSolution has no counterpart in the schema
+                Go field Solution *commands.ResultSolution has no counterpart in the schema  [suppressed: T-9 result review, finding 1: internal/codegen/testdata/schema/get_results.json's result/nvt node has no solution child, but all 4 live fixtures (internal/gmptest/testdata/live/get_results/00{1,2,3,4}_response.xml) send <solution type=''> right after </tags>, retained as DROPPED in every one of those fixtures' own _fidelity.txt. The full shape — optional element, chardata text plus optional type/method attributes — is the exact declaration get_nvts' OWN live schema snapshot (internal/codegen/testdata/schema/get_nvts.json's get_nvts_response/nvt/solution) already carries for the identical nvt/solution reuse, already proven correct as commands.NVTSolution (commands/get_nvts.go); no live get_results fixture happens to send a non-empty type, method or text, so those parts are evidenced by get_nvts' own schema declaration and generated type, not by get_results' own captures]
   EXTRA         response /get_results_response/result/oci_image
                 Go field OCIImage *commands.ResultOCIImage has no counterpart in the schema
   EXTRA         response /get_results_response/result_count/#text
                 Go *commands.ResultCount has a `,chardata` field; schema declares no character data here  [suppressed: T-23: count-wrapper chardata total is schema-undeclared]
   EXTRA         response /get_results_response/sort/field/#text
                 Go commands.ResultField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
+  OMITEMPTY     response /get_results_response/result/nvt/refs
+                schema says required, Refs is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
   SCHEMA-DEFECT response /get_results_response/result/delta/notes/note/active
                 duplicate-ele: redefined in the same scope
   SCHEMA-DEFECT response /get_results_response/result/delta/overrides/override/active

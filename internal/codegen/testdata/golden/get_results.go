@@ -136,8 +136,8 @@ type ResultNVT struct {
 	Severities ResultSeverities `xml:"severities"`
 	CPE        string           `xml:"cpe"`
 	Tags       string           `xml:"tags"`
-	Solution   *ResultSolution  `xml:"solution,omitempty"`
-	Refs       ResultRefs       `xml:"refs"`
+	Solution   *ResultSolution  `xml:"solution,omitempty" gmpoverride:"T-9 result review, finding 1: internal/codegen/testdata/schema/get_results.json's result/nvt node has no solution child, but all 4 live fixtures (internal/gmptest/testdata/live/get_results/00{1,2,3,4}_response.xml) send <solution type=''> right after </tags>, retained as DROPPED in every one of those fixtures' own _fidelity.txt. The full shape — optional element, chardata text plus optional type/method attributes — is the exact declaration get_nvts' OWN live schema snapshot (internal/codegen/testdata/schema/get_nvts.json's get_nvts_response/nvt/solution) already carries for the identical nvt/solution reuse, already proven correct as commands.NVTSolution (commands/get_nvts.go); no live get_results fixture happens to send a non-empty type, method or text, so those parts are evidenced by get_nvts' own schema declaration and generated type, not by get_results' own captures"`
+	Refs       *ResultRefs      `xml:"refs,omitempty"`
 	EPSS       *ResultEPSS      `xml:"epss,omitempty"`
 }
 
@@ -159,8 +159,8 @@ type ResultSeverity struct {
 // ResultSolution is the <solution> element of get_results. See the GMP protocol docs for details.
 type ResultSolution struct {
 	Value  string `xml:",chardata"`
-	Type   string `xml:"type,attr,omitempty"`
-	Method string `xml:"method,attr,omitempty"`
+	Type   string `xml:"type,attr,omitempty" gmpoverride:"see the solution entry above: get_nvts' own schema declares solution/@type optional text; all 4 live get_results fixtures send it present but empty (type='')"`
+	Method string `xml:"method,attr,omitempty" gmpoverride:"see the solution entry above: get_nvts' own schema declares solution/@method optional text; no live get_results fixture ever sends it, matching get_nvts' own declaration of it as optional rather than evidencing its absence as a defect"`
 }
 
 // ResultRefs is the <refs> element of get_results. See the GMP protocol docs for details.

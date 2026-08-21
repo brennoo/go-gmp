@@ -16,4 +16,4 @@ ADDED
   /get_results_response/result/nvt/cpe                                     x2
 
 DUPLICATED
-  /get_results_response/result/nvt/refs                                    1 -> 2
+  (none)

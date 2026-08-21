@@ -148,6 +148,73 @@ func TestGetResultsOriginalSeverityAbsent(t *testing.T) {
 	}
 }
 
+// T-26: nvt/refs is schema-required, so a plain (non-pointer) field would
+// fabricate an empty <refs></refs> on remarshal for every NVT that never had
+// one — exactly the fabrication live/get_results/001_response.xml showed (1
+// of 5 <nvt> elements has <refs>, the other 4 don't; decoding then remarshaling
+// with the pre-fix non-pointer field produced 4 fabricated empty <refs>).
+func TestGetResultsNVTRefsAbsentStaysAbsent(t *testing.T) {
+	var nvt ResultNVT
+	if err := xml.Unmarshal([]byte(`<nvt></nvt>`), &nvt); err != nil {
+		t.Fatalf("Unmarshal: %v", err)
+	}
+	if nvt.Refs != nil {
+		t.Fatalf("Refs = %+v, want nil since the source never sent <refs>", nvt.Refs)
+	}
+
+	out, err := xml.Marshal(&nvt)
+	if err != nil {
+		t.Fatalf("Marshal: %v", err)
+	}
+	if strings.Contains(string(out), "<refs") {
+		t.Fatalf("Marshal = %s, want no fabricated <refs> element", out)
+	}
+}
+
+func TestGetResultsNVTRefsPresentRoundTrips(t *testing.T) {
+	var nvt ResultNVT
+	in := `<nvt><refs><ref id="CVE-2020-0001" type="cve"></ref></refs></nvt>`
+	if err := xml.Unmarshal([]byte(in), &nvt); err != nil {
+		t.Fatalf("Unmarshal: %v", err)
+	}
+	if nvt.Refs == nil || len(nvt.Refs.Ref) != 1 || nvt.Refs.Ref[0].ID != "CVE-2020-0001" {
+		t.Fatalf("Refs = %+v, want one ref with ID=CVE-2020-0001", nvt.Refs)
+	}
+
+	out, err := xml.Marshal(&nvt)
+	if err != nil {
+		t.Fatalf("Marshal: %v", err)
+	}
+	if !strings.Contains(string(out), `<refs><ref id="CVE-2020-0001" type="cve">`) {
+		t.Fatalf("Marshal = %s, want the present refs element preserved", out)
+	}
+}
+
+// TestGetResultsNVTRefsEmptyPresentSurvives is the presence-not-content
+// counterpart to TestGetResultsNVTRefsAbsentStaysAbsent: an NVT that sends
+// <refs></refs> with no <ref> children (unlike the absent case) must decode
+// to a non-nil pointer, not collapse to the same nil the absent case produces.
+func TestGetResultsNVTRefsEmptyPresentSurvives(t *testing.T) {
+	var nvt ResultNVT
+	if err := xml.Unmarshal([]byte(`<nvt><refs></refs></nvt>`), &nvt); err != nil {
+		t.Fatalf("Unmarshal: %v", err)
+	}
+	if nvt.Refs == nil {
+		t.Fatal("Refs = nil, want a non-nil pointer for a present-but-empty <refs>")
+	}
+	if len(nvt.Refs.Ref) != 0 {
+		t.Fatalf("Refs.Ref = %+v, want no ref entries", nvt.Refs.Ref)
+	}
+
+	out, err := xml.Marshal(&nvt)
+	if err != nil {
+		t.Fatalf("Marshal: %v", err)
+	}
+	if !strings.Contains(string(out), "<refs></refs>") {
+		t.Fatalf("Marshal = %s, want the present-but-empty refs element preserved", out)
+	}
+}
+
 // note.result and override.result are the same recursive "result inside a
 // result's own notes/overrides" shape the top-level Result models with 8
 // fields; the served schema itself declares this nested occurrence a plain

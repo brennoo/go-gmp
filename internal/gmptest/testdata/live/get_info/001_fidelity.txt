@@ -4,8 +4,6 @@ decode: ok
 namespaces-seen:
 
 DROPPED
-  /get_info_response/info/@max                                             x1
-  /get_info_response/info/@start                                           x1
   /get_info_response/info/in_use                                           x11  (+1 descendant paths)
   /get_info_response/info/writable                                         x11  (+1 descendant paths)
 
@@ -20,14 +18,4 @@ ADDED
   /get_info_response/details/#text                                         x1
 
 DUPLICATED
-  /get_info_response/info/comment                                          11 -> 12
-  /get_info_response/info/creation_time                                    11 -> 12
-  /get_info_response/info/creation_time/#text                              11 -> 12
-  /get_info_response/info/modification_time                                11 -> 12
-  /get_info_response/info/modification_time/#text                          11 -> 12
-  /get_info_response/info/name                                             11 -> 12
-  /get_info_response/info/owner                                            11 -> 12
-  /get_info_response/info/owner/name                                       11 -> 12
-  /get_info_response/info/permissions                                      11 -> 12
-  /get_info_response/info/update_time                                      11 -> 12
-  /get_info_response/info/update_time/#text                                11 -> 12
+  (none)

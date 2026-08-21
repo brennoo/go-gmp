@@ -92,16 +92,20 @@ func (r *GetFiltersResponse) UnmarshalXML(d *xml.Decoder, start xml.StartElement
 				if err != nil {
 					return err
 				}
-				if seenFilters[idx] {
-					return errors.New("GetFiltersResponse: unexpected extra <filters> element")
-				}
-				seenFilters[idx] = true
 				switch idx {
 				case 0:
+					if seenFilters[0] {
+						return errors.New("GetFiltersResponse: unexpected extra <filters> element")
+					}
+					seenFilters[0] = true
 					if err := d.DecodeElement(&r.Filters, &t); err != nil {
 						return err
 					}
 				case 1:
+					if seenFilters[1] {
+						return errors.New("GetFiltersResponse: unexpected extra <filters> element")
+					}
+					seenFilters[1] = true
 					if err := d.DecodeElement(&r.Filters2, &t); err != nil {
 						return err
 					}

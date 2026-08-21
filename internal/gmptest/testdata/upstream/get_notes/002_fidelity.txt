@@ -35,7 +35,6 @@ ADDED
   /get_notes_response/note/result/name                                     x1
   /get_notes_response/note/result/nvt/cpe                                  x1
   /get_notes_response/note/result/nvt/family                               x1
-  /get_notes_response/note/result/nvt/refs                                 x1
   /get_notes_response/note/result/nvt/tags                                 x1
   /get_notes_response/note/result/nvt/type                                 x1
   /get_notes_response/note/result/owner                                    x1

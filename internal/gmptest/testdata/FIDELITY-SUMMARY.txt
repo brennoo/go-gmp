@@ -12,7 +12,7 @@
 
 fixtures: 344   clean: 271   with-loss: 61   decode-errors: 12   advisory: 0
 commands with loss: 28 of 122
-distinct dropped paths: 104
+distinct dropped paths: 102
 
 ## Per fixture
 
@@ -168,8 +168,8 @@ get_groups                   live      001 clean         dropped=0   truncated=0
 get_groups                   live      002 clean         dropped=0   truncated=0   changed=0   added=0
 get_groups                   live      003 clean         dropped=0   truncated=0   changed=0   added=0
 get_groups                   upstream  001 ok            dropped=2   truncated=0   changed=0   added=3
-get_info                     live      001 ok            dropped=4   truncated=0   changed=0   added=2
-get_info                     live      002 ok            dropped=4   truncated=0   changed=0   added=2
+get_info                     live      001 ok            dropped=2   truncated=0   changed=0   added=2
+get_info                     live      002 ok            dropped=2   truncated=0   changed=0   added=2
 get_info                     live      003 clean         dropped=0   truncated=0   changed=0   added=9
 get_info                     upstream  001 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0
 get_info                     upstream  002 DECODE-ERROR  dropped=0   truncated=0   changed=0   added=0
@@ -179,7 +179,7 @@ get_notes                    live      001 clean         dropped=0   truncated=0
 get_notes                    live      002 clean         dropped=0   truncated=0   changed=0   added=0
 get_notes                    live      003 clean         dropped=0   truncated=0   changed=0   added=0
 get_notes                    upstream  001 ok            dropped=1   truncated=0   changed=0   added=14
-get_notes                    upstream  002 ok            dropped=3   truncated=0   changed=0   added=41
+get_notes                    upstream  002 ok            dropped=3   truncated=0   changed=0   added=40
 get_nvt_families             live      001 clean         dropped=0   truncated=0   changed=0   added=0
 get_nvt_families             upstream  001 ok            dropped=1   truncated=0   changed=0   added=0
 get_nvts                     upstream  001 ok            dropped=6   truncated=0   changed=0   added=2
@@ -188,7 +188,7 @@ get_overrides                live      001 clean         dropped=0   truncated=0
 get_overrides                live      002 clean         dropped=0   truncated=0   changed=0   added=0
 get_overrides                live      003 clean         dropped=0   truncated=0   changed=0   added=1
 get_overrides                upstream  001 ok            dropped=1   truncated=0   changed=1   added=17
-get_overrides                upstream  002 ok            dropped=2   truncated=0   changed=1   added=54
+get_overrides                upstream  002 ok            dropped=2   truncated=0   changed=1   added=53
 get_permissions              live      001 ok            dropped=2   truncated=0   changed=0   added=0
 get_permissions              live      002 ok            dropped=2   truncated=0   changed=0   added=0
 get_permissions              live      003 ok            dropped=2   truncated=0   changed=0   added=0

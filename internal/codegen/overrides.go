@@ -168,6 +168,20 @@ const t18aSortFieldReason = "T-18a: sort-field chardata is nested under <field>"
 // docs/review-2026-08.md's T-23 entry rather than repeated 25 times over.
 const t23CountTotalReason = "T-23: count-wrapper chardata total is schema-undeclared"
 
+// t26NVTRefsReason is the shared Reason for every T-26 nvt/refs pointer
+// entry below: the shared NVT struct's Refs field is schema-required but
+// only ever present when the underlying NVT actually carries references, so
+// a non-pointer field fabricates an empty <refs></refs> on every sibling NVT
+// that never had one on re-encode — the same fabrication class T-23b's
+// count-wrapper fix addressed, evidenced live at
+// internal/gmptest/testdata/live/get_results/001_response.xml (1 of 5 <nvt>
+// elements carries <refs>, the other 4 don't) and confirmed by decode-then-
+// remarshal producing 4 fabricated empty <refs> elements; see
+// docs/review-2026-08.md's T-26 entry.
+const t26NVTRefsReason = "T-26: nvt/refs is schema-required but only sometimes present on the wire, " +
+	"fabricating an empty <refs></refs> on remarshal for every sibling NVT that never had one — same " +
+	"fabrication class as T-23b's count-wrapper fix"
+
 var FieldOverrides = map[string][]FieldOverride{
 	"get_tls_certificates:/tls_certificate": {{
 		Name: "valid", GoType: "GMPBool",
@@ -488,6 +502,18 @@ type FieldTypeOverride struct {
 	Attr   bool
 	GoType string
 	Reason string
+
+	// Pointer additionally forces this schema-required field to `*GoType` with
+	// `,omitempty`, the same override requiredFieldType already applies for a
+	// top-level RequiredOverrides entry — needed here because a nested
+	// structurally-deduplicated shape (e.g. get_results/get_reports/
+	// create_report/get_notes/get_overrides' shared NVT struct) has no single
+	// owning command for RequiredOverrides' "<command>.<field>" key to name.
+	// Only meaningful when GoType names a struct: the zero value of a
+	// non-pointer structured field is otherwise indistinguishable from
+	// "genuinely absent," fabricating the element on re-encode (T-23b's
+	// count-wrapper class).
+	Pointer bool
 }
 
 // FieldTypeOverrides is keyed exactly like FieldOverrides/FieldSuppressions:
@@ -513,12 +539,18 @@ var FieldTypeOverrides = map[string][]FieldTypeOverride{
 			"(\"5.0\") for it — the same element name is declared type severity (float64) a few levels " +
 			"over at errors/error/nvt/cvss_base, so this is the schema itself disagreeing with its own " +
 			"declaration, not a defect in the generated int",
+	}, {
+		Name: "refs", GoType: "ReportRefs", Pointer: true,
+		Reason: t26NVTRefsReason,
 	}},
 	"get_reports:/report/report/results/result/nvt": {{
 		Name: "cvss_base", GoType: "float64",
 		Reason: "T-9 report review: same schema/wire disagreement as create_report's entry above — " +
 			"internal/gmptest/testdata/upstream/get_reports/002_response.xml sends the same decimal " +
 			"cvss_base shape at this path",
+	}, {
+		Name: "refs", GoType: "ReportRefs", Pointer: true,
+		Reason: t26NVTRefsReason,
 	}},
 	"get_results:/result/nvt": {{
 		Name: "cvss_base", GoType: "float64",
@@ -528,6 +560,17 @@ var FieldTypeOverrides = map[string][]FieldTypeOverride{
 			"(\"5.0\") for it, which a plain int would truncate on round trip. Not every fixture agrees on " +
 			"shape — upstream 002 sends a whole number (\"9\") and all 4 live fixtures send \"0.0\" — but " +
 			"upstream 001's decimal alone is sufficient to rule out int",
+	}, {
+		Name: "refs", GoType: "ResultRefs", Pointer: true,
+		Reason: t26NVTRefsReason,
+	}},
+	"get_notes:/note/result/nvt": {{
+		Name: "refs", GoType: "NoteRefs", Pointer: true,
+		Reason: t26NVTRefsReason,
+	}},
+	"get_overrides:/override/result/nvt": {{
+		Name: "refs", GoType: "OverrideRefs", Pointer: true,
+		Reason: t26NVTRefsReason,
 	}},
 	"get_info:/info/cve/configuration_nodes/node": {{
 		Name: "node", GoType: "NVTNode",

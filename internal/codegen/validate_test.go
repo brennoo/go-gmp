@@ -95,7 +95,7 @@ func TestValidateBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_notes": {
 			actionable: map[string]int{schema.CatDefect: 3},
-			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 2},
 		},
 		"delete_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -163,7 +163,7 @@ func TestValidateGeneratedMatchesOrImproves(t *testing.T) {
 	wantAfter := map[string]counts{
 		"create_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_notes":   {actionable: map[string]int{schema.CatDefect: 3}, suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1}},
+		"get_notes":   {actionable: map[string]int{schema.CatDefect: 3}, suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 2}},
 		"delete_note": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 
@@ -193,7 +193,7 @@ func TestValidateOverrideBeforeMatchesKnownConformance(t *testing.T) {
 		"modify_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"get_overrides": {
 			actionable: map[string]int{schema.CatDefect: 3},
-			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
+			suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 2},
 		},
 		"delete_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -244,7 +244,7 @@ func TestValidateOverrideGeneratedMatchesOrImproves(t *testing.T) {
 	wantAfter := map[string]counts{
 		"create_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
 		"modify_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
-		"get_overrides":   {actionable: map[string]int{schema.CatDefect: 3}, suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 1}},
+		"get_overrides":   {actionable: map[string]int{schema.CatDefect: 3}, suppressed: map[string]int{schema.CatExtra: 2, schema.CatMissing: 1, schema.CatOmitEmpty: 2}},
 		"delete_override": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
 	assertMatchesOrImproves(t, before, after, wantAfter)

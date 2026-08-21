@@ -41,7 +41,6 @@ ADDED
   /get_overrides_response/override/result/nvt/cvss_base/#text              x1
   /get_overrides_response/override/result/nvt/family                       x1
   /get_overrides_response/override/result/nvt/name                         x1
-  /get_overrides_response/override/result/nvt/refs                         x1
   /get_overrides_response/override/result/nvt/severities                   x1
   /get_overrides_response/override/result/nvt/severities/@score            x1
   /get_overrides_response/override/result/nvt/tags                         x1

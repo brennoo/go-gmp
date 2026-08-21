@@ -89,6 +89,15 @@ func TestApplySchemaPatchesSplicesIntoGenerate(t *testing.T) {
 			t.Errorf("generated output missing %q; full output:\n%s", want, src)
 		}
 	}
+
+	// T-26: a patched node's own Reason must reach the generated field as a
+	// gmpoverride tag, so internal/schema's comparer can suppress the EXTRA
+	// finding a raw-schema comparison would otherwise report unexplained — a
+	// SchemaPatch adds a field the schema itself has no counterpart for, by
+	// definition, so every use needs this or it always shows up unsuppressed.
+	if !strings.Contains(src, `gmpoverride:"test"`) {
+		t.Errorf("generated solution field is missing a gmpoverride tag carrying the patch's Reason; full output:\n%s", src)
+	}
 }
 
 // TestApplySchemaPatchesMissingParentPath proves the fail-closed guarantee
@@ -120,6 +129,67 @@ func TestApplySchemaPatchesWireNameCollision(t *testing.T) {
 	err := ApplySchemaPatches([]schema.Command{cmd})
 	if err == nil || !strings.Contains(err.Error(), "already has a child") {
 		t.Fatalf("ApplySchemaPatches error = %v, want a wire-name-collision error", err)
+	}
+}
+
+// commandWithSingleItem returns a synthetic command shaped like get_info's
+// own get_info_response/info subtree: one repeated <item> child carrying an
+// @id attribute, just enough for an AllowCollision patch to add a disjoint
+// same-name sibling to.
+func commandWithSingleItem() schema.Command {
+	c := minimalCommand()
+	c.Response.Children = []*schema.Node{
+		{
+			Name: "item", Kind: schema.KindElement, Card: schema.CardRepeated,
+			Children: []*schema.Node{
+				{Name: "id", Kind: schema.KindAttribute, Card: schema.CardOptional, Type: "text"},
+			},
+		},
+	}
+	return c
+}
+
+func wrapperPatch() []SchemaPatch {
+	return []SchemaPatch{{
+		Name: "item", Kind: schema.KindElement, Card: schema.CardOptional, AllowCollision: true,
+		Reason: "test wrapper collision",
+		Children: []SchemaPatch{
+			{Name: "start", Kind: schema.KindAttribute, Card: schema.CardRequired, Type: "integer", Reason: "test"},
+		},
+	}}
+}
+
+// TestApplySchemaPatchesCollisionSiblingIsSuppressed is T-26's regression
+// test for the bug the review caught: a collision-group member (get_info's
+// AllowCollision wrapper) needs both a gmpwire tag (from the collision codec)
+// and a gmpoverride tag (from its own SchemaPatch.Reason) on the same field —
+// writeField's tag emission used to be exclusive between the two, so the
+// wrapper's EXTRA finding surfaced unsuppressed in the conformance report
+// despite having a perfectly good evidence-backed reason recorded right next
+// to it.
+func TestApplySchemaPatchesCollisionSiblingIsSuppressed(t *testing.T) {
+	withSchemaPatches(t, map[string][]SchemaPatch{"test_cmd:/test_cmd_response": wrapperPatch()})
+
+	cmd := commandWithSingleItem()
+	if err := ApplySchemaPatches([]schema.Command{cmd}); err != nil {
+		t.Fatalf("ApplySchemaPatches failed: %v", err)
+	}
+
+	files, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, RequiredOverrides, nil, nil, nil, nil, nil, nil, "", nil, nil, nil)
+	if err != nil {
+		t.Fatalf("Generate failed on a patched command: %v", err)
+	}
+	var src string
+	for _, s := range files {
+		src += s
+	}
+
+	if !strings.Contains(src, `gmpwire:"item`) {
+		t.Fatalf("generated collision-group field is missing its gmpwire tag; full output:\n%s", src)
+	}
+	if !strings.Contains(src, `gmpoverride:"test wrapper collision"`) {
+		t.Fatalf("generated collision-group field is missing a gmpoverride tag carrying the patch's Reason "+
+			"— it must carry both, or the wrapper's EXTRA finding surfaces unsuppressed; full output:\n%s", src)
 	}
 }
 

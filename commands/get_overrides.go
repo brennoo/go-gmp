@@ -204,7 +204,7 @@ type OverrideResultNVT struct {
 	Severities OverrideSeverities `xml:"severities"`
 	CPE        string             `xml:"cpe"`
 	Tags       string             `xml:"tags"`
-	Refs       OverrideRefs       `xml:"refs"`
+	Refs       *OverrideRefs      `xml:"refs,omitempty"`
 	EPSS       *OverrideEPSS      `xml:"epss,omitempty"`
 }
 

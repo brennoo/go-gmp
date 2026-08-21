@@ -2,7 +2,10 @@
 
 package commands
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"errors"
+)
 
 // GetInfo is a get_info command request. See the GMP protocol docs for details.
 type GetInfo struct {
@@ -25,11 +28,157 @@ type GetInfoResponse struct {
 	Details    GMPBool       `xml:"details"`
 	InfoCount  *NVTInfoCount `xml:"info_count,omitempty"`
 	Info       []NVTInfo     `xml:"info,omitempty"`
+	Info2      *GetInfoInfo  `xml:"-" gmpwire:"info,omitempty" gmpoverride:"T-26: get_info's pagination wrapper (<info start max>) shares its element name with the data item but is schema-undeclared — see docs/review-2026-08.md's T-26 entry"`
 }
 
 // GetStatus returns the status and status text from the response.
 func (r *GetInfoResponse) GetStatus() (string, string) {
 	return r.Status, r.StatusText
+}
+
+// classifyGetInfoResponseInfo identifies which schema-declared <info> variant a start tag
+// belongs to, from its attributes: GetInfoResponse's colliding members are distinguished
+// by disjoint attribute signatures, not by arrival order, so a reordered or
+// malformed document fails closed instead of being misrouted.
+func classifyGetInfoResponseInfo(attrs []xml.Attr) (int, error) {
+	has := map[string]bool{}
+	for _, a := range attrs {
+		has[a.Name.Local] = true
+	}
+	match := -1
+	if has["id"] {
+		if match != -1 && match != 0 {
+			return -1, errors.New("GetInfoResponse: ambiguous <info> element: attributes match more than one known variant")
+		}
+		match = 0
+	}
+	if has["max"] || has["start"] {
+		if match != -1 && match != 1 {
+			return -1, errors.New("GetInfoResponse: ambiguous <info> element: attributes match more than one known variant")
+		}
+		match = 1
+	}
+	if match == -1 {
+		return -1, errors.New("GetInfoResponse: unrecognized <info> element: no known variant's attributes are present")
+	}
+	return match, nil
+}
+
+// UnmarshalXML decodes GetInfoResponse by hand: two of its fields share one wire tag,
+// which encoding/xml's reflection-based field routing cannot express. The
+// colliding members are told apart by attribute signature (see the
+// classify functions above), not by arrival order. See the generator's
+// emitCollisionMethods for why this is safe.
+func (r *GetInfoResponse) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	*r = GetInfoResponse{}
+	r.XMLName = start.Name
+	for _, a := range start.Attr {
+		switch a.Name.Local {
+		case "status":
+			r.Status = a.Value
+		case "status_text":
+			r.StatusText = a.Value
+		}
+	}
+	seenInfo := make([]bool, 2)
+	for {
+		tok, err := d.Token()
+		if err != nil {
+			return err
+		}
+		switch t := tok.(type) {
+		case xml.StartElement:
+			switch t.Name.Local {
+			case "filters":
+				if err := d.DecodeElement(&r.Filters, &t); err != nil {
+					return err
+				}
+			case "sort":
+				if err := d.DecodeElement(&r.Sort, &t); err != nil {
+					return err
+				}
+			case "details":
+				if err := d.DecodeElement(&r.Details, &t); err != nil {
+					return err
+				}
+			case "info_count":
+				r.InfoCount = new(NVTInfoCount)
+				if err := d.DecodeElement(r.InfoCount, &t); err != nil {
+					return err
+				}
+			case "info":
+				idx, err := classifyGetInfoResponseInfo(t.Attr)
+				if err != nil {
+					return err
+				}
+				switch idx {
+				case 0:
+					var v NVTInfo
+					if err := d.DecodeElement(&v, &t); err != nil {
+						return err
+					}
+					r.Info = append(r.Info, v)
+				case 1:
+					if seenInfo[1] {
+						return errors.New("GetInfoResponse: unexpected extra <info> element")
+					}
+					seenInfo[1] = true
+					r.Info2 = new(GetInfoInfo)
+					if err := d.DecodeElement(r.Info2, &t); err != nil {
+						return err
+					}
+				}
+			default:
+				if err := d.Skip(); err != nil {
+					return err
+				}
+			}
+		case xml.EndElement:
+			return nil
+		}
+	}
+}
+
+// MarshalXML encodes GetInfoResponse by hand, mirroring UnmarshalXML: manual
+// EncodeElement calls bypass the same reflection-based tag routing that
+// cannot express two fields sharing one wire tag.
+func (r *GetInfoResponse) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	start.Name = r.XMLName
+	if start.Name.Local == "" {
+		start.Name.Local = "get_info_response"
+	}
+	start.Attr = append(start.Attr[:0:0], xml.Attr{Name: xml.Name{Local: "status"}, Value: r.Status}, xml.Attr{Name: xml.Name{Local: "status_text"}, Value: r.StatusText})
+	if err := e.EncodeToken(start); err != nil {
+		return err
+	}
+	if err := e.EncodeElement(r.Filters, xml.StartElement{Name: xml.Name{Local: "filters"}}); err != nil {
+		return err
+	}
+	if err := e.EncodeElement(r.Sort, xml.StartElement{Name: xml.Name{Local: "sort"}}); err != nil {
+		return err
+	}
+	if err := e.EncodeElement(r.Details, xml.StartElement{Name: xml.Name{Local: "details"}}); err != nil {
+		return err
+	}
+	if r.InfoCount != nil {
+		if err := e.EncodeElement(r.InfoCount, xml.StartElement{Name: xml.Name{Local: "info_count"}}); err != nil {
+			return err
+		}
+	}
+	for _, v := range r.Info {
+		if err := e.EncodeElement(v, xml.StartElement{Name: xml.Name{Local: "info"}}); err != nil {
+			return err
+		}
+	}
+	if r.Info2 != nil {
+		if err := e.EncodeElement(r.Info2, xml.StartElement{Name: xml.Name{Local: "info"}}); err != nil {
+			return err
+		}
+	}
+	if err := e.EncodeToken(start.End()); err != nil {
+		return err
+	}
+	return nil
 }
 
 // NVTFilters is the <filters> element of get_info. See the GMP protocol docs for details.
@@ -267,6 +416,12 @@ type NVTRefs struct {
 	Type  string   `xml:"type,attr"`
 	RefID string   `xml:"ref_id,attr"`
 	Ref   []string `xml:"ref,omitempty"`
+}
+
+// GetInfoInfo is the <info> element of get_info. See the GMP protocol docs for details.
+type GetInfoInfo struct {
+	Start int `xml:"start,attr" gmpoverride:"T-26: get_info's pagination wrapper (<info start max>) shares its element name with the data item but is schema-undeclared — see docs/review-2026-08.md's T-26 entry"`
+	Max   int `xml:"max,attr" gmpoverride:"T-26: get_info's pagination wrapper (<info start max>) shares its element name with the data item but is schema-undeclared — see docs/review-2026-08.md's T-26 entry"`
 }
 
 // NVTRelation is the <relation> value of get_info. See the GMP protocol docs for details.

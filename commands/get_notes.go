@@ -201,7 +201,7 @@ type NoteResultNVT struct {
 	Severities NoteSeverities `xml:"severities"`
 	CPE        string         `xml:"cpe"`
 	Tags       string         `xml:"tags"`
-	Refs       NoteRefs       `xml:"refs"`
+	Refs       *NoteRefs      `xml:"refs,omitempty"`
 	EPSS       *NoteEPSS      `xml:"epss,omitempty"`
 }
 

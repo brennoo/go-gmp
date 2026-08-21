@@ -86,6 +86,19 @@ type Node struct {
 	// type, as it would for a pure leaf, and Chardata records that it
 	// co-occurs with Children rather than replacing them.
 	Chardata bool
+
+	// PatchReason is non-empty only for a node internal/codegen's
+	// ApplySchemaPatches spliced in — never set by the parser itself, and
+	// always empty on a freshly-loaded, unpatched command (LoadSnapshots),
+	// so `omitempty` keeps every committed Stage-A snapshot byte-identical:
+	// this field only ever appears in the in-memory tree Generate/Validate
+	// consume, never in a serialized snapshot. It exists so a patched node's
+	// own evidence can follow it all the way to the generated field's
+	// gmpoverride tag: without this, a schema-patched field with no other
+	// suppression reason surfaces as an unsuppressed, unexplained EXTRA
+	// finding in the conformance report, indistinguishable from a real
+	// Go/schema disagreement.
+	PatchReason string `json:",omitempty"`
 }
 
 // Path returns the node's location under parent, in the same syntax the

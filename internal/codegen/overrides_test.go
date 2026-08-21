@@ -1011,3 +1011,54 @@ func TestRequiredOverridePointerizesStructuredField(t *testing.T) {
 		t.Fatalf("generated source does not pointer-ify the overridden structured field:\n%s", src)
 	}
 }
+
+// TestFieldTypeOverridePointerizesStructuredField is T-26's counterpart to
+// TestRequiredOverridePointerizesStructuredField: the same structured-field
+// pointer exception, but reached through FieldTypeOverrides' nested
+// "<command>:/<path>" key rather than RequiredOverrides' top-level
+// "<command>.<field>" key — the case a nested, structurally-deduplicated
+// shape with no single owning command needs (get_results/get_reports/
+// create_report/get_notes/get_overrides' shared NVT struct).
+func TestFieldTypeOverridePointerizesStructuredField(t *testing.T) {
+	refs := &schema.Node{
+		Name: "refs", Kind: schema.KindElement, Card: schema.CardRequired,
+		Children: []*schema.Node{{Name: "ref", Kind: schema.KindElement, Card: schema.CardRepeated, Type: "text"}},
+	}
+	nvt := &schema.Node{
+		Name: "nvt", Kind: schema.KindElement, Card: schema.CardRequired,
+		Children: []*schema.Node{refs},
+	}
+	cmd := commandWithResponseChild(nvt)
+	tov := map[string][]FieldTypeOverride{
+		"test_cmd:/nvt": {{Name: "refs", GoType: "CmdNvtRefs", Pointer: true, Reason: "r"}},
+	}
+	got, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, nil, nil, nil, nil, nil, nil, tov, "", nil, nil, nil)
+	if err != nil {
+		t.Fatalf("Generate returned error: %v", err)
+	}
+	src, ok := got[CommandFile("test_cmd")]
+	if !ok {
+		t.Fatalf("test_cmd was not generated")
+	}
+	if !strings.Contains(src, "*CmdNvtRefs") || !strings.Contains(src, `xml:"refs,omitempty"`) {
+		t.Fatalf("generated source does not pointer-ify the retyped structured field:\n%s", src)
+	}
+}
+
+// TestFieldTypeOverrideRejectsPointerOnScalar is the FieldTypeOverrides
+// counterpart to TestRequiredOverrideRejectsUnsupportedTargets: Pointer is
+// only evidenced for a structured field whose own zero value would otherwise
+// be indistinguishable from absence (T-23b's count-wrapper class) — a scalar
+// leaf has no such evidence, so Generate must refuse rather than silently
+// pointer-ifying it.
+func TestFieldTypeOverrideRejectsPointerOnScalar(t *testing.T) {
+	child := &schema.Node{Name: "count", Kind: schema.KindElement, Card: schema.CardRequired, Type: "integer"}
+	cmd := commandWithResponseChild(child)
+	tov := map[string][]FieldTypeOverride{
+		"test_cmd:/test_cmd_response": {{Name: "count", GoType: "int", Pointer: true, Reason: "r"}},
+	}
+	_, err := Generate([]schema.Command{cmd}, TypeOverrides, PointerOverrides, nil, nil, nil, nil, nil, nil, tov, "", nil, nil, nil)
+	if err == nil || !strings.Contains(err.Error(), "only evidenced for structured fields") {
+		t.Fatalf("Generate error = %v, want a structured-field-only rejection", err)
+	}
+}

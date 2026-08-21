@@ -47,6 +47,18 @@ type SchemaPatch struct {
 	// same way; nil for a leaf.
 	Children []SchemaPatch
 
+	// AllowCollision permits this patch to add a same-name, same-Kind sibling
+	// of an already-declared child instead of failing closed — the DSL's own
+	// <id> escape hatch (get_filters' two <filters> definitions) modelled
+	// through a patch instead of a served schema declaration, for a command
+	// whose served schema never added the second definition itself (see
+	// get_info's wrapper/item collision below). Every use must have a
+	// disjoint attribute signature from its same-named sibling(s): the
+	// existing duplicate-wire collision codec (collisionDiscriminators)
+	// dispatches by exactly that, and fails closed on ambiguity at generation
+	// time if it isn't.
+	AllowCollision bool
+
 	Reason string // cites the live/upstream evidence for both presence and shape
 }
 
@@ -55,7 +67,32 @@ type SchemaPatch struct {
 // under. ApplySchemaPatches consults it once per LoadGenerationModels (or
 // check.go's loadFamilySnapshots) call, before Generate runs, so every
 // generation-side consumer sees the same patched tree.
+// t26InfoWrapperReason is the shared Reason for get_info's wrapper-collision
+// SchemaPatch entry below and its two attribute children: command_get_info.xml
+// declares only the CVE/CPE/NVT/etc. data item, never the pagination wrapper
+// every live 200 response and both upstream fixtures actually send — the same
+// schema gap get_filters' own filters2 definition already covers correctly.
+// Full evidence (fixtures, vendor worked example, collision-codec reasoning)
+// is in docs/review-2026-08.md's T-26 entry rather than repeated 3 times over.
+const t26InfoWrapperReason = "T-26: get_info's pagination wrapper (<info start max>) shares its " +
+	"element name with the data item but is schema-undeclared — see docs/review-2026-08.md's T-26 entry"
+
 var SchemaPatches = map[string][]SchemaPatch{
+	"get_info:/get_info_response": {{
+		Name: "info", Kind: schema.KindElement, Card: schema.CardOptional,
+		InsertAfter: "info", AllowCollision: true,
+		Reason: t26InfoWrapperReason,
+		Children: []SchemaPatch{
+			{
+				Name: "start", Kind: schema.KindAttribute, Card: schema.CardRequired, Type: "integer",
+				Reason: t26InfoWrapperReason,
+			},
+			{
+				Name: "max", Kind: schema.KindAttribute, Card: schema.CardRequired, Type: "integer",
+				Reason: t26InfoWrapperReason,
+			},
+		},
+	}},
 	"get_results:/result/nvt": {{
 		Name: "solution", Kind: schema.KindElement, Card: schema.CardOptional,
 		Type: "text", Chardata: true, InsertAfter: "tags",
@@ -141,8 +178,15 @@ func applySchemaPatchesTo(c *schema.Command, path []string, patches []SchemaPatc
 	}
 
 	for _, p := range patches {
-		if findSchemaChild(target, p.Name) != nil {
-			return fmt.Errorf("%s already has a child %q — the schema has caught up; remove this patch", target.Name, p.Name)
+		if existing := findSchemaChild(target, p.Name); existing != nil {
+			if !p.AllowCollision {
+				return fmt.Errorf("%s already has a child %q — the schema has caught up; remove this patch", target.Name, p.Name)
+			}
+			if existing.Kind != p.Kind {
+				return fmt.Errorf("%s: AllowCollision child %q has Kind %v, existing child has Kind %v — "+
+					"a same-name collision must share Kind for the duplicate-wire collision codec to dispatch it",
+					target.Name, p.Name, p.Kind, existing.Kind)
+			}
 		}
 		node := schemaPatchNode(p)
 		if p.InsertAfter == "" {
@@ -167,8 +211,18 @@ func applySchemaPatchesTo(c *schema.Command, path []string, patches []SchemaPatc
 
 // descendSchemaPath walks n's Children by name for each path segment,
 // returning the final node — the same segment semantics fieldOverrideKey's
-// path already uses (the root's own name is never a segment).
+// path already uses (the root's own name is never a segment) — except a
+// single-segment path matching n's own Name targets n itself directly,
+// letting a SchemaPatches key address a command's request/response root
+// (e.g. "get_info:/get_info_response") the same way emitRequest/emitResponse
+// already do for FieldOverrides/FieldTypeOverrides via a synthetic
+// structType{node: c.Response}. Request and Response never share a Name (the
+// schema always spells them "<command>" and "<command>_response"), so this
+// can never match both sides at once.
 func descendSchemaPath(n *schema.Node, path []string) (*schema.Node, error) {
+	if len(path) == 1 && path[0] == n.Name {
+		return n, nil
+	}
 	cur := n
 	for _, seg := range path {
 		next := findSchemaChild(cur, seg)
@@ -200,7 +254,7 @@ func schemaPatchNode(p SchemaPatch) *schema.Node {
 	}
 	return &schema.Node{
 		Name: p.Name, Kind: p.Kind, Card: p.Card, Type: p.Type,
-		Chardata: p.Chardata, Children: kids,
+		Chardata: p.Chardata, Children: kids, PatchReason: p.Reason,
 	}
 }
 
