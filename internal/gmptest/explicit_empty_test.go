@@ -4,6 +4,7 @@ package gmptest
 
 import (
 	"context"
+	"encoding/xml"
 	"fmt"
 	"testing"
 
@@ -30,6 +31,73 @@ func TestExplicitEmptySemantics(t *testing.T) {
 // triggering a gvmd crash against the shared dev stack is undesirable, and the
 // typed API already cannot construct the <sources><source></source></sources>
 // payload (UserSource is omitempty-tagged, so empty string is dropped).
+
+// getConfigByID fetches one config by ID via RawXML, not gmp.Client's
+// GetConfigs(ctx, args ...filtering.FilterArg): that signature only ever
+// consults recognized FilterArg types (string, Option, their slices), so a
+// *commands.GetConfigs passed as an arg is silently ignored and the call
+// falls back to gvmd's default (unfiltered) list — fetching an arbitrary,
+// unrelated config instead of the one this test just created.
+func getConfigByID(t *testing.T, ctx context.Context, c interface {
+	RawXML(ctx context.Context, xmlStr string) (string, error)
+}, id string) commands.Config {
+	t.Helper()
+	out, err := c.RawXML(ctx, fmt.Sprintf(`<get_configs config_id="%s"/>`, id))
+	if err != nil {
+		t.Fatalf("RawXML get_configs: %v", err)
+	}
+	var resp commands.GetConfigsResponse
+	if err := xml.Unmarshal([]byte(out), &resp); err != nil {
+		t.Fatalf("decode get_configs_response: %v", err)
+	}
+	if len(resp.Config) == 0 {
+		t.Fatalf("get_configs returned no config for %s", id)
+	}
+	return resp.Config[0]
+}
+
+// getPortListByID is getConfigByID's counterpart for GetPortLists, which has
+// the same filtered-args-only signature on gmp.Client.
+func getPortListByID(t *testing.T, ctx context.Context, c interface {
+	RawXML(ctx context.Context, xmlStr string) (string, error)
+}, id string) commands.PortList {
+	t.Helper()
+	out, err := c.RawXML(ctx, fmt.Sprintf(`<get_port_lists port_list_id="%s"/>`, id))
+	if err != nil {
+		t.Fatalf("RawXML get_port_lists: %v", err)
+	}
+	var resp commands.GetPortListsResponse
+	if err := xml.Unmarshal([]byte(out), &resp); err != nil {
+		t.Fatalf("decode get_port_lists_response: %v", err)
+	}
+	if len(resp.PortList) == 0 {
+		t.Fatalf("get_port_lists returned no port list for %s", id)
+	}
+	return resp.PortList[0]
+}
+
+// getOverrideByID is getConfigByID's counterpart for GetOverrides — same
+// filtered-args-only signature, plus details="1" is required for gvmd to
+// include hosts/port/threat/new_threat in the response at all: gvmd's
+// default (non-detailed) view omits them entirely, which would otherwise
+// read as "cleared to empty" for every field this test checks.
+func getOverrideByID(t *testing.T, ctx context.Context, c interface {
+	RawXML(ctx context.Context, xmlStr string) (string, error)
+}, id string) commands.Override {
+	t.Helper()
+	out, err := c.RawXML(ctx, fmt.Sprintf(`<get_overrides override_id="%s" details="1"/>`, id))
+	if err != nil {
+		t.Fatalf("RawXML get_overrides: %v", err)
+	}
+	var resp commands.GetOverridesResponse
+	if err := xml.Unmarshal([]byte(out), &resp); err != nil {
+		t.Fatalf("decode get_overrides_response: %v", err)
+	}
+	if len(resp.Override) == 0 {
+		t.Fatalf("get_overrides returned no override for %s", id)
+	}
+	return resp.Override[0]
+}
 
 func testModifyConfigComment(t *testing.T) {
 	c := requireLive(t)
@@ -64,14 +132,7 @@ func testModifyConfigComment(t *testing.T) {
 		t.Fatalf("RawXML (omit): %v", err)
 	}
 
-	getResp, err := c.GetConfigs(ctx, &commands.GetConfigs{ConfigID: createResp.ID})
-	if err != nil {
-		t.Fatalf("GetConfigs (after omit): %v", err)
-	}
-	if len(getResp.Config) == 0 {
-		t.Fatalf("GetConfigs returned empty response")
-	}
-	afterOmit := getResp.Config[0].Comment
+	afterOmit := getConfigByID(t, ctx, c, createResp.ID).Comment
 
 	if _, err := c.ModifyConfig(ctx, &commands.ModifyConfig{
 		ConfigID: createResp.ID,
@@ -85,14 +146,7 @@ func testModifyConfigComment(t *testing.T) {
 		t.Fatalf("RawXML (explicit-empty): %v", err)
 	}
 
-	getResp, err = c.GetConfigs(ctx, &commands.GetConfigs{ConfigID: createResp.ID})
-	if err != nil {
-		t.Fatalf("GetConfigs (after empty): %v", err)
-	}
-	if len(getResp.Config) == 0 {
-		t.Fatalf("GetConfigs returned empty response")
-	}
-	afterEmpty := getResp.Config[0].Comment
+	afterEmpty := getConfigByID(t, ctx, c, createResp.ID).Comment
 
 	if afterOmit != afterEmpty {
 		t.Errorf("modify_config.comment: omit=%q, empty=%q; expected EQUIVALENT (both leave unchanged)", afterOmit, afterEmpty)
@@ -125,14 +179,7 @@ func testModifyPortListComment(t *testing.T) {
 		t.Fatalf("RawXML (omit): %v", err)
 	}
 
-	getResp, err := c.GetPortLists(ctx, &commands.GetPortLists{PortListID: createResp.ID})
-	if err != nil {
-		t.Fatalf("GetPortLists (after omit): %v", err)
-	}
-	if len(getResp.PortList) == 0 {
-		t.Fatalf("GetPortLists returned empty response")
-	}
-	afterOmit := getResp.PortList[0].Comment
+	afterOmit := getPortListByID(t, ctx, c, createResp.ID).Comment
 
 	if _, err := c.ModifyPortList(ctx, &commands.ModifyPortList{
 		PortListID: createResp.ID,
@@ -146,14 +193,7 @@ func testModifyPortListComment(t *testing.T) {
 		t.Fatalf("RawXML (explicit-empty): %v", err)
 	}
 
-	getResp, err = c.GetPortLists(ctx, &commands.GetPortLists{PortListID: createResp.ID})
-	if err != nil {
-		t.Fatalf("GetPortLists (after empty): %v", err)
-	}
-	if len(getResp.PortList) == 0 {
-		t.Fatalf("GetPortLists returned empty response")
-	}
-	afterEmpty := getResp.PortList[0].Comment
+	afterEmpty := getPortListByID(t, ctx, c, createResp.ID).Comment
 
 	if afterOmit != "" || afterEmpty != "" {
 		t.Errorf("modify_port_list.comment: omit=%q, empty=%q; expected EQUIVALENT (both clear to empty)", afterOmit, afterEmpty)
@@ -180,19 +220,24 @@ func testModifyNoteHosts(t *testing.T) {
 	}
 	defer c.DeleteNote(ctx, &commands.DeleteNote{NoteID: createResp.ID, Ultimate: true})
 
+	// Text is schema-required on every modify_note request (gvmd rejects an
+	// empty <text></text> with "A TEXT entity is required"), so every set/reset
+	// below must resend it alongside the field actually under test.
 	if _, err := c.ModifyNote(ctx, &commands.ModifyNote{
 		NoteID: createResp.ID,
+		Text:   "test note",
 		Hosts:  "Known value",
 	}); err != nil {
 		t.Fatalf("ModifyNote (set): %v", err)
 	}
 
-	req := fmt.Sprintf(`<modify_note note_id="%s"></modify_note>`, createResp.ID)
+	req := fmt.Sprintf(`<modify_note note_id="%s"><text>test note</text></modify_note>`, createResp.ID)
 	if _, err := c.RawXML(ctx, req); err != nil {
 		t.Fatalf("RawXML (omit): %v", err)
 	}
 
-	getResp, err := c.GetNotes(ctx, &commands.GetNotes{NoteID: createResp.ID})
+	trueBool := commands.GMPBool(true)
+	getResp, err := c.GetNotes(ctx, &commands.GetNotes{NoteID: createResp.ID, Details: &trueBool})
 	if err != nil {
 		t.Fatalf("GetNotes (after omit): %v", err)
 	}
@@ -203,17 +248,18 @@ func testModifyNoteHosts(t *testing.T) {
 
 	if _, err := c.ModifyNote(ctx, &commands.ModifyNote{
 		NoteID: createResp.ID,
+		Text:   "test note",
 		Hosts:  "Known value",
 	}); err != nil {
 		t.Fatalf("ModifyNote (reset): %v", err)
 	}
 
-	req = fmt.Sprintf(`<modify_note note_id="%s"><hosts></hosts></modify_note>`, createResp.ID)
+	req = fmt.Sprintf(`<modify_note note_id="%s"><text>test note</text><hosts></hosts></modify_note>`, createResp.ID)
 	if _, err := c.RawXML(ctx, req); err != nil {
 		t.Fatalf("RawXML (explicit-empty): %v", err)
 	}
 
-	getResp, err = c.GetNotes(ctx, &commands.GetNotes{NoteID: createResp.ID})
+	getResp, err = c.GetNotes(ctx, &commands.GetNotes{NoteID: createResp.ID, Details: &trueBool})
 	if err != nil {
 		t.Fatalf("GetNotes (after empty): %v", err)
 	}
@@ -249,17 +295,19 @@ func testModifyNotePort(t *testing.T) {
 
 	if _, err := c.ModifyNote(ctx, &commands.ModifyNote{
 		NoteID: createResp.ID,
-		Port:   "Known value",
+		Text:   "test note port",
+		Port:   "80/tcp",
 	}); err != nil {
 		t.Fatalf("ModifyNote (set): %v", err)
 	}
 
-	req := fmt.Sprintf(`<modify_note note_id="%s"></modify_note>`, createResp.ID)
+	req := fmt.Sprintf(`<modify_note note_id="%s"><text>test note port</text></modify_note>`, createResp.ID)
 	if _, err := c.RawXML(ctx, req); err != nil {
 		t.Fatalf("RawXML (omit): %v", err)
 	}
 
-	getResp, err := c.GetNotes(ctx, &commands.GetNotes{NoteID: createResp.ID})
+	trueBool := commands.GMPBool(true)
+	getResp, err := c.GetNotes(ctx, &commands.GetNotes{NoteID: createResp.ID, Details: &trueBool})
 	if err != nil {
 		t.Fatalf("GetNotes (after omit): %v", err)
 	}
@@ -270,17 +318,18 @@ func testModifyNotePort(t *testing.T) {
 
 	if _, err := c.ModifyNote(ctx, &commands.ModifyNote{
 		NoteID: createResp.ID,
-		Port:   "Known value",
+		Text:   "test note port",
+		Port:   "80/tcp",
 	}); err != nil {
 		t.Fatalf("ModifyNote (reset): %v", err)
 	}
 
-	req = fmt.Sprintf(`<modify_note note_id="%s"><port></port></modify_note>`, createResp.ID)
+	req = fmt.Sprintf(`<modify_note note_id="%s"><text>test note port</text><port></port></modify_note>`, createResp.ID)
 	if _, err := c.RawXML(ctx, req); err != nil {
 		t.Fatalf("RawXML (explicit-empty): %v", err)
 	}
 
-	getResp, err = c.GetNotes(ctx, &commands.GetNotes{NoteID: createResp.ID})
+	getResp, err = c.GetNotes(ctx, &commands.GetNotes{NoteID: createResp.ID, Details: &trueBool})
 	if err != nil {
 		t.Fatalf("GetNotes (after empty): %v", err)
 	}
@@ -315,47 +364,42 @@ func testModifyOverrideHosts(t *testing.T) {
 	}
 	defer c.DeleteOverride(ctx, &commands.DeleteOverride{OverrideID: createResp.ID, Ultimate: true})
 
+	// Text is schema-required on every modify_override request, same as
+	// modify_note. new_threat is also resent throughout: gvmd additionally
+	// requires new_severity/new_threat whenever hosts/threat is present on a
+	// modify_override request, a cross-field constraint the schema itself
+	// does not declare.
 	if _, err := c.ModifyOverride(ctx, &commands.ModifyOverride{
 		OverrideID: createResp.ID,
-		Hosts:      "Known value",
+		Text:       "test override",
+		Hosts:      "10.0.0.1",
+		NewThreat:  "Log",
 	}); err != nil {
 		t.Fatalf("ModifyOverride (set): %v", err)
 	}
 
-	req := fmt.Sprintf(`<modify_override override_id="%s"></modify_override>`, createResp.ID)
+	req := fmt.Sprintf(`<modify_override override_id="%s"><text>test override</text><new_threat>Log</new_threat></modify_override>`, createResp.ID)
 	if _, err := c.RawXML(ctx, req); err != nil {
 		t.Fatalf("RawXML (omit): %v", err)
 	}
 
-	getResp, err := c.GetOverrides(ctx, &commands.GetOverrides{OverrideID: createResp.ID})
-	if err != nil {
-		t.Fatalf("GetOverrides (after omit): %v", err)
-	}
-	if len(getResp.Override) == 0 {
-		t.Fatalf("GetOverrides returned empty response")
-	}
-	afterOmit := getResp.Override[0].Hosts
+	afterOmit := getOverrideByID(t, ctx, c, createResp.ID).Hosts
 
 	if _, err := c.ModifyOverride(ctx, &commands.ModifyOverride{
 		OverrideID: createResp.ID,
-		Hosts:      "Known value",
+		Text:       "test override",
+		Hosts:      "10.0.0.1",
+		NewThreat:  "Log",
 	}); err != nil {
 		t.Fatalf("ModifyOverride (reset): %v", err)
 	}
 
-	req = fmt.Sprintf(`<modify_override override_id="%s"><hosts></hosts></modify_override>`, createResp.ID)
+	req = fmt.Sprintf(`<modify_override override_id="%s"><text>test override</text><hosts></hosts><new_threat>Log</new_threat></modify_override>`, createResp.ID)
 	if _, err := c.RawXML(ctx, req); err != nil {
 		t.Fatalf("RawXML (explicit-empty): %v", err)
 	}
 
-	getResp, err = c.GetOverrides(ctx, &commands.GetOverrides{OverrideID: createResp.ID})
-	if err != nil {
-		t.Fatalf("GetOverrides (after empty): %v", err)
-	}
-	if len(getResp.Override) == 0 {
-		t.Fatalf("GetOverrides returned empty response")
-	}
-	afterEmpty := getResp.Override[0].Hosts
+	afterEmpty := getOverrideByID(t, ctx, c, createResp.ID).Hosts
 
 	if afterOmit != "" || afterEmpty != "" {
 		t.Errorf("modify_override.hosts: omit=%q, empty=%q; expected EQUIVALENT (both clear to empty)", afterOmit, afterEmpty)
@@ -385,45 +429,35 @@ func testModifyOverridePort(t *testing.T) {
 
 	if _, err := c.ModifyOverride(ctx, &commands.ModifyOverride{
 		OverrideID: createResp.ID,
-		Port:       "Known value",
+		Text:       "test override port",
+		Port:       "80/tcp",
+		NewThreat:  "Log",
 	}); err != nil {
 		t.Fatalf("ModifyOverride (set): %v", err)
 	}
 
-	req := fmt.Sprintf(`<modify_override override_id="%s"></modify_override>`, createResp.ID)
+	req := fmt.Sprintf(`<modify_override override_id="%s"><text>test override port</text><new_threat>Log</new_threat></modify_override>`, createResp.ID)
 	if _, err := c.RawXML(ctx, req); err != nil {
 		t.Fatalf("RawXML (omit): %v", err)
 	}
 
-	getResp, err := c.GetOverrides(ctx, &commands.GetOverrides{OverrideID: createResp.ID})
-	if err != nil {
-		t.Fatalf("GetOverrides (after omit): %v", err)
-	}
-	if len(getResp.Override) == 0 {
-		t.Fatalf("GetOverrides returned empty response")
-	}
-	afterOmit := getResp.Override[0].Port
+	afterOmit := getOverrideByID(t, ctx, c, createResp.ID).Port
 
 	if _, err := c.ModifyOverride(ctx, &commands.ModifyOverride{
 		OverrideID: createResp.ID,
-		Port:       "Known value",
+		Text:       "test override port",
+		Port:       "80/tcp",
+		NewThreat:  "Log",
 	}); err != nil {
 		t.Fatalf("ModifyOverride (reset): %v", err)
 	}
 
-	req = fmt.Sprintf(`<modify_override override_id="%s"><port></port></modify_override>`, createResp.ID)
+	req = fmt.Sprintf(`<modify_override override_id="%s"><text>test override port</text><port></port><new_threat>Log</new_threat></modify_override>`, createResp.ID)
 	if _, err := c.RawXML(ctx, req); err != nil {
 		t.Fatalf("RawXML (explicit-empty): %v", err)
 	}
 
-	getResp, err = c.GetOverrides(ctx, &commands.GetOverrides{OverrideID: createResp.ID})
-	if err != nil {
-		t.Fatalf("GetOverrides (after empty): %v", err)
-	}
-	if len(getResp.Override) == 0 {
-		t.Fatalf("GetOverrides returned empty response")
-	}
-	afterEmpty := getResp.Override[0].Port
+	afterEmpty := getOverrideByID(t, ctx, c, createResp.ID).Port
 
 	if afterOmit != "" || afterEmpty != "" {
 		t.Errorf("modify_override.port: omit=%q, empty=%q; expected EQUIVALENT (both clear to empty)", afterOmit, afterEmpty)
@@ -453,45 +487,35 @@ func testModifyOverrideThreat(t *testing.T) {
 
 	if _, err := c.ModifyOverride(ctx, &commands.ModifyOverride{
 		OverrideID: createResp.ID,
+		Text:       "test override threat",
 		Threat:     "Medium",
+		NewThreat:  "Low",
 	}); err != nil {
 		t.Fatalf("ModifyOverride (set): %v", err)
 	}
 
-	req := fmt.Sprintf(`<modify_override override_id="%s"></modify_override>`, createResp.ID)
+	req := fmt.Sprintf(`<modify_override override_id="%s"><text>test override threat</text><new_threat>Low</new_threat></modify_override>`, createResp.ID)
 	if _, err := c.RawXML(ctx, req); err != nil {
 		t.Fatalf("RawXML (omit): %v", err)
 	}
 
-	getResp, err := c.GetOverrides(ctx, &commands.GetOverrides{OverrideID: createResp.ID})
-	if err != nil {
-		t.Fatalf("GetOverrides (after omit): %v", err)
-	}
-	if len(getResp.Override) == 0 {
-		t.Fatalf("GetOverrides returned empty response")
-	}
-	afterOmit := getResp.Override[0].Threat
+	afterOmit := getOverrideByID(t, ctx, c, createResp.ID).Threat
 
 	if _, err := c.ModifyOverride(ctx, &commands.ModifyOverride{
 		OverrideID: createResp.ID,
+		Text:       "test override threat",
 		Threat:     "Medium",
+		NewThreat:  "Low",
 	}); err != nil {
 		t.Fatalf("ModifyOverride (reset): %v", err)
 	}
 
-	req = fmt.Sprintf(`<modify_override override_id="%s"><threat></threat></modify_override>`, createResp.ID)
+	req = fmt.Sprintf(`<modify_override override_id="%s"><text>test override threat</text><threat></threat><new_threat>Low</new_threat></modify_override>`, createResp.ID)
 	if _, err := c.RawXML(ctx, req); err != nil {
 		t.Fatalf("RawXML (explicit-empty): %v", err)
 	}
 
-	getResp, err = c.GetOverrides(ctx, &commands.GetOverrides{OverrideID: createResp.ID})
-	if err != nil {
-		t.Fatalf("GetOverrides (after empty): %v", err)
-	}
-	if len(getResp.Override) == 0 {
-		t.Fatalf("GetOverrides returned empty response")
-	}
-	afterEmpty := getResp.Override[0].Threat
+	afterEmpty := getOverrideByID(t, ctx, c, createResp.ID).Threat
 
 	if afterOmit != "" || afterEmpty != "" {
 		t.Errorf("modify_override.threat: omit=%q, empty=%q; expected EQUIVALENT (both clear to empty)", afterOmit, afterEmpty)
@@ -520,45 +544,33 @@ func testModifyOverrideNewThreat(t *testing.T) {
 
 	if _, err := c.ModifyOverride(ctx, &commands.ModifyOverride{
 		OverrideID: createResp.ID,
+		Text:       "test override new threat",
 		NewThreat:  "High",
 	}); err != nil {
 		t.Fatalf("ModifyOverride (set): %v", err)
 	}
 
-	req := fmt.Sprintf(`<modify_override override_id="%s"></modify_override>`, createResp.ID)
+	req := fmt.Sprintf(`<modify_override override_id="%s"><text>test override new threat</text></modify_override>`, createResp.ID)
 	if _, err := c.RawXML(ctx, req); err != nil {
 		t.Fatalf("RawXML (omit): %v", err)
 	}
 
-	getResp, err := c.GetOverrides(ctx, &commands.GetOverrides{OverrideID: createResp.ID})
-	if err != nil {
-		t.Fatalf("GetOverrides (after omit): %v", err)
-	}
-	if len(getResp.Override) == 0 {
-		t.Fatalf("GetOverrides returned empty response")
-	}
-	afterOmit := getResp.Override[0].NewThreat
+	afterOmit := getOverrideByID(t, ctx, c, createResp.ID).NewThreat
 
 	if _, err := c.ModifyOverride(ctx, &commands.ModifyOverride{
 		OverrideID: createResp.ID,
+		Text:       "test override new threat",
 		NewThreat:  "High",
 	}); err != nil {
 		t.Fatalf("ModifyOverride (reset): %v", err)
 	}
 
-	req = fmt.Sprintf(`<modify_override override_id="%s"><new_threat></new_threat></modify_override>`, createResp.ID)
+	req = fmt.Sprintf(`<modify_override override_id="%s"><text>test override new threat</text><new_threat></new_threat></modify_override>`, createResp.ID)
 	if _, err := c.RawXML(ctx, req); err != nil {
 		t.Fatalf("RawXML (explicit-empty): %v", err)
 	}
 
-	getResp, err = c.GetOverrides(ctx, &commands.GetOverrides{OverrideID: createResp.ID})
-	if err != nil {
-		t.Fatalf("GetOverrides (after empty): %v", err)
-	}
-	if len(getResp.Override) == 0 {
-		t.Fatalf("GetOverrides returned empty response")
-	}
-	afterEmpty := getResp.Override[0].NewThreat
+	afterEmpty := getOverrideByID(t, ctx, c, createResp.ID).NewThreat
 
 	if afterOmit != "High" || afterEmpty != "High" {
 		t.Errorf("modify_override.new_threat: omit=%q, empty=%q; expected EQUIVALENT (both leave unchanged at 'High')", afterOmit, afterEmpty)

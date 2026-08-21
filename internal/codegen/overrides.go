@@ -1232,9 +1232,14 @@ var CommandWarnings = map[string]CommandWarning{
 		Text: "Hosts, Port and Threat are all cleared whenever any is omitted from a request, not " +
 			"left unchanged: modifying one alone blanks the others. NewThreat behaves oppositely: " +
 			"omission and explicit-empty both leave it unchanged. This asymmetry within one command " +
-			"means a caller cannot assume uniform full-replace across modify_override's fields.",
+			"means a caller cannot assume uniform full-replace across modify_override's fields. " +
+			"Separately, gvmd rejects Hosts or Threat sent without NewSeverity or NewThreat also " +
+			"present (\"400 new_severity is required\"), even though the schema declares all four " +
+			"independently optional — resend NewSeverity/NewThreat alongside Hosts/Threat.",
 		Reason: "T-25: live gvmd probe confirmed the Hosts/Port/Threat full-replace behavior and the " +
-			"NewThreat leave-unchanged behavior; see docs/review-2026-08.md's T-25 section",
+			"NewThreat leave-unchanged behavior; T-28: live gvmd run confirmed the undeclared " +
+			"Hosts/Threat-require-NewSeverity/NewThreat cross-field requirement; see " +
+			"docs/review-2026-08.md's T-25 and T-28 sections",
 	},
 }
 
