@@ -725,7 +725,7 @@ func firstID(doc, element string) string {
 // finding, and lands in the summary as a skip.
 func setStringField(req any, field, value string) bool {
 	v := reflect.ValueOf(req)
-	if v.Kind() != reflect.Ptr || v.IsNil() {
+	if v.Kind() != reflect.Pointer || v.IsNil() {
 		return false
 	}
 	v = v.Elem()
