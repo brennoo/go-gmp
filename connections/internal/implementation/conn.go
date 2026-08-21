@@ -45,53 +45,38 @@ var (
 
 // Connection is a GMP transport over a single stream socket.
 //
-// GMP is a strict request/response protocol with no correlation IDs, so a
-// complete write-then-read transaction must occupy the socket exclusively.
-// Connection therefore serializes transactions: it is safe for concurrent use,
-// but not parallel — callers wait. Use one Connection per goroutine (each with
-// its own authentication) if genuine parallelism is needed.
+// GMP has no correlation IDs, so a write-then-read transaction must occupy the
+// socket exclusively. Connection serializes transactions accordingly: safe for
+// concurrent use, but not parallel — callers wait, with no FIFO fairness
+// guarantee. Use one Connection per goroutine for genuine parallelism.
 //
-// Waiting callers are not served in FIFO order: admission is a semaphore, not a
-// queue, with no starvation bound. Callers needing fairness must arrange it
-// above this type.
-//
-// Two synchronization primitives are used, deliberately separate:
-//
-//   - admission, a size-one buffered channel semaphore, serializes whole
-//     transactions. A channel not a mutex, because a mutex cannot be acquired
-//     under a context, so a waiting caller could not honor its own deadline.
-//   - mu guards state, rawConn and reader. Separate from admission so Close can
-//     act while another goroutine holds the transaction, and never held across
-//     blocking socket I/O.
+// admission is a channel rather than a mutex so a waiting caller can honor
+// ctx cancellation (a mutex can't be acquired under a context); mu guards
+// state, rawConn and reader separately, so Close can act while another
+// goroutine holds the transaction, and is never held across blocking I/O.
 //
 // A Connection must not be copied after first use.
 type Connection struct {
-	// admission is lazily created by sem(); see the note on admissionOnce.
+	// admission is lazily created by sem(); see admissionOnce.
 	admission chan struct{}
 	// admissionOnce keeps the zero value usable: Connection is exported, so a
-	// bare literal remains constructible and a nil chan would block forever. It
-	// also gives every sem() caller the happens-before edge to observe the same
-	// channel safely.
+	// bare literal must stay constructible (a nil chan would block forever).
 	admissionOnce sync.Once
 
 	mu      sync.Mutex
 	state   connState
 	rawConn net.Conn
-	// reader is a long-lived buffered reader over rawConn. It must be
-	// persistent (not per-call) so that no bytes are stranded in a discarded
-	// buffer between transactions, and it is only ever touched by the goroutine
-	// currently admitted to a transaction, which is what makes it safe.
+	// reader must be persistent, not per-call, so no bytes are stranded in a
+	// discarded buffer between transactions.
 	reader *bufio.Reader
 }
 
 // New returns a Connection that owns rawConn, together with the persistent
 // buffered reader built over it.
 //
-// A socket can only be installed at construction. There is deliberately no
-// setter: swapping it on a live Connection would race an in-flight transaction
-// or resurrect one that Close or a transport failure had retired. Reconnecting
-// means a new Connection, which is also what keeps reconnect safe — a stream
-// that failed ambiguously must never be resumed.
+// There is deliberately no setter to swap the socket later: that would race
+// an in-flight transaction or resurrect one Close had retired. Reconnecting
+// means building a new Connection.
 func New(rawConn net.Conn) *Connection {
 	return &Connection{
 		rawConn: rawConn,
@@ -170,10 +155,9 @@ func refusedError(cause error) error {
 // transact runs one complete request/response exchange and returns the raw
 // bytes of the framed response document.
 //
-// The order is fixed, and is the acceptance criterion for the race detector:
-// acquire admission; under the state lock verify open and snapshot
-// rawConn/reader; drop the lock; do all I/O through the snapshot, never the
-// struct fields; retake the lock only to classify; release admission.
+// Order is fixed: acquire admission, snapshot rawConn/reader under the state
+// lock, drop the lock, do all I/O through the snapshot (never the struct
+// fields), then retake the lock only to classify.
 //
 // Every error returned here is boundary-unknown and has already poisoned the
 // connection. Boundary-known failures are the caller's to classify.
@@ -212,14 +196,10 @@ func (conn *Connection) transact(ctx context.Context, request []byte) ([]byte, e
 
 // acquire takes the admission semaphore, honoring ctx while the caller waits.
 //
-// A non-blocking acquire is tried first. Without it, a caller whose context was
-// cancelled between checkUsable and here would race between "admitted" and
-// "cancelled while waiting" in a single select, making the two rows of the
-// cancellation table nondeterministic. Splitting it means the ctx.Done arm is
-// only reachable when the caller genuinely had to wait.
-//
-// This grants admission, not a place in line: see the note on fairness in the
-// Connection doc comment.
+// The non-blocking attempt is tried first so the ctx.Done arm is only
+// reachable once the caller genuinely had to wait — otherwise a context
+// cancelled between checkUsable and here would race "admitted" against
+// "cancelled" nondeterministically.
 func (conn *Connection) acquire(ctx context.Context) error {
 	sem := conn.sem()
 	select {
@@ -270,13 +250,10 @@ func (conn *Connection) armCancelWatchdog(ctx context.Context, c net.Conn) func(
 		return func() bool { return false }
 	}
 
-	// These three variables resolve the race between "the watchdog observed
-	// cancellation" and "the owner finished its I/O" to exactly one winner. A
-	// plain select on ctx.Done() vs. done is not enough: when both are ready Go
-	// picks at random, so a cancellation arriving strictly *after* a successful
-	// transaction could still win and destroy a healthy connection. The owner
-	// publishes finished before closing done, so any cancellation observed from
-	// that point on is a no-op.
+	// A plain select on ctx.Done() vs. done isn't enough: when both are ready Go
+	// picks at random, so a cancellation arriving after a successful transaction
+	// could still win and destroy a healthy connection. finished/outcomeMu
+	// resolve that race to one winner deterministically.
 	var (
 		outcomeMu sync.Mutex
 		cancelled bool
@@ -298,9 +275,6 @@ func (conn *Connection) armCancelWatchdog(ctx context.Context, c net.Conn) func(
 			}
 			cancelled = true
 			outcomeMu.Unlock()
-			// Acting on behalf of the transaction owner: CAS open -> broken so a
-			// concurrent Close cannot be clobbered, then interrupt the blocked
-			// socket operation.
 			conn.poison()
 			_ = c.Close()
 		case <-done:
@@ -312,10 +286,8 @@ func (conn *Connection) armCancelWatchdog(ctx context.Context, c net.Conn) func(
 		finished = true
 		wasCancelled := cancelled
 		outcomeMu.Unlock()
-		// Joining the watchdog before admission is released is essential: a
-		// straggling cancel goroutine must never close the socket during the
-		// *next* transaction. It also guarantees that if the watchdog won, its
-		// poison() has landed before the outcome is classified.
+		// Must join before admission is released: a straggling cancel goroutine
+		// must never close the socket during the next transaction.
 		close(done)
 		<-guard
 		return wasCancelled
@@ -346,13 +318,10 @@ func (conn *Connection) classify(ctx context.Context, ioErr error, wasCancelled 
 		return transportError(joinCause(ErrConnectionClosed, ioErr))
 
 	case wasCancelled:
-		// An error even when ioErr is nil: the response can frame completely
-		// just before the cancellation lands, leaving the caller a good document
-		// and a connection the watchdog has already destroyed. Reporting success
-		// there would make every later call fail for no visible reason.
-		//
-		// Any platform error is wrapped underneath so errors.Is finds the
-		// cancellation, not the "use of closed connection" the watchdog provoked.
+		// An error even when ioErr is nil: the response can frame completely just
+		// before cancellation lands, leaving a good document but a connection the
+		// watchdog already destroyed. ctx.Err() is wrapped outermost so errors.Is
+		// finds the cancellation, not the platform error it provoked.
 		return transportError(joinCause(ctx.Err(), ioErr))
 
 	default:
@@ -404,12 +373,10 @@ func performRequest(ctx context.Context, c net.Conn, r *bufio.Reader, request []
 // consumed while doing so.
 //
 // Framing is structural, not length-based: treating a short read as
-// end-of-message hangs forever on a response that is an exact multiple of the
-// buffer size.
-//
-// A fresh xml.Decoder per call is fine; the *persistent* reader is what
-// matters. xml.NewDecoder consumes directly from an io.ByteReader rather than
-// wrapping it, so discarding the decoder strands no bytes.
+// end-of-message would hang forever on a response that's an exact multiple of
+// the buffer size. A fresh xml.Decoder per call is fine — it consumes directly
+// from an io.ByteReader rather than wrapping it, so discarding it strands no
+// bytes from the persistent reader underneath.
 func readDocument(r *bufio.Reader) ([]byte, error) {
 	rec := &recordingByteReader{src: r}
 	dec := xml.NewDecoder(rec)
@@ -446,14 +413,9 @@ func readDocument(r *bufio.Reader) ([]byte, error) {
 }
 
 // recordingByteReader wraps the persistent reader and records every byte the
-// decoder pulls through it.
-//
-// Because the decoder consumes byte-at-a-time from an io.ByteReader, the
-// recording is exactly the bytes the decoder consumed — no InputOffset
-// arithmetic and no tee-buffer slicing, both of which record what the
-// *reader* pulled rather than what the decoder used.
-//
-// It is only ever used by the goroutine holding the transaction.
+// decoder pulls through it — exactly the bytes consumed, since the decoder
+// reads byte-at-a-time via ReadByte rather than through buffered Read calls.
+// Only ever used by the goroutine holding the transaction.
 type recordingByteReader struct {
 	src *bufio.Reader
 	buf []byte
@@ -531,11 +493,10 @@ func (conn *Connection) Execute(ctx context.Context, command interface{}, respon
 // RawXML sends xmlStr verbatim and returns the response as a wire segment.
 //
 // The result is every byte consumed while locating and framing the response:
-// any leading declaration, comments, directives and whitespace before the root
-// are included, trailing whitespace after it is not. That asymmetry is
-// deliberate — nothing is trimmed, since trimming would be neither exact wire
-// fidelity nor clean document extraction — but it means the result is not
-// guaranteed to be a standalone well-formed document.
+// leading declaration/comments/whitespace before the root are included,
+// trailing whitespace after it is not (nothing is trimmed; it's simply never
+// consumed). The result is therefore not guaranteed to be standalone
+// well-formed XML.
 //
 // RawXML shares Execute's admission gate, so mixing the two is safe.
 func (conn *Connection) RawXML(ctx context.Context, xmlStr string) (string, error) {

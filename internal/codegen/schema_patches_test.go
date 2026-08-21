@@ -8,9 +8,8 @@ import (
 )
 
 // withSchemaPatches swaps the package-level SchemaPatches table for the
-// duration of one test, restoring the real committed table afterward so
-// later tests (and TestSchemaPatchesTableIsValid) never see a leaked
-// synthetic entry.
+// duration of one test, restoring the real table afterward so no later
+// test sees a leaked synthetic entry.
 func withSchemaPatches(t *testing.T, patches map[string][]SchemaPatch) {
 	t.Helper()
 	restore := SchemaPatches
@@ -19,10 +18,9 @@ func withSchemaPatches(t *testing.T, patches map[string][]SchemaPatch) {
 }
 
 // commandWithResultNVTTags returns a synthetic command shaped like
-// get_results' own /result/nvt subtree just enough to exercise a patch
-// spliced in after "tags" — an optional element, a chardata leaf, nested two
-// levels under Response the way result/nvt really sits under
-// get_results_response.
+// get_results' own /result/nvt subtree — nested two levels under Response,
+// with a chardata "tags" leaf — just enough to exercise a patch spliced in
+// after it.
 func commandWithResultNVTTags() schema.Command {
 	c := minimalCommand()
 	c.Response.Children = []*schema.Node{
@@ -90,11 +88,9 @@ func TestApplySchemaPatchesSplicesIntoGenerate(t *testing.T) {
 		}
 	}
 
-	// T-26: a patched node's own Reason must reach the generated field as a
-	// gmpoverride tag, so internal/schema's comparer can suppress the EXTRA
-	// finding a raw-schema comparison would otherwise report unexplained — a
-	// SchemaPatch adds a field the schema itself has no counterpart for, by
-	// definition, so every use needs this or it always shows up unsuppressed.
+	// T-26: a patched node's Reason must reach the field as a gmpoverride tag
+	// so the comparer can suppress the EXTRA finding a SchemaPatch always
+	// produces (it adds a field the schema has no counterpart for).
 	if !strings.Contains(src, `gmpoverride:"test"`) {
 		t.Errorf("generated solution field is missing a gmpoverride tag carrying the patch's Reason; full output:\n%s", src)
 	}
@@ -160,13 +156,9 @@ func wrapperPatch() []SchemaPatch {
 }
 
 // TestApplySchemaPatchesCollisionSiblingIsSuppressed is T-26's regression
-// test for the bug the review caught: a collision-group member (get_info's
-// AllowCollision wrapper) needs both a gmpwire tag (from the collision codec)
-// and a gmpoverride tag (from its own SchemaPatch.Reason) on the same field —
-// writeField's tag emission used to be exclusive between the two, so the
-// wrapper's EXTRA finding surfaced unsuppressed in the conformance report
-// despite having a perfectly good evidence-backed reason recorded right next
-// to it.
+// test: a collision-group member needs both a gmpwire tag and a gmpoverride
+// tag on the same field, but writeField's tag emission used to be exclusive
+// between the two.
 func TestApplySchemaPatchesCollisionSiblingIsSuppressed(t *testing.T) {
 	withSchemaPatches(t, map[string][]SchemaPatch{"test_cmd:/test_cmd_response": wrapperPatch()})
 

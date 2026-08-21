@@ -3,12 +3,10 @@
 // lock file, and rewrites a Docker Compose file's pins to match. It exists
 // because content-digest pinning alone only protects against a tag moving —
 // it does nothing if the upstream registry garbage-collects the blob,
-// changes retention, removes the repository, or is simply unreachable. See
-// T-22 in docs/review-2026-08.md.
+// changes retention, removes the repository, or is simply unreachable.
 //
 // Every function that shells out takes a Runner so it can be unit-tested
-// against a fake instead of a real Skopeo binary and network, the same way
-// internal/dockerstack injects its command runner.
+// against a fake instead of a real Skopeo binary and network.
 package mirror
 
 import (
@@ -53,9 +51,8 @@ type SourceImage struct {
 }
 
 // SourceImagesFromLock returns one SourceImage per entry of a previous run's
-// lock file — the durable record of what to mirror from, since once
-// hack/docker-compose.yml itself points at the mirror, its "image:" lines no
-// longer carry the upstream channel to re-resolve.
+// lock file: once hack/docker-compose.yml points at the mirror, its "image:"
+// lines no longer carry the upstream channel to re-resolve.
 func SourceImagesFromLock(lock Lock) []SourceImage {
 	images := make([]SourceImage, len(lock.Entries))
 	for i, e := range lock.Entries {
@@ -65,12 +62,11 @@ func SourceImagesFromLock(lock Lock) []SourceImage {
 }
 
 // RewriteCompose rewrites every "    image: ..." line of composeData whose
-// repository matches a LockEntry's SourceRepository or DestinationRepository
-// — the former lets a Compose file still pointing at the original upstream
-// be cut over on its first mirrored run, the latter keeps it pinned on every
-// run after. A line matching no entry passes through unchanged. The
-// replacement tag is the entry's resolved Version if any, else its
-// digest-derived fallback tag.
+// repository matches a LockEntry's SourceRepository (cutting over a Compose
+// file still on the original upstream) or DestinationRepository (keeping it
+// pinned on every run after). A line matching no entry passes through
+// unchanged. The replacement tag is the entry's resolved Version if any,
+// else its digest-derived fallback tag.
 func RewriteCompose(composeData []byte, entries []LockEntry) ([]byte, error) {
 	byRepo := make(map[string]LockEntry, len(entries)*2)
 	for _, e := range entries {
@@ -136,7 +132,7 @@ func ResolveDigest(ctx context.Context, run Runner, ref string) (digestRef strin
 type PlatformManifest struct {
 	OS     string
 	Arch   string
-	Digest string // full "sha256:<hex>" per-platform manifest digest
+	Digest string // "sha256:<hex>" per-platform manifest digest
 }
 
 // InspectPlatforms returns one PlatformManifest per real platform digestRef's

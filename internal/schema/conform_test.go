@@ -182,16 +182,13 @@ func TestChardataWithOverrideReasonDoesNotHideSiblingMissing(t *testing.T) {
 	}
 }
 
-// T-18a's shape: the schema wrongly declares an element's chardata on the
-// wrapper (e.g. <sort>) when the wire actually carries it one level deeper,
-// on a child (e.g. <sort><field>). internal/codegen's FieldSuppressions
-// relocates it by suppressing the wrapper's chardata and adding an override
-// one on the child; the wrapper field itself carries the relocation's
-// gmpoverride tag, since the wrapper struct has no chardata field left of
+// T-18a's shape: the schema wrongly declares an element's chardata on a
+// wrapper (e.g. <sort>) when the wire carries it one level deeper, on a
+// child (e.g. <sort><field>). The relocation's gmpoverride tag lands on the
+// wrapper field itself, since the wrapper struct has no chardata field of
 // its own to carry it. checkChardata must suppress both halves: the
-// wrapper's now-missing chardata (via g.OverrideReason) and the child's now-
-// extra chardata (via g.ChardataOverrideReason), the same way
-// TestChardataWithOverrideReasonIsSuppressed does for a lone addition.
+// wrapper's now-missing chardata (g.OverrideReason) and the child's now-extra
+// chardata (g.ChardataOverrideReason).
 func TestChardataRelocationSuppressesBothHalves(t *testing.T) {
 	body := `
     <name>x</name>

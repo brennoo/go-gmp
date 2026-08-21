@@ -77,13 +77,12 @@ func NewGMPError(status, statusText string) *GMPError {
 }
 
 // ConnectionNotInitializedError means a Connection was used without an
-// underlying socket, which only happens when one is built as a bare struct
-// literal instead of by its constructor. It is a misuse of the library, not a
-// runtime failure: nothing was dialled, and retrying can never help.
+// underlying socket — built as a bare struct literal instead of via its
+// constructor. It's a misuse of the library, not a runtime failure, and
+// retrying can never help.
 //
-// Deliberately not a TransportError — no transport was ever established, so
-// neither answer to "is this connection usable" is honest: one implies a live
-// stream was retired, the other invites a retry loop that cannot terminate.
+// Deliberately not a TransportError: no transport was ever established, so
+// neither answer to "is this connection usable" would be honest.
 type ConnectionNotInitializedError struct {
 	Cause error
 }
@@ -113,21 +112,16 @@ const maxRetainedDocument = 4096
 // not be unmarshalled into the caller's type — for example schema or version
 // drift between client and server.
 //
-// A ProtocolError always leaves the connection usable: the document framed
-// cleanly, so the stream's message-boundary position is known and the next
-// transaction is unaffected. Contrast TransportError, where it depends — see
-// its ConnectionUsable field.
+// The connection is always left usable: the document framed cleanly, so the
+// stream's message-boundary position is known. Contrast TransportError, where
+// it depends on ConnectionUsable.
 type ProtocolError struct {
 	Cause error
-	// Document is a capped copy of the response that failed to decode. It is
-	// never included in Error(), because GMP responses routinely carry
-	// sensitive material — credentials from get_credentials, report bodies,
-	// target details — so a caller must deliberately reach for this field
-	// rather than have it appear in a log line by accident.
-	//
-	// It is an arbitrary byte prefix, cut at a fixed length rather than at a
-	// rune or element boundary, so a truncated Document may be neither valid
-	// UTF-8 nor well-formed XML. Treat it as diagnostic bytes, not a document.
+	// Document is a capped copy of the response that failed to decode.
+	// Deliberately excluded from Error(): GMP responses routinely carry
+	// sensitive material (credentials, report bodies) that shouldn't leak into
+	// logs by accident. It's a fixed-length byte prefix, not a boundary-aware
+	// cut, so it may be neither valid UTF-8 nor well-formed XML.
 	Document []byte
 	// DocumentSize is the full on-wire length of the response, even when
 	// Document was truncated. Truncation is exactly len(Document) < DocumentSize.
@@ -140,12 +134,9 @@ func (e *ProtocolError) Error() string {
 
 func (e *ProtocolError) Unwrap() error { return e.Cause }
 
-// NewProtocolError builds a ProtocolError over a copy of document, retaining
-// at most maxRetainedDocument bytes.
-//
-// document is always copied, never aliased: a get_results response is
-// routinely megabytes, and aliasing the caller's slice would pin the whole
-// backing array alive for the lifetime of the error.
+// NewProtocolError builds a ProtocolError over a copy of document (at most
+// maxRetainedDocument bytes): aliasing the caller's slice would otherwise pin
+// a potentially multi-megabyte backing array alive for the error's lifetime.
 func NewProtocolError(document []byte, cause error) *ProtocolError {
 	retained := make([]byte, min(len(document), maxRetainedDocument))
 	copy(retained, document)
@@ -168,15 +159,12 @@ type TransportError struct {
 
 	// ConnectionUsable reports whether the connection can still carry further
 	// requests. True only when the request was refused before the socket was
-	// touched — most commonly a context that was already done — leaving the
-	// connection exactly as it was.
+	// touched (e.g. an already-done context), leaving it exactly as it was.
+	// False means replace it: the stream's message-boundary position is
+	// unknown or the connection is already closed/broken, and neither can be
+	// revived.
 	//
-	// False means replace it: the failure left the stream's message-boundary
-	// position unknown, or the connection was already closed or broken. Neither
-	// can be revived, and an ambiguous stream must never be resumed.
-	//
-	// The zero value is deliberately the conservative answer, so a forgotten
-	// field says "do not reuse" rather than promising a guarantee never checked.
+	// The zero value is deliberately the conservative "do not reuse" answer.
 	ConnectionUsable bool
 }
 

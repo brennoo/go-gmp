@@ -8,10 +8,9 @@ import (
 	"github.com/brennoo/go-gmp/commands"
 )
 
-// The redactor is the one part of the live-capture path that can be tested with
-// no server, so it is tested hard. Everything here runs against hand-written
-// XML: if a test needed a captured fixture it would be testing the capture, and
-// the capture is what these tests exist to make safe.
+// The redactor is the one part of the live-capture path that can be tested
+// with no server, so it is tested hard against hand-written XML rather than
+// captured fixtures.
 
 func TestRedactPathsRewritesTextValues(t *testing.T) {
 	doc := []byte(`<authenticate><credentials><username>admin</username><password>hunter2</password></credentials></authenticate>`)
@@ -34,10 +33,10 @@ func TestRedactPathsRewritesTextValues(t *testing.T) {
 	}
 }
 
-// TestRedactPathsIsByteSurgical pins the property that makes live fixtures
-// usable as evidence: everything outside the redacted span is untouched,
-// including self-closing tags, single-quoted attributes, comments and
-// indentation, none of which survive a decode/re-encode round trip.
+// Pins the property that makes live fixtures usable as evidence: everything
+// outside the redacted span is untouched, including self-closing tags,
+// single-quoted attributes, comments and indentation — none of which survive
+// a decode/re-encode round trip.
 func TestRedactPathsIsByteSurgical(t *testing.T) {
 	doc := []byte("<?xml version='1.0'?>\n" +
 		"<!-- a comment -->\n" +
@@ -106,10 +105,9 @@ func TestRedactPathsHandlesEveryOccurrenceOfARepeatedPath(t *testing.T) {
 	}
 }
 
-// TestRedactPathsRedactsTLSCertificateData proves the committed
-// get_tls_certificates spec actually reaches the certificate bytes: this is
-// the one response element the whole family exists to protect, and it only
-// appears in the wire document when IncludeCertificateData was requested.
+// Proves the committed get_tls_certificates spec actually reaches the
+// certificate bytes, which only appear in the wire document when
+// IncludeCertificateData was requested.
 func TestRedactPathsRedactsTLSCertificateData(t *testing.T) {
 	const fakeDER = "MIIBSynthEXAMPLEnotarealcertificateFAKEbase64QQQQ=="
 	doc := []byte(`<get_tls_certificates_response status="200" status_text="OK">` +
@@ -136,9 +134,8 @@ func TestRedactPathsRedactsTLSCertificateData(t *testing.T) {
 	}
 }
 
-// TestRedactPathsDistinguishesDepth guards against a prefix or suffix match
-// standing in for a real path comparison: only the fully qualified path is a
-// hit, so a <password> somewhere else in the tree is left alone.
+// Guards against a prefix/suffix match standing in for a real path
+// comparison: only the fully qualified path is a hit.
 func TestRedactPathsDistinguishesDepth(t *testing.T) {
 	doc := []byte(`<a><password>keep</password><b><password>drop</password></b></a>`)
 
@@ -154,9 +151,8 @@ func TestRedactPathsDistinguishesDepth(t *testing.T) {
 	}
 }
 
-// TestRedactPathsMergesAdjacentTextTokens covers CDATA, which the decoder
-// returns as its own CharData token. Without span merging the output would
-// carry two placeholders where the document had one value.
+// Covers CDATA, which the decoder returns as its own CharData token: without
+// span merging the output would carry two placeholders for one value.
 func TestRedactPathsMergesAdjacentTextTokens(t *testing.T) {
 	doc := []byte(`<a><private><![CDATA[--BEGIN--]]>tail</private></a>`)
 
@@ -172,9 +168,8 @@ func TestRedactPathsMergesAdjacentTextTokens(t *testing.T) {
 	}
 }
 
-// TestRedactPathsCoversEscapedText proves the raw byte span is replaced rather
-// than the decoded value: an entity-escaped secret must not be left behind in
-// its escaped form.
+// Proves the raw byte span is replaced rather than the decoded value: an
+// entity-escaped secret must not be left behind in its escaped form.
 func TestRedactPathsCoversEscapedText(t *testing.T) {
 	doc := []byte(`<a><password>zzz&amp;qqq&#x21;jjj</password></a>`)
 
@@ -239,11 +234,9 @@ func TestValidateRedactionPath(t *testing.T) {
 	}
 }
 
-// TestRedactorRefusesASecretBearingCommandWithNoSpec drives the deny-by-default
-// rule with injected maps. It cannot be driven through NewRedactor, because
-// TestRedactionSpecsAreConsistent asserts the real maps never reach this state
-// — which is the whole design: the runtime check exists for the window between
-// someone adding a command to the set and someone running the tests.
+// Drives the deny-by-default rule with injected maps, not NewRedactor:
+// TestRedactionSpecsAreConsistent asserts the real maps never reach this
+// state, so this covers the window before someone runs the tests.
 func TestRedactorRefusesASecretBearingCommandWithNoSpec(t *testing.T) {
 	r := newRedactor(map[string][]string{}, map[string]bool{"create_credential": true})
 
@@ -258,11 +251,11 @@ func TestRedactorRefusesASecretBearingCommandWithNoSpec(t *testing.T) {
 	}
 }
 
-// TestRedactionSpecsAreConsistent keeps the two maps and the registry from
-// drifting apart. Each clause is a distinct way the corpus could leak: a spec
-// for a command nobody marked secret-bearing means the set is stale; a
-// secret-bearing command with no spec means the tool will refuse to capture it;
-// a path rooted at the wrong element silently matches nothing.
+// Keeps the two maps and the registry from drifting apart. Each clause is a
+// distinct way the corpus could leak: a spec for a command nobody marked
+// secret-bearing means the set is stale; a secret-bearing command with no
+// spec means capture will refuse it; a path rooted at the wrong element
+// silently matches nothing.
 func TestRedactionSpecsAreConsistent(t *testing.T) {
 	for command, paths := range redactionSpecs {
 		if !secretBearingCommands[command] {
@@ -333,10 +326,9 @@ func TestSweepIgnoresEmptyAndDuplicateTerms(t *testing.T) {
 	}
 }
 
-// TestCommittedSpecsRedactRealRequests marshals the actual commands.* types the
-// capture tool sends and checks the committed specs against the bytes that come
-// out. A spec written against a guessed element name would pass every test
-// above and fail here.
+// Marshals the actual commands.* types the capture tool sends and checks the
+// committed specs against the real bytes: a spec written against a guessed
+// element name would pass every test above and fail here.
 func TestCommittedSpecsRedactRealRequests(t *testing.T) {
 	r := NewRedactor()
 
@@ -434,9 +426,8 @@ func TestCommittedSpecsRedactRealRequests(t *testing.T) {
 	}
 }
 
-// TestSweepBacksUpTheSpecs is the end-to-end shape of the capture guard: redact
-// with the committed spec, then sweep for the literal secret. Nothing may be
-// written between those two steps.
+// The end-to-end shape of the capture guard: redact with the committed spec,
+// then sweep for the literal secret.
 func TestSweepBacksUpTheSpecs(t *testing.T) {
 	r := NewRedactor()
 	r.AddSecret("-gmp.pass", "PW-AUTH")

@@ -5,11 +5,9 @@ import (
 	"testing"
 )
 
-// chardataRoundTrip unmarshals in into a fresh *T, hands it to check for the
-// field assertions specific to that case, then marshals it back and requires
-// byte-identical output — the shared body every TestChardata*RoundTrip case
-// below runs, split out so each case stays under the linter's complexity
-// budget for a single test func.
+// chardataRoundTrip unmarshals in into a fresh *T, hands it to check for
+// case-specific assertions, then marshals it back and requires byte-identical
+// output. Shared by every TestChardata*RoundTrip case below.
 func chardataRoundTrip[T any](t *testing.T, in string, check func(t *testing.T, got *T)) {
 	t.Helper()
 	got := new(T)
@@ -27,15 +25,12 @@ func chardataRoundTrip[T any](t *testing.T, in string, check func(t *testing.T, 
 	}
 }
 
-// TestChardataRoundTripText exercises mixed content: an element that carries
-// both an attribute and bare text of its own — <text excerpt="...">the
-// text</text>, the shape the schema DSL spells with no dedicated keyword,
-// which schema.Node's Chardata field and the generator's emitChardata now
-// model as a `,chardata` field alongside the element's real attribute.
+// TestChardataRoundTripText exercises mixed content: an element with both an
+// attribute and bare text of its own — <text excerpt="...">the text</text> —
+// modeled via a `,chardata` field alongside the element's real attribute.
 //
-// The wrapper mirrors how Note actually field-tags NoteText (see
-// commands/get_notes.go) rather than relying on the type's own name for the
-// wire element, since NoteText is never marshaled standalone in production.
+// The wrapper mirrors how Note field-tags NoteText (see commands/get_notes.go)
+// since NoteText is never marshaled standalone in production.
 func TestChardataRoundTripText(t *testing.T) {
 	type wrapper struct {
 		XMLName xml.Name `xml:"note"`
@@ -53,9 +48,8 @@ func TestChardataRoundTripText(t *testing.T) {
 	})
 }
 
-// TestChardataRoundTripHost is TestChardataRoundTripText's counterpart for an
-// element with a real child *and* bare text — <host><hostname>...</hostname>
-// the hostname</host>.
+// TestChardataRoundTripHost covers an element with both a real child and bare
+// text — <host><hostname>...</hostname> the hostname</host>.
 func TestChardataRoundTripHost(t *testing.T) {
 	type wrapper struct {
 		XMLName xml.Name `xml:"result"`
@@ -76,13 +70,12 @@ func TestChardataRoundTripHost(t *testing.T) {
 	})
 }
 
-// TestChardataRoundTripSort covers the third recurring shape: a wrapper
-// element with a child that itself carries bare text and another child —
-// <sort><field>text<order>...</order></field></sort>, shared by ~25 get_*
-// commands' response. The schema declares the chardata directly on <sort>,
-// but live wire data actually places it one level deeper on <sort>'s own
-// <field> child; T-18a's FieldSuppressions/FieldOverrides relocation moves
-// NoteSort's chardata onto NoteField to match.
+// TestChardataRoundTripSort covers a wrapper element whose child itself
+// carries bare text and another child — <sort><field>text<order>...</order>
+// </field></sort>. The schema declares the chardata directly on <sort>, but
+// live wire data places it one level deeper on <field>; T-18a's
+// FieldSuppressions/FieldOverrides relocation moves NoteSort's chardata onto
+// NoteField to match.
 func TestChardataRoundTripSort(t *testing.T) {
 	type wrapper struct {
 		XMLName xml.Name `xml:"get_notes_response"`
@@ -101,10 +94,10 @@ func TestChardataRoundTripSort(t *testing.T) {
 }
 
 // TestChardataRoundTripCountZero and TestChardataRoundTripCountNonZero cover
-// T-23's count-wrapper shape: RoleCount's Value field carries no omitempty
-// (an int chardata field tagged with omitempty drops the whole element on
-// marshal, zero or not — see overrides.go's get_roles:/role_count entry), so
-// a genuine zero total must round-trip as "0", not vanish.
+// T-23: RoleCount's Value field carries no omitempty (an int chardata field
+// tagged omitempty drops the whole element on marshal, zero or not — see
+// overrides.go's get_roles:/role_count entry), so a genuine zero total must
+// round-trip as "0", not vanish.
 func TestChardataRoundTripCountZero(t *testing.T) {
 	type wrapper struct {
 		XMLName xml.Name  `xml:"get_roles_response"`
@@ -140,10 +133,9 @@ func TestChardataRoundTripCountNonZero(t *testing.T) {
 }
 
 // TestChardataRoundTripCountAbsent covers the case a non-pointer RoleCount
-// field got wrong: a response that omits <role_count> entirely (e.g.
-// get_filters's single-ID lookup example) must stay nil through decode and
-// marshal rather than fabricate the element back on re-encode — the defect
-// overrides.go's RequiredOverrides pointer-ifies the field to fix.
+// field got wrong: a response that omits <role_count> entirely must stay nil
+// through decode and marshal, not fabricate the element on re-encode —
+// overrides.go's RequiredOverrides pointer-ifies the field to fix this.
 func TestChardataRoundTripCountAbsent(t *testing.T) {
 	type wrapper struct {
 		XMLName xml.Name   `xml:"get_roles_response"`

@@ -8,25 +8,12 @@ import (
 	"strings"
 )
 
-// The Go side is derived by reflection rather than by go/ast.
-//
-// Reflection is used because it reads the same thing encoding/xml reads. It
-// gives the resolved reflect.StructTag, the real pointer/slice/value shape
-// after named types and aliases are followed, and it crosses file and package
-// boundaries for free. go/ast would give the source text of a tag and a type
-// *expression*: resolving `*TargetCredential` to its fields means building a
-// name table across commands/*.go and re-implementing Go's own rules for
-// embedding and shadowing. Every one of those is a place for the tool to be
-// wrong in a way that looks like a struct bug.
-//
-// What reflection cannot see is the source: field order as written, comments,
-// and any type never reachable from internal/gmptest.Registry. Field order is
-// irrelevant to a name-matched diff, and unreachable types are by definition
-// not part of any command's shape, so neither loss matters here.
-//
-// This is also independent of the fidelity tooling, which never reflects: it
-// marshals and diffs documents. Two oracles built the same way would agree for
-// uninteresting reasons.
+// The Go side is derived by reflection rather than by go/ast: reflection reads
+// the same thing encoding/xml reads (resolved StructTag, real pointer/slice
+// shape, cross-package types), where go/ast would need to re-implement Go's
+// embedding and shadowing rules by hand. This is also independent of the
+// fidelity tooling, which never reflects — two oracles built the same way
+// would agree for uninteresting reasons.
 
 // GoNode is one Go struct field, or a synthetic wrapper standing in for the
 // intermediate element in an `a>b` tag path.
@@ -122,11 +109,10 @@ func fill(n *GoNode, t reflect.Type, seen map[reflect.Type]bool) {
 		}
 		if f.Anonymous {
 			// encoding/xml flattens an anonymous struct or *struct field's
-			// children into the parent unconditionally — any xml tag on
-			// the field itself (name, any, chardata, ...) is ignored. Only
-			// an anonymous field of interface type is treated as named,
-			// and structUnder already returns nil for anything that isn't
-			// a struct, so that case falls through to addField below.
+			// children into the parent unconditionally, ignoring any xml tag
+			// on the field itself. Only an anonymous interface field is
+			// treated as named; structUnder returns nil for that case, so it
+			// falls through to addField below.
 			if elem := structUnder(f.Type); elem != nil {
 				fill(n, elem, seen)
 				continue
@@ -221,13 +207,10 @@ func leafNode(name string, f reflect.StructField, opts map[string]bool) *GoNode 
 	return kid
 }
 
-// cardOf reads the cardinality the Go declaration actually expresses.
-//
-// A slice is zero-or-more. A pointer is genuinely optional: nil and present
-// are distinguishable. A value field with omitempty is optional only in the
-// weaker sense that the zero value is not written — which is right for a
-// string and wrong for a bool or an int, and cardinalityFinding is where that
-// distinction is drawn.
+// cardOf reads the cardinality the Go declaration actually expresses. A value
+// field with omitempty is optional only in the weaker sense that the zero
+// value isn't written — right for a string, wrong for a bool or an int (see
+// checkCardinality).
 func cardOf(n *GoNode) Card {
 	switch {
 	case n.Slice:

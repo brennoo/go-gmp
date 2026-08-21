@@ -28,27 +28,18 @@ type Override struct {
 // type definition says something the mechanical mapping would get wrong, not
 // because a Go type happened to look nicer.
 var TypeOverrides = map[string]Override{
-	// vendor/XML's <type><name>boolean</name> declares <pattern>text</pattern>
-	// and documents "zero is false, anything else is true. As a result, the
-	// empty string is considered true". Go's encoding/xml bool would reject
-	// "" and accept only "true"/"false"/"1"/"0".
+	// Go's encoding/xml bool would reject "" and accept only "true"/"false"/"1"/"0".
 	"boolean": {
 		GoType: "commands.GMPBool",
 		Reason: `T-9 defect #6: lexical free text ("0"=false, anything else incl. empty=true), not xsd:boolean`,
 	},
-	// boolean_atoi is NOT the same wire rule as boolean: vendor/XML's
-	// <type><name>boolean_atoi</name> says the value is run through atoi(3)
-	// first, "which means that an empty string is considered false" — the
-	// exact opposite of <type><name>boolean</name>'s empty-is-true rule
-	// above. modify_config is the first generated family to declare it
-	// (family_selection/growing, family/all, family/growing), so it gets its
-	// own type rather than reusing GMPBool, which would silently invert
-	// every empty element.
+	// boolean_atoi's empty-is-false rule is the opposite of boolean's
+	// empty-is-true rule above, so it needs its own type rather than reusing
+	// GMPBool, which would silently invert every empty element.
 	"boolean_atoi": {
 		GoType: "commands.GMPAtoiBool",
 		Reason: "T-9 config: atoi(3) semantics (empty/non-numeric=false) differ from boolean's empty=true",
 	},
-	//
 	// gvmd emits ctime(3) strings and empty elements under fields the schema
 	// labels iso_time; time.Time's RFC 3339 UnmarshalText fails on both.
 	"iso_time": {
@@ -74,51 +65,19 @@ type PointerOverride struct {
 // (fieldOf's command argument is empty for a nested struct's fields, which
 // have no single owning command, so no key here can ever match one).
 //
-// pointerScalars documents a generator-wide default: "in this protocol an
-// empty string and an absent element mean the same thing", so an optional
-// string field is never a pointer. A live experiment against gvmd 26.36.1
-// (Greenbone Community Edition), run to answer the question review-only
-// `alert` had left open, proved that default wrong for modify_alert's name
-// and comment: omitting the element leaves the stored value unchanged, while
-// sending it empty (`<comment></comment>`) clears it. A bare `string` with
-// `,omitempty` can only ever send the first form, so adoption's mechanical
-// string-not-pointer conversion silently removed a request `alert`'s
-// hand-written `*string` could express. See docs/review-2026-08.md's `alert
-// adopted` section for the experiment and the reasoning below.
-//
-// The table stayed narrow on purpose until the post-tls_certificate T-9
-// revisit pass ran the same live experiment (gvmd 26.36.1) against every
-// remaining family with optional text fields: modify_role, modify_group,
-// modify_tag and modify_schedule. Results, one per family below.
-//
-// modify_role and modify_group: name, comment and users are NOT like
-// modify_alert's — omitting an element does not leave the stored value
-// unchanged. A bare `<modify_role role_id="..."/>` with every optional
-// element absent returns 200 OK but clears name, comment and users
-// unconditionally, and sending only `<comment>` still wipes the other two
-// even though they were never mentioned. Omitted and explicit-empty are
-// equivalent here, just not to "unchanged" — a pointer type could not
-// express a third wire state that does not exist, so no override is
-// warranted. The real hazard is behavioral, not a typing gap: a caller who
-// means to change only one field silently blanks the rest. See
-// docs/review-2026-08.md's post-tls_certificate revisit section.
-//
-// modify_tag: name behaves like modify_role/modify_group's fields do NOT —
-// omitted and explicit-empty both leave the stored name unchanged, so it
-// keeps the mechanical string default. value and comment behave like
-// modify_alert's (omit leaves the stored value unchanged, explicit-empty
-// clears it), so both get an entry below.
-//
-// modify_schedule: name, comment, icalendar and timezone all behave like
-// modify_tag's name — omitted and explicit-empty are indistinguishable,
-// both leaving the stored value unchanged — so none gets an entry. A
-// separate, unrelated wire quirk surfaced while testing timezone: gvmd
-// rejects a request that sends `<timezone>` without also sending
-// `<icalendar>` ("ICALENDAR element is required"), even though the schema
-// declares both independently optional. That is a cross-field requirement
-// the server enforces and the schema does not describe, not an
-// omit-vs-explicit-empty distinction, so it does not belong in this table
-// either.
+// pointerScalars' generator-wide default is that an optional string field is
+// never a pointer, since in this protocol an empty string and an absent
+// element mean the same thing. Live experiments against gvmd 26.36.1 proved
+// that default wrong for specific fields: omitting the element leaves the
+// stored value unchanged, while sending it explicit-empty clears it — a
+// distinction a bare `string`+`,omitempty` can never express. Each entry
+// below is one such field; see docs/review-2026-08.md's `alert adopted` and
+// post-tls_certificate revisit sections for the experiments, including the
+// negative results (fields that turned out NOT to need an entry, e.g.
+// modify_role/modify_group's name/comment/users, which clear unconditionally
+// rather than distinguishing omit from explicit-empty, and modify_schedule's
+// fields, which don't distinguish the two at all).
+
 // FieldOverride adds a field to a generated struct that the schema's own
 // declared pattern does not, and structurally cannot, produce — a real,
 // evidence-backed protocol field the schema simply never declares.
@@ -147,14 +106,8 @@ type FieldOverride struct {
 // effective override set (fieldOverridesFor, generate.go) — a use that
 // disagrees, or has no entry at all, fails the build rather than leaking one
 // use's override onto another. emitStruct, emitRequest, and emitResponse all
-// consult this table. emitRequest's own widening is modify_report_config's
-// report_config_id below: a command's top-level request envelope needed a
-// field the schema never declares anywhere, the same shape emitStruct's
-// nested structs already had evidence for. emitResponse's widening is
-// verify_scanner's version below: live gvmd traffic confirmed the field is a
-// real, populated wire value the schema's <pattern> never declares (only its
-// <example> shows it) — dropping it would be a real behavior regression, not
-// a defect fix.
+// consult this table.
+
 // t18aSortFieldReason is the shared Reason for every T-18a sort-chardata
 // relocation below, in both this table and FieldSuppressions: every affected
 // get_X command, and the fidelity evidence behind each one, is already
@@ -170,14 +123,9 @@ const t23CountTotalReason = "T-23: count-wrapper chardata total is schema-undecl
 
 // t26NVTRefsReason is the shared Reason for every T-26 nvt/refs pointer
 // entry below: the shared NVT struct's Refs field is schema-required but
-// only ever present when the underlying NVT actually carries references, so
-// a non-pointer field fabricates an empty <refs></refs> on every sibling NVT
-// that never had one on re-encode — the same fabrication class T-23b's
-// count-wrapper fix addressed, evidenced live at
-// internal/gmptest/testdata/live/get_results/001_response.xml (1 of 5 <nvt>
-// elements carries <refs>, the other 4 don't) and confirmed by decode-then-
-// remarshal producing 4 fabricated empty <refs> elements; see
-// docs/review-2026-08.md's T-26 entry.
+// only sometimes present on the wire, so a non-pointer field fabricates an
+// empty <refs></refs> on every sibling NVT that never had one; see
+// docs/review-2026-08.md's T-26 entry for the live evidence.
 const t26NVTRefsReason = "T-26: nvt/refs is schema-required but only sometimes present on the wire, " +
 	"fabricating an empty <refs></refs> on remarshal for every sibling NVT that never had one — same " +
 	"fabrication class as T-23b's count-wrapper fix"
@@ -813,16 +761,9 @@ var PointerOverrides = map[string]PointerOverride{
 	"modify_alert.comment": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
 	},
-	// modify_filter: a second live experiment (T-9, gvmd 26.36.1), run to
-	// answer the review finding that filter's review-only doc had asserted
-	// "no PointerOverrides entry needed" without testing it. Result: name and
-	// comment behave exactly like modify_alert's (omit leaves the stored
-	// value unchanged, explicit-empty clears it); term also distinguishes the
-	// two, though explicit-empty doesn't clear it to "" but resets it to
-	// gvmd's default filter term (e.g. "first=1 rows=11 sort=name") — still a
-	// real distinction a bare string+omitempty could never send. type showed
-	// no distinction (omit and explicit-empty both leave it unchanged), so it
-	// keeps the mechanical default and has no entry here.
+	// modify_filter.term: explicit-empty doesn't clear it to "" but resets it
+	// to gvmd's default filter term — still a real distinction a bare
+	// string+omitempty could never send.
 	"modify_filter.name": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <name> are distinct requests",
 	},
@@ -832,42 +773,27 @@ var PointerOverrides = map[string]PointerOverride{
 	"modify_filter.term": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <term> are distinct requests (explicit-empty resets to gvmd's default term rather than leaving it unchanged)",
 	},
-	// modify_tls_certificate: a third live experiment (T-9, gvmd 26.36.1), run
-	// to answer the review-only doc's unsubstantiated "no PointerOverrides
-	// entry needed" claim for name/comment/copy, the same claim already
-	// disproven once for modify_filter. Result: name and comment behave
-	// exactly like modify_alert's/modify_filter's (omit leaves the stored
-	// value unchanged, explicit-empty clears it to ""). copy did not: omit,
-	// explicit-empty, and setting it to a second real certificate's UUID all
-	// returned 200 OK but left the target certificate's name, comment, and
-	// both fingerprints completely unchanged in every case, so unlike
-	// create_tls_certificate's copy (which clones at creation) this field is
-	// observably inert on modify_tls_certificate in this gvmd version -- omit
-	// and explicit-empty are not merely equivalent, all three tested inputs
-	// are. No override is warranted for a field with no observable effect.
+	// modify_tls_certificate.copy has no entry: unlike create_tls_certificate's
+	// copy (which clones at creation), omit, explicit-empty and a real UUID all
+	// left the target unchanged here — no observable effect for a pointer to
+	// distinguish.
 	"modify_tls_certificate.name": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <name> are distinct requests",
 	},
 	"modify_tls_certificate.comment": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
 	},
-	// modify_tag: the post-tls_certificate T-9 revisit pass's live experiment.
-	// value and comment behave like modify_alert's; name did not (see the
-	// doc comment above this table) and keeps the mechanical default.
+	// modify_tag.name is not here: unlike value/comment, it doesn't
+	// distinguish omit from explicit-empty and keeps the mechanical default.
 	"modify_tag.value": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <value> are distinct requests",
 	},
 	"modify_tag.comment": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
 	},
-	// modify_ticket: live gvmd 26.36.1 experiment run against review-only
-	// ticket's deferred question. comment, open_note, fixed_note and
-	// closed_note behave like modify_alert's fields (omit leaves the stored
-	// value unchanged, explicit-empty clears it to ""). status does not: an
-	// explicit-empty <status></status> is rejected outright with
-	// "400 Error in status" rather than accepted as a clear, so there is no
-	// legal empty wire state for a pointer to express and it keeps the
-	// mechanical string default (see the modify_ticket CommandWarning below).
+	// modify_ticket.status is not here: it rejects explicit-empty outright
+	// (see the modify_ticket CommandWarning below), so no legal empty wire
+	// state exists for a pointer to express.
 	"modify_ticket.comment": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
 	},
@@ -880,98 +806,39 @@ var PointerOverrides = map[string]PointerOverride{
 	"modify_ticket.closed_note": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <closed_note> are distinct requests",
 	},
-	// modify_credential: live gvmd 26.36.1 experiment run against review-only
-	// credential's optional string fields (up, cc, snmp and krb5 credentials
-	// created and modified directly against the running instance). comment
-	// behaves like modify_alert's (omit leaves the stored value unchanged,
-	// explicit-empty clears it to ""). name, login and auth_algorithm did
-	// not: explicit-empty left each stored value unchanged, indistinguishable
-	// from omitting the element, so they keep the mechanical string default.
-	// certificate, kdc, community and password are not covered here at all —
-	// see the modify_credential CommandWarning below for why kdc and realm
-	// can't take a pointer either, and docs/review-2026-08.md's `credential
-	// added in review-only mode` section for the full experiment record,
-	// including why certificate, community and password could not be tested.
+	// modify_credential.{name,login,auth_algorithm} keep the mechanical
+	// default (explicit-empty leaves them unchanged). certificate, kdc,
+	// community and password are untested — see the modify_credential
+	// CommandWarning below.
 	"modify_credential.comment": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
 	},
-	// modify_user: live gvmd 22.7 experiment run against review-only user's
-	// deferred question (created a throwaway user with the built-in "User"
-	// role, then probed each field via RawXML and read the result back
-	// through get_users, or through a fresh authentication attempt for
-	// password since get_users never echoes it). comment behaves like
-	// modify_alert's (omit leaves the stored value unchanged, explicit-empty
-	// clears it to ""). new_name did not: an explicit-empty <new_name></new_name>
-	// returns 200 OK but leaves the name unchanged, indistinguishable from
-	// omitting the element entirely, so it keeps the mechanical string
-	// default. password's *UserPassword already models every legal
-	// combination structurally (the whole element can be omitted to leave
-	// the password alone; modify="0" and modify="1" with empty chardata both
-	// left the stored password unchanged in this gvmd version; modify="1"
-	// with real chardata changed it) so it needs no override here — see
-	// docs/review-2026-08.md's `user` section for the full experiment
-	// record, including the observed anomaly that the prior password kept
-	// authenticating after a successful rotation on this stack.
+	// modify_user.new_name keeps the mechanical default (explicit-empty
+	// leaves it unchanged). password's *UserPassword already models every
+	// legal combination structurally, so it needs no override — see
+	// docs/review-2026-08.md's `user` section.
 	"modify_user.comment": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
 	},
-	// modify_target: live gvmd 26.36.1 experiment run against review-only
-	// target's deferred question (created a throwaway target with unique
-	// hosts/exclude_hosts/port_range, then probed each field via RawXML and
-	// read comment/name/hosts/exclude_hosts back through get_targets).
-	// comment behaves like modify_alert's (omit leaves the stored value
-	// unchanged, explicit-empty clears it to ""). name did not: an
-	// explicit-empty <name></name> is rejected outright ("400 Name must be
-	// at least one character long"), so it keeps the mechanical string
-	// default (see the modify_target CommandWarning below). hosts and
-	// exclude_hosts could not be tested for an omit-vs-explicit-empty
-	// distinction either: gvmd requires both present together whenever
-	// either is touched, and rejects both explicit-empty too, so neither
-	// field has a legal standalone empty state a pointer could express (same
-	// warning). hosts_ordering accepted every value tried but could not be
-	// read back at all: get_targets's response never echoes it, so the
-	// omit-vs-clear question is unanswerable from this client alone.
+	// modify_target.name rejects explicit-empty outright (see the
+	// modify_target CommandWarning below), so it keeps the mechanical
+	// default; hosts/exclude_hosts/hosts_ordering are untested for the same
+	// or related reasons.
 	"modify_target.comment": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
 	},
-	// modify_task: live gvmd 26.36.1 experiment run against review-only
-	// task's deferred question (created a throwaway container task and a
-	// throwaway second user via create_user, then probed comment, name and
-	// observers via RawXML and read the result back through get_tasks).
-	// comment behaves like modify_alert's (omit leaves the stored value
-	// unchanged, explicit-empty clears it to ""). observers needed the
-	// throwaway user's login as a real value first (an arbitrary chardata
-	// string is rejected with "400 User name error"); once set, it behaves
-	// like comment (omit leaves it unchanged, explicit-empty clears it). name
-	// did not distinguish the two: an explicit-empty <name></name> returns
-	// 200 OK but leaves the stored name unchanged, indistinguishable from
-	// omitting the element entirely, so it keeps the mechanical string
-	// default. See docs/review-2026-08.md's `task` review-only section for
-	// the full experiment record.
+	// modify_task.name keeps the mechanical default (explicit-empty leaves it
+	// unchanged); see docs/review-2026-08.md's `task` review-only section.
 	"modify_task.comment": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
 	},
 	"modify_task.observers": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <observers> are distinct requests",
 	},
-	// modify_scanner: live gvmd 22.7 experiment run against review-only
-	// scanner's optional fields (created a throwaway CVE-type scanner with a
-	// throwaway "cc" client-certificate credential, since every enabled
-	// scanner type on this instance requires one, then probed each field via
-	// RawXML and read the result back through get_scanners). comment, name
-	// and ca_pub all behave like modify_alert's fields (omit leaves the
-	// stored value unchanged, explicit-empty clears it to ""). relay_host
-	// does too, but clearing it also resets relay_port to 0 as a side effect
-	// -- gvmd treats an empty relay_host as "no relay" and drops the paired
-	// port with it. relay_port did not get its own entry: gvmd validates
-	// relay_port and relay_host together, rejecting an explicit-empty
-	// <relay_port></relay_port> outright ("400 ... RELAY_PORT must be a valid
-	// port number ... if RELAY_HOST is not a UNIX socket path") whenever
-	// relay_host is still set, so there is no legal standalone empty state
-	// for relay_port a pointer could express beyond what relay_host already
-	// covers; it keeps the mechanical string default. See
-	// docs/review-2026-08.md's `scanner` review-only section for the full
-	// experiment record.
+	// modify_scanner.relay_port has no entry of its own: gvmd validates it
+	// together with relay_host, rejecting explicit-empty whenever relay_host
+	// is still set, so relay_host's entry already covers the only legal empty
+	// state. See docs/review-2026-08.md's `scanner` review-only section.
 	"modify_scanner.comment": {
 		Reason: "T-9: live gvmd test proved omitted vs. explicit-empty <comment> are distinct requests",
 	},

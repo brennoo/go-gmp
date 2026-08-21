@@ -32,10 +32,9 @@ func newOutDir(t *testing.T) string {
 	return dir
 }
 
-// writeTestFile writes a fixture into a t.TempDir tree. It deliberately does
-// not reuse scratch.go's writeFile: routing manifest-derived command names
-// through a non-test helper would pull that helper into gosec's taint graph
-// for the sake of a one-line os.WriteFile.
+// writeTestFile deliberately does not reuse scratch.go's writeFile: routing
+// manifest-derived command names through a non-test helper would pull that
+// helper into gosec's taint graph for the sake of a one-line os.WriteFile.
 func writeTestFile(t *testing.T, path, content string) {
 	t.Helper()
 	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
@@ -97,9 +96,8 @@ func TestCheckOutputCleanTree(t *testing.T) {
 }
 
 // TestCheckOutputAgreesWithCommittedTree is the regression guard: the whole
-// mechanism has to agree with reality as committed right now, using the real
-// manifest, the real snapshots and the real commands/ — including its 118
-// hand-written files, none of which may be reported obsolete.
+// mechanism has to agree with reality as committed right now, against the
+// real manifest, snapshots and commands/.
 func TestCheckOutputAgreesWithCommittedTree(t *testing.T) {
 	m := manifestOrFail(t)
 	r := checkOrFail(t, m, snapshotDir, commandsDir)
@@ -108,12 +106,9 @@ func TestCheckOutputAgreesWithCommittedTree(t *testing.T) {
 	}
 }
 
-// TestCheckOutputRejectsStaleEnumConstantNameEntry proves the read-only
-// check path enforces the same EnumConstantNames staleness guarantee the
-// write path does (checkEnumConstantNamesConsumed, shared by GenerateAll and
-// CheckOutput): gengmp -check must fail closed on an entry no family's
-// generation ever needed, or a value could stop appearing anywhere in the
-// schema without anything ever catching it.
+// TestCheckOutputRejectsStaleEnumConstantNameEntry proves -check fails
+// closed on an EnumConstantNames entry no family's generation ever needed —
+// the same guarantee the write path enforces via checkEnumConstantNamesConsumed.
 func TestCheckOutputRejectsStaleEnumConstantNameEntry(t *testing.T) {
 	ec := map[string]EnumConstantName{}
 	for k, v := range EnumConstantNames {
@@ -172,10 +167,9 @@ func TestCheckOutputDetectsModified(t *testing.T) {
 
 func TestCheckOutputDetectsObsolete(t *testing.T) {
 	dir := newOutDir(t)
-	// A leftover from a family or command that used to be generated: marked,
-	// but nothing in the manifest accounts for it. delete_agents has no
-	// family in the manifest at all yet, so this can't collide with a real
-	// generated file the way "delete_note.go" now would.
+	// A leftover from a family that used to be generated but no longer is.
+	// delete_agents has no family in the manifest yet, so it can't collide
+	// with a real generated file the way "delete_note.go" now would.
 	stale := filepath.Join(dir, "delete_agents.go")
 	writeTestFile(t, stale, GeneratedMarker+"\n\npackage commands\n\ntype DeleteAgents struct{}\n")
 	wantOnly(t, checkOrFail(t, manifestOrFail(t), snapshotDir, dir), "obsolete", []string{stale})
@@ -199,10 +193,9 @@ func TestCheckOutputIgnoresUnmarkedAndNonGo(t *testing.T) {
 }
 
 func TestCheckOutputDetectsAbsentSnapshot(t *testing.T) {
-	// A manifest naming a command with no snapshot file at all, alongside
-	// every family newOutDir actually seeded the directory with — otherwise
-	// the seeded families' own files would show up as unrelated Obsolete
-	// findings, masking the one this test cares about.
+	// A manifest naming a command with no snapshot, alongside every family
+	// newOutDir seeded the directory with — otherwise the seeded families'
+	// own files would show up as unrelated Obsolete findings.
 	dir := newOutDir(t)
 	m := Manifest{Families: append(append([]Family{}, manifestOrFail(t).Adopted().Families...),
 		Family{Name: "phantom", Commands: []string{"get_phantoms"}})}

@@ -81,10 +81,8 @@ func TestGetResultsNVTSolutionEmptyPresent(t *testing.T) {
 	if !strings.Contains(string(out), "<solution") {
 		t.Fatalf("Marshal = %s, want the solution element preserved despite all-zero fields", out)
 	}
-	// Accepted, documented loss (docs/review-2026-08.md's 2026-08-19
-	// addendum): Type's `omitempty` can't distinguish explicit-empty from
-	// absent, so type="" never survives remarshal. Pin the baseline instead
-	// of letting this test read as if the whole observed shape round-trips.
+	// Accepted, documented loss: Type's `omitempty` can't distinguish
+	// explicit-empty from absent, so type="" never survives remarshal.
 	if strings.Contains(string(out), "type=") {
 		t.Fatalf("Marshal = %s, want type=\"\" dropped (accepted omitempty loss), not preserved", out)
 	}
@@ -150,9 +148,8 @@ func TestGetResultsOriginalSeverityAbsent(t *testing.T) {
 
 // T-26: nvt/refs is schema-required, so a plain (non-pointer) field would
 // fabricate an empty <refs></refs> on remarshal for every NVT that never had
-// one — exactly the fabrication live/get_results/001_response.xml showed (1
-// of 5 <nvt> elements has <refs>, the other 4 don't; decoding then remarshaling
-// with the pre-fix non-pointer field produced 4 fabricated empty <refs>).
+// one — exactly what live/get_results/001_response.xml showed (only 1 of 5
+// <nvt> elements has <refs>).
 func TestGetResultsNVTRefsAbsentStaysAbsent(t *testing.T) {
 	var nvt ResultNVT
 	if err := xml.Unmarshal([]byte(`<nvt></nvt>`), &nvt); err != nil {
@@ -215,12 +212,11 @@ func TestGetResultsNVTRefsEmptyPresentSurvives(t *testing.T) {
 	}
 }
 
-// note.result and override.result are the same recursive "result inside a
-// result's own notes/overrides" shape the top-level Result models with 8
-// fields; the served schema itself declares this nested occurrence a plain
-// leaf, so T-21 collapses it to a string instead of re-expanding the whole
-// Result type recursively. Pin that collapse: attributes and any child
-// elements are dropped, only the element's own character data survives.
+// note.result and override.result are the recursive "result inside a
+// result's own notes/overrides" shape; the served schema declares this nested
+// occurrence a plain leaf, so T-21 collapses it to a string instead of
+// re-expanding Result recursively. Pin that collapse: attributes and child
+// elements are dropped, only the character data survives.
 func TestGetResultsNoteAndOverrideResultCollapseToString(t *testing.T) {
 	var note ResultNote
 	if err := xml.Unmarshal([]byte(`<note><result id="614a1067-8556-40ab-9b40-e2ff98a7a4f4">deleted</result></note>`), &note); err != nil {

@@ -19,21 +19,17 @@ type testConnection struct{}
 
 //nolint:gocyclo // Mock connection handles all GMP commands
 func (tc *testConnection) Execute(ctx context.Context, command interface{}, response interface{}) error {
-	// Handle pagination commands
 	if cmd, ok := command.(*commands.GetTasks); ok {
 		resp := response.(*commands.GetTasksResponse)
 		resp.Status = "200"
 		resp.StatusText = "OK"
 		if cmd.Filter != "" {
-			// Check if page size is 0
 			if cmd.Filter == "first=1 rows=0" {
 				resp.Task = []commands.Task{}
 			} else {
-				// Parse pagination parameters
 				first := 1
 				rows := 3
 				if strings.Contains(cmd.Filter, "first=") {
-					// Extract just the pagination part before any additional filters
 					parts := strings.Fields(cmd.Filter)
 					for _, part := range parts {
 						if strings.HasPrefix(part, "first=") {
@@ -44,7 +40,6 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 					}
 				}
 
-				// Return appropriate slice based on pagination
 				allTasks := []commands.Task{
 					{ID: "task-1", Name: "Test Task 1"},
 					{ID: "task-2", Name: "Test Task 2"},
@@ -71,15 +66,12 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 		resp.Status = "200"
 		resp.StatusText = "OK"
 		if cmd.Filter != "" {
-			// Check if page size is 0
 			if cmd.Filter == "first=1 rows=0" {
 				resp.Result = []commands.Result{}
 			} else {
-				// Parse pagination parameters
 				first := 1
 				rows := 3
 				if strings.Contains(cmd.Filter, "first=") {
-					// Extract just the pagination part before any additional filters
 					parts := strings.Fields(cmd.Filter)
 					for _, part := range parts {
 						if strings.HasPrefix(part, "first=") {
@@ -90,7 +82,6 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 					}
 				}
 
-				// Return appropriate slice based on pagination
 				allResults := []commands.Result{
 					{ID: "result-1", Name: "Test Result 1"},
 					{ID: "result-2", Name: "Test Result 2"},
@@ -117,18 +108,15 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 		resp.Status = "200"
 		resp.StatusText = "OK"
 		if cmd.Filter != "" {
-			// Check if page size is 0
 			if cmd.Filter == "first=1 rows=0" {
 				resp.Asset = []commands.GetAssetsAsset{}
 			} else {
-				// Parse pagination parameters
 				first := 1
 				rows := 2
 				if strings.Contains(cmd.Filter, "first=") {
 					fmt.Sscanf(cmd.Filter, "first=%d rows=%d", &first, &rows)
 				}
 
-				// Return appropriate slice based on pagination
 				allAssets := []commands.GetAssetsAsset{
 					{ID: "asset-1", Name: "Test Asset 1"},
 					{ID: "asset-2", Name: "Test Asset 2"},
@@ -154,15 +142,12 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 		resp.Status = "200"
 		resp.StatusText = "OK"
 		if cmd.Filter != "" {
-			// Check if page size is 0
 			if cmd.Filter == "first=1 rows=0" {
 				resp.Target = []commands.Target{}
 			} else {
-				// Parse pagination parameters
 				first := 1
 				rows := 3
 				if strings.Contains(cmd.Filter, "first=") {
-					// Extract just the pagination part before any additional filters
 					parts := strings.Fields(cmd.Filter)
 					for _, part := range parts {
 						if strings.HasPrefix(part, "first=") {
@@ -173,7 +158,6 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 					}
 				}
 
-				// Return appropriate slice based on pagination
 				allTargets := []commands.Target{
 					{ID: "target-1", Name: "Test Target 1"},
 					{ID: "target-2", Name: "Test Target 2"},
@@ -200,15 +184,12 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 		resp.Status = "200"
 		resp.StatusText = "OK"
 		if cmd.Filter != "" {
-			// Check if page size is 0
 			if cmd.Filter == "first=1 rows=0" {
 				resp.Ticket = []commands.Ticket{}
 			} else {
-				// Parse pagination parameters
 				first := 1
 				rows := 3
 				if strings.Contains(cmd.Filter, "first=") {
-					// Extract just the pagination part before any additional filters
 					parts := strings.Fields(cmd.Filter)
 					for _, part := range parts {
 						if strings.HasPrefix(part, "first=") {
@@ -219,7 +200,6 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 					}
 				}
 
-				// Return appropriate slice based on pagination
 				allTickets := []commands.Ticket{
 					{ID: "ticket-1", Name: "Test Ticket 1"},
 					{ID: "ticket-2", Name: "Test Ticket 2"},
@@ -246,15 +226,12 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 		resp.Status = "200"
 		resp.StatusText = "OK"
 		if cmd.Filter != "" {
-			// Check if page size is 0
 			if cmd.Filter == "first=1 rows=0" {
 				resp.PortList = []commands.PortList{}
 			} else {
-				// Parse pagination parameters
 				first := 1
 				rows := 3
 				if strings.Contains(cmd.Filter, "first=") {
-					// Extract just the pagination part before any additional filters
 					parts := strings.Fields(cmd.Filter)
 					for _, part := range parts {
 						if strings.HasPrefix(part, "first=") {
@@ -265,7 +242,6 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 					}
 				}
 
-				// Return appropriate slice based on pagination
 				allPortLists := []commands.PortList{
 					{ID: "portlist-1", Name: "Test PortList 1"},
 					{ID: "portlist-2", Name: "Test PortList 2"},
@@ -292,15 +268,12 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 		resp.Status = "200"
 		resp.StatusText = "OK"
 		if cmd.Filter != "" {
-			// Check if page size is 0
 			if cmd.Filter == "first=1 rows=0" {
 				resp.Setting = []commands.SettingsSetting{}
 			} else {
-				// Parse pagination parameters
 				first := 1
 				rows := 3
 				if strings.Contains(cmd.Filter, "first=") {
-					// Extract just the pagination part before any additional filters
 					parts := strings.Fields(cmd.Filter)
 					for _, part := range parts {
 						if strings.HasPrefix(part, "first=") {
@@ -311,7 +284,6 @@ func (tc *testConnection) Execute(ctx context.Context, command interface{}, resp
 					}
 				}
 
-				// Return appropriate slice based on pagination
 				allSettings := []commands.SettingsSetting{
 					{ID: "setting-1", Name: "Test Setting 1"},
 					{ID: "setting-2", Name: "Test Setting 2"},
@@ -411,11 +383,9 @@ func (etc *errorTestClient) GetSettingsRaw(ctx context.Context, cmd *commands.Ge
 
 // General iterator tests that apply to all iterator types.
 func TestIteratorErrorHandling(t *testing.T) {
-	// Test with error client
 	errorCli := &errorTestClient{}
 	ctx := context.Background()
 
-	// Test TaskIterator error handling
 	taskIter := NewTaskIterator(errorCli, ctx, PaginationOptions{Page: 1, PageSize: 2})
 
 	if taskIter.Next() {
@@ -431,7 +401,6 @@ func TestIteratorEdgeCases(t *testing.T) {
 	cli := &testClient{}
 	ctx := context.Background()
 
-	// Test with large page size
 	iterator := NewTaskIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 100})
 
 	var tasks []*commands.Task
@@ -440,7 +409,6 @@ func TestIteratorEdgeCases(t *testing.T) {
 		tasks = append(tasks, task)
 	}
 
-	// Should get all 3 tasks
 	if len(tasks) != 3 {
 		t.Errorf("Expected 3 items with large page size, got %d", len(tasks))
 	}
@@ -450,7 +418,6 @@ func TestIteratorWithFilters(t *testing.T) {
 	cli := &testClient{}
 	ctx := context.Background()
 
-	// Test with filters
 	iterator := NewTaskIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 2}, "name=Test")
 
 	var tasks []*commands.Task
@@ -459,7 +426,6 @@ func TestIteratorWithFilters(t *testing.T) {
 		tasks = append(tasks, task)
 	}
 
-	// Should get all 3 tasks with filters
 	if len(tasks) != 3 {
 		t.Errorf("Expected 3 tasks with filters, got %d", len(tasks))
 	}
@@ -469,7 +435,6 @@ func TestIteratorPagination(t *testing.T) {
 	cli := &testClient{}
 	ctx := context.Background()
 
-	// Test with small page size to trigger pagination
 	iterator := NewTaskIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 1})
 
 	var tasks []*commands.Task
@@ -478,7 +443,6 @@ func TestIteratorPagination(t *testing.T) {
 		tasks = append(tasks, task)
 	}
 
-	// Should get all 3 tasks with small page size
 	if len(tasks) != 3 {
 		t.Errorf("Expected 3 tasks with small page size, got %d", len(tasks))
 	}
@@ -490,7 +454,6 @@ func TestIteratorStateManagement(t *testing.T) {
 
 	iterator := NewTaskIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 2})
 
-	// Test first item
 	if !iterator.Next() {
 		t.Fatal("Expected first Next() to return true")
 	}
@@ -500,12 +463,10 @@ func TestIteratorStateManagement(t *testing.T) {
 		t.Fatal("Expected first item, got nil")
 	}
 
-	// Should still have more data
 	if !iterator.HasMore() {
 		t.Error("Iterator should still have more data after first item")
 	}
 
-	// Test second item
 	if !iterator.Next() {
 		t.Fatal("Expected second Next() to return true")
 	}
@@ -517,7 +478,6 @@ func TestIteratorStateManagement(t *testing.T) {
 }
 
 func TestIteratorErrorScenarios(t *testing.T) {
-	// Test context cancellation
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel() // Cancel immediately
 
@@ -536,7 +496,6 @@ func TestIteratorEmptyCurrentSlice(t *testing.T) {
 	cli := &testClient{}
 	ctx := context.Background()
 
-	// Test with page size 0 to get empty results
 	iterator := NewTaskIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 0})
 
 	if iterator.Next() {
@@ -554,14 +513,12 @@ func TestIteratorContextCancellation(t *testing.T) {
 
 	iterator := NewTaskIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 2})
 
-	// Cancel context after first item
 	if !iterator.Next() {
 		t.Fatal("Expected first Next() to return true")
 	}
 
-	cancel() // Cancel context
+	cancel()
 
-	// Next call should detect cancellation
 	if iterator.Next() {
 		t.Error("Expected Next() to return false after context cancellation")
 	}
@@ -592,12 +549,10 @@ func TestIteratorCurrentBoundaryConditions(t *testing.T) {
 
 	iterator := NewTaskIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 2})
 
-	// Current() should return nil before any Next() calls
 	if iterator.Current() != nil {
 		t.Error("Expected Current() to return nil before Next() is called")
 	}
 
-	// After Next() returns false, Current() should return the last item
 	if !iterator.Next() {
 		t.Fatal("Expected first Next() to return true")
 	}
@@ -607,12 +562,9 @@ func TestIteratorCurrentBoundaryConditions(t *testing.T) {
 		t.Fatal("Expected Current() to return a task after Next()")
 	}
 
-	// Continue until no more items
 	for iterator.Next() {
-		// Just advance
 	}
 
-	// Current() should still return the last item
 	lastTask := iterator.Current()
 	if lastTask == nil {
 		t.Error("Expected Current() to return last item after iteration ends")
@@ -625,17 +577,13 @@ func TestIteratorNextNoMoreData(t *testing.T) {
 
 	iterator := NewTaskIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 2})
 
-	// Consume all items
 	for iterator.Next() {
-		// Just advance
 	}
 
-	// Next() should return false when no more data
 	if iterator.Next() {
 		t.Error("Expected Next() to return false when no more data")
 	}
 
-	// HasMore() should return false when no more data
 	if iterator.HasMore() {
 		t.Error("Expected HasMore() to return false when no more data")
 	}
@@ -647,7 +595,6 @@ func TestIteratorNextValidContext(t *testing.T) {
 
 	iterator := NewTaskIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 2})
 
-	// Next() should work with valid context
 	if !iterator.Next() {
 		t.Error("Expected Next() to return true with valid context")
 	}
@@ -663,7 +610,6 @@ func TestIteratorNextValidContextAll(t *testing.T) {
 
 	iterator := NewTaskIterator(cli, ctx, PaginationOptions{Page: 1, PageSize: 2})
 
-	// Iterate through all items
 	count := 0
 	for iterator.Next() {
 		count++
@@ -673,7 +619,6 @@ func TestIteratorNextValidContextAll(t *testing.T) {
 		}
 	}
 
-	// Should have processed all items
 	if count != 3 {
 		t.Errorf("Expected to process 3 items, got %d", count)
 	}

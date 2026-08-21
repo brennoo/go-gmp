@@ -16,7 +16,6 @@ import (
 	"github.com/brennoo/go-gmp/connections"
 )
 
-// Configuration constants.
 const (
 	gvmdHost     = "localhost:9390"
 	username     = "admin"
@@ -60,7 +59,7 @@ func (g *GMPClient) Close() error {
 	return g.conn.Close()
 }
 
-// Authenticate authenticates with the GMP server with retry logic.
+// Authenticate authenticates with the GMP server.
 func (g *GMPClient) Authenticate(ctx context.Context, username, password string) error {
 	log.Printf("Authenticating as user: %s", username)
 
@@ -189,13 +188,11 @@ func (g *GMPClient) DeleteTarget(ctx context.Context, targetID string) error {
 func (g *GMPClient) DeleteTargetWithDependencies(ctx context.Context, targetID string) error {
 	log.Printf("Deleting target with dependencies: %s", targetID)
 
-	// First, get the target to see if it's in use
 	target, err := g.GetTargetByID(ctx, targetID)
 	if err != nil {
 		return fmt.Errorf("failed to get target info: %w", err)
 	}
 
-	// If target has tasks, delete them first
 	if target.Tasks != nil && len(target.Tasks.Task) > 0 {
 		log.Printf("Target has %d associated tasks, deleting them first", len(target.Tasks.Task))
 		for _, task := range target.Tasks.Task {
@@ -206,7 +203,6 @@ func (g *GMPClient) DeleteTargetWithDependencies(ctx context.Context, targetID s
 		}
 	}
 
-	// Now delete the target
 	return g.DeleteTarget(ctx, targetID)
 }
 
@@ -422,7 +418,6 @@ func (g *GMPClient) getTaskProgress(ctx context.Context, taskID string) (int, er
 func (g *GMPClient) PrintResultsWithIterator(ctx context.Context, taskID string) error {
 	log.Printf("Getting results for task: %s using iterator", taskID)
 
-	// Create an iterator for results
 	resultIter := g.client.Results(ctx, 50, taskID)
 	defer resultIter.Close()
 
@@ -430,7 +425,6 @@ func (g *GMPClient) PrintResultsWithIterator(ctx context.Context, taskID string)
 	log.Println("Scanning results...")
 	log.Println("=" + strings.Repeat("=", 80))
 
-	// Iterate through all results
 	for resultIter.Next() {
 		result := resultIter.Current()
 		resultCount++
@@ -448,7 +442,6 @@ func (g *GMPClient) PrintResultsWithIterator(ctx context.Context, taskID string)
 		fmt.Println()
 	}
 
-	// Check for errors
 	if err := resultIter.Err(); err != nil {
 		return fmt.Errorf("error during iteration: %w", err)
 	}
@@ -467,15 +460,13 @@ func (g *GMPClient) PrintResultsWithIterator(ctx context.Context, taskID string)
 func (g *GMPClient) PrintResultsWithFiltering(ctx context.Context, taskID string) error {
 	log.Printf("Getting results for task: %s using filtering system", taskID)
 
-	// Create filter options for high and critical severity results
 	opts := []filtering.Option{
 		filtering.WithTask(taskID),
 		filtering.WithSeverityGreaterThanOrEqual(7.0), // High and Critical
 		filtering.WithSortDesc(filtering.SortByResultSeverity),
-		filtering.WithLimit(20), // Limit to top 20 results
+		filtering.WithLimit(20),
 	}
 
-	// Use the new filtering method
 	var args []filtering.FilterArg
 	for _, opt := range opts {
 		args = append(args, opt)
@@ -513,14 +504,12 @@ func (g *GMPClient) PrintResultsWithFiltering(ctx context.Context, taskID string
 func (g *GMPClient) PrintTasksWithFiltering(ctx context.Context) error {
 	log.Println("Getting tasks using filtering system")
 
-	// Create filter options for running tasks
 	opts := []filtering.Option{
 		filtering.WithStatus(filtering.StatusRunning),
 		filtering.WithSortDesc(filtering.SortByCreated),
-		filtering.WithLimit(10), // Show last 10 running tasks
+		filtering.WithLimit(10),
 	}
 
-	// Use the new filtering method
 	var args []filtering.FilterArg
 	for _, opt := range opts {
 		args = append(args, opt)
@@ -550,58 +539,48 @@ func (g *GMPClient) PrintTasksWithFiltering(ctx context.Context) error {
 }
 
 func main() {
-	// Create context with timeout
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()
 
-	// Create GMP client
 	gmpClient, err := NewGMPClient(ctx, gvmdHost)
 	if err != nil {
 		log.Fatalf("Failed to create GMP client: %v", err)
 	}
 	defer gmpClient.Close() //nolint:errcheck // Ignoring close error
 
-	// Authenticate
 	if err := gmpClient.Authenticate(ctx, username, password); err != nil {
 		log.Fatalf("Authentication failed: %v", err)
 	}
 
-	// Get scanner
 	scanner, err := gmpClient.GetScanner(ctx, scannerName)
 	if err != nil {
 		log.Fatalf("Failed to get scanner: %v", err)
 	}
 
-	// Get configuration
 	configID, err := gmpClient.GetConfig(ctx, configName)
 	if err != nil {
 		log.Fatalf("Failed to get configuration: %v", err)
 	}
 
-	// Get port list
 	portListID, err := gmpClient.GetPortList(ctx, portListName)
 	if err != nil {
 		log.Fatalf("Failed to get port list: %v", err)
 	}
 
-	// Create target
 	target, err := gmpClient.CreateTarget(ctx, targetName, targetHosts, portListID)
 	if err != nil {
 		log.Fatalf("Failed to create target: %v", err)
 	}
 
-	// Create task
 	task, err := gmpClient.CreateTask(ctx, taskName, configID, target.ID, scanner.ID)
 	if err != nil {
 		log.Fatalf("Failed to create task: %v", err)
 	}
 
-	// Start task
 	if err := gmpClient.StartTask(ctx, task.ID); err != nil {
 		log.Fatalf("Failed to start task: %v", err)
 	}
 
-	// Wait for completion
 	if err := gmpClient.WaitForTaskCompletion(ctx, task.ID); err != nil {
 		log.Fatalf("Task failed or timed out: %v", err)
 	}

@@ -96,11 +96,9 @@ func init() {
 		AllowInsecure: commands.Bool(false),
 	})
 
-	// ModifyCredential.Comment is *string (internal/codegen/overrides.go's
-	// PointerOverrides): gvmd distinguishes an omitted comment (existing
-	// value unchanged) from an explicit empty one (clears it). These cases
-	// pin the omitted/explicit-empty/set wire shapes side by side, matching
-	// modify_ticket's convention.
+	// ModifyCredential.Comment is *string: gvmd distinguishes an omitted
+	// comment (unchanged) from an explicit empty one (clears it). These pin
+	// the omitted/explicit-empty/set wire shapes side by side.
 	RegisterRequestCase("modify_credential", "all_unset", &commands.ModifyCredential{ // nolint:gosec // G101 fires on the UUID; it is a resource id, not a secret
 		CredentialID: "9b16f6c2-4c9d-4e6a-8f6a-1a2b3c4d5e6f",
 	})

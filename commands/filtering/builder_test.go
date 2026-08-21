@@ -6,7 +6,6 @@ import (
 )
 
 func TestBuildFilterFromArgs(t *testing.T) {
-	// Test with no arguments
 	filter, err := BuildFilterFromArgs()
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -15,7 +14,6 @@ func TestBuildFilterFromArgs(t *testing.T) {
 		t.Errorf("Expected empty filter, got %q", filter)
 	}
 
-	// Test with string filters only
 	filter, err = BuildFilterFromArgs("name=test", "status=running")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -25,7 +23,6 @@ func TestBuildFilterFromArgs(t *testing.T) {
 		t.Errorf("Expected %q, got %q", expected, filter)
 	}
 
-	// Test with functional options only
 	filter, err = BuildFilterFromArgs(WithName("test"), WithStatus(StatusRunning))
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -35,7 +32,6 @@ func TestBuildFilterFromArgs(t *testing.T) {
 		t.Errorf("Expected %q, got %q", expected, filter)
 	}
 
-	// Test with mixed arguments (both functional options and string filters are combined)
 	filter, err = BuildFilterFromArgs("name=old", WithName("new"), "status=old", WithStatus(StatusRunning))
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -45,7 +41,6 @@ func TestBuildFilterFromArgs(t *testing.T) {
 		t.Errorf("Expected %q, got %q", expected, filter)
 	}
 
-	// Test with string slices
 	filter, err = BuildFilterFromArgs([]string{"name=test", "status=running"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -55,7 +50,6 @@ func TestBuildFilterFromArgs(t *testing.T) {
 		t.Errorf("Expected %q, got %q", expected, filter)
 	}
 
-	// Test with option slices
 	filter, err = BuildFilterFromArgs([]Option{WithName("test"), WithStatus(StatusRunning)})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -65,7 +59,6 @@ func TestBuildFilterFromArgs(t *testing.T) {
 		t.Errorf("Expected %q, got %q", expected, filter)
 	}
 
-	// Test with mixed slices
 	filter, err = BuildFilterFromArgs([]string{"name=test"}, []Option{WithStatus(StatusRunning)})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -77,27 +70,24 @@ func TestBuildFilterFromArgs(t *testing.T) {
 }
 
 func TestBuildConsolidatedFilter(t *testing.T) {
-	// Test with no arguments
 	filter := BuildConsolidatedFilter([]string{})
 	if filter != "" {
 		t.Errorf("Expected empty filter, got %q", filter)
 	}
 
-	// Test with string filters
 	filter = BuildConsolidatedFilter([]string{"name=test", "status=running"})
 	expected := "name=test status=running"
 	if filter != expected {
 		t.Errorf("Expected %q, got %q", expected, filter)
 	}
 
-	// Test with functional options
 	filter = BuildConsolidatedFilter([]string{}, WithName("test"), WithStatus(StatusRunning))
 	expected = "name=test status=Running"
 	if filter != expected {
 		t.Errorf("Expected %q, got %q", expected, filter)
 	}
 
-	// Test with mixed arguments (functional options take precedence)
+	// Functional options take precedence over string filters when both are given.
 	filter = BuildConsolidatedFilter([]string{"name=old", "status=old"}, WithName("new"), WithStatus(StatusRunning))
 	expected = "name=new status=Running"
 	if filter != expected {
@@ -117,11 +107,9 @@ func TestBuildFilterFromArgsRejectsUnrecognizedTypes(t *testing.T) {
 		{"bool", true},
 		{"struct literal", struct{}{}},
 		{"typed nil pointer", (*int)(nil)},
-		// The real-world case: a caller mistakenly passes a typed request
-		// struct instead of a string/Option filter (see T-28's
-		// TestExplicitEmptySemantics, which did exactly this against
-		// GetOverrides/GetConfigs/GetPortLists and got an unfiltered query
-		// back with no error at all).
+		// Real-world case from T-28: a caller mistakenly passes a typed
+		// request struct, which previously produced an unfiltered query
+		// with no error.
 		{"unrelated struct pointer", &struct{ OverrideID string }{OverrideID: "abc"}},
 	}
 	for _, tt := range tests {
@@ -135,7 +123,6 @@ func TestBuildFilterFromArgsRejectsUnrecognizedTypes(t *testing.T) {
 }
 
 func TestBuildFilterFromArgsWithEmptySlices(t *testing.T) {
-	// Test with empty string slice
 	filter, err := BuildFilterFromArgs([]string{})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -144,7 +131,6 @@ func TestBuildFilterFromArgsWithEmptySlices(t *testing.T) {
 		t.Errorf("Expected empty filter, got %q", filter)
 	}
 
-	// Test with empty option slice
 	filter, err = BuildFilterFromArgs([]Option{})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -155,7 +141,6 @@ func TestBuildFilterFromArgsWithEmptySlices(t *testing.T) {
 }
 
 func TestBuildFilterFromArgsWithNilSlices(t *testing.T) {
-	// Test with nil string slice
 	var stringSlice []string
 	filter, err := BuildFilterFromArgs(stringSlice)
 	if err != nil {
@@ -165,7 +150,6 @@ func TestBuildFilterFromArgsWithNilSlices(t *testing.T) {
 		t.Errorf("Expected empty filter, got %q", filter)
 	}
 
-	// Test with nil option slice
 	var optionSlice []Option
 	filter, err = BuildFilterFromArgs(optionSlice)
 	if err != nil {
@@ -177,21 +161,19 @@ func TestBuildFilterFromArgsWithNilSlices(t *testing.T) {
 }
 
 func TestBuildFilterFromArgsComplexScenario(t *testing.T) {
-	// Test complex scenario with multiple types
 	now := time.Now()
 	filter, err := BuildFilterFromArgs(
-		"name=test",               // String filter
-		WithStatus(StatusRunning), // Functional option
-		[]string{"severity>5.0"},  // String slice
-		[]Option{WithLimit(10)},   // Option slice
-		WithCreatedAfter(now),     // Functional option
-		"sort=name",               // String filter
+		"name=test",
+		WithStatus(StatusRunning),
+		[]string{"severity>5.0"},
+		[]Option{WithLimit(10)},
+		WithCreatedAfter(now),
+		"sort=name",
 	)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	// Should contain all the functional options and string filters
 	if !containsHelper(filter, "name=test") {
 		t.Errorf("Expected filter to contain name=test, got %q", filter)
 	}

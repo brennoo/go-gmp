@@ -19,18 +19,15 @@ import (
 	"testing"
 )
 
-// update is declared locally rather than reused from internal/gmptest, the
-// same call internal/codegen/snapshot_test.go makes: importing gmptest for
-// one bool would pull the whole fidelity corpus package into this binary.
+// Declared locally rather than reused from internal/gmptest: importing
+// gmptest for one bool would pull the whole fidelity corpus package in.
 var update = flag.Bool("update", false, "rewrite the committed public API golden")
 
 const goldenPath = "testdata/PUBLIC_API.txt"
 
-// pkg is one publicly importable package this module ships. The list is
-// fixed and ordered by dependency layer (root -> client -> commands -> ...),
-// not alphabetically or discovered by walking the tree: internal/, examples/
-// and any future internal restructuring must never silently join or leave
-// this surface.
+// pkg is one publicly importable package this module ships. The list below
+// is fixed, not discovered by walking the tree, so internal/ and examples/
+// restructuring never silently joins or leaves this surface.
 type pkg struct {
 	dir        string // relative to the repo root
 	importPath string
@@ -46,14 +43,11 @@ var targetPackages = []pkg{
 }
 
 // TestPublicAPISnapshot builds the public API golden and checks it against
-// the committed one.
+// the committed one. Regenerate with:
+// go test ./internal/apisnapshot -run TestPublicAPISnapshot -update
 //
-// Regenerate with: go test ./internal/apisnapshot -run TestPublicAPISnapshot -update
-//
-// The assertion is "unchanged", not "empty": every exported declaration in
-// client, commands, commands/filtering, commands/pagination, connections and
-// the root package is API this module has promised callers, so any diff here
-// is a reviewed API decision — never a mechanical fix-the-build step.
+// Any diff here is a reviewed API decision, never a mechanical fix-the-build
+// step: this covers every exported declaration this module has promised callers.
 func TestPublicAPISnapshot(t *testing.T) {
 	got, err := buildSnapshot()
 	if err != nil {
@@ -80,8 +74,7 @@ func TestPublicAPISnapshot(t *testing.T) {
 
 // TestPublicAPISnapshotIsDeterministic guards the golden's only real
 // precondition: building it twice from the same on-disk source must produce
-// byte-identical output, mirroring TestEnumInventoryIsDeterministic and
-// TestOptionalScalarInventoryIsDeterministic for this golden.
+// byte-identical output.
 func TestPublicAPISnapshotIsDeterministic(t *testing.T) {
 	a, err := buildSnapshot()
 	if err != nil {
@@ -97,10 +90,7 @@ func TestPublicAPISnapshotIsDeterministic(t *testing.T) {
 }
 
 // firstDiff points at the first differing line, so a failure names the
-// change instead of dumping hundreds of kilobytes of declarations. Copied
-// from internal/codegen/generate_test.go's unexported helper of the same
-// name and behavior — not importable across packages as a test-only symbol,
-// and too small to justify exporting it from codegen just for this.
+// change instead of dumping hundreds of kilobytes of declarations.
 func firstDiff(want, got string) string {
 	w, g := strings.Split(want, "\n"), strings.Split(got, "\n")
 	for i := 0; i < len(w) && i < len(g); i++ {
@@ -322,11 +312,9 @@ func renderSection(importPath string, entries []entry) string {
 var blankRunRE = regexp.MustCompile(`\n[ \t]*\n(\n[ \t]*)+`)
 
 // collapseBlankLines removes go/printer's dependence on the parsed source's
-// original line spacing: dropping ParseComments hides comment text but not
-// a comment line's contribution to fset's line-distance bookkeeping, so
-// linebreak still preserves whatever blank-line gap the (unseen) comment
-// left behind. Adding or deleting a doc comment must never change this
-// golden, since doc comments are explicitly out of scope for it.
+// original line spacing: dropping ParseComments hides comment text but a
+// comment's blank-line gap still leaks through fset's line bookkeeping.
+// Adding or deleting a doc comment must never change this golden.
 func collapseBlankLines(s string) string {
 	s = blankRunRE.ReplaceAllString(s, "\n\n")
 	lines := strings.Split(s, "\n")

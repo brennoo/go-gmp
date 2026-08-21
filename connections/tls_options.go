@@ -12,9 +12,8 @@ import (
 type TLSOption func(*tlsSettings)
 
 // tlsSettings accumulates the effect of applied TLSOption values before dialling.
-// A functional option cannot return an error, so options that can fail (ex: reading a
-// file from disk) record the first error here instead. The first error wins: once set,
-// later options must not overwrite it.
+// A functional option can't return an error, so options that can fail (e.g. reading a
+// file from disk) record the first error here instead; later options must not overwrite it.
 type tlsSettings struct {
 	config *tls.Config
 	err    error

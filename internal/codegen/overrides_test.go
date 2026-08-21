@@ -281,10 +281,9 @@ func TestValidateFieldOverridesRejectsBadEntries(t *testing.T) {
 	}
 }
 
-// TestValidateFieldOverridesAcceptsCommittedTable is a regression net: the
-// real, committed FieldOverrides table must always pass the table-shape
-// checks, so any future entry that fails this test has a defect in the entry
-// itself, not in the checker.
+// TestValidateFieldOverridesAcceptsCommittedTable pins the committed
+// FieldOverrides table against validateFieldOverrides: a failure here means
+// the table has a bad entry, not that the checker is wrong.
 func TestValidateFieldOverridesAcceptsCommittedTable(t *testing.T) {
 	g := &gen{fo: FieldOverrides}
 	if err := g.validateFieldOverrides(); err != nil {
@@ -362,11 +361,9 @@ func TestValidateFieldSuppressionsRejectsBadEntries(t *testing.T) {
 }
 
 // TestFieldRelocationsRejectMissingCounterpart proves validateFieldRelocations
-// fails closed in both directions: a FieldSuppressions entry with no matching
-// FieldOverrides.RelocatedFrom back-reference, and a FieldOverride.RelocatedFrom
-// with no matching FieldSuppressions entry. Either half deleted alone must
-// break the build, not silently leave a suppressed field with nowhere to
-// reappear or an addition claiming a relocation that never happened.
+// fails closed in both directions: either half of a relocation pair missing
+// must break the build, not silently orphan a suppressed field or leave an
+// unevidenced RelocatedFrom.
 func TestFieldRelocationsRejectMissingCounterpart(t *testing.T) {
 	t.Run("orphaned suppression", func(t *testing.T) {
 		fs := map[string][]FieldSuppression{
@@ -422,11 +419,10 @@ func commandWithDefects(defects ...schema.Defect) schema.Command {
 	return c
 }
 
-// commandWithResponseChild returns a minimal command whose response declares
-// exactly one top-level child, for exercising fieldOf's RequiredOverrides
-// branch through the real Generate() pipeline — needed for any node with
-// Children, since goTypeOf resolves those through g.byHash, which only
-// g.collect() (run inside Generate) populates.
+// commandWithResponseChild returns a minimal command with one top-level
+// response child, routed through Generate() rather than built by hand:
+// goTypeOf resolves child nodes through g.byHash, which only g.collect() (run
+// inside Generate) populates.
 func commandWithResponseChild(child *schema.Node) schema.Command {
 	c := minimalCommand()
 	c.Response.Children = []*schema.Node{child}
@@ -466,10 +462,9 @@ func TestCheckDefectsAcceptsMatchingEntry(t *testing.T) {
 	}
 }
 
-// TestCheckDefectsMultipleFailuresAreDeterministic proves that more than one
-// unallowlisted defect is reported together, sorted, rather than stopping at
-// the first — the same "report every problem in one pass" property
-// checkFieldOverridesConsumed already gives FieldOverrides.
+// TestCheckDefectsMultipleFailuresAreDeterministic proves multiple
+// unallowlisted defects are reported together, sorted, rather than stopping
+// at the first.
 func TestCheckDefectsMultipleFailuresAreDeterministic(t *testing.T) {
 	cmd := commandWithDefects(
 		schema.Defect{Class: schema.DefectEmptyPattern, Path: "/test_cmd/z"},
@@ -570,12 +565,9 @@ func TestCheckDefectAllowlistConsumedRejectsStaleEntry(t *testing.T) {
 	})
 }
 
-// TestCheckDefectAllowlistConsumedIgnoresOutOfScopeEntries proves
-// checkDefectAllowlistConsumed's scoping: an allowlist entry for a command
-// that is not part of this Generate call is not "stale" for this call, the
-// same per-family scoping checkFieldOverridesConsumed already gives
-// FieldOverrides — otherwise family-local generation (GenerateAll's whole
-// premise) could never pass with a shared allowlist.
+// TestCheckDefectAllowlistConsumedIgnoresOutOfScopeEntries proves an
+// allowlist entry for a command outside this Generate call is not "stale":
+// family-local generation over a shared allowlist depends on that scoping.
 func TestCheckDefectAllowlistConsumedIgnoresOutOfScopeEntries(t *testing.T) {
 	cmd := commandWithDefects(schema.Defect{Class: schema.DefectEmptyPattern, Path: "/test_cmd/x"})
 	da := map[DefectKey]DefectAllowlistEntry{
@@ -587,10 +579,9 @@ func TestCheckDefectAllowlistConsumedIgnoresOutOfScopeEntries(t *testing.T) {
 	}
 }
 
-// TestValidateDefectAllowlistAcceptsCommittedTable is a regression net: the
-// real, committed DefectAllowlist table must always pass the table-shape
-// checks, so any future entry that fails this test has a defect in the entry
-// itself, not in the checker.
+// TestValidateDefectAllowlistAcceptsCommittedTable pins the committed
+// DefectAllowlist table against validateDefectAllowlist: a failure here means
+// the table has a bad entry, not that the checker is wrong.
 func TestValidateDefectAllowlistAcceptsCommittedTable(t *testing.T) {
 	g := &gen{da: DefectAllowlist}
 	if err := g.validateDefectAllowlist(); err != nil {
@@ -598,11 +589,10 @@ func TestValidateDefectAllowlistAcceptsCommittedTable(t *testing.T) {
 	}
 }
 
-// TestDefectAllowlistHasNoOrphans checks the whole corpus at once, which
-// checkDefectAllowlistConsumed structurally cannot: it runs per family, so an
-// entry naming a command in no family is never anyone's stale entry. That
-// gap matters here more than for the other tables — an orphan is a standing
-// pre-approval for a defect nothing is generating through any more.
+// TestDefectAllowlistHasNoOrphans checks the whole corpus at once, which the
+// per-family checkDefectAllowlistConsumed structurally cannot: an entry
+// naming a command in no family is never anyone's stale entry, yet it's a
+// standing pre-approval for a defect nothing generates through anymore.
 func TestDefectAllowlistHasNoOrphans(t *testing.T) {
 	cmds, err := LoadSnapshots(snapshotDir, manifestOrFail(t).AllCommands())
 	if err != nil {
@@ -669,10 +659,9 @@ func TestValidatePointerOverridesRejectsBadEntries(t *testing.T) {
 	}
 }
 
-// TestValidatePointerOverridesAcceptsCommittedTable is a regression net: the
-// real, committed PointerOverrides table must always pass the table-shape
-// checks, so any future entry that fails this test has a defect in the entry
-// itself, not in the checker.
+// TestValidatePointerOverridesAcceptsCommittedTable pins the committed
+// PointerOverrides table against validatePointerOverrides: a failure here
+// means the table has a bad entry, not that the checker is wrong.
 func TestValidatePointerOverridesAcceptsCommittedTable(t *testing.T) {
 	g := &gen{pf: PointerOverrides}
 	if err := g.validatePointerOverrides(); err != nil {
@@ -680,11 +669,10 @@ func TestValidatePointerOverridesAcceptsCommittedTable(t *testing.T) {
 	}
 }
 
-// TestCheckPointerOverridesConsumedRejectsStaleEntry proves the fail-closed
-// guarantee already enforced for RequiredOverrides also holds for
-// PointerOverrides: an entry for a command in scope that never matched a
-// generated optional field — a typo'd field name here — fails generation
-// rather than silently doing nothing.
+// TestCheckPointerOverridesConsumedRejectsStaleEntry proves the same
+// fail-closed guarantee RequiredOverrides has also holds for PointerOverrides:
+// an in-scope entry that never matched a generated optional field — a typo'd
+// name here — fails generation rather than doing nothing.
 func TestCheckPointerOverridesConsumedRejectsStaleEntry(t *testing.T) {
 	cmd := commandWithResponseChild(&schema.Node{
 		Name: "comment", Kind: schema.KindElement, Card: schema.CardOptional, Type: "text",
@@ -696,11 +684,10 @@ func TestCheckPointerOverridesConsumedRejectsStaleEntry(t *testing.T) {
 	}
 }
 
-// TestCheckPointerOverridesConsumedIgnoresOutOfScopeEntries mirrors
-// TestCheckRequiredOverridesConsumedIgnoresOutOfScopeEntries: an entry for a
-// command that is not part of this Generate call is not "stale" for this
-// call, the per-family scoping GenerateAll's family-local generation depends
-// on for a table shared across families.
+// TestCheckPointerOverridesConsumedIgnoresOutOfScopeEntries proves an entry
+// for a command outside this Generate call is not "stale": GenerateAll's
+// family-local generation depends on that scoping for a table shared across
+// families.
 func TestCheckPointerOverridesConsumedIgnoresOutOfScopeEntries(t *testing.T) {
 	cmd := commandWithResponseChild(&schema.Node{
 		Name: "comment", Kind: schema.KindElement, Card: schema.CardOptional, Type: "text",
@@ -716,9 +703,8 @@ func TestCheckPointerOverridesConsumedIgnoresOutOfScopeEntries(t *testing.T) {
 
 // TestValidateRequiredOverridesRejectsBadEntries proves RequiredOverrides'
 // table-shape checks fail closed the same way validateFieldOverrides and
-// validateDefectAllowlist do: a malformed key or missing Reason is a defect
-// in the table itself, caught before generation ever looks for a matching
-// field.
+// validateDefectAllowlist do: a malformed key or missing Reason is caught
+// before generation looks for a matching field.
 func TestValidateRequiredOverridesRejectsBadEntries(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -760,10 +746,9 @@ func TestValidateRequiredOverridesRejectsBadEntries(t *testing.T) {
 	}
 }
 
-// TestValidateRequiredOverridesAcceptsCommittedTable is a regression net: the
-// real, committed RequiredOverrides table must always pass the table-shape
-// checks, so any future entry that fails this test has a defect in the entry
-// itself, not in the checker.
+// TestValidateRequiredOverridesAcceptsCommittedTable pins the committed
+// RequiredOverrides table against validateRequiredOverrides: a failure here
+// means the table has a bad entry, not that the checker is wrong.
 func TestValidateRequiredOverridesAcceptsCommittedTable(t *testing.T) {
 	g := &gen{ro: RequiredOverrides}
 	if err := g.validateRequiredOverrides(); err != nil {
@@ -831,10 +816,9 @@ func TestValidateNameOverridesRejectsBadEntries(t *testing.T) {
 	}
 }
 
-// TestValidateNameOverridesAcceptsCommittedTable is a regression net: the
-// real, committed NameOverrides table must always pass the table-shape
-// checks, so any future entry that fails this test has a defect in the entry
-// itself, not in the checker.
+// TestValidateNameOverridesAcceptsCommittedTable pins the committed
+// NameOverrides table against validateNameOverrides: a failure here means the
+// table has a bad entry, not that the checker is wrong.
 func TestValidateNameOverridesAcceptsCommittedTable(t *testing.T) {
 	g := &gen{no: NameOverrides}
 	if err := g.validateNameOverrides(); err != nil {
@@ -843,10 +827,10 @@ func TestValidateNameOverridesAcceptsCommittedTable(t *testing.T) {
 }
 
 // TestValidateFieldTypeOverridesRejectsBadEntries mirrors
-// TestValidateFieldOverridesRejectsBadEntries for the FieldTypeOverrides
-// table: GoType is emitted directly into generated Go source, so an invalid
-// value must fail here rather than surface later as a compile error with
-// Generate having already reported success.
+// TestValidateFieldOverridesRejectsBadEntries for FieldTypeOverrides: GoType
+// is emitted directly into generated source, so an invalid value must fail
+// here rather than surface later as a compile error after Generate reports
+// success.
 func TestValidateFieldTypeOverridesRejectsBadEntries(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -913,10 +897,9 @@ func TestValidateFieldTypeOverridesRejectsBadEntries(t *testing.T) {
 	}
 }
 
-// TestValidateFieldTypeOverridesAcceptsCommittedTable is a regression net:
-// the real, committed FieldTypeOverrides table must always pass the
-// table-shape checks, so any future entry that fails this test has a defect
-// in the entry itself, not in the checker.
+// TestValidateFieldTypeOverridesAcceptsCommittedTable pins the committed
+// FieldTypeOverrides table against validateFieldTypeOverrides: a failure
+// here means the table has a bad entry, not that the checker is wrong.
 func TestValidateFieldTypeOverridesAcceptsCommittedTable(t *testing.T) {
 	g := &gen{tov: FieldTypeOverrides}
 	if err := g.validateFieldTypeOverrides(); err != nil {
@@ -925,9 +908,9 @@ func TestValidateFieldTypeOverridesAcceptsCommittedTable(t *testing.T) {
 }
 
 // TestCheckRequiredOverridesConsumedRejectsStaleEntry proves the fail-closed
-// guarantee finding 1 asked for: an override entry for a command in scope
-// that never matched a generated required field — a typo'd field name here —
-// fails generation rather than silently doing nothing.
+// guarantee: an in-scope RequiredOverrides entry that never matched a
+// generated required field — a typo'd name here — fails generation rather
+// than doing nothing.
 func TestCheckRequiredOverridesConsumedRejectsStaleEntry(t *testing.T) {
 	cmd := commandWithResponseChild(&schema.Node{
 		Name: "report_id", Kind: schema.KindElement, Card: schema.CardRequired, Type: "text",
@@ -954,11 +937,10 @@ func TestCheckRequiredOverridesConsumedRejectsWrongCardinality(t *testing.T) {
 	}
 }
 
-// TestCheckRequiredOverridesConsumedIgnoresOutOfScopeEntries mirrors
-// TestCheckDefectAllowlistConsumedIgnoresOutOfScopeEntries: an entry for a
-// command that is not part of this Generate call is not "stale" for this
-// call, the per-family scoping GenerateAll's family-local generation depends
-// on for a table shared across families.
+// TestCheckRequiredOverridesConsumedIgnoresOutOfScopeEntries proves an entry
+// for a command outside this Generate call is not "stale": GenerateAll's
+// family-local generation depends on that scoping for a table shared across
+// families.
 func TestCheckRequiredOverridesConsumedIgnoresOutOfScopeEntries(t *testing.T) {
 	cmd := commandWithResponseChild(&schema.Node{
 		Name: "report_id", Kind: schema.KindElement, Card: schema.CardRequired, Type: "text",
@@ -972,12 +954,11 @@ func TestCheckRequiredOverridesConsumedIgnoresOutOfScopeEntries(t *testing.T) {
 	}
 }
 
-// TestRequiredOverrideRejectsUnsupportedTargets is finding 2's regression
-// test: RequiredOverrides is only evidenced for a plain required string leaf
-// (resume_task/start_task's report_id) or a structured field pointer-ified
-// for presence (T-23's count wrappers). A non-string scalar leaf has no such
-// evidence — a bigger, unevidenced API change — so Generate must refuse
-// rather than silently reshaping the field into a pointer.
+// TestRequiredOverrideRejectsUnsupportedTargets proves RequiredOverrides is
+// only evidenced for a plain required string leaf (resume_task/start_task's
+// report_id) or a structured field pointer-ified for presence (T-23's count
+// wrappers). A non-string scalar leaf has no such evidence, so Generate must
+// refuse rather than silently reshaping it into a pointer.
 func TestRequiredOverrideRejectsUnsupportedTargets(t *testing.T) {
 	child := &schema.Node{Name: "count", Kind: schema.KindElement, Card: schema.CardRequired, Type: "integer"}
 	cmd := commandWithResponseChild(child)
@@ -1013,12 +994,11 @@ func TestRequiredOverridePointerizesStructuredField(t *testing.T) {
 }
 
 // TestFieldTypeOverridePointerizesStructuredField is T-26's counterpart to
-// TestRequiredOverridePointerizesStructuredField: the same structured-field
-// pointer exception, but reached through FieldTypeOverrides' nested
-// "<command>:/<path>" key rather than RequiredOverrides' top-level
-// "<command>.<field>" key — the case a nested, structurally-deduplicated
-// shape with no single owning command needs (get_results/get_reports/
-// create_report/get_notes/get_overrides' shared NVT struct).
+// TestRequiredOverridePointerizesStructuredField, reached through
+// FieldTypeOverrides' nested "<command>:/<path>" key: the case a
+// structurally-deduplicated shape with no single owning command needs (the
+// NVT struct shared by get_results/get_reports/create_report/get_notes/
+// get_overrides).
 func TestFieldTypeOverridePointerizesStructuredField(t *testing.T) {
 	refs := &schema.Node{
 		Name: "refs", Kind: schema.KindElement, Card: schema.CardRequired,
@@ -1047,10 +1027,9 @@ func TestFieldTypeOverridePointerizesStructuredField(t *testing.T) {
 
 // TestFieldTypeOverrideRejectsPointerOnScalar is the FieldTypeOverrides
 // counterpart to TestRequiredOverrideRejectsUnsupportedTargets: Pointer is
-// only evidenced for a structured field whose own zero value would otherwise
-// be indistinguishable from absence (T-23b's count-wrapper class) — a scalar
-// leaf has no such evidence, so Generate must refuse rather than silently
-// pointer-ifying it.
+// only evidenced for a structured field whose zero value would otherwise be
+// indistinguishable from absence (T-23b's count-wrapper class); a scalar leaf
+// has no such evidence, so Generate must refuse rather than pointer-ifying it.
 func TestFieldTypeOverrideRejectsPointerOnScalar(t *testing.T) {
 	child := &schema.Node{Name: "count", Kind: schema.KindElement, Card: schema.CardRequired, Type: "integer"}
 	cmd := commandWithResponseChild(child)

@@ -81,26 +81,22 @@ func TestGenerateIsDeterministic(t *testing.T) {
 }
 
 // TestGeneratedCodeCompiles is acceptance criterion 2: the generated source
-// has to build without the hand-written commands/create_note.go,
-// modify_note.go or get_notes.go, or the generator could be quietly leaning on
-// types it did not emit.
+// must build without the hand-written commands/create_note.go,
+// modify_note.go, or get_notes.go, so the generator cannot quietly lean on
+// types it did not itself emit.
 //
-// It covers every family the manifest declares, review-only ones included, and
-// compiles them all into one package — which is also the only check that two
-// families never declare the same type name. Family-local dedup means each
-// family names its shapes without consulting the others, so "note and override
-// both describe an <nvt>" is resolved by the family prefix (NoteNVT vs
-// OverrideNVT) rather than by a shared type; if that prefixing ever failed to
-// separate two families, this test is where the redeclaration surfaces.
+// It compiles every family the manifest declares — review-only ones
+// included — into one package, which is also the only check that two
+// families never declare the same type name: family-local dedup resolves
+// "note and override both describe an <nvt>" via the family prefix (NoteNVT
+// vs OverrideNVT) rather than a shared type, and this is where a failure of
+// that prefixing would surface.
 //
-// Those three files still exist on disk, so the check cannot simply build the
-// output as package commands: every type would be redeclared. Instead the
-// files are copied into a throwaway module with only their package clause
-// rewritten — that one line is the entire transformation — and the support
-// types the override table targets (commands.GMPBool, commands.GMPTime) are
-// re-supplied as aliases to the real commands package. Everything the
-// generated code needs beyond the standard library therefore still comes from
-// commands, and nothing else does.
+// Because create_note.go etc. still exist on disk, the generated files are
+// copied into a throwaway module with only their package clause rewritten,
+// and commands.GMPBool/GMPTime are re-supplied as aliases to the real
+// commands package, so nothing beyond the standard library is needed except
+// commands itself.
 func TestGeneratedCodeCompiles(t *testing.T) {
 	goBin, err := exec.LookPath("go")
 	if err != nil {
@@ -210,10 +206,9 @@ func TestCollisionRequiresAttributeDiscriminators(t *testing.T) {
 // UnmarshalXML/MarshalXML (get_filters.go's only collided shape — see
 // generate.go's emitCollisionMethods) separates the two sibling <filters>
 // elements by attribute signature, not by arrival order. It reuses
-// TestGeneratedCodeCompiles's scratch-module machinery, then goes one step
-// further: a `go run` package main, in the same module, that imports the
-// generated package and asserts on stdout (it is the only thing that can
-// import the generated types, so assertions have to run inside it).
+// TestGeneratedCodeCompiles's scratch-module technique, then adds a `go run`
+// package main that imports the generated package and asserts on stdout —
+// the only way to run assertions against the generated types.
 func TestGetFiltersCollisionRoundTrips(t *testing.T) {
 	goBin, err := exec.LookPath("go")
 	if err != nil {
@@ -446,15 +441,9 @@ func main() {
 
 // TestTLSCertificateGeneratedRoundTrips proves the real generated
 // GetTLSCertificatesResponse agrees with the two FieldOverride entries in
-// overrides.go (T-9 finding 3) — that certificate data, format, and validity
-// survive a decode/re-encode/re-decode round trip through the generated type
-// for both the upstream bundled example and a redacted live capture.
-//
-// ModifyTLSCertificate's omit/explicit-empty/set wire shape (finding 4) used
-// to be pinned here too, as a generator-level stand-in for
-// internal/gmptest/cases_tls_certificate.go, which could not exist until
-// tls_certificate was adopted. Now that it is adopted, that coverage lives in
-// the real cases_tls_certificate.go instead.
+// overrides.go (T-9 finding 3): certificate data, format, and validity
+// survive a decode/re-encode/re-decode round trip for both the upstream
+// bundled example and a redacted live capture.
 func TestTLSCertificateGeneratedRoundTrips(t *testing.T) {
 	goBin, err := exec.LookPath("go")
 	if err != nil {
@@ -627,12 +616,10 @@ func ticketScratchModule(t *testing.T, dir string) string {
 	return goBin
 }
 
-// TestTicketGeneratedRequestRoundTrips is T-9 ticket review finding 2:
-// internal/gmptest/cases_ticket.go still uses the hand-written Assigned
-// *TicketUser field, so it cannot exercise the generated AssignedTo shape or
-// the PointerOverrides added for modify_ticket's note fields. This proves
-// the real generated CreateTicket/ModifyTicket/GetTickets request types
-// against that experiment's conclusions directly.
+// TestTicketGeneratedRequestRoundTrips is T-9 ticket review finding 2: it
+// proves the real generated AssignedTo shape and the modify_ticket note
+// fields' PointerOverrides, which cases_ticket.go's hand-written types
+// cannot reach.
 func TestTicketGeneratedRequestRoundTrips(t *testing.T) {
 	dir := t.TempDir()
 	goBin := ticketScratchModule(t, dir)
@@ -713,10 +700,8 @@ func main() {
 `
 
 // TestTicketGeneratedResponseRoundTrips is T-9 ticket review finding 3: the
-// upstream and live get_tickets fixtures on file confirm every documented
-// generation change except two paths neither fixture exercises
-// (user_tags/nvt), so this adds a synthetic document for those alongside the
-// real fixtures.
+// real fixtures cover every documented generation change except user_tags
+// and nvt, so a synthetic document adds those two.
 func TestTicketGeneratedResponseRoundTrips(t *testing.T) {
 	dir := t.TempDir()
 	goBin := ticketScratchModule(t, dir)
@@ -842,13 +827,9 @@ func main() {
 }
 `
 
-// credentialScratchModule copies the generated credential family into a
-// throwaway module under dir/genproto, the same technique
-// ticketScratchModule uses. internal/gmptest/cases_credential.go does not
-// exist yet (credential is review-only), and the existing goldens compile
-// against the hand-written commands package, not the generated one, so this
-// is the only way to exercise the real generated Kdc/Kdcs/Key/Privacy shapes
-// and the modify_credential.comment PointerOverride before adoption.
+// credentialScratchModule is ticketScratchModule's counterpart for the
+// credential family (also review-only), exercising the generated
+// Kdc/Kdcs/Key/Privacy shapes before adoption.
 func credentialScratchModule(t *testing.T, dir string) string {
 	t.Helper()
 	goBin, err := exec.LookPath("go")
@@ -891,13 +872,9 @@ func credentialScratchModule(t *testing.T, dir string) string {
 }
 
 // TestCredentialGeneratedRequestRoundTrips is T-9 credential review finding
-// 1: generation renames KDC/KDCs to Kdc/Kdcs, dedups CreateCredentialKDCs and
-// CreateCredentialKey into the shared CredentialKdcs/CredentialKey, and drops
-// CredentialPrivacy.Algorithm/.Password's omitempty (they are required
-// elements, not optional ones, per the schema). None of that is exercised by
-// the hand-written-type goldens, so this proves the real generated request
-// shapes directly, including the modify_credential.comment PointerOverride
-// added from this family's live gvmd experiment.
+// 1: proves the generated Kdc/Kdcs/Key/Privacy shapes and the
+// modify_credential.comment PointerOverride, none of which the
+// hand-written-type goldens exercise.
 func TestCredentialGeneratedRequestRoundTrips(t *testing.T) {
 	dir := t.TempDir()
 	goBin := credentialScratchModule(t, dir)
@@ -928,12 +905,11 @@ func TestCredentialGeneratedRequestRoundTrips(t *testing.T) {
 
 // credentialRequestRoundTripProgram is a `go run` main for
 // TestCredentialGeneratedRequestRoundTrips. The zero-valued-privacy case
-// pins that CredentialPrivacy.Algorithm/.Password are required-but-empty:
-// generation dropped their omitempty tags, so a non-nil *CredentialPrivacy
-// with both fields at their zero value still emits both elements rather than
-// omitting them. modify-credential-comment-omitted/-explicit-empty prove the
-// PointerOverride's nil-vs-pointer-to-empty-string distinction, matching the
-// live gvmd experiment recorded in overrides.go and docs/review-2026-08.md.
+// pins that CredentialPrivacy.Algorithm/.Password are required-but-empty
+// (generation dropped their omitempty), so a non-nil *CredentialPrivacy with
+// both fields zero still emits both elements. modify-credential-comment-*
+// prove the PointerOverride's nil-vs-pointer-to-empty-string distinction
+// (docs/review-2026-08.md).
 const credentialRequestRoundTripProgram = `package main
 
 import (
@@ -986,13 +962,9 @@ func main() {
 `
 
 // TestCredentialGeneratedResponseRoundTrips is T-9 credential review finding
-// 2: the conformance gate validates schema structure but never proves
-// GetCredentialsResponse round-trips real fixtures. Committed fixtures cover
-// repeated Credential, Formats, AllowInsecure/Writable/InUse, target entries
-// and package chardata+format, but none exercises Kdcs, scanner entries or
-// privacy/certificate_info, so this adds a synthetic document pinning every
-// field of CredentialCertificateInfo and GetCredentialsPrivacy.Algorithm
-// alongside the real fixtures.
+// 2: committed fixtures don't exercise Kdcs, scanner entries, or
+// privacy/certificate_info, so a synthetic document adds those alongside the
+// real fixtures.
 func TestCredentialGeneratedResponseRoundTrips(t *testing.T) {
 	dir := t.TempDir()
 	goBin := credentialScratchModule(t, dir)
@@ -1184,11 +1156,8 @@ func main() {
 }
 `
 
-// portListScratchModule copies the generated port_list family into a
-// throwaway module under dir/genproto, the same technique
-// credentialScratchModule uses. internal/gmptest's cases compile against
-// the hand-written commands package, so this is the only way to exercise
-// the real generated types before adoption.
+// portListScratchModule is credentialScratchModule's counterpart for the
+// port_list family, also still review-only.
 func portListScratchModule(t *testing.T, dir string) string {
 	t.Helper()
 	goBin, err := exec.LookPath("go")
@@ -1537,11 +1506,9 @@ func assetScratchModule(t *testing.T, dir string) string {
 }
 
 // TestAssetGeneratedRequestRoundTrips proves the generated request shape for
-// create_asset (both the asset and report choice branches), get_assets
-// (IgnorePagination/Details unset/false/true, plus AssetID and FiltID
-// together — the schema declares them as independent optional attributes),
-// and modify_asset (comment set and comment omitted, the two wire shapes the
-// modify_asset CommandWarning documents).
+// create_asset's asset/report choice branches, get_assets's
+// IgnorePagination/Details/AssetID/FiltID combinations, and modify_asset's
+// comment set-vs-omitted wire shapes from its CommandWarning.
 func TestAssetGeneratedRequestRoundTrips(t *testing.T) {
 	dir := t.TempDir()
 	goBin := assetScratchModule(t, dir)
@@ -2114,14 +2081,11 @@ func TestFieldOfGMPTimePointerPolicy(t *testing.T) {
 }
 
 // TestFieldOfScalarPointerPolicy pins pointerScalars' int/GMPBool/GMPAtoiBool
-// entries directly at the fieldOf level, the same way
-// TestFieldOfGMPTimePointerPolicy pins its GMPTime entry: T-24's audit found
-// this policy already fully and correctly generalized (zero exceptions across
-// the generated corpus), so this test documents the existing, already-correct
-// behavior rather than changing it. An optional field of any of these types
-// must generate as a pointer with omitempty, since each one's Go zero value
-// (0, false) is itself a legal wire value; a required field of the same type
-// stays a plain value with no omitempty.
+// entries directly, the same way TestFieldOfGMPTimePointerPolicy pins
+// GMPTime: T-24's audit found this policy already fully generalized, so it
+// documents rather than changes existing behavior. An optional field of any
+// of these types generates as a pointer with omitempty (the Go zero value is
+// itself a legal wire value); a required field stays a plain value.
 func TestFieldOfScalarPointerPolicy(t *testing.T) {
 	tests := []struct {
 		name       string
@@ -2348,11 +2312,9 @@ func TestChardataRelocationSucceeds(t *testing.T) {
 
 // TestChardataRelocationCrossUseMismatch is
 // TestFieldOverridesCrossUseMismatchOnDifferentEntries's counterpart for
-// chardata suppression: cmd_a and cmd_b share <thing>'s structurally
-// identical shape, but only cmd_a suppresses its chardata. Structural dedup
-// collapses both uses into one struct, so fieldSuppressionsFor must catch the
-// disagreement rather than silently apply cmd_a's suppression to cmd_b too
-// (or vice versa).
+// chardata suppression: cmd_a and cmd_b share <thing>'s deduplicated shape,
+// but only cmd_a suppresses its chardata, so fieldSuppressionsFor must catch
+// the disagreement rather than silently applying it to cmd_b too.
 func TestChardataRelocationCrossUseMismatch(t *testing.T) {
 	cmdA, cmdB := twinChardataCommands()
 	fs := map[string][]FieldSuppression{
@@ -2422,11 +2384,8 @@ func TestFieldOverridesChardataAdditionGeneratesLeadingValue(t *testing.T) {
 
 // TestFieldOverridesChardataAdditionCrossUseMismatch is
 // TestFieldOverridesCrossUseMismatchOnMissingKey's counterpart for a
-// Chardata-only FieldOverride: cmd_a and cmd_b share <thing>'s structurally
-// identical shape, but only cmd_a adds a chardata override. This is the
-// plain-addition path (no FieldSuppressions involved, unlike
-// TestChardataRelocationCrossUseMismatch's relocation case) and previously
-// had no test of its own.
+// Chardata-only FieldOverride (the plain-addition path, no FieldSuppressions
+// involved as in TestChardataRelocationCrossUseMismatch).
 func TestFieldOverridesChardataAdditionCrossUseMismatch(t *testing.T) {
 	cmdA, cmdB := twinFieldOverrideCommands()
 	fo := map[string][]FieldOverride{
@@ -2511,13 +2470,11 @@ func responseOverrideCommand() schema.Command {
 	}
 }
 
-// TestFieldOverrideOnResponseEnvelopeEmitsField is the direct regression test
-// for widening emitResponse to consult FieldOverrides the same way
-// emitRequest already did (see the FieldOverride doc comment and the
-// verify_scanner Version entry it now supports): a response-envelope-keyed
-// override must be emitted as a real field on the response struct, carrying
-// both its XML tag and the gmpoverride tag emitResponse's other fields never
-// go through emitStruct to get.
+// TestFieldOverrideOnResponseEnvelopeEmitsField is the regression test for
+// widening emitResponse to consult FieldOverrides the same way emitRequest
+// already did (see the verify_scanner Version entry it now supports): a
+// response-envelope-keyed override must emit a real field, with both its XML
+// tag and the gmpoverride tag.
 func TestFieldOverrideOnResponseEnvelopeEmitsField(t *testing.T) {
 	cmd := responseOverrideCommand()
 	fo := map[string][]FieldOverride{

@@ -1,16 +1,11 @@
 // Package schema reads the GMP protocol schema DSL and compares the model it
-// declares against the hand-written structs in commands/.
-//
-// It is a schema oracle. internal/gmptest is a runtime oracle: it round-trips
-// real documents through the structs and records what is lost. This package
-// never looks at a document. It reads what the schema says a command's shape
-// is and reports where the Go types disagree, which finds fields no fixture
-// happens to exercise.
+// declares against the hand-written structs in commands/. Unlike
+// internal/gmptest's runtime oracle, it never looks at a document, so it
+// finds fields no fixture happens to exercise.
 //
 // The input is vendor/XML/commands/command_*.xml, which is gitignored and
-// AGPL-licensed. Nothing here vendors, copies or emits schema prose: only
-// element names, cardinalities and type names cross the boundary, and only
-// into a report. See docs/review-2026-08.md, T-9.
+// AGPL-licensed; only element names, cardinalities and type names cross the
+// boundary, and only into a report. See docs/review-2026-08.md, T-9.
 package schema
 
 import (
@@ -76,28 +71,18 @@ type Node struct {
 	Alts     []string
 	Children []*Node
 
-	// Chardata marks mixed content: this element has real children and/or
-	// attributes AND bare text of its own. The DSL has no dedicated keyword
-	// for this, and spells it two different ways: bare identifier text next
-	// to an <attrib> or <e> (e.g. <text excerpt="...">the text</text>, see
-	// bareChardata), or an explicit <t>/<type> next to an <e> (e.g.
-	// <pattern><t>integer</t><e>growing</e></pattern>, config/nvt_count in
-	// command_get_configs.xml). Either way Type carries the text's lexical
-	// type, as it would for a pure leaf, and Chardata records that it
-	// co-occurs with Children rather than replacing them.
+	// Chardata marks mixed content: real children and/or attributes AND bare
+	// text of its own. The DSL spells this two ways — bare identifier text
+	// next to an <attrib> or <e> (see bareChardata), or an explicit <t>/<type>
+	// next to an <e> (e.g. config/nvt_count in command_get_configs.xml) —
+	// and either way Type still carries the text's lexical type.
 	Chardata bool
 
-	// PatchReason is non-empty only for a node internal/codegen's
-	// ApplySchemaPatches spliced in — never set by the parser itself, and
-	// always empty on a freshly-loaded, unpatched command (LoadSnapshots),
-	// so `omitempty` keeps every committed Stage-A snapshot byte-identical:
-	// this field only ever appears in the in-memory tree Generate/Validate
-	// consume, never in a serialized snapshot. It exists so a patched node's
-	// own evidence can follow it all the way to the generated field's
-	// gmpoverride tag: without this, a schema-patched field with no other
-	// suppression reason surfaces as an unsuppressed, unexplained EXTRA
-	// finding in the conformance report, indistinguishable from a real
-	// Go/schema disagreement.
+	// PatchReason is set only on a node internal/codegen's ApplySchemaPatches
+	// spliced in, never by the parser itself, so `omitempty` keeps committed
+	// Stage-A snapshots byte-identical. It lets a patched node's evidence
+	// follow through to the generated field's gmpoverride tag, so a
+	// schema-patched field doesn't surface as an unexplained EXTRA finding.
 	PatchReason string `json:",omitempty"`
 }
 
@@ -141,11 +126,11 @@ type Provenance struct {
 	// vendor path.
 	Source string
 	// SourceRevision is the upstream tag or commit, when known; supplied
-	// explicitly to Load, never inferred. See docs/review-2026-08.md, T-16a.
+	// explicitly to Load, never inferred.
 	SourceRevision string
 	// SourceSHA256 is the hex SHA-256 of the source document's bytes as read.
-	// It identifies the document the parsed files were split from; it does not
-	// attest them, since nothing binds split.py's output back to it. That is
+	// It identifies what the parsed files were split from; it does not attest
+	// them, since nothing binds split.py's output back to it — that's
 	// ParsedSHA256's job.
 	SourceSHA256 string
 	// ParsedSHA256 is the hex SHA-256 over the command_*.xml files Load
@@ -154,8 +139,7 @@ type Provenance struct {
 	ParsedSHA256 string
 	// DeclaredVersion is the document's own <version> value, verbatim. Under
 	// file-based extraction this is GMP.xml.in's literal, unsubstituted
-	// "@GMP_VERSION@" CMake template token, not a real version number —
-	// recording it honestly is the point.
+	// "@GMP_VERSION@" CMake template token, not a real version number.
 	DeclaredVersion string
 	ExtractedAt     time.Time
 }
@@ -279,7 +263,7 @@ type rawAttrib struct {
 // that document is an error rather than a provenance-less success.
 //
 // sourceRevision is the upstream gvmd tag or commit, when the caller knows
-// it; pass "" otherwise. Load never infers it. See docs/review-2026-08.md, T-16a.
+// it; pass "" otherwise. Load never infers it.
 func Load(dir, sourceRevision string) ([]Command, error) {
 	paths, err := filepath.Glob(filepath.Join(dir, "command_*.xml"))
 	if err != nil {
@@ -461,26 +445,16 @@ func (e *env) fill(n *Node, pattern *rawPattern, defs []rawEle, path string) {
 			e.noteType(ct, path)
 		}
 	}
-	// Mixed content has two DSL spellings. bareChardata just caught the
-	// first: bare text co-occurring with an <attrib> or an <e> reference,
-	// where leafOf's own bare-text branch declined the type precisely
-	// because that co-occurrence was present. The second is <t>/<type>
-	// declaring the type explicitly alongside an <e> reference (e.g.
-	// <pattern><t>integer</t><e>growing</e></pattern>, seen on
-	// config/nvt_count in command_get_configs.xml, confirmed against a
-	// real example response) — leafOf's T/Type-for-T branches return the
-	// type unconditionally and never see this co-occurrence at all. Both
-	// cases collapse to the same signal once n.Type is known: a type name
-	// alongside real content of its own, as opposed to a bare leaf or a
-	// reference this pattern is about to hand off to expandShared.
-	// <alts> is the third spelling: it constrains text content without naming a
-	// type, so an element whose text is only an alt list still carries text.
+	// Both mixed-content spellings (bareChardata's bare text, and <t>/<type>
+	// alongside an <e> reference, e.g. config/nvt_count in
+	// command_get_configs.xml) collapse to the same signal once n.Type is
+	// known: a type name alongside real content of its own. <alts> is a
+	// third spelling: an element whose text is only an alt list still
+	// carries text.
 	if (n.Type != "" || len(n.Alts) > 0) && (len(pattern.Attribs) > 0 || !pattern.empty()) {
-		// Guard against the one case where a non-empty Type does not mean
-		// text: <t>/<type> naming a shared top-level <element> rather than a
-		// scalar type. expandShared is about to replace n's content with
-		// that element's own pattern, so any Children collected so far
-		// belong to this local pattern, not to bare text this Type carries.
+		// Exception: <t>/<type> can also name a shared top-level <element>
+		// rather than a scalar type. expandShared is about to replace n's
+		// content with that element's pattern, so this isn't bare text.
 		if _, isSharedRef := e.elements[n.Type]; !isSharedRef {
 			n.Chardata = true
 		}
@@ -498,10 +472,7 @@ func (e *env) fill(n *Node, pattern *rawPattern, defs []rawEle, path string) {
 }
 
 // expandShared pulls in a top-level <element> definition when a node's leaf
-// type names one.
-//
-// The review claims those 16 definitions are never referenced by any command.
-// In this revision twelve command sites do reference them, and they are the
+// type names one. Twelve command sites reference them, and they are the
 // largest subtrees in the protocol: result, report, note, override.
 func (e *env) expandShared(n *Node, path string) {
 	def, ok := e.elements[n.Type]
@@ -600,16 +571,12 @@ func (e *env) child(n *Node, name string, scope map[string]*rawEle, card Card, c
 		return
 	}
 	if seen[name] {
-		// The same <e> token referenced twice in one pattern — not two
-		// occurrences, the identical reference accidentally repeated (target's
-		// <e>permissions</e> is declared once before its credential list and
-		// again after, both resolving to the single <ele><name>permissions</name>
-		// definition). This is a distinct defect from DefectDuplicateEle, which
-		// is about two *definitions* colliding; here there is only one
-		// definition and it is referenced twice. get_filters's legitimate
-		// same-wire-name case is unaffected: its two occurrences use different
-		// tokens ("filters" and "filters2", the latter aliased via <id>), so
-		// they never collide here.
+		// The same <e> token referenced twice in one pattern (e.g. target's
+		// <e>permissions</e> before and after its credential list, both
+		// resolving to one <ele> definition) — distinct from
+		// DefectDuplicateEle, which is about two *definitions* colliding.
+		// get_filters's legitimate same-wire-name case is unaffected: its two
+		// occurrences use different tokens ("filters"/"filters2" via <id>).
 		e.defect(DefectDuplicateRef, path+"/"+name, "referenced more than once in the same pattern")
 		return
 	}

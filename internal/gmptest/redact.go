@@ -12,43 +12,21 @@ import (
 
 // RedactionPlaceholder replaces every value a redaction spec names.
 //
-// It is deliberately not empty and not valid base64 or PEM. An empty element is
-// indistinguishable from a server that sent nothing, and a placeholder that
-// still parsed as key material would let a reviewer's eye slide over it. This
-// string is also what to grep for when auditing the corpus.
+// It is deliberately not empty and not valid base64 or PEM, so it can't be
+// mistaken for real key material or for an empty response. Also what to grep
+// for when auditing the corpus.
 const RedactionPlaceholder = "[REDACTED-BY-GO-GMP-CAPTURE]"
 
 // secretBearingCommands is the deny-by-default list: every command whose
 // request or response can carry material that must never reach git.
 //
-// Membership is a claim about the protocol, not about the current specs. A
-// command listed here with no entry in redactionSpecs makes the capture tool
-// refuse to write its fixture, because "no spec" must mean "nobody has looked
-// yet", never "nothing to redact". redactSpecsAreConsistent in redact_test.go
-// pins the two maps to each other.
+// A command listed here with no entry in redactionSpecs makes the capture
+// tool refuse to write its fixture — an absent spec must never be read as
+// "nothing to redact". redactSpecsAreConsistent in redact_test.go pins the
+// two maps to each other.
 //
-// Derived by reading commands/ rather than by name matching:
-//
-//   - authenticate carries the caller's own password on the way in.
-//   - create_credential and modify_credential carry <password>, <community>,
-//     <key><phrase>, <key><private> and <privacy><password>. The passphrase is
-//     included even though it is not in the usual list: CreateCredentialKey has
-//     a Phrase field and a passphrase is a secret by definition.
-//   - create_user carries <password>; modify_user carries it as a
-//     <password modify="1"> element with chardata.
-//   - modify_auth and describe_auth carry <auth_conf_setting> values, which is
-//     where an LDAP bind password or a RADIUS shared secret lives.
-//   - get_credentials returns exportable credential material: <package> (the
-//     downloadable key/installer blob), <certificate> and <public_key>.
-//   - get_tls_certificates returns the certificate itself.
-//   - get_scanners returns <ca_pub> and <key_pub>; create_scanner and
-//     modify_scanner send <ca_pub>.
-//   - create_tls_certificate sends a certificate blob.
-//
-// certificate_info is deliberately absent: gvmd derives it (issuer, subject,
-// expiry) from the certificate rather than echoing key material, so redacting
-// it would cost fixture value for no gain. If that ever stops being true, the
-// literal-value sweep is the backstop.
+// certificate_info is deliberately absent: gvmd derives it from the
+// certificate rather than echoing key material.
 var secretBearingCommands = map[string]bool{
 	"authenticate":           true,
 	"create_credential":      true,
@@ -65,19 +43,14 @@ var secretBearingCommands = map[string]bool{
 	"modify_scanner":         true,
 }
 
-// redactionSpecs maps a GMP command to the canonical paths whose values are
-// rewritten before its fixture is written.
+// redactionSpecs maps a GMP command to the canonical paths (as ExtractPaths
+// produces them) whose values are rewritten before its fixture is written.
+// One spec covers both directions: request paths root at <command>, response
+// paths at <command_response>.
 //
-// Paths are exactly what ExtractPaths produces, so a spec can be checked
-// against a real document by eye. One spec covers both directions of a command:
-// request paths are rooted at <command> and response paths at
-// <command_response>, so they cannot collide.
-//
-// A path that matches nothing in a given document is not an error. That is what
-// makes it safe to list both the element form and the attribute form of the
-// same value when it is not yet known which one gvmd actually emits — see
-// describe_auth, where commands/describe_auth.go models auth_conf_setting's key
-// and value as child elements and gvmd is believed to send attributes.
+// A path matching nothing is not an error — e.g. describe_auth lists both the
+// element and attribute form of auth_conf_setting since it isn't yet known
+// which one gvmd emits.
 var redactionSpecs = map[string][]string{
 	"authenticate": {
 		"/authenticate/credentials/password/#text",
@@ -133,15 +106,14 @@ var redactionSpecs = map[string][]string{
 	},
 }
 
-// SweepTerm is one literal value the final pass looks for in the bytes about to
-// be written.
+// SweepTerm is one literal value the final pass looks for in the bytes about
+// to be written.
 //
-// Fatal separates a secret from an identifier. A password is fatal: it has no
-// legitimate reason to appear, so a hit means a spec missed a path and the run
-// must stop. A username is not: gvmd echoes it in <owner><name> on nearly every
-// authenticated response, so treating it as fatal would abort every capture on
-// its first fixture and there would be no corpus at all. It is still swept, and
-// every hit is reported, so a reviewer can see where the identity leaked.
+// Fatal distinguishes a secret from an identifier. A password is fatal: any
+// hit means a spec missed a path, so the run must stop. A username is not
+// fatal — gvmd echoes it in <owner><name> on nearly every response, which
+// would abort every capture — but it is still swept and reported so a
+// reviewer can see where identity leaked.
 type SweepTerm struct {
 	Label string
 	Value string
@@ -162,10 +134,9 @@ func NewRedactor() *Redactor {
 	return newRedactor(redactionSpecs, secretBearingCommands)
 }
 
-// newRedactor exists so the tests can drive the deny-by-default rule with maps
-// they control. Testing it through NewRedactor is impossible by construction:
-// redact_test.go asserts that every secret-bearing command has a spec, so the
-// refusal path is unreachable with the real maps, which is the point.
+// newRedactor lets tests drive the deny-by-default rule with maps they
+// control; NewRedactor's real maps make the refusal path unreachable by
+// construction.
 func newRedactor(specs map[string][]string, secret map[string]bool) *Redactor {
 	return &Redactor{specs: specs, secret: secret}
 }
@@ -221,9 +192,8 @@ func (r *Redactor) Redact(command string, doc []byte) ([]byte, []string, error) 
 
 // Sweep looks for every registered term in doc.
 //
-// It reports labels, never values: an error message that quoted the password it
-// found would put it straight into the test log and from there into a CI
-// transcript, which is the same disclosure the sweep exists to prevent.
+// It reports labels, never values — quoting a found password in an error
+// would put it straight into a test log and from there into CI.
 func (r *Redactor) Sweep(doc []byte) (fatal, notices []string) {
 	for _, t := range r.terms {
 		if !bytes.Contains(doc, []byte(t.Value)) {
@@ -251,20 +221,16 @@ func (r *Redactor) Terms() []SweepTerm {
 // span is a half-open byte range of doc to be replaced.
 type span struct{ start, end int }
 
-// RedactPaths rewrites the value at each canonical path in doc and leaves every
-// other byte exactly as it was.
+// RedactPaths rewrites the value at each canonical path in doc and leaves
+// every other byte exactly as it was.
 //
-// Splicing bytes rather than decoding and re-encoding is the whole point. A
-// round trip through xml.Encoder would rewrite <a/> as <a></a>, normalize
-// attribute quoting and expand numeric character references across the entire
-// document, so every live fixture would stop being wire bytes the moment one
-// element in it needed redacting — and fixtures that needed no redaction would
-// have to take a different code path to stay faithful, which is exactly the
-// kind of asymmetry that hides bugs.
+// Splicing bytes rather than decoding and re-encoding is deliberate: a round
+// trip through xml.Encoder would rewrite <a/> as <a></a> and normalize
+// attribute quoting, so a redacted fixture would stop being wire bytes the
+// moment anything in it needed redacting.
 //
-// The byte spans come from Decoder.InputOffset(): the offset after the previous
-// token is the offset of this one, because the decoder yields a token for every
-// byte range including the whitespace between elements.
+// Byte spans come from Decoder.InputOffset(): the offset after the previous
+// token is the offset of this one.
 func RedactPaths(doc []byte, paths []string) ([]byte, []string, error) {
 	if len(paths) == 0 {
 		return doc, nil, nil
@@ -346,11 +312,11 @@ func findRedactionSpans(doc []byte, want map[string]bool) ([]span, map[string]bo
 }
 
 // attrSpans locates the value of every wanted attribute inside one start tag.
+// raw is the tag's bytes; base is where they start in the document.
 //
-// raw is the tag's bytes and base is where they start in the document. A wanted
-// attribute that cannot be located is a hard error rather than a skip: the only
-// way to reach it is a bug in the scanner, and silently declining to redact is
-// the one outcome this package must never produce.
+// A wanted attribute that cannot be located is a hard error, not a skip:
+// reaching it means a scanner bug, and silently declining to redact is the
+// one outcome this package must never produce.
 func attrSpans(raw []byte, base int, here string, attrs []xml.Attr, want, hit map[string]bool) ([]span, error) {
 	var out []span
 	for _, a := range attrs {
@@ -374,11 +340,9 @@ func attrSpans(raw []byte, base int, here string, attrs []xml.Attr, want, hit ma
 
 func pathOf(stack []string) string { return "/" + strings.Join(stack, "/") }
 
-// spliceSpans replaces each span with the placeholder, merging spans that abut.
-//
-// Merging matters because one logical text node can arrive as several CharData
-// tokens: a CDATA section is its own token, so <p><![CDATA[a]]>b</p> yields two
-// adjacent spans that would otherwise produce two placeholders in a row.
+// spliceSpans replaces each span with the placeholder, merging spans that
+// abut — a CDATA section is its own token, so <p><![CDATA[a]]>b</p> would
+// otherwise yield two adjacent spans and two placeholders in a row.
 func spliceSpans(doc []byte, spans []span) []byte {
 	sort.Slice(spans, func(i, j int) bool { return spans[i].start < spans[j].start })
 
@@ -400,11 +364,9 @@ func spliceSpans(doc []byte, spans []span) []byte {
 	return out.Bytes()
 }
 
-// ValidateRedactionPath rejects a spec path that cannot possibly match.
-//
-// A typo in a spec is the failure mode with no symptom: the path matches
-// nothing, the fixture is written, and the secret is in it. Every spec path
-// goes through this before any document is touched.
+// ValidateRedactionPath rejects a spec path that cannot possibly match. A
+// typo here is the failure mode with no symptom otherwise: the path matches
+// nothing, the fixture is written, and the secret is in it.
 func ValidateRedactionPath(p string) error {
 	switch {
 	case !strings.HasPrefix(p, "/"):
@@ -428,12 +390,9 @@ func ValidateRedactionPath(p string) error {
 }
 
 // attrValueSpan finds the byte range of one attribute's value inside a start
-// tag, returning offsets relative to raw.
-//
-// A hand-rolled scan rather than a regexp because the value may contain
-// anything except its own quote character, and because the decoder has already
-// proved the tag is well-formed, so the scan only has to agree with a parse
-// that is known to have succeeded.
+// tag, returning offsets relative to raw. Hand-rolled rather than a regexp
+// because the decoder has already proved the tag is well-formed, so this
+// scan only needs to agree with a parse known to succeed.
 func attrValueSpan(raw []byte, want xml.Name) (int, int, bool) {
 	s := &attrScanner{raw: raw}
 	s.skipElementName()

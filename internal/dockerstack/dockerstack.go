@@ -1,13 +1,10 @@
 // Package dockerstack resolves the content-addressed image digest backing a
 // running Docker Compose service. It exists so schema-extraction provenance
-// (T-16b) and live test fixture metadata (T-16c) can both record "the
-// resolved container image digest, read from the runtime" from one place
-// instead of two independent, possibly-diverging implementations.
+// (T-16b) and live test fixture metadata (T-16c) share one implementation
+// instead of independently drifting.
 //
-// The package itself has no build tag and compiles anywhere; only callers
-// that actually invoke ImageDigest need Docker present at runtime, the same
-// way package connections compiles everywhere but only does useful work
-// against a real network.
+// The package has no build tag and compiles anywhere; only callers that
+// actually invoke ImageDigest need Docker present at runtime.
 package dockerstack
 
 import (
@@ -74,12 +71,10 @@ func ImageDigest(ctx context.Context, composeFile, service string) (string, erro
 	return digest, nil
 }
 
-// configuredImage returns the image reference containerID was started from.
-// `docker inspect` on the container itself, rather than `compose config
-// --images <service>`, because the latter resolves service's full dependency
-// subtree (Compose prints every transitive depends_on's image too), and gvmd
-// depends_on six other services in hack/docker-compose.yml — there is no
-// single-service filter to ask Compose for instead.
+// configuredImage returns the image reference containerID was started from,
+// via `docker inspect` on the container itself rather than `compose config
+// --images <service>`: the latter resolves the full dependency subtree
+// (every transitive depends_on's image too) with no single-service filter.
 func configuredImage(ctx context.Context, containerID string) (string, error) {
 	return inspectFormat(ctx, containerID, "{{.Config.Image}}")
 }

@@ -7,9 +7,7 @@ import (
 )
 
 // These exercise the differ against hand-written types small enough to reason
-// about exactly. Testing it against real GMP documents first would make a
-// differ bug indistinguishable from a library bug, which is the whole thing
-// this tooling exists to tell apart.
+// about exactly, so a differ bug can't be mistaken for a library bug.
 
 func TestExtractPaths(t *testing.T) {
 	tests := []struct {
@@ -122,8 +120,8 @@ type truncRoot struct {
 }
 
 // A single-valued field against a repeated element keeps one occurrence and
-// silently discards the rest. That is data loss a "dropped" check cannot see,
-// which is why TRUNCATED is its own bucket.
+// silently discards the rest — loss a "dropped" check can't see, hence the
+// separate TRUNCATED bucket.
 func TestCompareTruncated(t *testing.T) {
 	f := Compare([]byte(`<a><b>1</b><b>2</b><b>3</b></a>`), &truncRoot{})
 	if f.DecodeErr != nil {
@@ -278,8 +276,8 @@ type wrongRoot struct {
 	XMLName xml.Name `xml:"b"`
 }
 
-// XMLName enforcement makes a mismatched root a hard decode failure. One
-// upstream get_preferences example has exactly this shape.
+// XMLName enforcement makes a mismatched root a hard decode failure, as seen
+// in one upstream get_preferences example.
 func TestCompareRecordsDecodeFailure(t *testing.T) {
 	f := Compare([]byte(`<a/>`), &wrongRoot{})
 	if f.DecodeErr == nil {
@@ -327,10 +325,9 @@ type hyphenRoot struct {
 	// no field for <b>, <b-c> or <b>'s children
 }
 
-// TestSuppressDescendantsAcrossSortingGap: '-' sorts before '/', so /a/b-c
-// falls between /a/b and /a/b/d. Comparing each finding only against the
-// previously emitted one left /a/b/d unfolded. <cpe-item> in the corpus makes
-// this reachable with real documents, not just contrived ones.
+// '-' sorts before '/', so /a/b-c falls between /a/b and /a/b/d; comparing
+// each finding only against the previously emitted one left /a/b/d unfolded.
+// <cpe-item> makes this reachable with real documents, not just contrived ones.
 func TestSuppressDescendantsAcrossSortingGap(t *testing.T) {
 	f := Compare([]byte(`<a><b><d>1</d></b><b-c>2</b-c></a>`), &hyphenRoot{})
 	if f.DecodeErr != nil {
@@ -359,10 +356,10 @@ type nsRoot struct {
 	X       string   `xml:"x"`
 }
 
-// TestNamespacedDocumentIsNeverClean: two same-local-name elements in different
-// namespaces used to collapse onto one path, so losing one could still report
-// clean. Paths are now namespace-qualified, and any namespaced document is
-// marked advisory rather than certified.
+// Two same-local-name elements in different namespaces used to collapse onto
+// one path, so losing one could still report clean. Paths are now
+// namespace-qualified, and any namespaced document is marked advisory rather
+// than certified.
 func TestNamespacedDocumentIsNeverClean(t *testing.T) {
 	doc := []byte(`<a xmlns:p="urn:p" xmlns:q="urn:q"><p:x>1</p:x><q:x>2</q:x></a>`)
 
@@ -399,9 +396,8 @@ type coerceRoot struct {
 	S       string   `xml:"s"`
 }
 
-// TestCompareReportsChangedValues: structural retention is not fidelity. A
-// value the library cannot reproduce is information it did not keep, even
-// though the path survived.
+// Structural retention is not fidelity: a value the library can't reproduce
+// is information it didn't keep, even though the path survived.
 func TestCompareReportsChangedValues(t *testing.T) {
 	f := Compare([]byte(`<a><n>5.0</n><s>keep</s></a>`), &coerceRoot{})
 	if f.DecodeErr != nil {

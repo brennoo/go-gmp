@@ -3,17 +3,14 @@
 // from what would be generated now.
 //
 // It is a thin wrapper: load the generation manifest, load the committed
-// Stage-A schema snapshots it names, call codegen, write or compare what comes
-// back. It never reads vendor/XML/commands itself — that AGPL-licensed
-// extraction step already happened when the snapshots under -schema were
-// committed (internal/codegen/snapshot_test.go -update), and keeping this CLI
-// on the far side of that boundary is what T-9's licensing isolation
-// (acceptance criterion 9) requires: nothing downstream of the snapshot ever
-// needs to know vendor/XML existed.
+// Stage-A schema snapshots it names, call codegen, write or compare what
+// comes back. It never reads vendor/XML/commands itself — that AGPL-licensed
+// extraction already happened when the snapshots under -schema were
+// committed — so nothing downstream of the snapshot needs to know vendor/XML
+// existed (T-9's licensing isolation).
 //
 // Writing is a manual, human-reviewed step, not something CI runs to write
-// code: see hack/generate.sh. -check is the read-only counterpart CI can run —
-// it touches neither the output directory nor the git index.
+// code: see hack/generate.sh. -check is the read-only counterpart CI can run.
 package main
 
 import (
@@ -108,9 +105,7 @@ func check(manifest codegen.Manifest, o options) error {
 		return err
 	}
 	if report.OK() {
-		// Adopted(), matching CheckOutput's own scope: a review-only family's
-		// files are not in o.out and were never inspected, so counting them
-		// here would overstate what the clean report covers.
+		// Adopted() count only: a review-only family's files were never inspected.
 		fmt.Printf("%s is up to date with the manifest and schema (%d file(s) accounted for)\n",
 			o.out, len(manifest.Adopted().ExpectedOutputFiles(o.out)))
 		if skipped := manifest.ReviewOnlyFamilies(); len(skipped) > 0 {

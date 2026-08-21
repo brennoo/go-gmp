@@ -38,7 +38,7 @@
 //   - [RequestEncodingError] — the command itself could not be marshalled to
 //     XML. The connection is never touched.
 //
-// All three error structs implement Unwrap, so errors.Is and errors.As reach
-// through them to an underlying cause such as context.DeadlineExceeded or a
-// net.Error.
+// Every error struct except GMPError implements Unwrap, so errors.Is and
+// errors.As reach through them to an underlying cause such as
+// context.DeadlineExceeded or a net.Error.
 package commands

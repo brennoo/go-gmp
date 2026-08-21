@@ -25,14 +25,13 @@ const (
 	reportPath  = "testdata/CONFORMANCE.md"
 )
 
-// TestConformanceReport builds the report and asserts it against the committed
-// golden.
+// TestConformanceReport builds the report and asserts it against the
+// committed golden.
 //
-// The assertion is "unchanged", not "empty". 122 commands were transcribed by
-// hand and the report says what that cost; turning every finding into a test
-// failure would mean either a permanently red suite or a suppression list
-// nobody reads. A committed report makes any drift, in either direction, a
-// reviewable diff.
+// The assertion is "unchanged", not "empty": 122 hand-transcribed commands
+// mean turning every finding into a test failure would leave either a
+// permanently red suite or a suppression list nobody reads. A committed
+// report makes any drift, in either direction, a reviewable diff.
 func TestConformanceReport(t *testing.T) {
 	rep := buildReport(t)
 	got := rep.String()

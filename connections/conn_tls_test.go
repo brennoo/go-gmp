@@ -108,8 +108,8 @@ func newLocalListenerProtocolNotSupported(t testing.TB) net.Listener {
 	return ln
 }
 
-// newLocalListenerTLS12Only starts a listener that only accepts TLS 1.2, so it can be used to
-// prove both that WithMinVersion can reach it and that the TLS 1.3 default cannot.
+// newLocalListenerTLS12Only starts a listener that only accepts TLS 1.2, to prove WithMinVersion
+// can reach it and the TLS 1.3 default cannot.
 func newLocalListenerTLS12Only(t testing.TB) net.Listener {
 	cert, err := tls.X509KeyPair(certPem, keyPem)
 	if err != nil {
@@ -128,7 +128,7 @@ func newLocalListenerTLS12Only(t testing.TB) net.Listener {
 }
 
 // newLocalListenerRequireClientCert starts a listener that requires the client to present a
-// certificate, so it can be used to prove WithClientCertificate/WithClientCertFiles work.
+// certificate, to prove WithClientCertificate/WithClientCertFiles work.
 func newLocalListenerRequireClientCert(t testing.TB) net.Listener {
 	cert, err := tls.X509KeyPair(certPem, keyPem)
 	if err != nil {
@@ -145,9 +145,8 @@ func newLocalListenerRequireClientCert(t testing.TB) net.Listener {
 	return ln
 }
 
-// generateSelfSignedCert creates a self-signed certificate valid for the given DNS names. Unlike
-// the checked-in certPem/keyPem fixture (CN only, no SAN), this produces a certificate that passes
-// real hostname verification, which modern Go no longer falls back to CN for.
+// generateSelfSignedCert creates a self-signed certificate with SANs, unlike the checked-in
+// certPem/keyPem fixture (CN only), since modern Go no longer falls back to CN for verification.
 func generateSelfSignedCert(t testing.TB, dnsNames ...string) tls.Certificate {
 	t.Helper()
 
@@ -435,10 +434,9 @@ func assertServerReceivesClientCert(t *testing.T, clientCertOpt TLSOption) {
 	}
 }
 
-// TestNewTLSConnectionRootCAFileMissing proves that a failing option returns an error from
-// NewTLSConnection instead of panicking, and that it does so without ever dialling: the address
-// below has nothing listening on it, so a "connection refused" error rather than the expected
-// root-CA-file error would indicate a dial was attempted despite the earlier option failure.
+// TestNewTLSConnectionRootCAFileMissing proves a failing option returns an error without ever
+// dialling: the address has nothing listening, so a "connection refused" error rather than the
+// expected root-CA-file error would mean a dial was attempted despite the earlier failure.
 func TestNewTLSConnectionRootCAFileMissing(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()

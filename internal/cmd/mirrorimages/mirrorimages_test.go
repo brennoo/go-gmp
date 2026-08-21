@@ -35,9 +35,8 @@ func ok(data []byte) func() ([]byte, error) { return func() ([]byte, error) { re
 func fail(err error) func() ([]byte, error) { return func() ([]byte, error) { return nil, err } }
 
 // sequence returns fns[0] on the first call, fns[1] on the second, and so on
-// — for commands whose result legitimately differs across repeated
-// invocations within a single run, such as checking a tag before and after
-// creating it.
+// — for a command whose result legitimately differs across repeated calls,
+// such as checking a tag before and after creating it.
 func sequence(t *testing.T, fns ...func() ([]byte, error)) func() ([]byte, error) {
 	t.Helper()
 	i := 0
@@ -72,8 +71,7 @@ func writeCompose(t *testing.T, dir, contents string) string {
 }
 
 // writeSeedLock writes entries as the lock file mirrorimages reads at
-// startup to learn what to mirror from — the durable seed a real run's own
-// prior output would have provided.
+// startup to learn what to mirror from.
 func writeSeedLock(t *testing.T, dir string, entries ...mirror.LockEntry) string {
 	t.Helper()
 	path := filepath.Join(dir, "lock.json")
@@ -197,10 +195,8 @@ func TestRunFallbackTagAlreadyCorrectIsNoOp(t *testing.T) {
 	dstFallbackRef := "ghcr.io/brennoo/gvm-mirror/gvmd:" + fallbackTag
 	dstDigestRef := "ghcr.io/brennoo/gvm-mirror/gvmd@sha256:" + srcHex
 
-	// No "skopeo copy" entry for the fallback tag at all: if WriteOnceTag
-	// still unconditionally copied instead of no-opping on an
-	// already-correct tag, fakeRunner would fail this test on the
-	// unexpected command.
+	// No "skopeo copy" entry for the fallback tag: fakeRunner fails the test
+	// if WriteOnceTag copies instead of no-opping on an already-correct tag.
 	runner := fakeRunner(t, map[string]func() ([]byte, error){
 		"skopeo inspect --raw docker://gvmd:stable":           ok([]byte(gvmdManifest)),
 		"skopeo inspect --raw docker://gvmd@sha256:" + srcHex: ok([]byte(gvmdManifest)),

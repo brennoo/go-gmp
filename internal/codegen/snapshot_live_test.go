@@ -22,11 +22,9 @@ import (
 
 // The -gmp.* flags below mirror internal/gmptest's flags of the same name
 // (see internal/gmptest/live.go) rather than importing that package for
-// them: internal/gmptest also declares its own, unconditional -update flag
-// (its derived-golden switch, see internal/gmptest/update.go), which would
-// collide with this package's own -update the moment both are linked into
-// one test binary — exactly the reason TestSnapshot's own update var is
-// declared locally instead of reused from there (see its doc comment).
+// them, for the same reason TestSnapshot's own -update flag is declared
+// locally: importing internal/gmptest here would also pull in its
+// unconditional -update flag, colliding with this package's.
 var (
 	liveAddr = flag.String("gmp.addr", "127.0.0.1:9390",
 		"host:port of gvmd's GMP TLS listener")
@@ -55,11 +53,10 @@ const liveCommandTimeout = 2 * time.Minute
 // dialLive authenticates against a live gvmd and returns the connection,
 // which the caller must Close.
 //
-// This deliberately dials and authenticates only — it does not wait for
-// gvmd's feed sync the way internal/gmptest's WaitReady does for fixture
-// capture. <help>'s output is the protocol's own command schema, not
-// feed-derived data, so waiting up to 45 minutes for a feed sync here would
-// cost real time for a check this path never needs.
+// It deliberately skips the feed-sync wait internal/gmptest's WaitReady does
+// for fixture capture: <help>'s output is the protocol's own command schema,
+// not feed-derived data, so it doesn't need to pay for a sync that can take
+// up to 45 minutes.
 func dialLive(ctx context.Context) (gmp.Connection, error) {
 	var opts []connections.TLSOption
 	if *liveInsecure {
@@ -90,12 +87,9 @@ func dialLive(ctx context.Context) (gmp.Connection, error) {
 	return conn, nil
 }
 
-// TestSnapshotLive is T-16b's served counterpart to TestSnapshot: its source
-// is a live gvmd's own <help format="XML" type=""/> response instead of
-// vendor/XML/commands. It writes straight to the same committed snapshotDir
-// TestSnapshot does — parity between the two extraction paths was proven once
-// (T-16b), so there is no separate live-only directory left to diff against.
-// This is now the primary way to refresh testdata/schema/*.json.
+// TestSnapshotLive is T-16b's served counterpart to TestSnapshot: its
+// source is a live gvmd's own <help format="XML" type=""/> response, and
+// it's now the primary way to refresh testdata/schema/*.json.
 //
 //	go test -tags integration ./internal/codegen -run TestSnapshotLive -update \
 //	  -gmp.addr=127.0.0.1:9390 -gmp.pass=… -gmp.servername=…

@@ -16,14 +16,11 @@ import (
 )
 
 // validateOrSkip runs Validate for the family owning the named command,
-// skipping (not failing) when no "go" toolchain is available to build and run
-// the reflect helper GeneratedGoRoots depends on — the same accommodation
-// TestGeneratedCodeCompiles makes.
-//
-// One family's commands, not the whole manifest: GeneratedGoRoots calls
-// Generate directly, which is scoped to a single family by GenerateAll's
-// contract, so validating per family is what keeps the "after" side identical
-// to the bytes the golden holds for that family.
+// skipping (not failing) when no "go" toolchain is available — the same
+// accommodation TestGeneratedCodeCompiles makes. It validates one family at a
+// time because GeneratedGoRoots's Generate call is scoped to a single family
+// by GenerateAll's contract, keeping "after" identical to that family's golden
+// bytes.
 func validateOrSkip(t *testing.T, command string) (before, after []schema.Result) {
 	t.Helper()
 	fam, ok := manifestOrFail(t).FamilyOf(command)
@@ -62,31 +59,18 @@ func countFindings(fs []schema.Finding) counts {
 	return c
 }
 
-// TestValidateBeforeMatchesKnownConformance pins down what Validate's "before"
-// side — the committed commands/ package, reflected by BeforeGoRoots — reports
-// for the note family, cross-checked against internal/schema/testdata/
-// CONFORMANCE.md's own create_note/modify_note/get_notes sections (committed,
-// generated from the same schema.Comparer). It exists to catch a bug in
-// BeforeGoRoots or in this package's snapshot loading — not in the generator —
-// before that bug gets blamed on the generated side by
+// TestValidateBeforeMatchesKnownConformance pins what Validate's "before" side
+// reports for the note family, cross-checked against internal/schema/testdata/
+// CONFORMANCE.md's committed create_note/modify_note/get_notes sections. It
+// exists to catch a bug in BeforeGoRoots or snapshot loading — not the
+// generator — before it gets blamed on the generated side by
 // TestValidateGeneratedMatchesOrImproves below.
 //
-// Since the swap-in (execution-order step 7 of the T-9 prototype plan),
-// commands/{create_note,modify_note,get_notes,note_shared}.go *are* the
-// generator's output, so "before" and "after" now describe the same source and
-// these numbers equal wantAfter's. That is not a weakening: it makes this test
-// a drift detector on the committed files — hand-edit a generated struct in a
-// way that costs conformance and this fails, independently of whether anyone
-// re-ran hack/generate.sh.
-//
-// For the record, the pre-swap hand-written numbers this used to pin, all of
-// which generation closed (see TestValidateGeneratedMatchesOrImproves for the
-// per-finding explanation):
-//
-//	create_note: actionable EXTRA 1
-//	modify_note: actionable EXTRA 1, suppressed OMITEMPTY 1
-//	get_notes:   actionable MISSING 19, TYPE 4, SCHEMA-DEFECT 2,
-//	             suppressed OMITEMPTY 14
+// commands/{create_note,modify_note,get_notes,note_shared}.go are now the
+// generator's own output, so "before" and "after" describe the same source and
+// these numbers equal wantAfter's: this is a drift detector on the committed
+// files, not a weaker assertion. Pre-swap numbers and per-finding history are
+// in docs/review-2026-08.md's T-9 section.
 func TestValidateBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_note")
 
@@ -115,46 +99,15 @@ func TestValidateBeforeMatchesKnownConformance(t *testing.T) {
 // schema conformance for this family, with any change explained rather than
 // silently regressed.
 //
-// What this run actually found, verified against the printed findings while
-// writing this test: generation closes every actionable and suppressed
-// finding for all three commands except the three pre-existing SCHEMA-DEFECT
-// findings on get_notes (all "duplicate-ele: redefined in the same scope"),
-// which are untouched byte-for-byte. That is expected and correct:
-// SCHEMA-DEFECT findings come from cmd.Defects, the schema's own upstream
-// bugs, not from comparing the Go model at all, so no amount of regenerating
-// commands/ can change them — schema.Comparer.Compare copies them into the
-// result before it ever looks at req/resp.
+// Generation closes every actionable and suppressed finding for all three
+// commands except get_notes's three pre-existing SCHEMA-DEFECT findings
+// ("duplicate-ele: redefined in the same scope"), untouched byte-for-byte:
+// those come from cmd.Defects, the schema's own upstream bugs, copied into the
+// result before Comparer ever looks at req/resp, so no regeneration can move
+// them. See docs/review-2026-08.md's T-9 note section for the per-finding
+// breakdown of what closed and why.
 //
-// The specific closures, all of them genuine (not category reshuffles — the
-// path either has zero findings after, or keeps only its SCHEMA-DEFECT):
-//   - create_note, modify_note: the EXTRA finding on .../nvt/name disappears
-//     because the generated NoteNVT (create_note.json/modify_note.json's
-//     schema shape) has no Name field to begin with — the hand-written NoteNVT
-//     carried one with nothing behind it in the schema.
-//   - modify_note: the suppressed OMITEMPTY on .../text disappears because the
-//     generated ModifyNote.Text has no omitempty tag, matching the schema's
-//     "required".
-//   - get_notes: all 19 MISSING findings close (7 request attributes, 12
-//     response elements including "notes" and the note/text/* shape, see
-//     testdata/golden/get_notes.go for the fields that now exist), the 14
-//     suppressed OMITEMPTY findings close (the generated struct's
-//     omitempty/pointer choices track the schema's required/optional exactly,
-//     per T-5's mapping table), and all 4 TYPE findings close because
-//     Note.Active/InUse/Orphan/Writable are commands.GMPBool — the
-//     TypeOverrides-driven fix for the T-9 defect #6 / T-5 boolean lexical
-//     rule the family was chosen to exercise.
-//
-// No unexplained finding category appears anywhere in the "after" results:
-// every category present after generation was already present before it, and
-// no category's count goes up. This test asserts both the specific known-good
-// numbers (tight regression protection, expected to need updating in lockstep
-// with testdata/golden if the generator's output for this family changes) and
-// the general "no unexplained regression" rule (robust to that kind of
-// change, and the one that would actually catch a genuine future problem like
-// the required-vs-pointer or recursion-cut deltas flagged as risks during
-// design — neither of which, it turns out, produces a schema.Comparer finding
-// at all for this family, checked directly against the printed diff above).
-// note_count's bare leading total is now recovered via overrides.go's
+// note_count's bare leading total is recovered via overrides.go's
 // FieldOverrides["get_notes:/note_count"] (T-23), adding one suppressed
 // EXTRA below.
 func TestValidateGeneratedMatchesOrImproves(t *testing.T) {
@@ -171,20 +124,11 @@ func TestValidateGeneratedMatchesOrImproves(t *testing.T) {
 }
 
 // TestValidateOverrideBeforeMatchesKnownConformance is the override family's
-// counterpart to TestValidateBeforeMatchesKnownConformance.
-//
-// Since the swap-in, commands/{create_override,modify_override,get_overrides,
-// override_shared}.go *are* the generator's output, so "before" and "after"
-// now describe the same source and these numbers equal wantAfter's — a drift
-// detector on the committed files, not a weaker assertion.
-//
-// For the record, the pre-swap hand-written numbers this used to pin, all of
-// which generation closed (see TestValidateOverrideGeneratedMatchesOrImproves
-// for the per-finding explanation):
-//
-//	create_override, modify_override: actionable EXTRA 2, MISSING 2 each
-//	get_overrides: actionable EXTRA 3, MISSING 28, TYPE 6, SCHEMA-DEFECT 2,
-//	               suppressed OMITEMPTY 40
+// counterpart to TestValidateBeforeMatchesKnownConformance: commands/
+// {create_override,modify_override,get_overrides,override_shared}.go are now
+// the generator's own output, so this is a drift detector on the committed
+// files. Pre-swap numbers and the per-finding closure history are in
+// docs/review-2026-08.md's T-9 override section.
 func TestValidateOverrideBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_override")
 
@@ -208,34 +152,13 @@ func TestValidateOverrideBeforeMatchesKnownConformance(t *testing.T) {
 }
 
 // TestValidateOverrideGeneratedMatchesOrImproves is the override family's
-// pre-swap gate, run at the same rigour the note family's was.
+// pre-swap gate, run at the same rigour the note family's was. Generation
+// closed all 84 findings except get_overrides's three SCHEMA-DEFECT ones
+// (upstream duplicate-ele bugs, byte-identical before and after — no
+// generated output can move a cmd.Defects finding, same as get_notes). See
+// docs/review-2026-08.md's T-9 override section for the per-finding breakdown.
 //
-// What this run found while override was still review_only: generation
-// closed all 84 findings (44 actionable, 40 suppressed) except the three
-// SCHEMA-DEFECT ones on get_overrides, which are byte-identical before and
-// after. Those three are cmd.Defects — upstream duplicate-ele bugs in the
-// schema itself, copied into the result before Comparer looks at any Go
-// type — so no generated output can move them, exactly as for get_notes.
-//
-//   - create_override, modify_override: the EXTRA 2/MISSING 2 pairs closed
-//     because the generated OverrideNVT has no Name/Type fields the schema
-//     doesn't declare, and Result/Task became ID-bearing structs instead of
-//     bare strings.
-//   - get_overrides: all 28 MISSING findings closed (2 request attributes,
-//     25 response elements, and 1 chardata site — the schema's <sort>
-//     declares bare text alongside its <field> child, which schema.Comparer
-//     now understands via Node.Chardata, matched by the generated
-//     OverrideSort's own Value field), the 40 suppressed OMITEMPTY findings
-//     closed, the 6 TYPE findings closed (GMPBool for lexical booleans,
-//     float64 for severity — cvss_base stays int, matching the schema's own
-//     declaration), and the 3 EXTRA findings closed (the undeclared @trash
-//     request attribute and result-NVT cve/bid are gone).
-//
-// Nothing regresses and no new category appears, so the assertion below is
-// the strongest form: after == {SCHEMA-DEFECT: 2} for get_overrides and
-// empty for the other two.
-//
-// override_count's bare leading total is now recovered via overrides.go's
+// override_count's bare leading total is recovered via overrides.go's
 // FieldOverrides["get_overrides:/override_count"] (T-23), adding one
 // suppressed EXTRA below.
 func TestValidateOverrideGeneratedMatchesOrImproves(t *testing.T) {
@@ -252,22 +175,10 @@ func TestValidateOverrideGeneratedMatchesOrImproves(t *testing.T) {
 
 // TestValidateRoleBeforeMatchesKnownConformance is the role family's
 // counterpart to TestValidateBeforeMatchesKnownConformance.
-//
-// Since the swap-in, commands/{create_role,modify_role,get_roles}.go *are*
-// the generator's output, so "before" and "after" now describe the same
-// source and these numbers equal wantAfter's — a drift detector on the
-// committed files, not a weaker assertion.
-//
-// For the record, the pre-swap hand-written numbers this used to pin, all of
-// which generation closed (see TestValidateRoleGeneratedMatchesOrImproves for
-// the per-finding explanation):
-//
-//	create_role, modify_role: no findings either side
-//	get_roles: actionable MISSING 11, TYPE 2, suppressed OMITEMPTY 6
-//
-// Unlike note and override, get_roles carries zero SCHEMA-DEFECT findings —
-// role's schema has no known upstream defect, which was one of the criteria
-// that ranked it above the other create/get/modify candidates.
+// commands/{create_role,modify_role,get_roles}.go are the generator's own
+// output, so this is a drift detector on the committed files, not a weaker
+// assertion. Unlike note and override, get_roles carries no SCHEMA-DEFECT
+// findings — role's schema has no known upstream defect.
 func TestValidateRoleBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_role")
 
@@ -288,29 +199,12 @@ func TestValidateRoleBeforeMatchesKnownConformance(t *testing.T) {
 }
 
 // TestValidateRoleGeneratedMatchesOrImproves is the role family's pre-swap
-// gate, run at the same rigour the note and override families were.
+// gate. Generation closed every actionable and suppressed finding on all
+// three commands; role carries no SCHEMA-DEFECT findings to begin with.
 //
-// What this run found while role was still review_only: generation closed
-// every actionable and suppressed finding on all three commands, leaving all
-// of them clean: the 11 MISSING findings on get_roles closed (request filter
-// attributes plus response elements — see testdata/golden/get_roles.go), the
-// 2 TYPE findings closed (Writable/InUse become commands.GMPBool), and the 6
-// suppressed OMITEMPTY findings closed (the generated struct's
-// omitempty/pointer choices track the schema's required/optional exactly).
-// Since role has no SCHEMA-DEFECT findings to begin with, "after" is empty
-// for every command in this family.
-//
-// "Empty" describes what schema.Comparer can see, which is bounded by what
-// the schema's own <pattern> declares — it is not a claim that the generated
-// model is a lossless mirror of every byte gvmd sends. role_count was a
-// concrete counterexample until T-23: the schema's own <pattern> for
-// role_count declares only <e>filtered</e>/<e>page</e> with no text token
-// anywhere in it, while both bundled command_get_roles.xml examples and a
-// live capture send a bare total ("1", "6") ahead of those two children.
-// FieldOverrides["get_roles:/role_count"] now adds that total back as a
-// schema-undeclared chardata field, which is why get_roles carries one more
-// suppressed CatExtra below than get_groups/get_tags/etc. do before their own
-// T-23 entries land.
+// role_count's bare leading total is recovered via overrides.go's
+// FieldOverrides["get_roles:/role_count"] (T-23), adding one suppressed
+// EXTRA below.
 func TestValidateRoleGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_role")
 
@@ -325,21 +219,10 @@ func TestValidateRoleGeneratedMatchesOrImproves(t *testing.T) {
 
 // TestValidateGroupBeforeMatchesKnownConformance is the group family's
 // counterpart to TestValidateBeforeMatchesKnownConformance.
-//
-// Since the swap-in, commands/{create_group,modify_group,get_groups}.go
-// *are* the generator's output, so "before" and "after" now describe the
-// same source and these numbers equal wantAfter's — a drift detector on the
-// committed files, not a weaker assertion.
-//
-// For the record, the pre-swap hand-written numbers this used to pin, both
-// of which generation closed (see TestValidateGroupGeneratedMatchesOrImproves
-// for the per-finding explanation):
-//
-//	create_group: actionable SCHEMA-DEFECT 1 (unchanged by the swap — schema
-//	  defects are copied from cmd.Defects before any Go-type comparison ever
-//	  runs, so generation cannot move them)
-//	modify_group: no findings either side
-//	get_groups: actionable TYPE 2, suppressed OMITEMPTY 1
+// commands/{create_group,modify_group,get_groups}.go are the generator's own
+// output, so this is a drift detector on the committed files. create_group's
+// actionable SCHEMA-DEFECT is copied from cmd.Defects and can't be moved by
+// regeneration.
 func TestValidateGroupBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_group")
 
@@ -362,27 +245,14 @@ func TestValidateGroupBeforeMatchesKnownConformance(t *testing.T) {
 	}
 }
 
-// TestValidateGroupGeneratedMatchesOrImproves is the group family's post-swap
-// gate, run at the same rigour note, override, and role were.
+// TestValidateGroupGeneratedMatchesOrImproves is the group family's
+// post-swap gate. Generation closed every finding except create_group's
+// SCHEMA-DEFECT (copied from cmd.Defects, untouched by regeneration).
 //
-// What this run found while group was still review_only: generation closed
-// both the TYPE 2 and suppressed OMITEMPTY 1 findings on get_groups
-// (Writable/InUse become commands.GMPBool; GroupFilters.Name gains
-// omitempty, tracking the schema's optional <name>), leaving get_groups and
-// modify_group clean. create_group keeps its SCHEMA-DEFECT 1 untouched:
-// SCHEMA-DEFECT findings are copied from cmd.Defects before any Go-type
-// comparison ever runs, so no generated output can move them — the same
-// reasoning already on record for note, override, and role.
-//
-// group_count carried the same schema-vs-wire gap already documented for
-// role (schema declares only <e>filtered</e><e>page</e>, no text token, yet
-// both command_get_groups.xml's bundled example and a live capture send a
-// bare total ahead of those children) until T-23's
-// FieldOverrides["get_groups:/group_count"] added it back.
-//
-// The sort field-name MISSING/EXTRA pair on get_groups below is not a new
-// regression: it is T-18a's relocation of GroupSort's schema-declared
-// chardata onto GroupField, where the wire actually puts it — see
+// group_count's bare leading total is recovered via overrides.go's
+// FieldOverrides["get_groups:/group_count"] (T-23), adding one suppressed
+// EXTRA below. The sort field-name MISSING/EXTRA pair on get_groups is
+// T-18a's relocation of GroupSort's chardata onto GroupField — see
 // FieldSuppressions["get_groups:/sort"].
 func TestValidateGroupGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_group")
@@ -398,20 +268,10 @@ func TestValidateGroupGeneratedMatchesOrImproves(t *testing.T) {
 
 // TestValidateTagBeforeMatchesKnownConformance is the tag family's
 // counterpart to TestValidateBeforeMatchesKnownConformance.
-//
-// Since the swap-in, commands/{create_tag,modify_tag,get_tags}.go *are* the
-// generator's output, so "before" and "after" now describe the same source
-// and these numbers equal wantAfter's — a drift detector on the committed
-// files, not a weaker assertion.
-//
-// For the record, the pre-swap hand-written numbers this used to pin, all of
-// which generation closed except get_tags's one SCHEMA-DEFECT (see
-// TestValidateTagGeneratedMatchesOrImproves for the per-finding explanation):
-//
-//	create_tag: actionable EXTRA 3, OMITEMPTY 1, suppressed OMITEMPTY 1
-//	get_tags:   actionable MISSING 8, EXTRA 2, CARDINALITY 4, TYPE 4,
-//	            SCHEMA-DEFECT 1, suppressed OMITEMPTY 2
-//	modify_tag: actionable MISSING 1, EXTRA 3, OMITEMPTY 1
+// commands/{create_tag,modify_tag,get_tags}.go are the generator's own
+// output, so this is a drift detector on the committed files. get_tags's
+// actionable SCHEMA-DEFECT is copied from cmd.Defects, untouched by
+// regeneration.
 func TestValidateTagBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_tag")
 
@@ -432,46 +292,10 @@ func TestValidateTagBeforeMatchesKnownConformance(t *testing.T) {
 }
 
 // TestValidateTagGeneratedMatchesOrImproves is the tag family's post-swap
-// gate, run at the same rigour note, override, role, and group were.
-//
-// What this run found while tag was still review_only: generation closed
-// every actionable and suppressed finding on all three commands except
-// get_tags's one pre-existing SCHEMA-DEFECT (/get_tags_response/tag/
-// resources/resource/permissions, an empty-pattern site — the same defect
-// class note/override/create_group already carry), which is untouched
-// byte-for-byte since SCHEMA-DEFECT findings are copied from cmd.Defects
-// before any Go-type comparison runs.
-//
-// The specific closures:
-//   - create_tag: the 3 EXTRA findings (resources/resource's name/trash/type)
-//     close because the generated TagResource (shared with modify_tag, see
-//     testdata/golden/tag_shared.go) only has an ID field — the schema's
-//     request-side resource pattern never declares those three. The
-//     actionable OMITEMPTY on .../resources (schema says required) closes
-//     because the generated CreateTag.Resources is a non-pointer
-//     TagResources. The suppressed OMITEMPTY on .../resources/resource/@id
-//     closes because the generated TagResource.ID keeps its omitempty,
-//     matching the schema's optional attribute.
-//   - get_tags: all 8 MISSING findings close (3 request attributes —
-//     filt_id, trash, names_only — and 5 response elements/wrappers —
-//     filters, sort, tags, tag_count, and the tag/resources wrapper, see
-//     testdata/golden/get_tags.go), both EXTRA findings close (the
-//     hand-written Tag.Resources's flattened shape and GetTagsResponse's
-//     unused Truncated field are both gone — Truncated has no schema
-//     counterpart at all and is dropped rather than replaced), all 4
-//     CARDINALITY and all 4 TYPE findings close together on the same four
-//     fields (Writable/InUse/Active/Orphan become *commands.GMPBool,
-//     closing the optional-lexical-boolean pair at once), and both
-//     suppressed OMITEMPTY findings close (tag/@id and tag/permissions both
-//     gain the omitempty the schema's optional declaration calls for).
-//   - modify_tag: the MISSING finding (resources/@action) closes because the
-//     generated ModifyTagResources gains an Action field; the 3 EXTRA
-//     findings close the same way create_tag's did, via the shared
-//     TagResource; the OMITEMPTY finding closes the same way, via
-//     TagResource.ID's omitempty.
-//
-// Nothing regresses and no new category appears: after == {SCHEMA-DEFECT: 1}
-// for get_tags and empty for the other two.
+// gate. Generation closed every actionable and suppressed finding on all
+// three commands except get_tags's one pre-existing SCHEMA-DEFECT
+// (resources/resource/permissions, an empty-pattern site), copied from
+// cmd.Defects and untouched by regeneration.
 func TestValidateTagGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_tag")
 
@@ -510,39 +334,14 @@ func TestValidateScheduleBeforeMatchesKnownConformance(t *testing.T) {
 }
 
 // TestValidateScheduleGeneratedMatchesOrImproves is the schedule family's
-// post-swap gate, run at the same rigour note, override, role, group, and tag
-// were.
+// post-swap gate. Generation closed every finding on get_schedules except
+// its SCHEMA-DEFECT (copied from cmd.Defects, untouched by regeneration).
 //
-// What this run found while schedule was still review_only: generation
-// closed the EXTRA 1 finding on get_schedules (ScheduleField drops its
-// hand-written `,chardata` field, which the schema's <field> pattern never
-// declared), closed both TYPE 2 findings (Writable/InUse become
-// commands.GMPBool), and closed all 17 suppressed OMITEMPTY findings
-// (Filters/Sort/Schedules/ScheduleCount and their required children become
-// non-pointer, non-omitempty values; the optional <tasks> wrapper becomes a
-// pointer). create_schedule and modify_schedule stayed clean throughout.
-// get_schedules keeps its SCHEMA-DEFECT 1 untouched: SCHEMA-DEFECT findings
-// are copied from cmd.Defects before any Go-type comparison ever runs, so no
-// generated output can move them — the same reasoning already on record for
-// every prior family.
-//
-// schedule_count carried the same schema-vs-wire gap already documented for
-// role and group until T-23's FieldOverrides["get_schedules:/schedule_count"]
-// added it back.
-//
-// The sort field-name MISSING/EXTRA pair on get_schedules below is not a new
-// regression: it is T-18a's relocation of ScheduleSort's schema-declared
-// chardata onto ScheduleField, where the wire actually puts it — see
+// schedule_count's bare leading total is recovered via overrides.go's
+// FieldOverrides["get_schedules:/schedule_count"] (T-23), adding one
+// suppressed EXTRA below. The sort field-name MISSING/EXTRA pair is T-18a's
+// relocation of ScheduleSort's chardata onto ScheduleField — see
 // FieldSuppressions["get_schedules:/sort"].
-//
-// A third gap worth naming even though it closed no finding and needed no
-// test: get_schedules's request-side Trash/Tasks attrs are schema-declared
-// booleans (Type:"boolean") but were hand-written as plain string, not bool —
-// and schema.Comparer's checkType only raises a TYPE finding when the Go
-// field's base type is bool (see conform.go's checkType), never when it is
-// already string. The generator still improved these to *GMPBool for typed,
-// schema-correct wire encoding, but that improvement tracked no finding
-// either side, since none was ever raised for the string case.
 func TestValidateScheduleGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_schedule")
 
@@ -581,36 +380,15 @@ func TestValidateAlertBeforeMatchesKnownConformance(t *testing.T) {
 	}
 }
 
-// TestValidateAlertGeneratedMatchesOrImproves is the alert family's post-swap
-// gate, run at the same rigour every prior family's was.
+// TestValidateAlertGeneratedMatchesOrImproves is the alert family's
+// post-swap gate. Generation closed every finding except get_alerts's two
+// SCHEMA-DEFECT findings (copied from cmd.Defects, untouched by
+// regeneration).
 //
-// What this run found while alert was still review_only: generation closed
-// create_alert's suppressed OMITEMPTY (Filter becomes a required, non-pointer
-// value); closed get_alerts's 2 MISSING findings by modeling
-// method/data/credential and method/data/certificate_info (as
-// AlertCredential/AlertCertificateInfo on a get_alerts-specific
-// AlertMethodData, since create_alert's and modify_alert's simpler <data>
-// shape stays the shared AlertData); closed all 4 TYPE findings via
-// InUse/Writable/Active/filter.Trash becoming commands.GMPBool; and closed
-// all 7 suppressed OMITEMPTY findings by making Filters/Sort/Alerts/AlertCount
-// and their required children non-pointer, non-omitempty values, while the
-// optional <tasks> and <user_tags> wrappers became pointers. modify_alert's
-// Name/Comment also dropped their hand-written *string in favor of a plain
-// string (the convention every other adopted family's Name/Comment already
-// follows), a change schema.Comparer has no category for either side of, so
-// it moved no number here. create_alert and modify_alert stayed otherwise
-// clean throughout. get_alerts keeps its SCHEMA-DEFECT 2 untouched:
-// SCHEMA-DEFECT findings are copied from cmd.Defects before any Go-type
-// comparison ever runs, so no generated output can move them — the same
-// reasoning already on record for every prior family.
-//
-// alert_count carried the same schema-vs-wire gap already documented for
-// role, group, tag, and schedule until T-23's
-// FieldOverrides["get_alerts:/alert_count"] added it back.
-//
-// The sort field-name MISSING/EXTRA pair on get_alerts below is not a new
-// regression: it is T-18a's relocation of AlertSort's schema-declared
-// chardata onto AlertField, where the wire actually puts it — see
+// alert_count's bare leading total is recovered via overrides.go's
+// FieldOverrides["get_alerts:/alert_count"] (T-23), adding one suppressed
+// EXTRA below. The sort field-name MISSING/EXTRA pair is T-18a's relocation
+// of AlertSort's chardata onto AlertField — see
 // FieldSuppressions["get_alerts:/sort"].
 func TestValidateAlertGeneratedMatchesOrImproves(t *testing.T) {
 	before, after := validateOrSkip(t, "create_alert")
@@ -629,14 +407,7 @@ func TestValidateAlertGeneratedMatchesOrImproves(t *testing.T) {
 // counterpart to TestValidateBeforeMatchesKnownConformance. filter is
 // adopted, so commands/{create_filter,modify_filter,get_filters}.go are
 // already the generator's output — this is a drift detector on the committed
-// files, the same role every other adopted family's post-adoption "before"
-// test plays.
-//
-// For the record, the pre-adoption hand-written numbers this used to pin, all
-// of which generation closed (see TestValidateFilterGeneratedMatchesOrImproves
-// for the per-finding explanation): get_filters carried actionable TYPE 2,
-// SCHEMA-DEFECT 1, MISSING 1, EXTRA 1, suppressed OMITEMPTY 1; create_filter
-// and modify_filter were already conformant.
+// files. Pre-adoption findings are recorded in docs/review-2026-08.md.
 func TestValidateFilterBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_filter")
 
@@ -660,30 +431,13 @@ func TestValidateFilterBeforeMatchesKnownConformance(t *testing.T) {
 }
 
 // TestValidateFilterGeneratedMatchesOrImproves is the filter family's
-// post-swap gate, run at the same rigour every prior family's was.
-//
-// What this run found while filter was still review_only: generation closed
-// the TYPE 2 findings (Filter.InUse/.Writable become commands.GMPBool), the
-// suppressed OMITEMPTY finding (Filters.Name gains omitempty), and the
-// MISSING/EXTRA findings the hand-written FilterInfo2 field produced by being
-// wrongly tagged xml:"filters2" instead of the wire's actual "filters".
-// SCHEMA-DEFECT 1 stayed untouched (the generic empty-pattern class already
-// on record for a dozen other commands, at
-// /get_filters_response/filter/alerts/alert/permissions): those findings
-// are copied from cmd.Defects before any Go-type comparison runs.
-//
-// get_filters's <filters> collision (see get_filters.go's generated
-// UnmarshalXML/MarshalXML and TestGetFiltersCollisionRoundTrips) can't give
-// the second field a real xml:"filters" tag — go vet's structtag analyzer
-// statically rejects two fields sharing one tag. It carries xml:"-" instead,
-// plus a private gmpwire:"filters" tag recording its true wire identity.
-// internal/schema/gomodel.go's addField reads xml:"-" fields' gmpwire tag
-// (when present) to make them visible again, by name, with no import or
-// method added to commands/*.go; internal/schema/conform.go's walk pairs
-// same-name schema children against same-name Go fields by occurrence
-// instead of collapsing every occurrence onto the first match. Together
-// these let the comparer see both Filters and Filters2 correctly, closing
-// the gap to zero MISSING/EXTRA.
+// post-swap gate, run at the same rigour every prior family's was. Generation
+// closed every finding except get_filters's SCHEMA-DEFECT (copied from
+// cmd.Defects, untouched by regeneration). See docs/review-2026-08.md's
+// filter section for the per-finding explanation, including the
+// xml:"-"/gmpwire:"filters" resolution of the <filters> field collision (see
+// get_filters.go's generated UnmarshalXML/MarshalXML and
+// TestGetFiltersCollisionRoundTrips).
 //
 // filter_count's bare leading total, once pinned as a permanent loss by
 // TestFilterCountBareTotalIsAnAcceptedLoss, is now recovered via
@@ -709,14 +463,8 @@ func TestValidateFilterGeneratedMatchesOrImproves(t *testing.T) {
 // TestValidateBeforeMatchesKnownConformance. tls_certificate is adopted, so
 // commands/{create_tls_certificate,modify_tls_certificate,
 // get_tls_certificates}.go are already the generator's output — this is a
-// drift detector on the committed files, the same role every other adopted
-// family's post-adoption "before" test plays.
-//
-// For the record, the pre-adoption hand-written numbers this used to pin, all
-// of which generation closed (see TestValidateTLSCertificateGeneratedMatchesOrImproves
-// for the per-finding explanation): get_tls_certificates carried actionable
-// MISSING 5, EXTRA 5, KIND 2, TYPE 3, suppressed OMITEMPTY 33; create_
-// and modify_tls_certificate were already conformant.
+// drift detector on the committed files. Pre-adoption findings are recorded
+// in docs/review-2026-08.md.
 func TestValidateTLSCertificateBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_tls_certificate")
 
@@ -737,66 +485,20 @@ func TestValidateTLSCertificateBeforeMatchesKnownConformance(t *testing.T) {
 
 // TestValidateTLSCertificateGeneratedMatchesOrImproves is the tls_certificate
 // family's post-swap gate, run at the same rigour every prior family's was.
+// See docs/review-2026-08.md's tls_certificate section for the per-finding
+// breakdown of what generation closed while it was still review_only.
 //
-// What this run found while tls_certificate was still review_only: generation
-// closed three of get_tls_certificates's five EXTRA findings and all of
-// MISSING/KIND/TYPE, leaving only two EXTRA findings — both suppressed, via
-// FieldOverrides — on all three commands:
+// Two EXTRA findings survive, both suppressed via FieldOverrides on
+// live/upstream evidence rather than a schema-declared shape:
+// /tls_certificate/certificate/#text keeps a Value field via the override at
+// "get_tls_certificates:/tls_certificate/certificate" — the schema declares
+// no chardata there, but the upstream bundled example sends real base64
+// certificate bytes as that element's text (see
+// TestTLSCertificateDataRoundTrips). /tls_certificate/valid keeps a Valid
+// GMPBool field via the override at "get_tls_certificates:/tls_certificate"
+// — the schema never references it at all, but live captures send
+// <valid>1</valid> regardless.
 //
-//   - MISSING 5: @filt_id on the request (GetTLSCertificates gains FiltID),
-//     and /tls_certificate/sources/source/{location,origin,timestamp,
-//     tls_versions}. The hand-written TLSCertificateSource only models
-//     Type/ID attrs; the schema's actual source pattern is id(attr) plus
-//     required timestamp/tls_versions/origin and optional location, none of
-//     which the hand-written struct carries at all.
-//   - EXTRA 5: /filters/comment (schema's filters pattern has no comment
-//     child), /tls_certificate/sources/source/@type (the hand-written Type
-//     attr the schema's source pattern never declares), /truncated (schema's
-//     get_tls_certificates_response pattern never declares it), plus the two
-//     discussed below — closed differently from the other three.
-//   - KIND 2: tls_certificate_count/filtered and /page are schema elements
-//     that the hand-written TLSCertificateCount models as attrs; generation
-//     fixes both to plain int elements.
-//   - TYPE 3: in_use/trust/writable become commands.GMPBool, the same
-//     lexical-boolean fix every other family needed.
-//   - OMITEMPTY 33 (suppressed): the hand-written struct tags most response
-//     fields ,omitempty despite the schema marking them required; inert on
-//     decode, so suppressed rather than actionable, per checkOmitEmpty.
-//
-// Two of the five EXTRA findings deserve individual comment beyond "closed":
-//
-// /tls_certificate/certificate/#text (the hand-written TLSCertificateData's
-// chardata field) is not dropped: FieldOverrides adds a chardata override at
-// "get_tls_certificates:/tls_certificate/certificate", so
-// TLSCertificateCertificate keeps a Value field alongside Format. The
-// schema's certificate pattern truly has no chardata token (Chardata: false
-// in the committed snapshot), yet the upstream bundled example
-// (internal/gmptest/testdata/upstream/get_tls_certificates/001_response.xml)
-// sends real base64 certificate bytes as that element's text — evidence
-// strong enough to keep the field rather than silently drop it. The finding
-// still fires (the schema still declares no chardata here) but comes back
-// Suppressed, with Reason citing that evidence. See
-// TestTLSCertificateDataRoundTrips below.
-//
-// /tls_certificate/valid is handled the same way, via a FieldOverride at
-// "get_tls_certificates:/tls_certificate" that adds a Valid GMPBool field.
-// Unlike every other EXTRA above, this is not the generated shape losing
-// content the schema declares elsewhere — the schema's tls_certificate
-// pattern never references a valid child at all (confirmed against both the
-// parsed snapshot and the raw command_get_tls_certificates.xml). Live
-// traffic proves gvmd sends it regardless
-// (internal/gmptest/testdata/live/get_tls_certificates/003_response.xml has
-// <valid>1</valid>, matched by the upstream example above), so the override
-// keeps the field, and the resulting EXTRA finding is suppressed with a
-// Reason citing both fixtures.
-//
-// Also worth flagging as a review artifact rather than a schema-conformance
-// finding: the generated SubjectDN/IssuerDN field names now match the
-// hand-written SubjectDN/IssuerDN (and get_reports.go's own SubjectDN)
-// casing, since internal/codegen/generate.go's initialisms table gained a
-// "dn" entry as part of the same pass. schema.Comparer only compares wire
-// tags, not Go identifier casing, so this produces no finding in either
-// count above.
 // tls_certificate_count's bare leading total, once pinned as a permanent
 // loss by TestTLSCertificateCountBareTotalIsAnAcceptedLoss, is now recovered
 // via overrides.go's FieldOverrides["get_tls_certificates:/tls_certificate_count"]
@@ -899,15 +601,8 @@ func TestTLSCertificateDataRoundTrips(t *testing.T) {
 // family's counterpart to TestValidateRoleBeforeMatchesKnownConformance.
 // permission is adopted, so commands/{create_permission,get_permissions,
 // modify_permission}.go are already the generator's output — this is a drift
-// detector on the committed files, the same role every other adopted
-// family's post-adoption "before" test plays.
-//
-// For the record, the pre-adoption hand-written numbers this used to pin, all
-// of which generation closed except the two SCHEMA-DEFECT findings (see
-// TestValidatePermissionGeneratedMatchesOrImproves for the per-finding
-// explanation): create_ and modify_permission each carried actionable
-// EXTRA 8, OMITEMPTY 2, suppressed OMITEMPTY 3/2; get_permissions carried
-// actionable MISSING 1, EXTRA 1, TYPE 5, DEFECT 2, suppressed OMITEMPTY 29.
+// detector on the committed files. Pre-adoption findings are recorded in
+// docs/review-2026-08.md.
 func TestValidatePermissionBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_permission")
 
@@ -931,32 +626,12 @@ func TestValidatePermissionBeforeMatchesKnownConformance(t *testing.T) {
 }
 
 // TestValidatePermissionGeneratedMatchesOrImproves is the permission family's
-// post-swap gate, run at the same rigour every prior family's was.
+// post-swap gate, run at the same rigour every prior family's was. Generation
+// closed every finding except get_permissions's two SCHEMA-DEFECT findings on
+// resource/permissions and subject/permissions (copied from cmd.Defects,
+// untouched by regeneration). See docs/review-2026-08.md's permission
+// section for the per-finding breakdown.
 //
-// What this run found while permission was still review_only: generation
-// drops the request-side subject/resource's
-// fabricated Name/Permissions/Trash/Deleted fields (the family-local
-// PermissionSubject/PermissionResource in testdata/golden/
-// permission_shared.go carry only the schema's own id+type), closing all 8
-// EXTRA findings on both create_permission and modify_permission; their
-// ID fields gain the omitempty the schema's optional id attribute calls for,
-// and their Type fields lose the omitempty the hand-written struct added
-// despite the schema marking it required — closing every OMITEMPTY finding
-// on both commands too. On get_permissions, PermissionSort gains a
-// `,chardata` field (closing the MISSING sort/#text finding, since
-// get_permissions's own schema pattern declares "text" directly alongside
-// <field> — the same schema-declared-but-misplaced text T-18a later
-// relocates onto PermissionField; see
-// FieldSuppressions["get_permissions:/sort"]), GetPermissionsSubject drops
-// the schema-absent
-// Deleted field (closing the one EXTRA finding), every response field's
-// omitempty tag now matches the schema's own required/optional split
-// (closing all 29 suppressed OMITEMPTY findings), and in_use/resource.
-// deleted/resource.trash/subject.trash/writable become commands.GMPBool
-// (closing all 5 TYPE findings). The 2 SCHEMA-DEFECT findings on resource/
-// permissions and subject/permissions stay untouched — copied from
-// cmd.Defects before any Go-type comparison runs, same as every other
-// family's empty-pattern class.
 // permission_count's bare leading total, once pinned as a permanent loss by
 // TestPermissionCountBareTotalIsAnAcceptedLoss, is now recovered via
 // overrides.go's FieldOverrides["get_permissions:/permission_count"] (T-23);
@@ -980,12 +655,8 @@ func TestValidatePermissionGeneratedMatchesOrImproves(t *testing.T) {
 // counterpart to TestValidatePermissionBeforeMatchesKnownConformance. ticket
 // is adopted, so commands/{create_ticket,get_tickets,modify_ticket}.go are
 // already the generator's output — this is a drift detector on the
-// committed files.
-//
-// For the record, the pre-adoption hand-written numbers this used to pin,
-// all of which generation closed (see TestValidateTicketGeneratedMatchesOrImproves
-// for the per-finding explanation): get_tickets carried actionable
-// MISSING 6, EXTRA 4, KIND 3, TYPE 3, suppressed OMITEMPTY 23.
+// committed files. Pre-adoption findings are recorded in
+// docs/review-2026-08.md.
 func TestValidateTicketBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_ticket")
 
@@ -1029,15 +700,8 @@ func TestValidateTicketGeneratedMatchesOrImproves(t *testing.T) {
 // family's counterpart to TestValidatePermissionBeforeMatchesKnownConformance.
 // credential is adopted, so commands/{create_credential,get_credentials,
 // modify_credential}.go are already the generator's output — this is a drift
-// detector on the committed files, the same role every other adopted
-// family's post-adoption "before" test plays.
-//
-// For the record, the pre-adoption hand-written numbers this used to pin, all
-// of which generation closed except the 2 SCHEMA-DEFECT findings (see
-// TestValidateCredentialGeneratedMatchesOrImproves for the per-finding
-// explanation): create_credential and modify_credential each carried
-// suppressed OMITEMPTY 2; get_credentials carried actionable MISSING 2,
-// EXTRA 1, TYPE 3, DEFECT 2, suppressed OMITEMPTY 2.
+// detector on the committed files. Pre-adoption findings are recorded in
+// docs/review-2026-08.md.
 func TestValidateCredentialBeforeMatchesKnownConformance(t *testing.T) {
 	before, _ := validateOrSkip(t, "create_credential")
 
@@ -1061,23 +725,11 @@ func TestValidateCredentialBeforeMatchesKnownConformance(t *testing.T) {
 }
 
 // TestValidateCredentialGeneratedMatchesOrImproves is the credential family's
-// post-swap gate, run at the same rigour every prior family's was.
+// post-swap gate, run at the same rigour every prior family's was. Generation
+// closed every finding except get_credentials's two SCHEMA-DEFECT findings on
+// scanner/permissions and target/permissions (copied from cmd.Defects,
+// untouched by regeneration).
 //
-// What this run found while credential was still review_only: generation
-// drops the request-side privacy/algorithm and privacy/password omitempty
-// tags (the family-local CredentialPrivacy in
-// testdata/golden/credential_shared.go matches the schema's "required"),
-// closing the suppressed OMITEMPTY finding on both create_credential and
-// modify_credential. On get_credentials, CertificateInfo and Privacy gain
-// full generated struct shapes instead of a bare chardata scalar (closing
-// both MISSING findings), the schema-absent Truncated field disappears
-// (closing the EXTRA finding), allow_insecure/writable/in_use become
-// commands.GMPBool (closing all 3 TYPE findings), and Formats/Filters.Name's
-// omitempty tags now track the schema's required/optional split exactly
-// (closing both suppressed OMITEMPTY findings). The 2 SCHEMA-DEFECT findings
-// on scanner/permissions and target/permissions stay untouched — copied from
-// cmd.Defects before any Go-type comparison runs, same as every other
-// family's empty-pattern class.
 // credential_count's bare leading total, once pinned as a permanent loss by
 // TestCredentialCountBareTotalIsAnAcceptedLoss, is now recovered via
 // overrides.go's FieldOverrides["get_credentials:/credential_count"] (T-23);
@@ -1367,26 +1019,20 @@ func TestValidateReportConfigBeforeMatchesKnownConformance(t *testing.T) {
 
 // TestValidateReportConfigGeneratedMatchesOrImproves is the report_config
 // family's post-swap gate, run at the same rigour every prior family's was.
-// Generation closes every actionable finding on create_report_config and
-// modify_report_config, and on get_report_configs except the allowlisted
-// empty-pattern SCHEMA-DEFECT (the schema itself declares
-// report_config/report_format/permissions with no content) and the
-// using_default relocation: FieldSuppressions removes
-// param/value/@using_default, which schema.Comparer honestly reports as one
-// MISSING finding — schema.CatMissing has no suppression mechanism, unlike
-// CatExtra's gmpoverride tag — and FieldOverrides' matching addition on
-// <param> is a real, schema-undeclared field, reported as one suppressed
-// EXTRA via that same tag. Both counts are the fix surfacing a previously
-// hidden truth (see TestReportConfigUsingDefaultOnParamAgreesWithFixture and
-// TestReportConfigUsingDefaultDecodesOnGeneratedParam below), not a
-// regression.
+// Generation closes every finding on create_report_config and
+// modify_report_config except get_report_configs's allowlisted
+// empty-pattern SCHEMA-DEFECT and one deliberate MISSING: FieldSuppressions
+// relocates param/value/@using_default onto <param> via a matching
+// FieldOverride (see TestReportConfigUsingDefaultOnParamAgreesWithFixture and
+// TestReportConfigUsingDefaultDecodesOnGeneratedParam below); schema.CatMissing
+// has no suppression mechanism, so the relocation surfaces as one actionable
+// MISSING and one suppressed EXTRA rather than a clean close.
 //
-// modify_report_config gains its own suppressed EXTRA finding for the same
-// reason: FieldOverrides["modify_report_config:/modify_report_config"] adds
-// ReportConfigID, a live-gvmd-evidenced field the schema's <pattern> never
-// declares at all (see the FieldOverride's Reason and the modify_report_config
-// CommandWarning in overrides.go). schema.Comparer honestly reports the
-// schema-undeclared attribute as EXTRA; the gmpoverride tag suppresses it.
+// modify_report_config's suppressed EXTRA is
+// FieldOverrides["modify_report_config:/modify_report_config"] adding
+// ReportConfigID, a live-gvmd-evidenced field the schema never declares (see
+// the override's Reason and its CommandWarning in overrides.go).
+//
 // report_config_count's bare leading total is now recovered via
 // overrides.go's FieldOverrides["get_report_configs:/report_config_count"]
 // (T-23), adding one more suppressed EXTRA below.
@@ -1589,15 +1235,8 @@ func TestValidateUserBeforeMatchesKnownConformance(t *testing.T) {
 
 // TestValidateUserGeneratedMatchesOrImproves is user's pre-adoption gate, run
 // at the same rigour every prior family's was. Generation closes every
-// actionable finding on create_user and modify_user (role/name and
-// groups/group/name have no schema counterpart; sources/source narrows from
-// a hand-written slice to the schema's declared scalar; hosts/@allow gains
-// omitempty) and every actionable finding on get_users except the two
-// allowlisted empty-pattern SCHEMA-DEFECT findings on role/permissions and
-// groups/group/permissions, which the schema itself declares with no
-// content. No FieldOverride/FieldSuppression/PointerOverride/CommandWarning
-// was needed for this family — unlike report_config, no fixture or
-// live-gvmd evidence surfaced a schema/wire mismatch here.
+// finding except get_users's two allowlisted empty-pattern SCHEMA-DEFECT
+// findings on role/permissions and groups/group/permissions.
 // user_count's bare leading total is now recovered via overrides.go's
 // FieldOverrides["get_users:/user_count"] (T-23), adding one more suppressed
 // EXTRA below.
@@ -1754,18 +1393,10 @@ func TestValidateTargetBeforeMatchesKnownConformance(t *testing.T) {
 
 // TestValidateTargetGeneratedMatchesOrImproves is target's pre-adoption gate,
 // run at the same rigour every prior family's was. Generation closes every
-// actionable finding on create_target and modify_target, and every
-// actionable finding on get_targets except the nine allowlisted
-// SCHEMA-DEFECT findings the schema itself carries (see
+// finding on get_targets except the nine allowlisted SCHEMA-DEFECT findings
+// the schema itself carries (see
 // internal/codegen/testdata/schema/get_targets.json's Defects array and the
-// matching DefectAllowlist entries in overrides.go). No
-// FieldOverride/FieldSuppression/TypeOverride was needed for this family —
-// every schema-vs-hand-written divergence found during review traced
-// directly to Card/Kind values already in the schema snapshot. The one
-// PointerOverride this family does carry (modify_target.comment) and the
-// modify_target CommandWarning (Name/Hosts/ExcludeHosts presence hazards)
-// came from live gvmd evidence, not from a generator-vs-schema mismatch, so
-// neither shows up as a suppressed finding here.
+// matching DefectAllowlist entries in overrides.go).
 // target_count's bare leading total is now recovered via overrides.go's
 // FieldOverrides["get_targets:/target_count"] (T-23), adding one more
 // suppressed EXTRA below.
@@ -1822,19 +1453,13 @@ func TestValidateTaskBeforeMatchesKnownConformance(t *testing.T) {
 
 // TestValidateTaskGeneratedMatchesOrImproves is task's pre-adoption gate, run
 // at the same rigour every prior family's was. Generation closes every
-// actionable finding on create_task and modify_task, and every actionable
 // finding on get_tasks except the seven allowlisted SCHEMA-DEFECT findings
 // the schema itself carries (see
 // internal/codegen/testdata/schema/get_tasks.json's Defects array and the
-// matching DefectAllowlist entries in overrides.go — three duplicate-ref
-// defects on result_count/hole|info|warning that this table also once
-// allowlisted are gone as of T-16b's live-schema cutover). The two
-// PointerOverrides this family carries (modify_task.comment,
-// modify_task.observers) came from live gvmd evidence, not from a
-// generator-vs-schema mismatch, so neither shows up as a suppressed finding
-// here. resume_task.report_id and start_task.report_id do: their
+// matching DefectAllowlist entries in overrides.go). resume_task.report_id
+// and start_task.report_id each keep one suppressed OMITEMPTY: their
 // RequiredOverrides entries deliberately keep omitempty despite the schema's
-// declared requiredness, so each still shows one suppressed OMITEMPTY finding.
+// declared requiredness.
 //
 // task_count's bare leading total (the top-level get_tasks_response summary
 // wrapper — not the excluded per-item TaskReportCount/TaskResultCount/
@@ -1898,15 +1523,10 @@ func TestValidateScannerBeforeMatchesKnownConformance(t *testing.T) {
 
 // TestValidateScannerGeneratedMatchesOrImproves is scanner's pre-adoption
 // gate, run at the same rigour every prior family's was. Generation closes
-// every actionable finding on create_scanner and modify_scanner, and every
-// actionable finding on get_scanners except the ten allowlisted
-// SCHEMA-DEFECT findings the schema itself carries (see
+// every finding on get_scanners except the ten allowlisted SCHEMA-DEFECT
+// findings the schema itself carries (see
 // internal/codegen/testdata/schema/get_scanners.json's Defects array and the
-// matching DefectAllowlist entries in overrides.go). The four
-// PointerOverrides this family carries (modify_scanner.comment/.name/
-// .ca_pub/.relay_host) came from live gvmd evidence, not from a
-// generator-vs-schema mismatch, so none shows up as a suppressed finding
-// here.
+// matching DefectAllowlist entries in overrides.go).
 // get_scanners' scanner_count gains a suppressed EXTRA below via
 // overrides.go's FieldOverrides["get_scanners:/scanner_count"] (T-23).
 func TestValidateScannerGeneratedMatchesOrImproves(t *testing.T) {
@@ -1960,21 +1580,18 @@ func TestValidateConfigBeforeMatchesKnownConformance(t *testing.T) {
 
 // TestValidateConfigGeneratedMatchesOrImproves is config's pre-adoption gate,
 // run at the same rigour every prior family's was. Generation closes every
-// actionable finding on all three commands except the two allowlisted
-// SCHEMA-DEFECT findings the schema itself carries: create_config's
-// unsupported-r at /create_config and get_configs' empty-pattern at
+// finding on all three commands except the two allowlisted SCHEMA-DEFECT
+// findings the schema itself carries: create_config's unsupported-r at
+// /create_config and get_configs' empty-pattern at
 // /get_configs_response/config/tasks/task/permissions (see
 // internal/codegen/testdata/schema/{create_config,get_configs}.json's
 // Defects arrays and the matching DefectAllowlist entries in overrides.go).
-// modify_config's three CARDINALITY/TYPE pairs on family.all/family.growing/
-// family_selection.growing close via the new boolean_atoi TypeOverrides
-// entry (commands.GMPAtoiBool) together with its pointerScalars
-// registration — without the latter, these fields would regenerate as bare
-// GMPAtoiBool values and reproduce the same CARDINALITY defect under the new
-// type. A live-gvmd experiment against modify_config's name/comment fields
-// found omission and explicit-empty indistinguishable (both no-ops), so
-// neither needed a PointerOverrides entry and no suppressed finding shows up
-// here for them.
+// modify_config's three CARDINALITY/TYPE pairs close via the boolean_atoi
+// TypeOverrides entry (commands.GMPAtoiBool) together with its
+// pointerScalars registration — without the latter, these fields would
+// regenerate as bare GMPAtoiBool values and reproduce the same CARDINALITY
+// defect under the new type.
+//
 // get_configs' top-level config_count gains a suppressed EXTRA below via
 // overrides.go's FieldOverrides["get_configs:/config_count"] (T-23) — this is
 // distinct from the excluded per-family ConfigFamilyCount/ConfigNVTCount and

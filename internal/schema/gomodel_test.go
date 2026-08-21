@@ -138,12 +138,9 @@ func TestModelOfFlattensAnonymousFieldEvenWithATag(t *testing.T) {
 
 // ZeroIsMeaningful must recognize commands.GMPBool and commands.GMPAtoiBool
 // as reflection actually spells them: package-qualified (f.Type.String()
-// returns "commands.GMPBool", not "GMPBool"). A prior version of the switch
-// only matched the unqualified name, so a hand-written or regressed
-// non-pointer optional field of either type went undetected. These use the
-// real commands types via reflection rather than a manually constructed
-// GoNode{GoType: "GMPBool"}, so a regression in the package-qualifier
-// stripping would actually be caught.
+// returns "commands.GMPBool", not "GMPBool"). A prior version only matched
+// the unqualified name; using the real commands types via reflection here,
+// rather than a manually constructed GoNode, is what would catch that again.
 func TestZeroIsMeaningfulRecognizesQualifiedGMPBool(t *testing.T) {
 	type Root struct {
 		XMLName xml.Name         `xml:"root"`

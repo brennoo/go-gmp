@@ -144,14 +144,11 @@ func sideOf(cmd Command, path string) string {
 // byName maps a (kind, name) key to a *slice* of Go nodes: get_filters's two
 // same-wire-name <filters> fields (see internal/codegen's collision codec and
 // gomodel.go's gmpwire tag) give schema.Children two same-key entries too,
-// and each must be paired with its own Go field rather than both resolving
-// to whichever one a plain map kept. Pairing is by occurrence order — the
-// Nth schema child named X against the Nth Go field named X — which is sound
-// because both sides preserve declaration order and gvmd's schema declares
-// get_filters's two definitions in the same relative order the fields are
-// generated in. matchedCount tracks, per key, how many leading Go occurrences
-// are claimed; outside get_filters it's always 0 or 1, so this is a no-op
-// generalization of the single-valued lookup it replaces.
+// each needing its own Go field rather than both resolving to whichever one
+// a plain map kept. Pairing is by occurrence order — the Nth schema child
+// named X against the Nth Go field named X — which is sound because both
+// sides preserve declaration order. matchedCount tracks, per key, how many
+// leading Go occurrences are claimed; outside get_filters it's always 0 or 1.
 func (c *Comparer) walk(res *Result, cmd Command, side string, s *Node, g *GoNode, path string, suspect map[string]bool) {
 	byName := map[string][]*GoNode{}
 	for _, k := range g.Children {
@@ -254,10 +251,8 @@ func (c *Comparer) compareNode(res *Result, cmd Command, side string, s *Node, g
 
 // checkChardata compares mixed content: an element with real children that
 // also carries bare text of its own (e.g. <text excerpt="...">the text
-// </text>). This is the reverse of the len(g.Children) > 0 && !g.Chardata
-// case above, which only fires when the schema is a pure leaf; here the
-// schema side already has children, so the chardata comparison has to run on
-// its own rather than falling out of the existing switch.
+// </text>). The case above only fires for a pure schema leaf, so this runs
+// separately rather than falling out of that switch.
 func (c *Comparer) checkChardata(res *Result, cmd Command, side string, s *Node, g *GoNode, path string) {
 	switch {
 	case s.Chardata && !g.Chardata:

@@ -26,27 +26,24 @@ import (
 // their dependency is missing.
 
 const (
-	// captureComment goes on every created resource so anything left behind by
-	// a run that died before its teardowns is obvious in the UI as well as by
-	// name.
+	// captureComment goes on every created resource so anything left behind
+	// by a died run is obvious in the UI as well as by name.
 	captureComment = "Created by go-gmp fixture capture. Safe to delete."
 
-	// readOnlyFilter is small enough that the response stays a fixture and
-	// large enough that <filters>, <sort> and the *_count envelope are all
-	// exercised. rows=1 would not distinguish a page from a single item.
+	// readOnlyFilter is small enough to stay a fixture, large enough to
+	// exercise <filters>, <sort> and the *_count envelope.
 	readOnlyFilter = "rows=2 first=1"
 
-	// wrongPassword is deliberately not derived from the real one, so the
-	// failure fixture cannot accidentally contain a prefix of it.
+	// wrongPassword is not derived from the real one, so the failure fixture
+	// cannot accidentally contain a prefix of it.
 	wrongPassword = "go-gmp-fixture-deliberately-wrong-password"
 
-	// nonexistentUUID is well-formed and cannot exist: gvmd's own resources are
-	// random v4 UUIDs.
+	// nonexistentUUID is well-formed and cannot exist: gvmd's own resources
+	// are random v4 UUIDs.
 	nonexistentUUID = "00000000-0000-0000-0000-000000000000"
 
 	// rowsPerPageSetting is gvmd's fixed UUID for the "Rows Per Page" user
-	// setting. Chosen because it is per-user, cosmetic and reversible, which
-	// rules out modifying anything the rest of the run depends on.
+	// setting: per-user, cosmetic and reversible.
 	rowsPerPageSetting = "5f5a8712-8017-11e1-8556-406186ea4fc5"
 )
 
@@ -94,9 +91,8 @@ func (r *captureRun) run() {
 
 // capturePreAuth records the two things that can only be seen before
 // authenticating, plus the authenticate exchange itself in both directions.
-//
-// Each fixture gets its own connection. gvmd closes the session after refusing
-// a command in the pre-authentication state, so reusing one would turn every
+// Each fixture gets its own connection, since gvmd closes the session after
+// refusing a command pre-authentication, and reusing one would turn every
 // fixture after the first into a transport error.
 func (r *captureRun) capturePreAuth() {
 	if conn, ok := r.dial("get_version", "pre-auth: get_version"); ok {
@@ -105,7 +101,7 @@ func (r *captureRun) capturePreAuth() {
 			&commands.GetVersion{})
 
 		// The one fixture whose request genuinely contains the harness
-		// password. Its redaction spec is the reason the whole redactor exists.
+		// password — the reason the whole redactor exists.
 		r.sendOn(conn, "authenticate",
 			"pre-auth: authenticate with the harness credentials, password redacted",
 			&commands.Authenticate{Credentials: commands.AuthCredentials{
@@ -131,8 +127,7 @@ func (r *captureRun) capturePreAuth() {
 // --- 2. Authenticated read-only ---------------------------------------------
 
 // readOnlyPresets supplies the attributes gvmd requires before it will answer
-// at all. Without them the bare pass would capture four 400s instead of four
-// responses; get_info with no type is captured deliberately later, as a
+// at all. get_info with no type is captured separately, deliberately, as a
 // missing-required-attribute fixture.
 var readOnlyPresets = map[string]map[string]string{
 	"get_aggregates":     {"Type": "task"},
@@ -152,12 +147,10 @@ func (r *captureRun) captureReadOnly() {
 	}
 }
 
-// captureGet sends one get_* twice: bare, and with a paging filter.
-//
-// The filtered variant is the only way to see the <filters>/<sort>/<*_count>
-// envelope, which is where the known role_count and agent_count gaps live. A
-// request type with no Filter field cannot produce it, and that absence is
-// recorded rather than skipped silently.
+// captureGet sends one get_* twice: bare, and with a paging filter. The
+// filtered variant is the only way to see the <filters>/<sort>/<*_count>
+// envelope; a request type with no Filter field can't produce it, and that
+// absence is recorded rather than skipped silently.
 func (r *captureRun) captureGet(name string) {
 	bare := Registry[name].NewReq()
 	applyPreset(name, bare)
@@ -191,11 +184,10 @@ func getCommands() []string {
 	return out
 }
 
-// getByID re-reads a single resource by its identifier.
-//
-// The field name is resolved by reflection so that a request type missing its
-// id attribute — get_notes and get_roles have no fields whatsoever — becomes a
-// recorded skip instead of a compile-time obstacle to capturing everything else.
+// getByID re-reads a single resource by its identifier. The field name is
+// resolved by reflection so a request type missing its id attribute (get_notes
+// and get_roles have no fields at all) becomes a recorded skip rather than a
+// compile-time obstacle to capturing everything else.
 func (r *captureRun) getByID(command, idField, id, desc string) {
 	req := Registry[command].NewReq()
 	if !setStringField(req, idField, id) {
@@ -207,10 +199,8 @@ func (r *captureRun) getByID(command, idField, id, desc string) {
 }
 
 // created runs a create_* command, registers its teardown and returns the new
-// identifier.
-//
-// The teardown goes on t.Cleanup, which is LIFO, so registering as we create in
-// dependency order gives teardown in reverse dependency order for free.
+// identifier. Teardown goes on t.Cleanup (LIFO), so registering in creation
+// order gives reverse-dependency-order teardown for free.
 func (r *captureRun) created(command, desc string, req any, teardown func(id string)) string {
 	resp, ok := r.send(command, desc, req)
 	if !ok {
@@ -265,13 +255,10 @@ func (r *captureRun) captureLifecycle(st *captureState) {
 }
 
 // makeKeypair generates the throwaway certificate and private key used by the
-// client-certificate credential, the TLS certificate resource and the scanner.
-//
-// Generating rather than embedding is what makes the redaction test real: the
-// private key is a genuine secret that only exists inside this process, it is
-// registered with the sweep, and if a spec fails to remove it from a request
-// the run aborts. An embedded fixture key would be a secret nobody cares about
-// and the sweep would be theatre.
+// client-certificate credential, the TLS certificate resource and the
+// scanner. Generating rather than embedding is what makes the redaction test
+// real: the private key is a genuine secret registered with the sweep, so a
+// spec that fails to remove it from a request aborts the run.
 func (r *captureRun) makeKeypair(st *captureState) {
 	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
@@ -306,8 +293,8 @@ func (r *captureRun) makeKeypair(st *captureState) {
 	st.certPEM = string(pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: der}))
 	st.keyPEM = string(pem.EncodeToMemory(&pem.Block{Type: "EC PRIVATE KEY", Bytes: keyDER}))
 
-	// The PEM body, not the whole armoured block: the BEGIN/END lines are not
-	// secret and a sweep term containing newlines would miss a re-wrapped copy.
+	// The PEM body, not the whole armoured block: a sweep term containing
+	// newlines would miss a re-wrapped copy.
 	r.red.AddSecret("generated private key", pemBody(st.keyPEM))
 }
 
@@ -356,8 +343,8 @@ func (r *captureRun) lifecyclePortList(st *captureState) {
 }
 
 func (r *captureRun) lifecycleCredentials(st *captureState) {
-	// A username/password credential. The password is generated here and
-	// registered with the sweep, so a spec that misses it aborts the run.
+	// The password is generated here and registered with the sweep, so a
+	// spec that misses it aborts the run.
 	password := r.generatedSecret("credential password")
 	st.credentialID = r.created("create_credential",
 		"lifecycle: create_credential type=up, password redacted",
@@ -414,8 +401,7 @@ func (r *captureRun) generatedSecret(label string) string {
 	if _, err := rand.Read(b[:]); err != nil {
 		r.t.Fatalf("Failed to generate a secret for %s: %v", label, err)
 	}
-	// Mixed case and punctuation because gvmd may enforce a password policy,
-	// and a rejected create_credential would cost the whole branch.
+	// Mixed case and punctuation in case gvmd enforces a password policy.
 	secret := "Gg1!" + hex.EncodeToString(b[:])
 	r.red.AddSecret(label, secret)
 	return secret
@@ -451,9 +437,8 @@ func (r *captureRun) lifecycleTarget(st *captureState) {
 		&commands.ModifyTarget{TargetID: st.targetID, Comment: &modifiedComment})
 }
 
-// lifecycleFilter also produces the restore fixture: it is the one resource
-// cheap enough to delete non-ultimately and pull back out of the trashcan,
-// which is the only way to capture <restore> against something real.
+// lifecycleFilter also produces the restore fixture: the one resource cheap
+// enough to delete non-ultimately and pull back out of the trashcan.
 func (r *captureRun) lifecycleFilter(st *captureState) {
 	st.filterID = r.created("create_filter", "lifecycle: create_filter",
 		&commands.CreateFilter{
@@ -492,12 +477,10 @@ func (r *captureRun) lifecycleTag(st *captureState) {
 		`<resources><type>target</type><resource id="%s"/></resources></create_tag>`,
 		r.resourceName("tag"), captureComment, st.targetID)
 
-	// TagResource only carries ID today. It used to also have non-omitempty
-	// <type>, <name> and <trash> children, and gvmd's tolerance of the
-	// resulting empty elements inside <resource> is exactly what got recorded
-	// verbatim in testdata/live/create_tag/001_request.xml — that capture
-	// predates the narrower type and is historical client output, not a
-	// requirement this call still exercises.
+	// The rawTag fallback exercises gvmd's tolerance of empty <type>/<name>/
+	// <trash> children inside <resource>, as recorded historically in
+	// testdata/live/create_tag/001_request.xml; TagResource itself only
+	// carries ID today.
 	resp := r.sendWithFallbacks("create_tag", "lifecycle: create_tag on the created target",
 		&commands.CreateTag{
 			Name:    r.resourceName("tag"),
@@ -668,10 +651,9 @@ func (r *captureRun) lifecycleTLSCertificate(st *captureState) {
 			Certificate: base64.StdEncoding.EncodeToString([]byte(st.certPEM)),
 		},
 		func(id string) {
-			// GMP has delete_tls_certificate; commands/ does not model it, and
-			// neither does Registry, so it cannot be a fixture — there is no
-			// directory to file it under. It is still sent, unfiled, because a
-			// teardown that silently skipped would leak the resource.
+			// delete_tls_certificate is unmodelled in commands/ and Registry, so
+			// it can't be a fixture, but it must still be sent to avoid leaking
+			// the resource.
 			r.unfiled(r.conn, "teardown: delete_tls_certificate (unmodelled command, not filed)",
 				fmt.Sprintf(`<delete_tls_certificate tls_certificate_id="%s" ultimate="1"/>`, id),
 				"delete_tls_certificate_response")
@@ -824,15 +806,11 @@ func (r *captureRun) lifecycleScanner(st *captureState) {
 		})
 }
 
-// lifecycleTask creates a container task: a task with no target, which is the
-// only kind that can exist without a scanner and the only way to get non-empty
-// get_reports, get_results and get_aggregates out of a stack where OpenVAS has
-// never run.
-//
-// Which spelling of "no target" gvmd wants is the open question. python-gvm's
-// create_container_task sends <target id="0"/>; the empty-string form is tried
-// as a fallback. Both attempts are captured, so whichever one works, the
-// other's rejection is documented.
+// lifecycleTask creates a container task (no target), the only kind that can
+// exist without a scanner and the only way to get non-empty get_reports/
+// get_results/get_aggregates on a stack where OpenVAS has never run. Which
+// spelling of "no target" gvmd wants is open, so both python-gvm's
+// <target id="0"/> and an empty-string form are tried as fallbacks.
 func (r *captureRun) lifecycleTask(st *captureState) {
 	name := r.resourceName("container-task")
 	rawWithZero := fmt.Sprintf(
@@ -886,13 +864,11 @@ func (r *captureRun) lifecycleSetting() {
 		[]rawAttempt{{desc: "lifecycle: modify_setting with no empty <name> element", xml: raw}})
 }
 
-// lifecycleAuth captures modify_auth without touching gvmd's auth
-// configuration: it reads method:file's current auth_conf_setting values via
-// describe_auth and writes the exact same values straight back, then reads
-// describe_auth a second time and fails the run hard if the stored values
-// changed at all. Byte-identical request/response XML only proves this
-// library didn't lose data in transit — it says nothing about what gvmd did
-// with the write, so the no-op claim needs this second read to be real.
+// lifecycleAuth captures modify_auth without touching gvmd's auth config: it
+// writes method:file's current auth_conf_setting values straight back, then
+// re-reads and fails hard if anything changed. Byte-identical request/
+// response XML only proves the library didn't lose data in transit, not that
+// gvmd left the config alone, hence the second read.
 func (r *captureRun) lifecycleAuth() {
 	before, ok := r.describeAuthFileSettings("lifecycle: describe_auth before modify_auth")
 	if !ok {
@@ -941,13 +917,10 @@ func (r *captureRun) describeAuthFileSettings(desc string) ([]commands.AuthConfS
 }
 
 // diffAuthSettingKeys compares two method:file auth_conf_setting lists and
-// returns the keys whose set of values differs. Order is not significant:
-// gvmd is not documented to preserve setting order across a write. Repeated
-// keys are, deliberately: a plain map[string]string would collapse
-// before=[enable=true, enable=false] and after=[enable=false] into an
-// equal-looking single value each, hiding a real change. Comparing the full
-// multiset of values per key (order-normalized, duplicates kept) catches that
-// case, matching this check's job of failing closed on anything ambiguous.
+// returns the keys whose set of values differs. A plain map[string]string
+// would collapse before=[enable=true, enable=false] and after=[enable=false]
+// into an equal-looking single value each, hiding a real change; comparing
+// the full multiset per key (order-normalized, duplicates kept) catches that.
 func diffAuthSettingKeys(before, after []commands.AuthConfSetting) []string {
 	beforeVals := authSettingMultimap(before)
 	afterVals := authSettingMultimap(after)
@@ -998,9 +971,9 @@ func equalValueMultisets(a, b []string) bool {
 
 // --- 4. The container-task trick ---------------------------------------------
 
-// captureContainerReport uploads a synthetic report into the container task —
-// the only way to get non-empty get_reports/get_results/get_aggregates
-// content on a stack where no scan has ever run and no scanner exists.
+// captureContainerReport uploads a synthetic report into the container task,
+// the only way to get non-empty get_reports/get_results/get_aggregates on a
+// stack where no scan has ever run and no scanner exists.
 func (r *captureRun) captureContainerReport(st *captureState) {
 	if st.taskID == "" {
 		r.missingDep("create_report", "container task: create_report", "the container task")
@@ -1049,8 +1022,7 @@ func (r *captureRun) captureContainerReport(st *captureState) {
 	st.reportID = r.acceptCreated("create_report", "container task: create_report", resp, func(id string) {
 		// This 404s intermittently: gvmd can discard a container task's
 		// synthetic report on its own once in_assets=1 finishes importing it,
-		// independent of the order relative to delete_asset (confirmed by an
-		// isolated create/delete probe) — see docs/review-2026-08.md.
+		// independent of delete_asset's ordering — see docs/review-2026-08.md.
 		r.send("delete_asset", "teardown: delete_asset for the imported report's assets",
 			&commands.DeleteAsset{ReportID: id})
 		r.send("delete_report", "teardown: delete_report, occasionally already gone",
@@ -1204,13 +1176,11 @@ func (r *captureRun) annotationTicket(st *captureState) {
 
 // --- 6. Deliberate failures --------------------------------------------------
 
-// captureDeliberateFailures records what gvmd says when it says no.
-//
-// These are the fixtures that settle T-7b: whether gvmd ever answers under a
-// root element other than <command>_response. The unauthenticated case is the
-// strongest candidate — gvmd refuses everything but get_version before
-// authentication, and the refusal is believed to come back as <gmp_response>,
-// which is filed under get_tasks because that is the command that was sent.
+// captureDeliberateFailures records what gvmd says when it says no. These are
+// the fixtures that settle T-7b (does gvmd ever answer under a root element
+// other than <command>_response?); the unauthenticated case, filed under
+// get_tasks, is the strongest candidate since gvmd refuses everything but
+// get_version pre-auth and is believed to answer <gmp_response>.
 func (r *captureRun) captureDeliberateFailures() {
 	if conn, ok := r.dial("get_tasks", "failure: unauthenticated get_tasks"); ok {
 		defer conn.Close()
@@ -1226,18 +1196,16 @@ func (r *captureRun) captureDeliberateFailures() {
 	r.sendRaw("create_target", "failure: create_target with neither hosts nor asset_hosts",
 		`<create_target><name>go-gmp-fixture-missing-hosts</name></create_target>`)
 
-	// Malformed input gets its own connection and may get no answer at all,
-	// which is itself a result: the exchange times out, the transport error is
-	// recorded, and the connection is discarded rather than reused.
+	// Malformed input gets its own connection: it may get no answer at all,
+	// and the connection is discarded rather than reused.
 	if conn, ok := r.dial("get_tasks", "failure: malformed XML"); ok {
 		defer conn.Close()
 		r.exchange(conn, "get_tasks", "failure: malformed XML with a mismatched end tag",
 			`<get_tasks><unclosed></get_tasks>`)
 	}
 
-	// An entirely unknown command is the cleanest probe for T-7b, and the only
-	// one that cannot be a fixture: there is no registered command directory to
-	// file it under. Its root element is reported in the summary instead.
+	// An entirely unknown command is the cleanest probe for T-7b and can't be
+	// a fixture, so its root element is reported in the summary instead.
 	if conn, ok := r.dial("get_version", "failure: unknown command probe"); ok {
 		defer conn.Close()
 		r.unfiled(conn, "unknown top-level command <no_such_command/>", `<no_such_command/>`, "")
@@ -1246,12 +1214,9 @@ func (r *captureRun) captureDeliberateFailures() {
 
 // --- 7. Expected-to-fail commands --------------------------------------------
 
-// captureExpectedFailures records the commands that cannot succeed on this
-// stack: Enterprise-only features, and anything that needs a scanner to have
-// actually run.
-//
-// They are captured because an error response is still a response, and the
-// error path is the part of these types nothing else in the corpus covers.
+// captureExpectedFailures records commands that cannot succeed on this stack
+// (Enterprise-only features, anything needing a scanner to have run): an
+// error response is still a response, and covers a path nothing else does.
 func (r *captureRun) captureExpectedFailures(st *captureState) {
 	r.send("sync_config", "expected failure: sync_config with no feed sync configured",
 		&commands.SyncConfig{})

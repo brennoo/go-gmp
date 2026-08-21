@@ -24,16 +24,8 @@ func loadManifestErr(t *testing.T, body string) string {
 func TestCommittedManifest(t *testing.T) {
 	m := manifestOrFail(t)
 
-	// note, override, role, group, tag, schedule, alert, filter,
-	// tls_certificate, permission, ticket, credential, port_list, asset,
-	// report_format, report_config, report, user, target, task, scanner,
-	// config, port_range, and trash are all adopted; every family but
-	// tls_certificate and trash also has a delete_X sibling. port_range has
-	// no get_X/modify_X commands at all — the schema only ever declared
-	// create_port_range/delete_port_range. report has no modify_X — the
-	// schema never declared one. trash has neither: empty_trashcan/restore
-	// are its only two commands. commands/*.go are all the generator's
-	// output for these families.
+	// port_range has no get_X/modify_X (schema only declares create/delete);
+	// report has no modify_X; trash has only empty_trashcan/restore.
 	assertFamily(t, m, "authenticate", "auth")
 	assertFamily(t, m, "describe_auth", "auth")
 	assertFamily(t, m, "modify_auth", "auth")
@@ -352,20 +344,11 @@ func TestGenerateAllIsPerFamily(t *testing.T) {
 }
 
 // TestRealFamiliesGenerateIndependently is TestGenerateAllIsPerFamily's
-// non-synthetic counterpart, and the one that would actually have caught a
-// regression when the override family was added to the manifest: it asserts
-// that every real family's bytes are the same generated alone as generated
-// alongside the others.
-//
-// The note case is the historically interesting one — Manifest{note} is
-// literally the manifest as committed before override was added, so a failure
-// there would mean adding override silently renamed a type or moved a struct in
-// commands/{create_note,get_notes,modify_note,note_shared}.go, which are
-// already committed and already called from client/ and internal/gmptest. The
-// two families are a real collision risk rather than a hypothetical one: both
-// describe <nvt>, <result>, <task>, <text>, <owner>, <permissions> and a dozen
-// more elements with identical shapes, so a global dedup pass would have had to
-// disambiguate one side of every one of them.
+// non-synthetic counterpart: every real family's bytes must be the same
+// generated alone as generated alongside the others. note and override are a
+// real collision risk, not a hypothetical one — both describe <nvt>,
+// <result>, <task>, <text>, <owner>, <permissions>, and more with identical
+// shapes, so a global dedup pass would have to disambiguate one side of each.
 func TestRealFamiliesGenerateIndependently(t *testing.T) {
 	m := manifestOrFail(t)
 	if len(m.Families) < 2 {
@@ -429,19 +412,11 @@ func TestRealFamiliesGenerateIndependently(t *testing.T) {
 }
 
 // TestScheduleICalendarNamingIsStable pins the fix for "icalendar" in
-// generate.go's initialisms table: the schema element and the adopted
-// commands/{create_schedule,modify_schedule,get_schedules}.go all spell the
-// Go field "ICalendar" (RFC 5545's own casing), and without the table entry
-// goName would instead render it "Icalendar" — a public API regression.
-//
-// Generating schedule alone and generating it alongside every other real
-// family in the committed manifest must produce byte-identical output for
-// this reason: initialisms is a package-level table with no per-family
-// state, so nothing about combining families could plausibly move this
-// spelling — but TestRealFamiliesGenerateIndependently above only proves
-// alone-vs-together consistency in general, not that the agreed-upon spelling
-// is the *correct* one. This test pins both: the exact identifier, and that
-// no other family's presence changes it.
+// generate.go's initialisms table: without that entry goName would render
+// the field "Icalendar" instead of "ICalendar" (RFC 5545's own casing), a
+// public API regression. It also proves alone-vs-together consistency, since
+// initialisms is package-level and TestRealFamiliesGenerateIndependently
+// doesn't check the spelling itself is correct.
 func TestScheduleICalendarNamingIsStable(t *testing.T) {
 	m := manifestOrFail(t)
 	cmds, err := LoadGenerationModels(snapshotDir, m.AllCommands())
@@ -485,21 +460,12 @@ func TestScheduleICalendarNamingIsStable(t *testing.T) {
 }
 
 // TestAlertFingerprintNamingIsStable pins the fix for "md5"/"sha256" in
-// generate.go's initialisms table: get_alerts's certificate_info element
-// exposes md5_fingerprint/sha256_fingerprint, and the hand-written
-// commands/get_reports.go and commands/get_scanners.go, plus the adopted
-// commands/get_tls_certificates.go, all already spell these fields
-// MD5Fingerprint/SHA256Fingerprint. Without the table entries goName would
-// instead render them Md5Fingerprint/Sha256Fingerprint — an inconsistent
-// public API that alert's adoption (commands/get_alerts.go is now the
-// generator's output) must not carry.
-//
-// As with TestScheduleICalendarNamingIsStable, generating alert alone and
-// generating it alongside every other real family in the committed manifest
-// must produce byte-identical output for this reason: initialisms is a
-// package-level table with no per-family state, so nothing about combining
-// families could plausibly move this spelling. This test pins both: the
-// exact identifiers, and that no other family's presence changes them.
+// generate.go's initialisms table: without those entries goName would render
+// get_alerts's fingerprint fields Md5Fingerprint/Sha256Fingerprint, breaking
+// consistency with the existing MD5Fingerprint/SHA256Fingerprint spelling in
+// commands/get_reports.go, get_scanners.go, and get_tls_certificates.go. Like
+// TestScheduleICalendarNamingIsStable, it also pins alone-vs-together
+// consistency.
 func TestAlertFingerprintNamingIsStable(t *testing.T) {
 	m := manifestOrFail(t)
 	cmds, err := LoadGenerationModels(snapshotDir, m.AllCommands())
@@ -546,20 +512,11 @@ func TestAlertFingerprintNamingIsStable(t *testing.T) {
 }
 
 // TestTLSCertificateDNNamingIsStable pins the fix for "dn" in generate.go's
-// initialisms table: get_tls_certificates's subject_dn/issuer_dn elements and
-// the hand-written commands/get_reports.go both already spell the Go fields
-// SubjectDN/IssuerDN, and the adopted commands/get_tls_certificates.go must
-// match. Without the table entry goName would instead render them
-// SubjectDn/IssuerDn — a public API regression against the casing
-// tls_certificate's own adoption locked in (T-9).
-//
-// As with TestScheduleICalendarNamingIsStable and
-// TestAlertFingerprintNamingIsStable, generating tls_certificate alone and
-// generating it alongside every other family in the committed manifest must
-// produce byte-identical output for this reason: initialisms is a
-// package-level table with no per-family state, so nothing about combining
-// families could plausibly move this spelling. This test pins both: the
-// exact identifiers, and that no other family's presence changes them.
+// initialisms table: without it goName would render SubjectDn/IssuerDn
+// instead of SubjectDN/IssuerDN, regressing against the casing
+// tls_certificate's own adoption locked in (T-9) and commands/get_reports.go
+// already uses. Also pins alone-vs-together consistency, per
+// TestScheduleICalendarNamingIsStable.
 func TestTLSCertificateDNNamingIsStable(t *testing.T) {
 	m := manifestOrFail(t)
 	cmds, err := LoadGenerationModels(snapshotDir, m.AllCommands())
@@ -606,20 +563,11 @@ func TestTLSCertificateDNNamingIsStable(t *testing.T) {
 }
 
 // TestOCIImageNamingIsStable pins the fix for "oci" in generate.go's
-// initialisms table: get_notes's and get_overrides's oci_image elements must
-// spell the Go fields OCIImage/NoteOCIImage/OverrideOCIImage, matching every
-// other full-caps acronym in the generated surface (API, CVE, TLS, ...).
-// Without the table entry goName would instead render them
-// OciImage/NoteOciImage/OverrideOciImage — the casing this test was written
-// to catch (docs/review-2026-08.md, T-16 review).
-//
-// As with the naming-stability tests above, generating note and override
-// alone and generating them alongside every other family in the committed
-// manifest must produce byte-identical output for this reason: initialisms
-// is a package-level table with no per-family state, so nothing about
-// combining families could plausibly move this spelling. This test pins
-// both: the exact identifiers, and that no other family's presence changes
-// them.
+// initialisms table (T-16 review, docs/review-2026-08.md): without it
+// get_notes's and get_overrides's oci_image elements would render as
+// OciImage/NoteOciImage/OverrideOciImage instead of matching the other
+// full-caps acronyms (API, CVE, TLS, ...) in the generated surface. Also
+// pins alone-vs-together consistency, per TestScheduleICalendarNamingIsStable.
 func TestOCIImageNamingIsStable(t *testing.T) {
 	m := manifestOrFail(t)
 	cmds, err := LoadGenerationModels(snapshotDir, m.AllCommands())
@@ -689,11 +637,9 @@ func findCommand(cmds []schema.Command, name string) (schema.Command, bool) {
 // put the shared types in a file ExpectedOutputFiles never predicts, and
 // -check would then call that file obsolete.
 func TestGenerateAllRejectsAnUnknownFamilyName(t *testing.T) {
-	// A single real family's own commands, not m.AllCommands(): merging every
-	// family's commands into one batch defeats GenerateAll's family-local
-	// isolation and can make structurally-identical types from unrelated
-	// families (e.g. report's nested tls_certificate and get_tls_certificates'
-	// own) collide on FieldOverrides/NameOverrides before this test's actual
+	// One family's own commands, not m.AllCommands(): merging every family
+	// into one batch defeats GenerateAll's family-local isolation and can
+	// collide structurally-identical types before this test's actual
 	// naming-convention check ever runs.
 	noteCommands := []string{"create_note", "delete_note", "get_notes", "modify_note"}
 	cmds, err := LoadGenerationModels(snapshotDir, noteCommands)

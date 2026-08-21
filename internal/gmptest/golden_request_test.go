@@ -11,14 +11,11 @@ import (
 )
 
 // TestRequestGolden marshals every curated request in cases_*.go and compares
-// the bytes to a committed golden.
-//
-// This is the only test that can catch a request-side field name, attribute
-// order, or omitempty regression: it starts from a populated Go value and
-// checks what encoding/xml actually produces. TestRequestRoundTrip cannot see
-// this — it starts from a document already on disk, so a field that should
-// have been emitted but silently wasn't never shows up as a source path to
-// begin with.
+// the bytes to a committed golden. This is the only test that can catch a
+// request-side field name, attribute order, or omitempty regression, since it
+// starts from a populated Go value rather than a document already on disk —
+// TestRequestRoundTrip can't see a field that should have been emitted but
+// silently wasn't.
 func TestRequestGolden(t *testing.T) {
 	cases := RequestCases()
 	if len(cases) == 0 {
@@ -54,25 +51,18 @@ func TestRequestGolden(t *testing.T) {
 
 // TestRequestRoundTrip checks, for every fixture that recorded a request
 // document, what the library's request type does with it on a round trip.
+// Unlike TestRequestGolden, the input is not curated — whatever a gvmd
+// changelog example or captured session happened to contain — so this
+// measures fidelity against unplanned real-world shapes.
 //
-// Unlike TestRequestGolden, the input here is not curated: it is whatever a
-// gvmd changelog example or a captured session happened to contain, so this
-// test measures fidelity against unplanned real-world shapes rather than the
-// cases this package's authors thought to write.
-//
-// The result is rolled up into one file, testdata/REQUEST-FIDELITY.txt, rather
-// than appended into each fixture's NNN_fidelity.txt. Two independent tests
-// writing into the same file under -update would race on which one's content
-// survives depending on run order; a dedicated file makes the two suites
-// (response fidelity, request fidelity) independently regenerable and
-// independently reviewable, at the cost of one more allowed name in
-// allowedUpdatePath — the same trade the existing FIDELITY-SUMMARY.txt already
-// made for the response side.
+// The result rolls up into testdata/REQUEST-FIDELITY.txt rather than each
+// fixture's NNN_fidelity.txt, so it can be regenerated and reviewed
+// independently of the response-fidelity suite (the same trade
+// FIDELITY-SUMMARY.txt already made).
 //
 // As with TestFidelitySummary, the assertion is "unchanged", not "empty":
-// most of these fixtures exist to document upstream examples, and clean
-// round-trips are a minority. A committed report turns any drift, in either
-// direction, into a reviewable diff instead of noise nobody reads.
+// clean round-trips are a minority, and a committed report turns any drift
+// into a reviewable diff instead of noise nobody reads.
 func TestRequestRoundTrip(t *testing.T) {
 	fixtures := loadFixturesOrSkip(t)
 

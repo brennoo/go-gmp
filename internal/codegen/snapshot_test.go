@@ -9,31 +9,18 @@ import (
 )
 
 // update is this package's regeneration switch, matching the -update idiom
-// internal/schema and internal/gmptest already use. It is declared here rather
-// than reused from internal/gmptest because that would make this test binary
-// import the fidelity corpus package for a bool, and because two flags of the
-// same name only collide inside one binary.
+// used elsewhere. It's declared locally, not reused from internal/gmptest,
+// to avoid importing that package for a bool and to avoid a flag collision.
 var update = flag.Bool("update", false,
 	"rewrite the committed schema snapshots and generated goldens")
 
-// TestSnapshot is Stage A's file-based path: a pure, opt-in comparison
-// oracle over vendor/XML/commands, an independently versioned mirror that
-// will legitimately drift from whatever gvmd last answered TestSnapshotLive
-// (in internal/codegen/snapshot_live_test.go, the primary and only route to
-// testdata/schema/*.json since T-16b). It never writes: -update belongs to
-// TestSnapshotLive alone, so a file-based run can never overwrite an
-// ExtractionServed snapshot with ExtractionFile provenance.
-//
-// It proves the fallback path itself still works — every manifest command
-// parses, marshals, and carries no AGPL prose — but deliberately does NOT
-// compare against the committed snapshots: asserting the two independently
-// versioned oracles agree is not a regression check, it is a permanent false
-// alarm the moment either side moves. See TestVendorParity, in
-// vendor_parity_test.go, for that comparison — it is an explicit, opt-in
-// drift check (T-17), not part of the default suite.
-//
-// On a clean checkout vendor/XML is absent and this test skips, which is why
-// CI never needs the AGPL input.
+// TestSnapshot is Stage A's file-based path: an opt-in oracle over
+// vendor/XML/commands that never writes and skips when vendor/XML is absent
+// (so CI never needs the AGPL input). It proves the fallback path still
+// works, but deliberately does not compare against the committed
+// snapshots — those are refreshed via TestSnapshotLive and would
+// legitimately drift; see TestVendorParity (vendor_parity_test.go) for that
+// opt-in comparison.
 func TestSnapshot(t *testing.T) {
 	cmds := loadSchemaOrSkip(t)
 
@@ -55,14 +42,12 @@ func TestSnapshot(t *testing.T) {
 	}
 }
 
-// assertNoProse is the licensing guard. schema.Command has no field that can
-// hold a <summary> or <description>, so this should never fire; it is here so
-// that a future field addition upstream fails loudly instead of quietly
-// copying AGPL prose into a committed MIT file.
-//
-// It matches JSON object keys, not values: "description" is a legitimate
-// element *name* in the schema (get_notes' note/result/description), and
-// carrying that name across is exactly what the boundary permits.
+// assertNoProse is the licensing guard: it should never fire today since
+// schema.Command has no field that can hold a <summary> or <description>,
+// but it catches a future field addition upstream before it copies AGPL
+// prose into a committed MIT file. It matches JSON keys, not values —
+// "description" is a legitimate element name in the schema (e.g.
+// get_notes' note/result/description) and may cross freely.
 func assertNoProse(t *testing.T, name string, snapshot []byte) {
 	t.Helper()
 	for _, banned := range []string{"summary", "Summary", "description", "Description", "example", "Example"} {

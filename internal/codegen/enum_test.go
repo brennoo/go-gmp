@@ -14,9 +14,8 @@ import (
 // --- named type usage, presence rules (real corpus) -------------------------
 
 // TestEnumFieldsUseNamedType pins T-19's core promise across several real
-// families at once: an Alts-bearing field generates as a named string type
-// with an exported const block, not a plain string, and the struct field
-// itself references that type.
+// families: an Alts-bearing field generates as a named string type with an
+// exported const block, not a plain string.
 func TestEnumFieldsUseNamedType(t *testing.T) {
 	got := generateOrFail(t)
 
@@ -79,9 +78,8 @@ func TestEnumFieldsUseNamedType(t *testing.T) {
 }
 
 // TestEnumOptionalAndRequiredPresenceRules confirms T-19 does not touch
-// presence semantics: an optional Alts field stays a non-pointer with
-// omitempty (zero value omitted, same as any other optional scalar), and a
-// required Alts field keeps no omitempty (its zero value is still emitted).
+// presence semantics: optional/required Alts fields follow the same
+// omitempty rules as any other optional/required scalar.
 func TestEnumOptionalAndRequiredPresenceRules(t *testing.T) {
 	got := generateOrFail(t)
 
@@ -221,11 +219,9 @@ func TestAltSuffixPrefixesAllDigitValues(t *testing.T) {
 }
 
 // TestAltSuffixRoutesPunctuationThroughEnumConstantNames covers the relation
-// operator table end to end, including ":" specifically: goName treats ':'
-// itself as a word separator, so splitting it produces no word at all and
-// goName's empty-input fallback would otherwise silently return the
-// misleading name "Field". altSuffix must never reach that fallback for a
-// punctuation-only value.
+// operator table, notably ":": goName treats ':' as a word separator, so
+// splitting it yields no word and goName's empty-input fallback would
+// otherwise silently return the misleading name "Field".
 func TestAltSuffixRoutesPunctuationThroughEnumConstantNames(t *testing.T) {
 	g := newEnumTestGen()
 	cases := map[string]string{
@@ -300,8 +296,7 @@ func TestBuildEnumConstsOrdersConstantsBySchemaOrder(t *testing.T) {
 // --- runtime round trip: presence rules and open-enum unknown values --------
 
 // enumScratchModule writes the full generated tree into a throwaway Go
-// module, the same way credentialScratchModule/ticketScratchModule do, for
-// the families TestEnumGeneratedRoundTrips exercises.
+// module, same as credentialScratchModule/ticketScratchModule.
 func enumScratchModule(t *testing.T, dir string) string {
 	t.Helper()
 	goBin, err := exec.LookPath("go")
@@ -346,11 +341,8 @@ func enumScratchModule(t *testing.T, dir string) string {
 }
 
 // TestEnumGeneratedRoundTrips proves T-19's runtime contract on real
-// generated types: a required enum field's zero value is still emitted (no
-// omitempty), an optional one is dropped, a known constant round-trips as
-// its literal wire value, an unrecognized server value still decodes rather
-// than being rejected (the enum is open, not validated), and a punctuation-
-// derived constant (EnumConstantNames) round-trips as its symbol.
+// generated types: presence rules hold, and the enum is open (an
+// unrecognized server value still decodes rather than being rejected).
 func TestEnumGeneratedRoundTrips(t *testing.T) {
 	dir := t.TempDir()
 	goBin := enumScratchModule(t, dir)

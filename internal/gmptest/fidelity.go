@@ -11,13 +11,10 @@ import (
 // Fidelity is what a document loses, gains, or alters on a round trip through
 // a Go type.
 //
-// It is computed by unmarshalling the document into the type and marshalling it
-// back, then diffing canonical path multisets and values — not by reflecting
-// over struct tags. Reflection would mean reimplementing encoding/xml's
-// matching rules (first-match-wins, local-name matching, embedded structs,
-// ,any, ,chardata), and every divergence from the real decoder is a silent
-// false result. The round trip measures the property that actually matters:
-// did information survive.
+// It is computed by unmarshalling into the type and marshalling back, then
+// diffing canonical path multisets and values — not by reflecting over
+// struct tags, which would mean reimplementing encoding/xml's own matching
+// rules and risk silently diverging from the real decoder.
 type Fidelity struct {
 	// DecodeErr is set when the document does not unmarshal at all. The other
 	// fields are then meaningless. This is recorded rather than treated as a
@@ -50,15 +47,12 @@ type Finding struct {
 
 // Advisory reports whether the comparison should be trusted. Namespaced
 // documents are not: encoding/xml does not round-trip prefixes and URIs
-// faithfully, so both a clean result and a dirty one may be artifacts.
+// faithfully.
 func (f Fidelity) Advisory() bool { return len(f.Namespaces) > 0 }
 
 // Clean reports whether the round trip preserved everything. Added and
-// Duplicated do not count as loss; Changed does, because a value the library
-// cannot reproduce is information it did not keep.
-//
-// An advisory comparison is never clean — reporting "nothing lost" from a
-// diff we have just said is untrustworthy would be the worst of both.
+// Duplicated do not count as loss; Changed does. An advisory comparison is
+// never clean.
 func (f Fidelity) Clean() bool {
 	return f.DecodeErr == nil && !f.Advisory() &&
 		len(f.Dropped) == 0 && len(f.Truncated) == 0 && len(f.Changed) == 0
@@ -117,9 +111,8 @@ func (f *Fidelity) diff(src, got PathSet) {
 			f.Duplicated = append(f.Duplicated, Finding{Path: path, Src: s, Got: g})
 		}
 
-		// Values are only comparable where the path occurs exactly once in
-		// both documents. With no positional index there is no way to align
-		// the nth occurrence of a repeated path across a reordering round trip.
+		// Comparable only where the path occurs exactly once in both
+		// documents — no positional index to align repeated occurrences.
 		sv, sok := src.SoleValue(path)
 		gv, gok := got.SoleValue(path)
 		if sok && gok && sv != gv {
@@ -137,15 +130,13 @@ func (f *Fidelity) diff(src, got PathSet) {
 // suppressDescendants keeps only the shallowest dropped path of each subtree,
 // recording how many descendants it stands for.
 //
-// This checks every ancestor prefix rather than only the previously emitted
-// finding. Lexicographic order does not place a subtree contiguously: '-' sorts
-// before '/', so a sibling like /a/b-c falls between /a/b and /a/b/d, and
-// comparing only against the last emitted path would leave /a/b/d unfolded.
-// Element names containing '-' are real — the corpus has <cpe-item>.
+// Checks every ancestor prefix rather than just the last emitted finding:
+// '-' sorts before '/', so a sibling like /a/b-c falls between /a/b and
+// /a/b/d, and comparing only against the last emitted path would leave
+// /a/b/d unfolded (element names containing '-' are real, e.g. <cpe-item>).
 //
-// Folding is sound only because it runs on fully dropped paths: if /a/b has
-// zero occurrences in the output then no /a/b/c can exist there either, since
-// it would need a surviving parent.
+// Sound only because it runs on fully dropped paths: if /a/b has zero
+// occurrences in the output, no /a/b/c can exist there either.
 func suppressDescendants(in []Finding) []Finding {
 	if len(in) == 0 {
 		return in
@@ -181,14 +172,9 @@ func shallowestAncestor(path string, at map[string]int) (int, bool) {
 	return 0, false
 }
 
-// Report renders f as the deterministic text that gets committed as a golden.
-//
-// The assertion on these files is "unchanged", not "empty". 103 bool fields
-// tagged omitempty cannot round-trip a false value, so an empty report is
-// unreachable until that is fixed, and a threshold would need permanent
-// tuning. Committing the report instead makes volume irrelevant: a struct fix
-// shows up as a shrinkage diff, and a server that starts sending a new element
-// shows up as one added line.
+// Report renders f as the deterministic text committed as a golden. The
+// assertion on these files is "unchanged", not "empty" — a struct fix shows
+// up as a shrinkage diff, a new server element as one added line.
 func (f Fidelity) Report(header string) string {
 	var b strings.Builder
 	b.WriteString(header)

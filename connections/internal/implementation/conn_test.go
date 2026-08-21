@@ -23,10 +23,8 @@ import (
 // newPipeConn wires a Connection to one end of a net.Pipe and hands back the
 // other (server) end.
 //
-// net.Pipe is fine for single-transaction tests. It is deliberately NOT used by
-// the concurrency test: net.Pipe is synchronous and unbuffered, so it
-// accidentally serializes callers and would mask exactly the bug that test
-// exists to catch.
+// Not used by the concurrency test: net.Pipe is synchronous and unbuffered, so
+// it would accidentally serialize callers and mask the bug that test catches.
 func newPipeConn(t *testing.T) (*Connection, net.Conn) {
 	t.Helper()
 	client, server := net.Pipe()
@@ -38,13 +36,12 @@ func newPipeConn(t *testing.T) (*Connection, net.Conn) {
 	return conn, server
 }
 
-// mustFinish runs fn in a goroutine and fails if it has not returned within d.
-// Every framing test uses it so that a regression of the "read loop hangs on an
-// exact multiple of the buffer size" bug fails fast instead of hanging the
-// whole suite forever.
+// mustFinish runs fn in a goroutine and fails if it has not returned within d,
+// so a regression of the read loop hanging fails fast rather than hanging the
+// whole suite.
 //
-// fn must not call t.Fatalf; it runs on another goroutine. Have it assign to
-// captured variables and assert after mustFinish returns.
+// fn must not call t.Fatalf; it runs on another goroutine. Assign to captured
+// variables and assert after mustFinish returns.
 func mustFinish(t *testing.T, d time.Duration, what string, fn func()) {
 	t.Helper()
 	done := make(chan struct{})
@@ -76,8 +73,7 @@ func echoServer(server net.Conn) {
 }
 
 // readOneRequest reads a single request off server and reports when it has
-// landed. Once the returned channel is closed the client's write has completed,
-// so the client is provably admitted and blocked in its read — which lets the
+// landed, proving the client is admitted and blocked in its read — which lets
 // cancellation tests be deterministic instead of sleep-based.
 func readOneRequest(t *testing.T, server net.Conn) <-chan struct{} {
 	t.Helper()
@@ -91,11 +87,8 @@ func readOneRequest(t *testing.T, server net.Conn) <-chan struct{} {
 }
 
 // followUpExecute issues a fresh Execute under a bound and returns its error.
-//
-// The bound matters: these call sites assert that a poisoned connection is
-// refused at entry. Should poisoning regress, the call would instead block on a
-// dead socket, so an unbounded assertion would hang the suite rather than fail
-// it.
+// The bound matters: should poisoning regress, the call would block on a dead
+// socket, so an unbounded assertion would hang the suite instead of failing it.
 func followUpExecute(t *testing.T, conn *Connection, what string) error {
 	t.Helper()
 	var err error
@@ -108,9 +101,8 @@ func followUpExecute(t *testing.T, conn *Connection, what string) error {
 // newTCPEchoConn starts a loopback TCP echo server and returns a Connection
 // dialed to it, plus a channel closed when the server goroutine exits.
 //
-// A real TCP socket is mandatory for the concurrency tests: net.Pipe is
-// synchronous and unbuffered, so it accidentally serializes callers and would
-// mask the very interleaving these tests exist to catch.
+// A real socket is mandatory for the concurrency tests: net.Pipe would
+// accidentally serialize callers and mask the interleaving they test for.
 func newTCPEchoConn(t *testing.T) (*Connection, <-chan struct{}) {
 	t.Helper()
 	ctx := context.Background()
@@ -194,11 +186,10 @@ func (c *sideEffectCmd) MarshalXML(*xml.Encoder, xml.StartElement) error {
 }
 
 // cancelOnFinalReadConn deterministically reproduces a transaction completing
-// and then being destroyed by a cancellation moments later. Its single Read
+// and then being destroyed by a cancellation moments later: its single Read
 // hands over the whole response, fires the cancellation, then blocks until the
-// watchdog closes it — so the connection is provably poisoned before Read
-// returns, yet the response is complete and frames without reading again,
-// making performRequest return nil.
+// watchdog closes it, so performRequest returns a complete response with a nil
+// error even though the connection is already poisoned.
 type cancelOnFinalReadConn struct {
 	net.Conn  // never set: every method the transport uses is overridden below
 	doc       string
@@ -276,8 +267,6 @@ func TestNew(t *testing.T) {
 		t.Fatalf("Expected to read 10 bytes, got: %d", nRead)
 	}
 
-	// New must also install the persistent buffered reader; without it every
-	// transaction would strand over-read bytes in a discarded buffer.
 	if conn.reader == nil {
 		t.Fatalf("Expected New to install a persistent reader")
 	}
@@ -288,14 +277,9 @@ func TestNew(t *testing.T) {
 	}
 }
 
-// TestPerformRequest round-trips a large payload.
-//
-// Changed from the original: the payload is now a large XML document rather
-// than 50000 bytes of arbitrary binary. Framing is done on the XML document
-// itself (T-1), so a response that is not XML has no end-of-message signal at
-// all. The intent — a payload far larger than any single socket read completes
-// correctly — is unchanged, and is in fact tested harder, since the response
-// now spans many reads of the buffered reader.
+// TestPerformRequest round-trips a large payload. The payload must be XML,
+// not arbitrary binary: framing (T-1) relies on the XML structure itself for
+// its end-of-message signal.
 func TestPerformRequest(t *testing.T) {
 	c1, c2 := net.Pipe()
 
@@ -421,12 +405,10 @@ func TestPerformRequestReadDeadline(t *testing.T) {
 	}
 }
 
-// TestAlreadyCancelledContextIsRefusedWithoutTouchingTheSocket supersedes an
-// earlier test asserting the opposite. A pre-cancelled context used to arm a
-// watchdog that fired immediately, so one caller's stale context permanently
-// destroyed a connection shared by everyone else. Nothing has been written at
-// that point, so the correct behaviour matches cancel-while-waiting: refuse the
-// caller, change no state, leave the socket alone.
+// TestAlreadyCancelledContextIsRefusedWithoutTouchingTheSocket: a pre-cancelled
+// context must be refused without touching the socket or changing state — not
+// arm a watchdog that fires immediately and destroys a connection shared by
+// everyone else.
 func TestAlreadyCancelledContextIsRefusedWithoutTouchingTheSocket(t *testing.T) {
 	client, server := net.Pipe()
 	t.Cleanup(func() {
@@ -742,11 +724,8 @@ func TestFramingAcrossReadBoundaries(t *testing.T) {
 }
 
 // TestFramingLeadingPrologAndTrailingWhitespace pins down the "wire segment"
-// contract documented on RawXML: a decoder legally emits ProcInst, Comment,
-// Directive and whitespace CharData before the root while depth is still zero,
-// so a depth counter that starts counting immediately would terminate before
-// the document even began. Those leading bytes are captured; trailing
-// whitespace after the root's closing tag is not, because it is never consumed.
+// contract documented on RawXML: leading ProcInst/Comment/Directive/whitespace
+// before the root are captured, trailing whitespace after it is not.
 func TestFramingLeadingPrologAndTrailingWhitespace(t *testing.T) {
 	conn, server := newPipeConn(t)
 
@@ -1129,12 +1108,9 @@ type echoID struct {
 	ID      int      `xml:"id"`
 }
 
-// TestConcurrentExecuteOverRealTCPSocket is the T-2 regression test.
-//
-// It must use a real TCP socket: net.Pipe is synchronous and unbuffered, so it
-// accidentally serializes callers and hides the interleaving entirely. With a
-// real socket and no serialization, 50 goroutines sharing one Connection
-// deadlock permanently and read each other's replies.
+// TestConcurrentExecuteOverRealTCPSocket is the T-2 regression test. It must
+// use a real TCP socket, not net.Pipe, or the interleaving it's testing for
+// never occurs (see newTCPEchoConn).
 func TestConcurrentExecuteOverRealTCPSocket(t *testing.T) {
 	conn, serverDone := newTCPEchoConn(t)
 
@@ -1707,12 +1683,10 @@ func TestCancelledContextOutranksMarshallingFailure(t *testing.T) {
 // cancellation racing completion
 // ---------------------------------------------------------------------------
 
-// TestCancelRacingCompletionIsNotReportedAsSuccess pins the one cell of the
-// outcome table that used to lie. The watchdog can only be joined after
-// performRequest returns, so a cancellation landing in between poisons the
-// connection while ioErr is still nil — and classifying on ioErr alone reported
-// success while handing back a transport every later call would reject. The
-// window cannot be closed, so the outcome is reconciled instead.
+// TestCancelRacingCompletionIsNotReportedAsSuccess: a cancellation landing
+// between performRequest returning and the watchdog being joined poisons the
+// connection while ioErr is still nil, so classifying on ioErr alone would
+// report success on a connection every later call rejects.
 func TestCancelRacingCompletionIsNotReportedAsSuccess(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

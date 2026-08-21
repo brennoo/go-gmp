@@ -1,10 +1,9 @@
 // Package imageref parses and validates Docker/OCI-style image references —
 // the "repository[:tag][@digest]" shape used throughout hack/docker-compose.yml
-// and this repo's own provenance metadata. It exists so the things that need
-// to reason about that shape — internal/dockerstack's digest resolution,
-// internal/mirror's Compose-file rewriting, and internal/schema's and
-// internal/gmptest's provenance validation — share one implementation instead
-// of several independently-drifting ones.
+// and this repo's own provenance metadata — so callers like
+// internal/dockerstack, internal/mirror, internal/schema and
+// internal/gmptest share one implementation instead of independently
+// drifting ones.
 package imageref
 
 import (

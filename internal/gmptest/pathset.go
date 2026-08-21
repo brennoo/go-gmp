@@ -19,24 +19,20 @@ import (
 //	/get_tasks_response/task/@id
 //	/get_tasks_response/task/name/#text
 //
-// An element in a namespace is written {uri}local. Collapsing namespaces to
-// local names would merge <a:x/> and <b:x/> into one path and let a document
-// that lost one of them still report clean.
+// An element in a namespace is written {uri}local — collapsing to local
+// names would merge <a:x/> and <b:x/> into one path.
 //
-// Paths carry no positional index. xml.Marshal emits fields in struct
-// declaration order, so element order does not survive a round trip and any
-// positional scheme would report reordering as loss.
+// Paths carry no positional index: xml.Marshal emits fields in struct
+// declaration order, so element order doesn't survive a round trip.
 type PathSet struct {
 	Counts map[string]int
 	// Values holds the text behind each path, in document order. Only paths
-	// occurring exactly once are comparable between two documents — with no
-	// positional index there is no way to align the nth occurrence of a
-	// repeated path across a reordering round trip.
+	// occurring exactly once are comparable between two documents — no
+	// positional index to align repeated occurrences.
 	Values map[string][]string
-	// Namespaces lists every distinct non-empty namespace URI seen. GMP is
-	// namespace-free in practice; when this is non-empty the comparison is
-	// marked advisory, because encoding/xml does not round-trip namespace
-	// prefixes faithfully and the resulting diff cannot be trusted either way.
+	// Namespaces lists every distinct non-empty namespace URI seen. Non-empty
+	// marks the comparison advisory, since encoding/xml doesn't round-trip
+	// namespace prefixes faithfully.
 	Namespaces []string
 }
 
@@ -70,9 +66,9 @@ func qualify(n xml.Name) string {
 // text node.
 //
 // xmlns and xmlns:* attributes are skipped: encoding/xml synthesizes them on
-// re-marshal even when the source had none, so counting them would manufacture
-// differences that mean nothing. The namespaces they declare are recorded on
-// the PathSet instead.
+// re-marshal even when the source had none, so counting them would
+// manufacture meaningless differences. Their namespaces are recorded on the
+// PathSet instead.
 func ExtractPaths(doc []byte) (PathSet, error) {
 	ps := PathSet{Counts: map[string]int{}, Values: map[string][]string{}}
 	seenNS := map[string]bool{}

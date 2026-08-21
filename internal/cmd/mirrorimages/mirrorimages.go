@@ -15,11 +15,9 @@ import (
 )
 
 // run parses flags, mirrors every image the lock file's previous run
-// recorded, and (outside -dry-run) writes the updated lock file and
-// rewrites compose-file's pins to match — even if some images failed, so
-// one broken source never costs the rest of the run its progress. It
-// returns a non-nil error if anything failed, after already reporting each
-// failure to stderr and writing whatever succeeded.
+// recorded, and (outside -dry-run) writes the updated lock file and rewrites
+// compose-file's pins to match — even if some images failed, so one broken
+// source never costs the rest of the run its progress.
 func run(ctx context.Context, args []string, runner mirror.Runner, now func() time.Time, stdout, stderr io.Writer) error {
 	fs := flag.NewFlagSet("mirrorimages", flag.ContinueOnError)
 	composeFile := fs.String("compose-file", "hack/docker-compose.yml",
@@ -69,11 +67,8 @@ func runWithFlags(ctx context.Context, composeFile, lockFile, destPrefix string,
 		return err
 	}
 
-	// byRepo starts as every entry the seed lock already knew and is updated
-	// in place by successes below, so a source that fails this run keeps its
-	// last-known SourceChannel/DestinationDigest instead of vanishing from
-	// the lock file — without that, the next run would have nothing to
-	// re-resolve it from and could never retry it.
+	// A source that fails this run keeps its seed entry rather than vanishing
+	// from the lock file, so the next run still has something to retry it from.
 	byRepo := make(map[string]mirror.LockEntry, len(seedLock.Entries))
 	for _, e := range seedLock.Entries {
 		byRepo[e.SourceRepository] = e
@@ -108,8 +103,7 @@ func runWithFlags(ctx context.Context, composeFile, lockFile, destPrefix string,
 }
 
 // writeResults writes byRepo (the seed lock merged with this run's
-// successes, so a failed source keeps its prior entry rather than losing its
-// retry state) to lockFile, then rewrites composeFile's pins for every entry
+// successes) to lockFile, then rewrites composeFile's pins for every entry
 // that has ever mirrored successfully.
 func writeResults(lockFile, composeFile string, byRepo map[string]mirror.LockEntry, succeeded []mirror.LockEntry, failed []string, stderr io.Writer) error {
 	entries := make([]mirror.LockEntry, 0, len(byRepo))
@@ -127,11 +121,9 @@ func writeResults(lockFile, composeFile string, byRepo map[string]mirror.LockEnt
 	if err != nil {
 		return fmt.Errorf("reading compose file to rewrite its pins: %w", err)
 	}
-	// A source that has never once mirrored successfully carries no
-	// DestinationDigest, so it is excluded here rather than handed to
-	// RewriteCompose: Compose still points at its original upstream channel,
-	// and that line must pass through unchanged, not fail closed for a
-	// digest this run was never going to have.
+	// A source with no DestinationDigest has never mirrored successfully, so
+	// it's excluded here rather than handed to RewriteCompose, which would
+	// otherwise fail closed on a digest this run was never going to have.
 	rewritable := make([]mirror.LockEntry, 0, len(entries))
 	for _, e := range entries {
 		if e.DestinationDigest != "" {
@@ -152,8 +144,8 @@ func writeResults(lockFile, composeFile string, byRepo map[string]mirror.LockEnt
 // mirrorOne resolves, inspects, and (outside dryRun) copies and tags one
 // source image, returning the LockEntry describing what was done or found.
 // A source image whose org.opencontainers.image.version/.revision labels
-// don't resolve is not a failure of the whole entry — it is mirrored under
-// its digest-derived fallback tag only, and that is noted on stderr.
+// don't resolve is not a failure of the whole entry — it mirrors under its
+// digest-derived fallback tag only, noted on stderr.
 func mirrorOne(ctx context.Context, runner mirror.Runner, img mirror.SourceImage, destRepo string, movable map[string]bool, dryRun bool, now func() time.Time, stderr io.Writer) (mirror.LockEntry, error) {
 	srcDigestRef, err := mirror.ResolveDigest(ctx, runner, img.Channel)
 	if err != nil {

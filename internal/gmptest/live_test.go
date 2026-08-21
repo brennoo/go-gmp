@@ -14,20 +14,16 @@ import (
 	"github.com/brennoo/go-gmp/commands"
 )
 
-// liveClient is the authenticated client the readiness ladder in live.go leaves
-// behind, shared by every test in this package. It is package-level rather than
-// threaded through *testing.T because the ladder runs at most once per test
-// binary and can take the better part of an hour on a first boot; making each
-// test pay for it separately is not an option.
+// liveClient is the authenticated client the readiness ladder in live.go
+// leaves behind, shared by every test in this package. Package-level rather
+// than threaded through *testing.T because the ladder can take the better
+// part of an hour on a first boot, and each test paying for it is not an option.
 var liveClient gmp.Client
 
-// liveConn is the same authenticated transport liveClient sits on.
-//
-// It is exposed separately because capture_test.go needs RawXML: a fixture must
-// be the bytes gvmd sent, and going through the typed client would lose them to
-// the decoder — worse, a response the library cannot decode is precisely the
-// most valuable thing the corpus can record, and it would be the one case that
-// produced no fixture at all.
+// liveConn is the same authenticated transport liveClient sits on, exposed
+// separately because capture_test.go needs RawXML: a fixture must be the
+// bytes gvmd sent, and a response the library can't decode is precisely the
+// most valuable thing the corpus can record.
 //
 // TestMain owns its lifetime and closes it after m.Run; nothing else may.
 var liveConn gmp.Connection
@@ -39,17 +35,15 @@ var (
 
 // TestMain parses flags and closes the shared connection.
 //
-// flag.Parse must be called explicitly: providing a custom TestMain opts out of
-// the parsing testing.Main would otherwise do, and the -gmp.* flags in live.go
+// flag.Parse must be called explicitly: a custom TestMain opts out of the
+// parsing testing.Main would otherwise do, and the -gmp.* flags in live.go
 // must be parsed before WaitReady reads them.
 //
-// The readiness ladder deliberately does not run here. It used to, which made
-// merely *selecting* a test in this package pay for it — including
-// `-run TestCaptureLive` with no -capture, which skips before it touches the
-// network and had no business waiting on a server first. Moving it behind
-// requireLive keeps the "exactly once per binary" property (sync.Once) and the
-// "fail loudly" one (t.Fatalf on the first test that needs it), while making
-// the cost proportional to what is actually being run.
+// The readiness ladder deliberately does not run here — it used to, which
+// made merely *selecting* a test pay for it, including `-run TestCaptureLive`
+// with no -capture. Moving it behind requireLive makes the cost proportional
+// to what's actually run, while keeping "exactly once per binary" (sync.Once)
+// and "fail loudly" (t.Fatalf on first use).
 func TestMain(m *testing.M) {
 	flag.Parse()
 
@@ -86,8 +80,7 @@ func requireLive(t *testing.T) gmp.Client {
 }
 
 // TestGetVersionSmoke is deliberately minimal: it only proves the ladder in
-// live.go left behind a working, authenticated client. The capture suite that
-// exercises the other ~120 commands is a separate phase.
+// live.go left behind a working, authenticated client.
 func TestGetVersionSmoke(t *testing.T) {
 	cli := requireLive(t)
 

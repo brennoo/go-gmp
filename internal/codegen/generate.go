@@ -28,33 +28,6 @@ const targetPackage = "commands"
 // declared by both create_note.go and modify_note.go and neither would build.
 const sharedFileSuffix = "_shared.go"
 
-// Generate renders Go source for every command in cmds.
-//
-// It returns a filename -> gofmt'd source map. The output is a pure function
-// of (cmds, ov, pf, ro): no clock, no filesystem, no map iteration order leaks
-// into it, and nothing here reads vendor/XML. That is what lets the golden
-// test in generate_test.go run in CI with only the committed JSON snapshot.
-//
-// family is the manifest's declared family name (e.g. "nvt"), authoritative
-// over the family noun this package would otherwise infer from the commands'
-// own names: that inference assumes every command in the family shares one
-// noun stem ("create_note"/"get_notes" -> "note"), which fails for a family
-// like get_nvts/get_nvt_families/get_preferences/get_info whose commands
-// share no common stem at all. An empty family falls back to the inferred
-// noun, which every caller that has no manifest in scope (this package's own
-// tests) passes.
-//
-// co is CardinalityOverrides, RequiredOverride's mirror image for schema Card
-// rather than requiredness.
-//
-// ec is EnumConstantNames, keyed by literal wire value rather than by
-// command; ecConsumed accumulates which of its entries this call resolved an
-// alt value through. Unlike every other override table's own xConsumed map,
-// ecConsumed is caller-owned and shared across every family in one
-// GenerateAll run rather than reset per call: EnumConstantNames' entries are
-// not command-scoped, so a family that never happens to need a given
-// <relation> operator is not evidence the entry is unused corpus-wide — only
-// GenerateAll, which sees every family, can decide that.
 // validateCommandShapes fails closed on a snapshot too malformed to generate
 // from at all, before any naming or emission work starts.
 func validateCommandShapes(cmds []schema.Command) error {
@@ -69,6 +42,24 @@ func validateCommandShapes(cmds []schema.Command) error {
 	return nil
 }
 
+// Generate renders Go source for every command in cmds, as a filename ->
+// gofmt'd source map. The output is a pure function of its inputs — no clock,
+// no filesystem, no map iteration order leaks into it, and nothing here reads
+// vendor/XML — which is what lets the golden test in generate_test.go run in
+// CI from only the committed JSON snapshot.
+//
+// family is the manifest's declared family name, authoritative over the noun
+// this package would otherwise infer from the commands' own names: that
+// inference assumes every command shares one noun stem
+// ("create_note"/"get_notes" -> "note"), which fails for a family like
+// get_nvts/get_nvt_families/get_preferences/get_info that shares no common
+// stem at all. An empty family falls back to the inferred noun.
+//
+// ecConsumed is caller-owned and shared across every family in one
+// GenerateAll run rather than reset per call: EnumConstantNames is keyed by
+// wire value, not by command, so only GenerateAll (seeing every family) can
+// tell a genuinely unused entry from one this family's commands simply never
+// needed.
 func Generate(cmds []schema.Command, ov map[string]Override, pf map[string]PointerOverride, ro map[string]RequiredOverride, fo map[string][]FieldOverride, fs map[string][]FieldSuppression, cw map[string]CommandWarning, da map[DefectKey]DefectAllowlistEntry, no map[string]NameOverride, tov map[string][]FieldTypeOverride, family string, co map[string]CardinalityOverride, ec map[string]EnumConstantName, ecConsumed map[string]bool) (map[string]string, error) {
 	if len(cmds) == 0 {
 		return nil, fmt.Errorf("codegen: no commands to generate")
@@ -899,27 +890,15 @@ func staleTableKeys[V any](cmds []schema.Command, table map[string]V, consumed m
 // GenerateAll renders every family in m, one Generate call per family, and
 // merges the results into a single filename -> source map.
 //
-// Per-family rather than one global call is a deliberate choice. Generate's
-// structural dedup, its type-name disambiguation ladder and its shared-file
-// decision are all scoped to the commands it is handed; giving it exactly one
-// family's commands is what guarantees that adding an unrelated family to the
-// manifest can never rename a type or move a struct in an existing one. A
-// single global call would have to reproduce that isolation internally, and
-// nothing in the output needs to be shared across families to make it work.
-//
-// Stated as the rule it is: structurally-equal shapes are deduplicated
-// family-locally and never globally. Two families that happen to describe the
-// same <nvt> shape each get their own type for it, in their own shared file,
-// under their own family-qualified name. The duplication is the price of the
-// property that matters more — a family's generated names, files and bytes
-// depend on that family's commands and nothing else — because the alternative
-// makes every future manifest addition a potential rename of already-committed,
-// already-called types across commands/, client/ and internal/gmptest.
-// Two tests hold the line: TestGenerateAllIsPerFamily (a synthetic twin family
-// whose shapes are identical to note's, the adversarial case) and
-// TestRealFamiliesGenerateIndependently (the real note and override families,
-// each generated alone and compared byte-for-byte against its slice of the
-// combined run).
+// Per-family rather than one global call is deliberate: Generate's structural
+// dedup, type-name ladder and shared-file decision are all scoped to the
+// commands it is handed, so adding an unrelated family to the manifest can
+// never rename a type or move a struct in an existing one. Two structurally
+// identical shapes in different families each get their own type, in their
+// own shared file, under their own family-qualified name — the duplication is
+// the price of a family's output depending on nothing but its own commands.
+// TestGenerateAllIsPerFamily and TestRealFamiliesGenerateIndependently hold
+// the line.
 //
 // cmds may contain commands in any order and must cover every command the
 // manifest names; a command not claimed by any family is an error, since it

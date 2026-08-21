@@ -12,8 +12,8 @@ import (
 )
 
 // TestExplicitEmptySemantics validates T-25 explicit-empty audit findings by
-// asserting the documented wire behavior for fields whose omit/explicit-empty
-// semantics have been classified as EQUIVALENT via live gvmd probes.
+// asserting the documented wire behavior for fields classified EQUIVALENT
+// (omit vs. explicit-empty) via live gvmd probes.
 //
 // Run with:
 //
@@ -30,16 +30,13 @@ func TestExplicitEmptySemantics(t *testing.T) {
 }
 
 // modify_user.sources.source segfault reproduction is intentionally omitted:
-// triggering a gvmd crash against the shared dev stack is undesirable, and the
-// typed API already cannot construct the <sources><source></source></sources>
-// payload (UserSource is omitempty-tagged, so empty string is dropped).
+// triggering a gvmd crash on the shared dev stack is undesirable, and the
+// typed API can't construct that payload anyway (UserSource is omitempty).
 
 // getConfigByID fetches one config by ID via RawXML, not gmp.Client's
-// GetConfigs(ctx, args ...filtering.FilterArg): that signature only ever
-// consults recognized FilterArg types (string, Option, their slices), so a
-// *commands.GetConfigs passed as an arg is silently ignored and the call
-// falls back to gvmd's default (unfiltered) list — fetching an arbitrary,
-// unrelated config instead of the one this test just created.
+// GetConfigs(ctx, args ...filtering.FilterArg): that signature only accepts
+// recognized FilterArg types, so a *commands.GetConfigs passed as an arg is
+// silently ignored and the call falls back to an unfiltered list.
 func getConfigByID(t *testing.T, ctx context.Context, c interface {
 	RawXML(ctx context.Context, xmlStr string) (string, error)
 }, id string) commands.Config {
@@ -58,8 +55,7 @@ func getConfigByID(t *testing.T, ctx context.Context, c interface {
 	return resp.Config[0]
 }
 
-// getPortListByID is getConfigByID's counterpart for GetPortLists, which has
-// the same filtered-args-only signature on gmp.Client.
+// getPortListByID is getConfigByID's counterpart for GetPortLists.
 func getPortListByID(t *testing.T, ctx context.Context, c interface {
 	RawXML(ctx context.Context, xmlStr string) (string, error)
 }, id string) commands.PortList {
@@ -78,11 +74,9 @@ func getPortListByID(t *testing.T, ctx context.Context, c interface {
 	return resp.PortList[0]
 }
 
-// getOverrideByID is getConfigByID's counterpart for GetOverrides — same
-// filtered-args-only signature, plus details="1" is required for gvmd to
-// include hosts/port/threat/new_threat in the response at all: gvmd's
-// default (non-detailed) view omits them entirely, which would otherwise
-// read as "cleared to empty" for every field this test checks.
+// getOverrideByID is getConfigByID's counterpart for GetOverrides, plus
+// details="1": gvmd's default view omits hosts/port/threat/new_threat
+// entirely, which would otherwise read as "cleared to empty".
 func getOverrideByID(t *testing.T, ctx context.Context, c interface {
 	RawXML(ctx context.Context, xmlStr string) (string, error)
 }, id string) commands.Override {
@@ -222,9 +216,8 @@ func testModifyNoteHosts(t *testing.T) {
 	}
 	defer c.DeleteNote(ctx, &commands.DeleteNote{NoteID: createResp.ID, Ultimate: true})
 
-	// Text is schema-required on every modify_note request (gvmd rejects an
-	// empty <text></text> with "A TEXT entity is required"), so every set/reset
-	// below must resend it alongside the field actually under test.
+	// Text is schema-required (gvmd rejects an empty <text></text>), so every
+	// set/reset below must resend it alongside the field under test.
 	if _, err := c.ModifyNote(ctx, &commands.ModifyNote{
 		NoteID: createResp.ID,
 		Text:   "test note",
@@ -366,11 +359,9 @@ func testModifyOverrideHosts(t *testing.T) {
 	}
 	defer c.DeleteOverride(ctx, &commands.DeleteOverride{OverrideID: createResp.ID, Ultimate: true})
 
-	// Text is schema-required on every modify_override request, same as
-	// modify_note. new_threat is also resent throughout: gvmd additionally
-	// requires new_severity/new_threat whenever hosts/threat is present on a
-	// modify_override request, a cross-field constraint the schema itself
-	// does not declare.
+	// Text is schema-required, same as modify_note. new_threat is also resent
+	// throughout: gvmd requires new_severity/new_threat whenever hosts/threat
+	// is present, a cross-field constraint the schema doesn't declare.
 	if _, err := c.ModifyOverride(ctx, &commands.ModifyOverride{
 		OverrideID: createResp.ID,
 		Text:       "test override",

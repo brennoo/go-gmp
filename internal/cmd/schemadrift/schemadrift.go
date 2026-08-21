@@ -18,13 +18,11 @@ import (
 )
 
 // defaultSourceRepository identifies gvmd's entry in the mirror lock file —
-// the one image this command ever resolves or boots, since T-17 only cares
-// about gvmd's served schema.
+// the only image this command ever resolves or boots.
 const defaultSourceRepository = "registry.community.greenbone.net/community/gvmd"
 
 // dialOptions mirrors internal/codegen/snapshot_live_test.go's -gmp.* flags,
-// reimplemented here because that helper is test-only and build-tagged
-// integration.
+// reimplemented here since that helper is test-only and build-tagged integration.
 type dialOptions struct {
 	addr, user, pass, caFile, serverName string
 	insecure                             bool
@@ -35,8 +33,7 @@ type dialFunc func(ctx context.Context, opts dialOptions) (gmp.Connection, error
 type imageDigestFunc func(ctx context.Context, composeFile, service string) (string, error)
 
 // dialLive authenticates against a live gvmd and returns the connection,
-// which the caller must Close. See dialOptions.insecure's flag help for why
-// hack/gvmd-up.sh's own certificates can never satisfy -gmp.servername.
+// which the caller must Close.
 func dialLive(ctx context.Context, opts dialOptions) (gmp.Connection, error) {
 	var tlsOpts []connections.TLSOption
 	if opts.insecure {
@@ -65,8 +62,7 @@ func dialLive(ctx context.Context, opts dialOptions) (gmp.Connection, error) {
 	return conn, nil
 }
 
-// findLockEntry returns the lock file entry identifying gvmd, the only image
-// this command ever inspects.
+// findLockEntry returns the lock file entry identifying gvmd.
 func findLockEntry(lockFile, sourceRepository string) (mirror.LockEntry, error) {
 	lock, err := mirror.ReadLock(lockFile)
 	if err != nil {
@@ -159,8 +155,7 @@ func run(ctx context.Context, args []string, runner mirror.Runner, dial dialFunc
 
 // runResolveOnly prints entry's fresh upstream digest, resolved from its
 // SourceChannel — used to pick which image a candidate stack should boot,
-// never the currently pinned one (see docs/review-2026-08.md, T-17, on why
-// diffing against the pinned image would never show drift).
+// never the currently pinned one, which would never show drift.
 func runResolveOnly(ctx context.Context, runner mirror.Runner, entry mirror.LockEntry, stdout io.Writer) error {
 	if _, err := exec.LookPath("skopeo"); err != nil {
 		return fmt.Errorf("skopeo not found in PATH: %w", err)
@@ -214,12 +209,10 @@ func runReport(ctx context.Context, f flags, dial dialFunc, imageDigest imageDig
 }
 
 // checkExpectedDigest fails closed unless servedDigest's content matches
-// expectDigest — the digest -resolve-only produced and hack/schema-drift.sh
-// booted the candidate stack from. Compared by SHA-256 hex only, like
-// digestHex's other callers, so a repository rewrite (upstream vs. this
-// project's GHCR mirror) alone isn't mistaken for a mismatch. A no-op when
-// expectDigest is empty, for standalone use against an arbitrary
-// already-running gvmd with no resolved candidate to bind to.
+// expectDigest, the digest the candidate stack was booted from. Compared by
+// SHA-256 hex only, so a repository rewrite (upstream vs. this project's GHCR
+// mirror) alone isn't mistaken for a mismatch. A no-op when expectDigest is
+// empty, for standalone use against an arbitrary already-running gvmd.
 func checkExpectedDigest(expectDigest, servedDigest string) error {
 	if expectDigest == "" {
 		return nil

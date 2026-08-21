@@ -16,9 +16,8 @@ import (
 type Provenance string
 
 const (
-	// Upstream fixtures are transcribed from gvmd's GMP schema. They are
-	// AGPL-derived, live in their own directory so they can be removed as a
-	// unit, and are documentation formatting rather than wire bytes — so no
+	// Upstream fixtures are transcribed from gvmd's GMP schema. AGPL-derived
+	// and documentation formatting rather than wire bytes, so no
 	// byte-exactness assertion may run against them.
 	Upstream Provenance = "upstream"
 	// Live fixtures are captured from a real gvmd over the wire.
@@ -32,13 +31,11 @@ const TestdataDir = "testdata"
 type GmpVersionSource string
 
 const (
-	// GmpVersionCaptured means this run's own get_version call recorded it —
-	// every fixture in the corpus, including the pre-T-16a ones, which
-	// recorded the same value under the misnamed gvmd_version key.
+	// GmpVersionCaptured means this run's own get_version call recorded it.
 	GmpVersionCaptured GmpVersionSource = "captured"
 	// GmpVersionInferred means it was backfilled rather than recorded by the
-	// capturing run. Nothing produces it; it exists so a future backfill has
-	// to say so instead of passing itself off as captured.
+	// capturing run. Nothing produces it yet; exists so a future backfill
+	// has to say so instead of passing itself off as captured.
 	GmpVersionInferred GmpVersionSource = "inferred-from-corpus"
 )
 
@@ -57,9 +54,8 @@ const (
 	// the running container at capture time; ImageDigest must be set.
 	ImageDigestResolved ImageDigestSource = "resolved"
 	// ImageDigestLegacy marks a fixture captured before T-16c pinned the
-	// integration stack, when no resolved digest existed to record. This is
-	// a permanent classification, not a placeholder to backfill — there is
-	// no way to recover after the fact what image a past capture ran
+	// integration stack. Permanent classification, not a placeholder to
+	// backfill — there's no way to recover what image a past capture ran
 	// against. ImageDigest must be empty.
 	ImageDigestLegacy ImageDigestSource = "legacy-unpinned"
 )
@@ -186,10 +182,8 @@ func (f *Fixture) loadMeta() error {
 	if err := json.Unmarshal(b, &f.Meta); err != nil {
 		return fmt.Errorf("parse meta for %s/%s: %w", f.Command, f.ID, err)
 	}
-	// Both identity fields are checked against the directory layout. A sidecar
-	// copied between commands would otherwise let a fixture be decoded with the
-	// wrong registry constructor while its metadata still claimed the original,
-	// which is exactly the kind of drift the corpus exists to rule out.
+	// Guards against a sidecar copied between commands, which would decode
+	// with the wrong registry constructor while claiming the original.
 	if f.Meta.Provenance != f.Provenance {
 		return fmt.Errorf("%s/%s: meta says provenance %q but it is filed under %q",
 			f.Command, f.ID, f.Meta.Provenance, f.Provenance)

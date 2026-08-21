@@ -17,64 +17,25 @@ import (
 	"github.com/brennoo/go-gmp/internal/schema"
 )
 
-// This file is the pre-swap validation step: before commands/create_note.go,
-// modify_note.go and get_notes.go are replaced by Generate's output, this is
-// what proves the replacement is a match-or-improve on schema conformance,
-// using the same schema.Comparer/schema.ModelOf machinery
-// internal/schema/conformance_test.go already trusts for the 122 hand-written
-// commands.
+// This file is the pre-swap validation step: before generated files replace
+// their hand-written counterparts in commands/, this proves the replacement
+// is a match-or-improve on schema conformance, using the same
+// schema.Comparer/schema.ModelOf machinery internal/schema/conformance_test.go
+// already trusts for the hand-written commands.
 //
-// # Design choice: how the "after" side gets a real reflect.Type
-//
-// schema.ModelOf takes a Go value and reflects it; it cannot work from source
-// text or from the schema.Node tree Generate consumed; that would just be
-// comparing the schema to itself. The generated code has to actually be
-// compiled, and reflected, somewhere.
-//
-// The complication is that the generated types collide by name with the
-// hand-written ones (both declare `type Note struct`, `type CreateNote
-// struct`, ...) and both are still needed side by side: the hand-written
-// ones for "before", the generated ones for "after". They cannot both be
-// package commands in the same build.
-//
-// TestGeneratedCodeCompiles (generate_test.go) solves the same collision for
-// its own purpose — proving the generated code builds independently of
-// commands/ — by copying it into a throwaway module (its own go.mod, a
-// replace directive back to this repo) with the package clause rewritten.
-// That proves compilation, but a throwaway *module* cannot be reflected from
-// here: reflect.TypeOf needs the type compiled into this process's binary,
-// and a separate module is a separate `go build`, not something this test
-// binary can link against without cgo-style plugin loading (fragile,
-// platform-specific, and unnecessary for a prototype covering three
-// commands).
-//
-// So GeneratedGoRoots takes a different shortcut, using the fact that the
-// generated code already lives inside this module rather than needing to
-// pretend it doesn't:
-//
-//  1. Write Generate's output, unmodified, into a throwaway *directory*
-//     (not a throwaway module) under internal/codegen/testdata — still part
-//     of module github.com/brennoo/go-gmp, so it can import
-//     internal/schema (an internal package, so a foreign module could not
-//     import it even with a replace directive: Go's internal-import rule
-//     is keyed on the importing package's own import path, not on disk
-//     layout).
-//  2. Write a tiny generated `package main` next to it that imports that
-//     directory, calls schema.ModelOf on each command's request/response
-//     zero value — the exact function TestGoModelMatchesRegistry already
-//     trusts for the hand-written side — and prints the resulting
-//     schema.GoRoot values as JSON.
-//  3. Run it with `go run` and decode the JSON.
-//
-// This is a leaner version of the plan's option C (a subprocess "reflect
-// server" that re-derives ModelOf's output): because everything stays
-// inside one module, no go.mod/replace scaffolding is needed at all, only a
-// scratch directory under testdata (which `go build ./...`/`go vet ./...`
-// already skip by name, and which is removed before this function returns).
-// It is a real, out-of-process reflection of the real generated source,
-// not a self-comparison of the schema against itself (the risk flagged for
-// option A) and not a second copy of ModelOf's logic (the risk of a
-// go/types-based static approach).
+// schema.ModelOf needs a real reflect.Type, so the generated code must
+// actually be compiled and reflected somewhere — but its types collide by
+// name with the hand-written ones ("before" and "after" both declare `type
+// Note struct`, ...), so they can't share one build. GeneratedGoRoots works
+// around this by writing Generate's output into a throwaway directory (not a
+// throwaway module — still part of this module, so it can import
+// internal/schema, which a foreign module could not) under
+// internal/codegen/testdata, then generating a tiny `package main` next to it
+// that imports that directory, calls schema.ModelOf on each command's zero
+// value, and prints the result as JSON for this process to decode via `go
+// run`. Everything stays in one module, so no go.mod/replace scaffolding is
+// needed, and it is a real out-of-process reflection of the real generated
+// source rather than a self-comparison of the schema against itself.
 const modulePath = "github.com/brennoo/go-gmp"
 
 // ErrNoGoToolchain is returned by GeneratedGoRoots when no "go" binary is on

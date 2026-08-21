@@ -235,8 +235,7 @@ func TestLeafTypeSpellings(t *testing.T) {
 // --- mixed content -----------------------------------------------------
 
 // TestChardataBareTextSpelling covers the DSL's first mixed-content
-// spelling: bare identifier text sitting next to an <attrib>, the shape
-// behind <text excerpt="...">actual text</text> in note/override.
+// spelling, the shape behind <text excerpt="...">actual text</text>.
 func TestChardataBareTextSpelling(t *testing.T) {
 	cmd := parseOne(t, `
     <name>x</name>
@@ -262,11 +261,10 @@ func TestChardataBareTextSpelling(t *testing.T) {
 
 // TestChardataTaggedTypeSpelling covers the DSL's second mixed-content
 // spelling: an explicit <t> alongside an <e> reference, the shape behind
-// config/nvt_count and config/family_count in command_get_configs.xml,
-// where a real example response shows bare integer text next to a
-// <growing> child (e.g. <nvt_count>88005<growing>1</growing></nvt_count>).
-// leafOf's T branch returns the type unconditionally, so unlike the bare-
-// text spelling above, this one is never routed through bareChardata.
+// config/nvt_count in command_get_configs.xml (e.g.
+// <nvt_count>88005<growing>1</growing></nvt_count>). leafOf's T branch
+// returns the type unconditionally, so this never routes through
+// bareChardata like the spelling above.
 func TestChardataTaggedTypeSpelling(t *testing.T) {
 	cmd := parseOne(t, `
     <name>x</name>
@@ -293,12 +291,10 @@ func TestChardataTaggedTypeSpelling(t *testing.T) {
 
 // TestChardataDoesNotFireForSharedElementReference guards the boundary the
 // tagged-type spelling introduces: a <t> can also name a shared top-level
-// <element> rather than a scalar type. If that pattern also carries a local
-// <e> reference of its own, n.Type is non-empty and Children is non-empty
-// at the exact point fill() checks — indistinguishable from genuine mixed
-// content unless the shared-element case is excluded. expandShared is about
-// to replace n's content with the referenced element's own pattern, so
-// there is no bare text here at all.
+// <element> rather than a scalar type, which looks identical to genuine
+// mixed content at the point fill() checks unless that case is excluded.
+// expandShared is about to replace n's content with the referenced
+// element's own pattern, so there is no bare text here at all.
 func TestChardataDoesNotFireForSharedElementReference(t *testing.T) {
 	body := `<?xml version="1.0"?><protocol>
       <element>
@@ -667,11 +663,9 @@ func TestSharedElementCycleTerminates(t *testing.T) {
 
 // TestSharedElementSecondReferenceIsExpanded guards the T-21 regression:
 // expandShared used to key its recursion guard off n.Type after e.fill had
-// already overwritten it, so it deleted the wrong guard entry and leaked the
-// real one. A shared <element> referenced twice within one command (as
-// get_scanners' ca_pub_info and certificate_info both reference the same
-// shared certificate_info element) expanded correctly the first time and
-// silently stayed an empty leaf, with no recorded Defect, the second time.
+// already overwritten it, deleting the wrong guard entry and leaking the
+// real one, so a shared <element> referenced twice in one command expanded
+// correctly the first time and silently stayed an empty leaf the second.
 func TestSharedElementSecondReferenceIsExpanded(t *testing.T) {
 	body := `<?xml version="1.0"?><protocol>
       <element>
