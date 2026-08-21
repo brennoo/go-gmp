@@ -15,7 +15,9 @@ import (
 // asserting the documented wire behavior for fields whose omit/explicit-empty
 // semantics have been classified as EQUIVALENT via live gvmd probes.
 //
-// Run with: go test -tags integration ./internal/gmptest -run TestExplicitEmpty -v -gmp.pass=admin -gmp.insecure
+// Run with:
+//
+//	go test -tags integration ./internal/gmptest -run TestExplicitEmpty -v -gmp.pass=admin -gmp.insecure
 func TestExplicitEmptySemantics(t *testing.T) {
 	t.Run("modify_config_comment", testModifyConfigComment)
 	t.Run("modify_port_list_comment", testModifyPortListComment)

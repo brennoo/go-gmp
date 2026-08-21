@@ -31,7 +31,7 @@ func TestNewFailedIterator(t *testing.T) {
 	if it.Next() {
 		t.Fatalf("expected Next() to be false")
 	}
-	if it.Err() != wantErr {
+	if !errors.Is(it.Err(), wantErr) {
 		t.Fatalf("Err() = %v, want %v", it.Err(), wantErr)
 	}
 	if it.HasMore() {

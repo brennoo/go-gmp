@@ -515,76 +515,31 @@ func TestIteratorConstructorsRejectUnrecognizedFilterArg(t *testing.T) {
 	ctx := context.Background()
 	bad := 123 // not string, Option, []string or []Option
 
-	t.Run("Tasks", func(t *testing.T) {
-		iter := cli.Tasks(ctx, 10, bad)
-		if iter == nil {
-			t.Fatal("Tasks returned nil iterator")
+	// All 7 iterator types are distinct generic instantiations with no
+	// shared named interface, but all structurally satisfy Next/Err.
+	tests := []struct {
+		name string
+		iter interface {
+			Next() bool
+			Err() error
 		}
-		if iter.Next() {
-			t.Fatal("expected Next() to be false for an invalid FilterArg")
-		}
-		if iter.Err() == nil {
-			t.Fatal("expected Err() to report the invalid FilterArg")
-		}
-	})
-
-	t.Run("Results", func(t *testing.T) {
-		iter := cli.Results(ctx, 10, bad)
-		if iter.Next() {
-			t.Fatal("expected Next() to be false for an invalid FilterArg")
-		}
-		if iter.Err() == nil {
-			t.Fatal("expected Err() to report the invalid FilterArg")
-		}
-	})
-
-	t.Run("Assets", func(t *testing.T) {
-		iter := cli.Assets(ctx, 10, bad)
-		if iter.Next() {
-			t.Fatal("expected Next() to be false for an invalid FilterArg")
-		}
-		if iter.Err() == nil {
-			t.Fatal("expected Err() to report the invalid FilterArg")
-		}
-	})
-
-	t.Run("Targets", func(t *testing.T) {
-		iter := cli.Targets(ctx, 10, bad)
-		if iter.Next() {
-			t.Fatal("expected Next() to be false for an invalid FilterArg")
-		}
-		if iter.Err() == nil {
-			t.Fatal("expected Err() to report the invalid FilterArg")
-		}
-	})
-
-	t.Run("Tickets", func(t *testing.T) {
-		iter := cli.Tickets(ctx, 10, bad)
-		if iter.Next() {
-			t.Fatal("expected Next() to be false for an invalid FilterArg")
-		}
-		if iter.Err() == nil {
-			t.Fatal("expected Err() to report the invalid FilterArg")
-		}
-	})
-
-	t.Run("PortLists", func(t *testing.T) {
-		iter := cli.PortLists(ctx, 10, bad)
-		if iter.Next() {
-			t.Fatal("expected Next() to be false for an invalid FilterArg")
-		}
-		if iter.Err() == nil {
-			t.Fatal("expected Err() to report the invalid FilterArg")
-		}
-	})
-
-	t.Run("Settings", func(t *testing.T) {
-		iter := cli.Settings(ctx, 10, bad)
-		if iter.Next() {
-			t.Fatal("expected Next() to be false for an invalid FilterArg")
-		}
-		if iter.Err() == nil {
-			t.Fatal("expected Err() to report the invalid FilterArg")
-		}
-	})
+	}{
+		{"Tasks", cli.Tasks(ctx, 10, bad)},
+		{"Results", cli.Results(ctx, 10, bad)},
+		{"Assets", cli.Assets(ctx, 10, bad)},
+		{"Targets", cli.Targets(ctx, 10, bad)},
+		{"Tickets", cli.Tickets(ctx, 10, bad)},
+		{"PortLists", cli.PortLists(ctx, 10, bad)},
+		{"Settings", cli.Settings(ctx, 10, bad)},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.iter.Next() {
+				t.Fatal("expected Next() to be false for an invalid FilterArg")
+			}
+			if tt.iter.Err() == nil {
+				t.Fatal("expected Err() to report the invalid FilterArg")
+			}
+		})
+	}
 }
