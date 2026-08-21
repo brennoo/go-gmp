@@ -167,21 +167,23 @@ it does nothing if the upstream registry garbage-collects the blob, changes
 retention, removes the repository, or is simply unreachable. See T-22 in
 `docs/review-2026-08.md`.
 
-`hack/image-mirror.lock.json` is the durable record of what was mirrored from
-where; it is also the seed the next run reads to know what to re-mirror. To
-refresh the mirror (picking up a new upstream `:stable` build, for instance),
-re-run:
+`hack/image-mirror.lock.json` here is a reviewed vendored copy, not the
+source of truth: the mirroring tool and its own copy of the lock file live in
+[brennoo/gvm-mirror](https://github.com/brennoo/gvm-mirror), which runs a
+weekly refresh and never commits automatically — review its diff like any
+other dependency bump.
+
+To pick up a refreshed mirror, sync the lock and regenerate this repo's
+Compose pins in one reviewed commit:
 
 ```bash
-hack/mirror-images.sh
+cp <gvm-mirror>/image-mirror.lock.json hack/image-mirror.lock.json
+go run github.com/brennoo/gvm-mirror/cmd/mirrorimages@latest \
+  -rewrite-compose-only -lock-file hack/image-mirror.lock.json -compose-file hack/docker-compose.yml
 ```
 
-This re-resolves each image from the channel its lock entry recorded, copies
-anything new to the mirror with Skopeo (no pull required), and rewrites both
-the lock file and `docker-compose.yml`'s pins in place. Nothing does this
-automatically or on a schedule — review the diff it produces like any other
-dependency bump before committing it, since a moved digest is exactly the
-kind of change that deserves a human look.
+`-rewrite-compose-only` touches neither the registry nor the lock file — it
+only rewrites `docker-compose.yml`'s pins from the already-resolved lock.
 
 ## Stopping
 

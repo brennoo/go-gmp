@@ -14,16 +14,14 @@ import (
 
 	gmp "github.com/brennoo/go-gmp"
 	"github.com/brennoo/go-gmp/internal/codegen"
-	"github.com/brennoo/go-gmp/internal/mirror"
 	"github.com/brennoo/go-gmp/internal/schema"
 )
 
 const testSourceRepository = "registry.community.greenbone.net/community/gvmd"
 
-// fakeRunner dispatches on the joined command line, the same way
-// internal/mirror's own tests do; an unlisted command fails the test rather
-// than silently returning a zero value.
-func fakeRunner(t *testing.T, responses map[string]func() ([]byte, error)) mirror.Runner {
+// fakeRunner dispatches on the joined command line; an unlisted command
+// fails the test rather than silently returning a zero value.
+func fakeRunner(t *testing.T, responses map[string]func() ([]byte, error)) Runner {
 	t.Helper()
 	return func(_ context.Context, name string, args ...string) ([]byte, error) {
 		key := name + " " + strings.Join(args, " ")
@@ -35,17 +33,21 @@ func fakeRunner(t *testing.T, responses map[string]func() ([]byte, error)) mirro
 	}
 }
 
-// respond is the internal/mirror/mirror_test.go "ok" helper under a
-// non-shadowing name, since fakeRunner's own map lookup already uses "ok" as
-// a local variable.
 func respond(data []byte) func() ([]byte, error) {
 	return func() ([]byte, error) { return data, nil }
 }
 
-func writeLockFile(t *testing.T, dir string, entries ...mirror.LockEntry) string {
+// writeLockFile writes a fixture lock file directly, rather than through the
+// mirror's own WriteLock: schemadrift only ever reads this file, and the
+// real writer lives in github.com/brennoo/gvm-mirror now.
+func writeLockFile(t *testing.T, dir string, entries ...lockEntry) string {
 	t.Helper()
 	path := filepath.Join(dir, "image-mirror.lock.json")
-	if err := mirror.WriteLock(path, mirror.Lock{Entries: entries}); err != nil {
+	data, err := json.MarshalIndent(lock{Entries: entries}, "", "  ")
+	if err != nil {
+		t.Fatalf("marshaling fixture lock file: %v", err)
+	}
+	if err := os.WriteFile(path, data, 0o600); err != nil {
 		t.Fatalf("writing fixture lock file: %v", err)
 	}
 	return path
@@ -53,11 +55,10 @@ func writeLockFile(t *testing.T, dir string, entries ...mirror.LockEntry) string
 
 func TestRunResolveOnlyPrintsFreshDigest(t *testing.T) {
 	dir := t.TempDir()
-	lockFile := writeLockFile(t, dir, mirror.LockEntry{
-		SourceRepository:      testSourceRepository,
-		SourceChannel:         testSourceRepository + ":stable",
-		DestinationRepository: "ghcr.io/brennoo/gvm-mirror/gvmd",
-		DestinationDigest:     "ghcr.io/brennoo/gvm-mirror/gvmd@sha256:" + strings.Repeat("aa", 32),
+	lockFile := writeLockFile(t, dir, lockEntry{
+		SourceRepository:  testSourceRepository,
+		SourceChannel:     testSourceRepository + ":stable",
+		DestinationDigest: "ghcr.io/brennoo/gvm-mirror/gvmd@sha256:" + strings.Repeat("aa", 32),
 	})
 
 	manifest := []byte(`{"mediaType":"single"}`)
@@ -95,11 +96,10 @@ func TestRunResolveOnlyMissingLockEntryFails(t *testing.T) {
 
 func TestRunReportModeDialError(t *testing.T) {
 	dir := t.TempDir()
-	lockFile := writeLockFile(t, dir, mirror.LockEntry{
-		SourceRepository:      testSourceRepository,
-		SourceChannel:         testSourceRepository + ":stable",
-		DestinationRepository: "ghcr.io/brennoo/gvm-mirror/gvmd",
-		DestinationDigest:     "ghcr.io/brennoo/gvm-mirror/gvmd@sha256:" + strings.Repeat("aa", 32),
+	lockFile := writeLockFile(t, dir, lockEntry{
+		SourceRepository:  testSourceRepository,
+		SourceChannel:     testSourceRepository + ":stable",
+		DestinationDigest: "ghcr.io/brennoo/gvm-mirror/gvmd@sha256:" + strings.Repeat("aa", 32),
 	})
 
 	wantErr := errors.New("connection refused")
@@ -117,11 +117,10 @@ func TestRunReportModeDialError(t *testing.T) {
 func TestRunReportModeDetectsDrift(t *testing.T) {
 	dir := t.TempDir()
 	pinnedDigest := "ghcr.io/brennoo/gvm-mirror/gvmd@sha256:" + strings.Repeat("aa", 32)
-	lockFile := writeLockFile(t, dir, mirror.LockEntry{
-		SourceRepository:      testSourceRepository,
-		SourceChannel:         testSourceRepository + ":stable",
-		DestinationRepository: "ghcr.io/brennoo/gvm-mirror/gvmd",
-		DestinationDigest:     pinnedDigest,
+	lockFile := writeLockFile(t, dir, lockEntry{
+		SourceRepository:  testSourceRepository,
+		SourceChannel:     testSourceRepository + ":stable",
+		DestinationDigest: pinnedDigest,
 	})
 
 	manifestFile := filepath.Join(dir, "manifest.json")
@@ -168,11 +167,10 @@ func TestRunReportModeDetectsDrift(t *testing.T) {
 func TestRunReportModeExpectDigestMismatchFails(t *testing.T) {
 	dir := t.TempDir()
 	pinnedDigest := "ghcr.io/brennoo/gvm-mirror/gvmd@sha256:" + strings.Repeat("aa", 32)
-	lockFile := writeLockFile(t, dir, mirror.LockEntry{
-		SourceRepository:      testSourceRepository,
-		SourceChannel:         testSourceRepository + ":stable",
-		DestinationRepository: "ghcr.io/brennoo/gvm-mirror/gvmd",
-		DestinationDigest:     pinnedDigest,
+	lockFile := writeLockFile(t, dir, lockEntry{
+		SourceRepository:  testSourceRepository,
+		SourceChannel:     testSourceRepository + ":stable",
+		DestinationDigest: pinnedDigest,
 	})
 
 	manifestFile := filepath.Join(dir, "manifest.json")
@@ -209,11 +207,10 @@ func TestRunReportModeExpectDigestMismatchFails(t *testing.T) {
 func TestRunReportModeNoDrift(t *testing.T) {
 	dir := t.TempDir()
 	digest := "ghcr.io/brennoo/gvm-mirror/gvmd@sha256:" + strings.Repeat("aa", 32)
-	lockFile := writeLockFile(t, dir, mirror.LockEntry{
-		SourceRepository:      testSourceRepository,
-		SourceChannel:         testSourceRepository + ":stable",
-		DestinationRepository: "ghcr.io/brennoo/gvm-mirror/gvmd",
-		DestinationDigest:     digest,
+	lockFile := writeLockFile(t, dir, lockEntry{
+		SourceRepository:  testSourceRepository,
+		SourceChannel:     testSourceRepository + ":stable",
+		DestinationDigest: digest,
 	})
 
 	manifestFile := filepath.Join(dir, "manifest.json")
@@ -253,7 +250,7 @@ func TestRunReportModeNoDrift(t *testing.T) {
 	}
 }
 
-func unusedRunner(t *testing.T) mirror.Runner {
+func unusedRunner(t *testing.T) Runner {
 	t.Helper()
 	return fakeRunner(t, map[string]func() ([]byte, error){})
 }

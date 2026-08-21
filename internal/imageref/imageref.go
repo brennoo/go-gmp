@@ -1,9 +1,8 @@
 // Package imageref parses and validates Docker/OCI-style image references —
 // the "repository[:tag][@digest]" shape used throughout hack/docker-compose.yml
 // and this repo's own provenance metadata — so callers like
-// internal/dockerstack, internal/mirror, internal/schema and
-// internal/gmptest share one implementation instead of independently
-// drifting ones.
+// internal/dockerstack, internal/schema and internal/gmptest share one
+// implementation instead of independently drifting ones.
 package imageref
 
 import (
@@ -114,38 +113,4 @@ func validatePathComponent(c string) error {
 		}
 	}
 	return nil
-}
-
-// ValidateTagName checks that tag is a well-formed Docker/OCI tag: 1-128
-// characters, starting with an alphanumeric, followed by alphanumerics,
-// '_', '.', or '-'. This is the distribution spec's own grammar, not this
-// project's invention.
-func ValidateTagName(tag string) error {
-	if tag == "" || len(tag) > 128 {
-		return fmt.Errorf("%q is not a valid tag name: must be 1-128 characters", tag)
-	}
-	for i, r := range tag {
-		switch {
-		case r >= 'a' && r <= 'z', r >= 'A' && r <= 'Z', r >= '0' && r <= '9':
-		case i > 0 && (r == '_' || r == '.' || r == '-'):
-		default:
-			return fmt.Errorf("%q is not a valid tag name: invalid character %q at position %d", tag, r, i)
-		}
-	}
-	return nil
-}
-
-// composeImagePrefix is the exact indentation Docker Compose service blocks
-// use for their "image:" key in this repo's own hack/docker-compose.yml.
-const composeImagePrefix = "    image: "
-
-// ImageLineRepository extracts a Compose "    image: ..." line's repository,
-// stripping any tag or digest via Repository. ok is false for any line that
-// is not an image line at all.
-func ImageLineRepository(line string) (repo string, ok bool) {
-	rest, isImage := strings.CutPrefix(line, composeImagePrefix)
-	if !isImage {
-		return "", false
-	}
-	return Repository(rest), true
 }

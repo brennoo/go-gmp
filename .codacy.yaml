@@ -16,13 +16,10 @@ engines:
       - "internal/codegen/validate.go"
       - "internal/codegen/check.go"
       - "internal/codegen/overrides.go"
-      - "internal/cmd/mirrorimages/mirrorimages.go"
   opengrep:
     exclude_paths:
       # Dev/build/test tooling: exec/file-I/O with fixed, non-attacker-controlled args, already `nolint:gosec`-reviewed.
       - "internal/cmd/gengmp/main_test.go"
-      - "internal/cmd/mirrorimages/mirrorimages.go"
-      - "internal/cmd/mirrorimages/mirrorimages_test.go"
       - "internal/cmd/schemadrift/schemadrift_test.go"
       - "internal/codegen/check.go"
       - "internal/codegen/check_test.go"
@@ -38,8 +35,6 @@ engines:
       - "internal/gmptest/golden_response_test.go"
       - "internal/gmptest/transcribe_test.go"
       - "internal/gmptest/update_test.go"
-      - "internal/mirror/mirror.go"
-      - "internal/mirror/mirror_test.go"
       - "internal/schema/conform.go"
       - "internal/schema/parse.go"
       - "internal/schema/provenance_test.go"
