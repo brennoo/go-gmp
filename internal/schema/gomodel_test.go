@@ -2,6 +2,7 @@ package schema
 
 import (
 	"encoding/xml"
+	"strings"
 	"testing"
 
 	"github.com/brennoo/go-gmp/commands"
@@ -194,5 +195,66 @@ func TestZeroIsMeaningfulIgnoresPointerGMPAtoiBool(t *testing.T) {
 	}
 	if got := root.Children[0].ZeroIsMeaningful(); got {
 		t.Errorf("ZeroIsMeaningful() on pointer *commands.GMPAtoiBool = %v, want false", got)
+	}
+}
+
+// T-34: a `,innerxml` field captures every child of its element verbatim
+// (see commands.HelpResponse.Text), so ModelOf must mark the enclosing node
+// CatchAll the same way it already does for `,any` — not just Chardata.
+func TestModelOfInnerxmlSetsCatchAll(t *testing.T) {
+	type Root struct {
+		XMLName xml.Name `xml:"root"`
+		Text    string   `xml:",innerxml"`
+	}
+	root := ModelOf(&Root{}).Root
+	if !root.Chardata {
+		t.Errorf("Chardata = false, want true")
+	}
+	if !root.CatchAll {
+		t.Errorf("CatchAll = false, want true")
+	}
+	if !strings.Contains(root.CatchAllReason, "innerxml") {
+		t.Errorf("CatchAllReason = %q, want it to mention innerxml", root.CatchAllReason)
+	}
+}
+
+// A `,comment` field captures XML comments, never child elements, so it must
+// not earn innerxml's CatchAll treatment.
+func TestModelOfCommentDoesNotSetCatchAll(t *testing.T) {
+	type Root struct {
+		XMLName xml.Name `xml:"root"`
+		Note    string   `xml:",comment"`
+	}
+	root := ModelOf(&Root{}).Root
+	if !root.Chardata {
+		t.Errorf("Chardata = false, want true")
+	}
+	if root.CatchAll {
+		t.Errorf("CatchAll = true, want false: `,comment` does not capture elements")
+	}
+}
+
+// The named-field counterpart to TestModelOfReadsGmpoverrideOnLeafField:
+// gmpmissing/gmpmissingreason on a struct-typed field must land on that
+// field's own node, since unmatchedSchema consults them while walking that
+// node's children.
+func TestModelOfReadsGmpmissingOnStructField(t *testing.T) {
+	type Value struct {
+		ReportFormat string `xml:"report_format"`
+	}
+	type Root struct {
+		XMLName xml.Name `xml:"root"`
+		Value   Value    `xml:"value" gmpmissing:"attr:using_default" gmpmissingreason:"relocated to param"`
+	}
+	root := ModelOf(&Root{}).Root
+	if len(root.Children) != 1 {
+		t.Fatalf("got %d children, want 1: %+v", len(root.Children), root.Children)
+	}
+	value := root.Children[0]
+	if got := value.MissingChildKeys; len(got) != 1 || got[0] != "attr:using_default" {
+		t.Errorf("MissingChildKeys = %v, want [\"attr:using_default\"]", got)
+	}
+	if got := value.MissingChildReason; got != "relocated to param" {
+		t.Errorf("MissingChildReason = %q, want %q", got, "relocated to param")
 	}
 }

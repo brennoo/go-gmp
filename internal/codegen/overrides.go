@@ -130,6 +130,17 @@ const t26NVTRefsReason = "T-26: nvt/refs is schema-required but only sometimes p
 	"fabricating an empty <refs></refs> on remarshal for every sibling NVT that never had one — same " +
 	"fabrication class as T-23b's count-wrapper fix"
 
+// t9ReportCVSSBaseReason is the shared Reason for create_report's and
+// get_reports' cvss_base retype below: both reach the same
+// structurally-deduplicated ReportNVT type (T-34's fieldTypeSetEqual now
+// compares Reason too, so the two uses must agree on one).
+const t9ReportCVSSBaseReason = "T-9 report review: command_get_reports.xml's schema declares " +
+	"results/result/nvt/cvss_base as type integer, but internal/gmptest/testdata/live/create_report/" +
+	"001_request.xml and testdata/upstream/get_reports/002_response.xml both send a real decimal value " +
+	"(\"5.0\") for it — the same element name is declared type severity (float64) a few levels over at " +
+	"errors/error/nvt/cvss_base, so this is the schema itself disagreeing with its own declaration, not " +
+	"a defect in the generated int"
+
 var FieldOverrides = map[string][]FieldOverride{
 	"get_tls_certificates:/tls_certificate": {{
 		Name: "valid", GoType: "GMPBool",
@@ -481,21 +492,14 @@ var FieldTypeOverrides = map[string][]FieldTypeOverride{
 	}},
 	"create_report:/report/report/results/result/nvt": {{
 		Name: "cvss_base", GoType: "float64",
-		Reason: "T-9 report review: command_get_reports.xml's schema declares " +
-			"results/result/nvt/cvss_base as type integer, but " +
-			"internal/gmptest/testdata/live/create_report/001_request.xml sends a real decimal value " +
-			"(\"5.0\") for it — the same element name is declared type severity (float64) a few levels " +
-			"over at errors/error/nvt/cvss_base, so this is the schema itself disagreeing with its own " +
-			"declaration, not a defect in the generated int",
+		Reason: t9ReportCVSSBaseReason,
 	}, {
 		Name: "refs", GoType: "ReportRefs", Pointer: true,
 		Reason: t26NVTRefsReason,
 	}},
 	"get_reports:/report/report/results/result/nvt": {{
 		Name: "cvss_base", GoType: "float64",
-		Reason: "T-9 report review: same schema/wire disagreement as create_report's entry above — " +
-			"internal/gmptest/testdata/upstream/get_reports/002_response.xml sends the same decimal " +
-			"cvss_base shape at this path",
+		Reason: t9ReportCVSSBaseReason,
 	}, {
 		Name: "refs", GoType: "ReportRefs", Pointer: true,
 		Reason: t26NVTRefsReason,

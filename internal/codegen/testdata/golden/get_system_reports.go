@@ -40,7 +40,7 @@ type SystemReport struct {
 type SystemReportReport struct {
 	Value     string   `xml:",chardata"`
 	Format    string   `xml:"format,attr"`
-	Duration  string   `xml:"duration,attr"`
+	Duration  string   `xml:"duration,attr" gmpoverride:"T-9 system_report review: command_get_system_reports.xml declares report/@duration as a required integer, but internal/gmptest/testdata/live/get_system_reports/001_response.xml sends duration=\"\" (empty string) for it — a plain int silently decodes that as zero and then re-encodes as \"0\", changing the wire value on round trip (confirmed by that fixture's own pre-adoption CHANGED finding); same class of schema/wire type disagreement as get_info's id below, retyped to string to preserve the exact captured value"`
 	StartTime *GMPTime `xml:"start_time,attr,omitempty" gmpoverride:"T-9 system_report review: command_get_system_reports.xml's <report> pattern never declares start_time, but internal/gmptest/testdata/live/get_system_reports/001_response.xml sends a real start_time=\"0001-01-01T00:00:00Z\" attribute — undeclared but genuine wire data, confirmed dropped by that fixture's own pre-adoption fidelity report; testdata/upstream/get_system_reports/002_response.xml proves the attribute is also genuinely absent on other reports, so it is pointer-typed (unlike this codebase's usual non-pointer GMPTime convention) to actually honor omitempty on re-encode rather than fabricate a zero timestamp for a report that never had one"`
 	EndTime   *GMPTime `xml:"end_time,attr,omitempty" gmpoverride:"T-9 system_report review: same undeclared-but-real, genuinely optional attribute as start_time above, same evidence and same pointer-typing rationale"`
 }

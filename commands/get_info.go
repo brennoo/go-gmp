@@ -221,7 +221,7 @@ type NVTInfoCount struct {
 
 // NVTInfo is the <info> element of get_info. See the GMP protocol docs for details.
 type NVTInfo struct {
-	ID               string               `xml:"id,attr,omitempty"`
+	ID               string               `xml:"id,attr,omitempty" gmpoverride:"T-9 nvt review: command_get_info.xml declares info/@id as type integer, and the live-captured schema snapshot agrees, but internal/gmptest/testdata/live/get_info/001_response.xml's type=cve lookups return the CVE name itself (\"CVE-1999-0001\") as @id, not a numeric ID — real wire data the generated *int can't even decode"`
 	Owner            NVTOwner             `xml:"owner"`
 	Name             string               `xml:"name"`
 	Comment          string               `xml:"comment"`
@@ -350,7 +350,7 @@ type NVTNode struct {
 	Operator    string          `xml:"operator"`
 	Negate      string          `xml:"negate"`
 	MatchString *NVTMatchString `xml:"match_string,omitempty"`
-	Node        []NVTNode       `xml:"node,omitempty"`
+	Node        []NVTNode       `xml:"node,omitempty" gmpoverride:"T-9 nvt review: node/node is a genuine self-reference (see DefectAllowlist's undefined-type entry for this path) that the mechanical mapping falls back to string for; Go structs may reference themselves through a slice field, so retyping it back to its own generated struct name is a correct closed-form fix, not a hand patch"`
 }
 
 // NVTMatchString is the <match_string> element of get_info. See the GMP protocol docs for details.

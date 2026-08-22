@@ -95,7 +95,7 @@ func (r Report) writeTotals(b *strings.Builder) {
 				actionable++
 				bySide[f.Side]++
 			}
-			if f.Confirmed {
+			if f.Confirmed && !f.Suppressed {
 				confirmed++
 			}
 		}
@@ -216,7 +216,7 @@ func (r Report) writeConfirmed(b *strings.Builder) {
 	var lines []string
 	for _, res := range r.Results {
 		for _, f := range res.Findings {
-			if f.Confirmed {
+			if f.Confirmed && !f.Suppressed {
 				lines = append(lines, fmt.Sprintf("  %-24s %s", res.Command, f.Path))
 			}
 		}

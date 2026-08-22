@@ -440,6 +440,36 @@ func TestBooleanAsStringIsNotFlagged(t *testing.T) {
 	}
 }
 
+// T-34 Part 2: checkType now honors a retyped field's gmpoverride reason,
+// reversing T-24/T-33's deliberate keep-visible choice for get_info's
+// id-style findings — FieldTypeOverrides is already evidence, not a guess.
+func TestTypeMismatchSuppressedWithOverrideReason(t *testing.T) {
+	body := `
+    <name>x</name>
+    <pattern><attrib><name>id</name><type>integer</type></attrib></pattern>
+    <response><pattern><attrib><name>status</name><type>status</type><required>1</required></attrib></pattern></response>`
+	type req struct {
+		XMLName xml.Name `xml:"x"`
+		ID      string   `xml:"id,attr" gmpoverride:"evidence for id"`
+	}
+	r := diff(t, body, &req{}, &respOK{})
+	if got := only(r, CatType); len(got) != 0 {
+		t.Errorf("A retyped field's TYPE finding must come back suppressed, got %v", render(got))
+	}
+	var found bool
+	for _, f := range r.Findings {
+		if f.Path == "/x/@id" && f.Category == CatType {
+			found = true
+			if !f.Suppressed || f.Reason != "evidence for id" {
+				t.Errorf("At /x/@id: got Suppressed=%v Reason=%q, want suppressed with %q", f.Suppressed, f.Reason, "evidence for id")
+			}
+		}
+	}
+	if !found {
+		t.Errorf("Expected a TYPE finding at /x/@id, got %v", render(r.Findings))
+	}
+}
+
 func TestSchemaDefectsAreNotChargedToGo(t *testing.T) {
 	body := `
     <name>x</name>
@@ -651,4 +681,111 @@ ADDED
 			t.Errorf("Got %q, want %q", got[i], want[i])
 		}
 	}
+}
+
+// T-34: an `,innerxml` field captures its element's schema-declared children
+// byte-for-byte (see commands.HelpResponse.Text), so a schema child with no
+// Go pairing under it must come back suppressed, not actionable.
+func TestInnerxmlSuppressesUnmatchedSchemaChild(t *testing.T) {
+	body := `
+    <name>x</name>
+    <pattern><o><e>b</e></o></pattern>
+    <ele><name>b</name><pattern>text</pattern></ele>
+    <response><pattern><attrib><name>status</name><type>status</type><required>1</required></attrib></pattern></response>`
+	type req struct {
+		XMLName xml.Name `xml:"x"`
+		Text    string   `xml:",innerxml"`
+	}
+	r := diff(t, body, &req{}, &respOK{})
+	if got := only(r, CatMissing); len(got) != 0 {
+		t.Errorf("innerxml captures <b> verbatim; MISSING must come back suppressed, got %v", render(got))
+	}
+	var found bool
+	for _, f := range r.Findings {
+		if f.Path == "/x/b" && f.Category == CatMissing {
+			found = true
+			if !f.Suppressed || !strings.Contains(f.Reason, "innerxml") {
+				t.Errorf("At /x/b: got Suppressed=%v Reason=%q, want suppressed mentioning innerxml", f.Suppressed, f.Reason)
+			}
+		}
+	}
+	if !found {
+		t.Errorf("Expected a MISSING finding at /x/b, got %v", render(r.Findings))
+	}
+}
+
+// The counterpart to TestInnerxmlSuppressesUnmatchedSchemaChild: `,comment`
+// only ever captures XML comments, never elements, so it must not earn the
+// same treatment.
+func TestCommentDoesNotSuppressUnmatchedSchemaChild(t *testing.T) {
+	body := `
+    <name>x</name>
+    <pattern><o><e>b</e></o></pattern>
+    <ele><name>b</name><pattern>text</pattern></ele>
+    <response><pattern><attrib><name>status</name><type>status</type><required>1</required></attrib></pattern></response>`
+	type req struct {
+		XMLName xml.Name `xml:"x"`
+		Note    string   `xml:",comment"`
+	}
+	wantOne(t, diff(t, body, &req{}, &respOK{}), CatMissing, "/x/b")
+}
+
+// T-34's get_report_configs mechanism: a gmpmissing/gmpmissingreason tag on
+// the field pointing at a struct must suppress exactly the named child's
+// MISSING and no other — the named-field counterpart to
+// TestChardataWithOverrideReasonDoesNotHideSiblingMissing's precedent.
+func TestMissingChildKeysSuppressesExactlyThatChild(t *testing.T) {
+	body := `
+    <name>x</name>
+    <pattern><e>a</e></pattern>
+    <ele>
+      <name>a</name>
+      <pattern><attrib><name>using_default</name><type>boolean</type></attrib><e>other</e></pattern>
+      <ele><name>other</name><pattern>text</pattern></ele>
+    </ele>
+    <response><pattern><attrib><name>status</name><type>status</type><required>1</required></attrib></pattern></response>`
+	type req struct {
+		XMLName xml.Name `xml:"x"`
+		A       struct {
+			ReportFormat string `xml:"report_format,omitempty"`
+		} `xml:"a" gmpmissing:"attr:using_default" gmpmissingreason:"relocated to param"`
+	}
+	r := diff(t, body, &req{}, &respOK{})
+	wantOne(t, r, CatMissing, "/x/a/other")
+
+	var found bool
+	for _, f := range r.Findings {
+		if f.Path == "/x/a/@using_default" {
+			found = true
+			if f.Category != CatMissing || !f.Suppressed || f.Reason != "relocated to param" {
+				t.Errorf("At /x/a/@using_default: got category %s suppressed=%v reason=%q, want CatMissing suppressed=true reason=%q",
+					f.Category, f.Suppressed, f.Reason, "relocated to param")
+			}
+		}
+	}
+	if !found {
+		t.Errorf("Expected a finding at /x/a/@using_default, got %v", render(r.Findings))
+	}
+}
+
+// Fail-closed: a gmpmissing tag without a paired gmpmissingreason is
+// malformed metadata, not a validated relocation — it must not suppress
+// anything, the same discipline TestUnpairedChardataMoveStaysActionable
+// applies to the chardata case.
+func TestMissingChildKeysWithoutReasonStaysActionable(t *testing.T) {
+	body := `
+    <name>x</name>
+    <pattern><e>a</e></pattern>
+    <ele>
+      <name>a</name>
+      <pattern><attrib><name>using_default</name><type>boolean</type></attrib></pattern>
+    </ele>
+    <response><pattern><attrib><name>status</name><type>status</type><required>1</required></attrib></pattern></response>`
+	type req struct {
+		XMLName xml.Name `xml:"x"`
+		A       struct {
+			Dummy string `xml:"dummy,omitempty"`
+		} `xml:"a" gmpmissing:"attr:using_default"`
+	}
+	wantOne(t, diff(t, body, &req{}, &respOK{}), CatMissing, "/x/a/@using_default")
 }

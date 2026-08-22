@@ -2713,7 +2713,7 @@ type GetReportConfigs struct {
 type GetReportConfigsParam struct {
 	Name         string                 `xml:"name"`
 	Type         ReportConfigType       `xml:"type"`
-	Value        ReportConfigParamValue `xml:"value"`
+	Value        ReportConfigParamValue `xml:"value" gmpmissing:"attr:using_default" gmpmissingreason:"T-9 report_config review: schema's <pattern> declares using_default as an attribute of <value>, but command_get_report_configs.xml's own <example> and internal/gmptest/testdata/upstream/get_report_configs/001_{response,fidelity}.txt both place it on the enclosing <param> instead; decoding a real response through the schema-faithful nesting leaves UsingDefault permanently false"`
 	Default      ReportConfigDefault    `xml:"default"`
 	Options      *ReportConfigOptions   `xml:"options,omitempty"`
 	UsingDefault GMPBool                `xml:"using_default,attr" gmpoverride:"T-9 report_config review: real position of using_default that FieldSuppressions[\"get_report_configs:/report_config/param/value\"] removes — command_get_report_configs.xml's own <example> and internal/gmptest/testdata/upstream/get_report_configs/001_{response,fidelity}.txt both place the attribute on <param>, not <value>"`
@@ -4025,7 +4025,7 @@ type NVTFilters struct {
 }
 
 type NVTInfo struct {
-	ID               string               `xml:"id,attr,omitempty"`
+	ID               string               `xml:"id,attr,omitempty" gmpoverride:"T-9 nvt review: command_get_info.xml declares info/@id as type integer, and the live-captured schema snapshot agrees, but internal/gmptest/testdata/live/get_info/001_response.xml's type=cve lookups return the CVE name itself (\"CVE-1999-0001\") as @id, not a numeric ID — real wire data the generated *int can't even decode"`
 	Owner            NVTOwner             `xml:"owner"`
 	Name             string               `xml:"name"`
 	Comment          string               `xml:"comment"`
@@ -4099,7 +4099,7 @@ type NVTNode struct {
 	Operator    string          `xml:"operator"`
 	Negate      string          `xml:"negate"`
 	MatchString *NVTMatchString `xml:"match_string,omitempty"`
-	Node        []NVTNode       `xml:"node,omitempty"`
+	Node        []NVTNode       `xml:"node,omitempty" gmpoverride:"T-9 nvt review: node/node is a genuine self-reference (see DefectAllowlist's undefined-type entry for this path) that the mechanical mapping falls back to string for; Go structs may reference themselves through a slice field, so retyping it back to its own generated struct name is a correct closed-form fix, not a hand patch"`
 }
 
 type NVTOrder string
@@ -4451,7 +4451,7 @@ type NoteResultNVT struct {
 	Severities NoteSeverities `xml:"severities"`
 	CPE        string         `xml:"cpe"`
 	Tags       string         `xml:"tags"`
-	Refs       *NoteRefs      `xml:"refs,omitempty"`
+	Refs       *NoteRefs      `xml:"refs,omitempty" gmpoverride:"T-26: nvt/refs is schema-required but only sometimes present on the wire, fabricating an empty <refs></refs> on remarshal for every sibling NVT that never had one — same fabrication class as T-23b's count-wrapper fix"`
 	EPSS       *NoteEPSS      `xml:"epss,omitempty"`
 }
 
@@ -4722,7 +4722,7 @@ type OverrideResultNVT struct {
 	Severities OverrideSeverities `xml:"severities"`
 	CPE        string             `xml:"cpe"`
 	Tags       string             `xml:"tags"`
-	Refs       *OverrideRefs      `xml:"refs,omitempty"`
+	Refs       *OverrideRefs      `xml:"refs,omitempty" gmpoverride:"T-26: nvt/refs is schema-required but only sometimes present on the wire, fabricating an empty <refs></refs> on remarshal for every sibling NVT that never had one — same fabrication class as T-23b's count-wrapper fix"`
 	EPSS       *OverrideEPSS      `xml:"epss,omitempty"`
 }
 
@@ -5664,11 +5664,11 @@ type ReportNVT struct {
 	Name       string           `xml:"name"`
 	Type       string           `xml:"type"`
 	Family     string           `xml:"family"`
-	CVSSBase   float64          `xml:"cvss_base"`
+	CVSSBase   float64          `xml:"cvss_base" gmpoverride:"T-9 report review: command_get_reports.xml's schema declares results/result/nvt/cvss_base as type integer, but internal/gmptest/testdata/live/create_report/001_request.xml and testdata/upstream/get_reports/002_response.xml both send a real decimal value (\"5.0\") for it — the same element name is declared type severity (float64) a few levels over at errors/error/nvt/cvss_base, so this is the schema itself disagreeing with its own declaration, not a defect in the generated int"`
 	Severities ReportSeverities `xml:"severities"`
 	CPE        string           `xml:"cpe"`
 	Tags       string           `xml:"tags"`
-	Refs       *ReportRefs      `xml:"refs,omitempty"`
+	Refs       *ReportRefs      `xml:"refs,omitempty" gmpoverride:"T-26: nvt/refs is schema-required but only sometimes present on the wire, fabricating an empty <refs></refs> on remarshal for every sibling NVT that never had one — same fabrication class as T-23b's count-wrapper fix"`
 	EPSS       *ReportEPSS      `xml:"epss,omitempty"`
 }
 
@@ -6267,12 +6267,12 @@ type ResultNVT struct {
 	Name       string           `xml:"name"`
 	Type       string           `xml:"type"`
 	Family     string           `xml:"family"`
-	CVSSBase   float64          `xml:"cvss_base"`
+	CVSSBase   float64          `xml:"cvss_base" gmpoverride:"T-9 result review, finding 2: same schema/wire disagreement as create_report/get_reports above — command_get_results.xml's served schema declares result/nvt/cvss_base as type integer, but internal/gmptest/testdata/upstream/get_results/001_response.xml sends a real decimal value (\"5.0\") for it, which a plain int would truncate on round trip. Not every fixture agrees on shape — upstream 002 sends a whole number (\"9\") and all 4 live fixtures send \"0.0\" — but upstream 001's decimal alone is sufficient to rule out int"`
 	Severities ResultSeverities `xml:"severities"`
 	CPE        string           `xml:"cpe"`
 	Tags       string           `xml:"tags"`
 	Solution   *ResultSolution  `xml:"solution,omitempty" gmpoverride:"T-9 result review, finding 1: internal/codegen/testdata/schema/get_results.json's result/nvt node has no solution child, but all 4 live fixtures (internal/gmptest/testdata/live/get_results/00{1,2,3,4}_response.xml) send <solution type=''> right after </tags>, retained as DROPPED in every one of those fixtures' own _fidelity.txt. The full shape — optional element, chardata text plus optional type/method attributes — is the exact declaration get_nvts' OWN live schema snapshot (internal/codegen/testdata/schema/get_nvts.json's get_nvts_response/nvt/solution) already carries for the identical nvt/solution reuse, already proven correct as commands.NVTSolution (commands/get_nvts.go); no live get_results fixture happens to send a non-empty type, method or text, so those parts are evidenced by get_nvts' own schema declaration and generated type, not by get_results' own captures"`
-	Refs       *ResultRefs      `xml:"refs,omitempty"`
+	Refs       *ResultRefs      `xml:"refs,omitempty" gmpoverride:"T-26: nvt/refs is schema-required but only sometimes present on the wire, fabricating an empty <refs></refs> on remarshal for every sibling NVT that never had one — same fabrication class as T-23b's count-wrapper fix"`
 	EPSS       *ResultEPSS      `xml:"epss,omitempty"`
 }
 
@@ -6887,7 +6887,7 @@ type SettingsFilters struct {
 }
 
 type SettingsResource struct {
-	ID   string `xml:"id,attr,omitempty"`
+	ID   string `xml:"id,attr,omitempty" gmpoverride:"T-9 settings review: command_get_resource_names.xml declares resource/@id as type integer, but its own baked <example> and internal/gmptest/testdata/live/get_resource_names/{001,002}_response.xml and testdata/upstream/get_resource_names/001_response.xml all show a UUID string (e.g. \"5b6b6aef-b320-42ca-899f-3161ee2a4195\") — real wire data the generated *int can't even decode, same class as get_info's id entry above"`
 	Name string `xml:"name"`
 }
 
@@ -6951,7 +6951,7 @@ type SystemReport struct {
 type SystemReportReport struct {
 	Value     string   `xml:",chardata"`
 	Format    string   `xml:"format,attr"`
-	Duration  string   `xml:"duration,attr"`
+	Duration  string   `xml:"duration,attr" gmpoverride:"T-9 system_report review: command_get_system_reports.xml declares report/@duration as a required integer, but internal/gmptest/testdata/live/get_system_reports/001_response.xml sends duration=\"\" (empty string) for it — a plain int silently decodes that as zero and then re-encodes as \"0\", changing the wire value on round trip (confirmed by that fixture's own pre-adoption CHANGED finding); same class of schema/wire type disagreement as get_info's id below, retyped to string to preserve the exact captured value"`
 	StartTime *GMPTime `xml:"start_time,attr,omitempty" gmpoverride:"T-9 system_report review: command_get_system_reports.xml's <report> pattern never declares start_time, but internal/gmptest/testdata/live/get_system_reports/001_response.xml sends a real start_time=\"0001-01-01T00:00:00Z\" attribute — undeclared but genuine wire data, confirmed dropped by that fixture's own pre-adoption fidelity report; testdata/upstream/get_system_reports/002_response.xml proves the attribute is also genuinely absent on other reports, so it is pointer-typed (unlike this codebase's usual non-pointer GMPTime convention) to actually honor omitempty on re-encode rather than fabricate a zero timestamp for a report that never had one"`
 	EndTime   *GMPTime `xml:"end_time,attr,omitempty" gmpoverride:"T-9 system_report review: same undeclared-but-real, genuinely optional attribute as start_time above, same evidence and same pointer-typing rationale"`
 }

@@ -204,7 +204,7 @@ type OverrideResultNVT struct {
 	Severities OverrideSeverities `xml:"severities"`
 	CPE        string             `xml:"cpe"`
 	Tags       string             `xml:"tags"`
-	Refs       *OverrideRefs      `xml:"refs,omitempty"`
+	Refs       *OverrideRefs      `xml:"refs,omitempty" gmpoverride:"T-26: nvt/refs is schema-required but only sometimes present on the wire, fabricating an empty <refs></refs> on remarshal for every sibling NVT that never had one — same fabrication class as T-23b's count-wrapper fix"`
 	EPSS       *OverrideEPSS      `xml:"epss,omitempty"`
 }
 

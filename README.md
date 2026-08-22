@@ -49,7 +49,7 @@ types are continuously checked against three independent, committed oracles (num
 
 | Check | Result |
 |---|---|
-| Schema conformance | 108/119 commands fully conformant (91%); each of the 20 remaining findings is a [documented decision](docs/review-2026-08.md), none a defect against the supported gvmd |
+| Schema conformance | 113/119 commands fully conformant (95%); each of the 15 remaining findings is a [documented decision](docs/review-2026-08.md), none a defect against the supported gvmd |
 | Request wire fidelity | 325/338 captured requests re-encode with zero loss (96%) |
 | Response wire fidelity | 269/338 captured live/upstream responses re-encode with zero loss (80%); every loss is classified and documented |
 | Public API stability | every exported declaration is snapshot-checked in CI — the API cannot change silently |
