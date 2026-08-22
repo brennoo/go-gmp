@@ -27,6 +27,7 @@ total exported declarations: 1803
 ## github.com/brennoo/go-gmp
 
 type Client interface {
+	Close() error
 	Authenticate(ctx context.Context, cmd *commands.Authenticate) (resp *commands.AuthenticateResponse, err error)
 	DescribeAuth(ctx context.Context, cmd *commands.DescribeAuth) (resp *commands.DescribeAuthResponse, err error)
 	ModifyAuth(ctx context.Context, cmd *commands.ModifyAuth) (resp *commands.ModifyAuthResponse, err error)
@@ -138,8 +139,8 @@ type Client interface {
 	ModifyLicense(ctx context.Context, cmd *commands.ModifyLicense) (resp *commands.ModifyLicenseResponse, err error)
 	GetLicense(ctx context.Context, cmd *commands.GetLicense) (resp *commands.GetLicenseResponse, err error)
 	GetFeatures(ctx context.Context, cmd *commands.GetFeatures) (resp *commands.GetFeaturesResponse, err error)
-	GetAggregates(ctx context.Context, args ...filtering.FilterArg) (*commands.GetAggregatesResponse, error)
-	GetResourceNames(ctx context.Context, args ...filtering.FilterArg) (*commands.GetResourceNamesResponse, error)
+	GetAggregates(ctx context.Context, cmd *commands.GetAggregates) (resp *commands.GetAggregatesResponse, err error)
+	GetResourceNames(ctx context.Context, cmd *commands.GetResourceNames) (resp *commands.GetResourceNamesResponse, err error)
 	GetInfo(ctx context.Context, cmd *commands.GetInfo) (resp *commands.GetInfoResponse, err error)
 	GetVersion(ctx context.Context, cmd *commands.GetVersion) (resp *commands.GetVersionResponse, err error)
 	Help(ctx context.Context, cmd *commands.Help) (resp *commands.HelpResponse, err error)

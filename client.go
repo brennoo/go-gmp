@@ -8,7 +8,25 @@ import (
 	"github.com/brennoo/go-gmp/commands/pagination"
 )
 
+// Client is a consumer interface, not a plugin point: callers depend on it,
+// they do not implement it. It is expected to grow — new GMP commands, and
+// pre-1.0 additions like observability hooks, land here as new methods.
+// External implementations (mocks included) should embed Client rather than
+// satisfy it by hand, so a future addition does not break their build.
+//
+// Get* methods split by whether the command has any schema-required
+// parameter: a command whose request is filter-only takes
+// Get*(ctx, ...filtering.FilterArg) and has a matching Get*Raw(ctx,
+// *commands.GetX) for direct construction; a command with a required
+// parameter (an ID, a resource type, ...) takes Get*(ctx, *commands.GetX)
+// directly, since a filter-only signature could never set that parameter. Do
+// not add a filter-variadic Get* for a command with a required field.
 type Client interface {
+	// Close releases the underlying Connection. Safe to call multiple times;
+	// safe to call while a request is in flight, which fails that request
+	// rather than blocking Close.
+	Close() error
+
 	// Authentication
 	Authenticate(ctx context.Context, cmd *commands.Authenticate) (resp *commands.AuthenticateResponse, err error)
 	DescribeAuth(ctx context.Context, cmd *commands.DescribeAuth) (resp *commands.DescribeAuthResponse, err error)
@@ -151,8 +169,8 @@ type Client interface {
 	ModifyLicense(ctx context.Context, cmd *commands.ModifyLicense) (resp *commands.ModifyLicenseResponse, err error)
 	GetLicense(ctx context.Context, cmd *commands.GetLicense) (resp *commands.GetLicenseResponse, err error)
 	GetFeatures(ctx context.Context, cmd *commands.GetFeatures) (resp *commands.GetFeaturesResponse, err error)
-	GetAggregates(ctx context.Context, args ...filtering.FilterArg) (*commands.GetAggregatesResponse, error)
-	GetResourceNames(ctx context.Context, args ...filtering.FilterArg) (*commands.GetResourceNamesResponse, error)
+	GetAggregates(ctx context.Context, cmd *commands.GetAggregates) (resp *commands.GetAggregatesResponse, err error)
+	GetResourceNames(ctx context.Context, cmd *commands.GetResourceNames) (resp *commands.GetResourceNamesResponse, err error)
 
 	// Miscellaneous
 	GetInfo(ctx context.Context, cmd *commands.GetInfo) (resp *commands.GetInfoResponse, err error)

@@ -16,6 +16,13 @@ func TestNew(t *testing.T) {
 	}
 }
 
+func TestClose(t *testing.T) {
+	cli := New(MockedConnection())
+	if err := cli.Close(); err != nil {
+		t.Fatalf("Unexpected error during Close: %s", err)
+	}
+}
+
 func TestGetPreferences(t *testing.T) {
 	cli := New(MockedConnection())
 	if cli == nil {
@@ -334,7 +341,7 @@ func TestGetResourceNames(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	resp, err := cli.GetResourceNames(ctx, "name=test-resource")
+	resp, err := cli.GetResourceNames(ctx, &commands.GetResourceNames{Type: "os"})
 	if err != nil {
 		t.Fatalf("Unexpected error during GetResourceNames: %s", err)
 	}
@@ -371,7 +378,7 @@ func TestGetAggregates(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	resp, err := cli.GetAggregates(ctx, "name=test-aggregate")
+	resp, err := cli.GetAggregates(ctx, &commands.GetAggregates{Type: "nvt"})
 	if err != nil {
 		t.Fatalf("Unexpected error during GetAggregates: %s", err)
 	}
