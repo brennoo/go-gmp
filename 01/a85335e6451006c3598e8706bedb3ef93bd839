@@ -1,0 +1,22 @@
+README.md
+  s_6b74b50f8b69ed::t_4f57aa182e37c4 10-18,22-30,33,41-43,45-48,50-55,57-60
+  s_6b74b50f8b69ed::t_43afa57ef443a0 4
+  s_6b74b50f8b69ed::t_f0cd83af5808bf 5
+  s_6b74b50f8b69ed::t_6ba5a7a8cfa08d 321-324
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "01a85335e6451006c3598e8706bedb3ef93bd839",
+  "prompts": {},
+  "sessions": {
+    "s_6b74b50f8b69ed": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "019fdd9a-6605-7b1e-bab6-fd85490a37f6",
+        "model": "0fe02vv2qtwc"
+      },
+      "human_author": "Brenno Oliveira <brenno.oliveira@deliveryhero.com>"
+    }
+  }
+}
