@@ -32,6 +32,11 @@ func execute[Resp any](ctx context.Context, conn gmp.Connection, cmd any) (*Resp
 	return resp, err
 }
 
+// Close releases the underlying Connection.
+func (cli *client) Close() error {
+	return cli.conn.Close()
+}
+
 func (cli *client) Authenticate(ctx context.Context, cmd *commands.Authenticate) (*commands.AuthenticateResponse, error) {
 	return execute[commands.AuthenticateResponse](ctx, cli.conn, cmd)
 }
@@ -499,38 +504,12 @@ func (cli *client) GetSettings(ctx context.Context, args ...filtering.FilterArg)
 	return cli.GetSettingsRaw(ctx, cmd)
 }
 
-// GetResourceNamesRaw provides the low-level method for direct command execution.
-func (cli *client) GetResourceNamesRaw(ctx context.Context, cmd *commands.GetResourceNames) (*commands.GetResourceNamesResponse, error) {
+func (cli *client) GetResourceNames(ctx context.Context, cmd *commands.GetResourceNames) (*commands.GetResourceNamesResponse, error) {
 	return execute[commands.GetResourceNamesResponse](ctx, cli.conn, cmd)
 }
 
-// GetResourceNames retrieves resource names with optional filters.
-func (cli *client) GetResourceNames(ctx context.Context, args ...filtering.FilterArg) (*commands.GetResourceNamesResponse, error) {
-	filter, err := filtering.BuildFilterFromArgs(args...)
-	if err != nil {
-		return nil, fmt.Errorf("GetResourceNames: %w", err)
-	}
-	cmd := &commands.GetResourceNames{
-		Filter: filter,
-	}
-	return cli.GetResourceNamesRaw(ctx, cmd)
-}
-
-// GetAggregatesRaw provides the low-level method for direct command execution.
-func (cli *client) GetAggregatesRaw(ctx context.Context, cmd *commands.GetAggregates) (*commands.GetAggregatesResponse, error) {
+func (cli *client) GetAggregates(ctx context.Context, cmd *commands.GetAggregates) (*commands.GetAggregatesResponse, error) {
 	return execute[commands.GetAggregatesResponse](ctx, cli.conn, cmd)
-}
-
-// GetAggregates retrieves aggregates with optional filters.
-func (cli *client) GetAggregates(ctx context.Context, args ...filtering.FilterArg) (*commands.GetAggregatesResponse, error) {
-	filter, err := filtering.BuildFilterFromArgs(args...)
-	if err != nil {
-		return nil, fmt.Errorf("GetAggregates: %w", err)
-	}
-	cmd := &commands.GetAggregates{
-		Filter: filter,
-	}
-	return cli.GetAggregatesRaw(ctx, cmd)
 }
 
 func (cli *client) GetFeatures(ctx context.Context, cmd *commands.GetFeatures) (*commands.GetFeaturesResponse, error) {
