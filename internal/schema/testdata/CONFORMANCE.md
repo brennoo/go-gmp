@@ -34,23 +34,23 @@ optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            119
-fully conformant:             108
-with actionable findings:     11
-actionable findings:          20  (request 9, response 11)
-suppressed findings:          143
-confirmed by fidelity corpus: 1
+fully conformant:             113
+with actionable findings:     6
+actionable findings:          15  (request 9, response 6)
+suppressed findings:          148
+confirmed by fidelity corpus: 0
 in the schema, not in Go:     36  (create_agent_group, create_oci_image_target, create_web_application_target, delete_agent, delete_agent_group, delete_oci_image_target, delete_web_application_target, export_scan_report, get_agent_groups, get_agent_installer_instruction, get_agent_support_bundle, get_agents, get_audit_report, get_audit_report_hosts, get_credential_stores, get_integration_configs, get_oci_image_targets, get_report_applications, get_report_closed_cves, get_report_cves, get_report_errors, get_report_hosts, get_report_operating_systems, get_report_ports, get_report_tls_certificates, get_report_vulns, get_scan_report, get_timezones, get_web_application_targets, modify_agent, modify_agent_control_scan_config, modify_agent_group, modify_integration_config, modify_oci_image_target, modify_web_application_target, sync_agents)
 in Go, not in the schema:     0
 
 ### Findings by category
 
                  actionable suppressed
-  MISSING                17         25
+  MISSING                15         27
   EXTRA                   0         72
   CARDINALITY             0          2
   KIND                    0          0
   OMITEMPTY               0         44
-  TYPE                    3          0
+  TYPE                    0          3
   SCHEMA-DEFECT         121          0
 
 ### Schema defects by class
@@ -86,12 +86,7 @@ taken against upstream main (155 commands). Two reasons, both expected:
   get_tasks                     3   MISSING=3
   modify_task                   3   MISSING=3
   get_credentials               2   MISSING=2
-  get_info                      1   TYPE=1
-  get_report_configs            1   MISSING=1
-  get_resource_names            1   TYPE=1
   get_scanners                  1   MISSING=1
-  get_system_reports            1   TYPE=1
-  help                          1   MISSING=1
 
 ### Confirmed by both oracles
 
@@ -104,7 +99,7 @@ never carry this mark. That is a gap in the cross-reference, not evidence that
 requests are in better shape — get_notes models none of its seven request
 attributes, and one of its own captured request fixtures uses three of them.
 
-  get_report_configs       /get_report_configs_response/report_config/param/value/@using_default
+  (none)
 
 ## Per command
 
@@ -533,7 +528,7 @@ MISSING=1  EXTRA=3  OMITEMPTY=1  TYPE=1  SCHEMA-DEFECT=2
   OMITEMPTY     response /get_info_response/info_count
                 schema says required, InfoCount is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
   TYPE          response /get_info_response/info/@id
-                schema type integer, Go ID is string (want int)
+                schema type integer, Go ID is string (want int)  [suppressed: T-9 nvt review: command_get_info.xml declares info/@id as type integer, and the live-captured schema snapshot agrees, but internal/gmptest/testdata/live/get_info/001_response.xml's type=cve lookups return the CVE name itself ("CVE-1999-0001") as @id, not a numeric ID — real wire data the generated *int can't even decode]
   SCHEMA-DEFECT response /get_info_response/info/cve/configuration_nodes/node/node
                 undefined-type: node is undefined and has no alias
   SCHEMA-DEFECT response /get_info_response/info/web_application_vt/refs/ref
@@ -644,7 +639,7 @@ conformant
 MISSING=2  EXTRA=3  OMITEMPTY=1  SCHEMA-DEFECT=1
 
   MISSING       response /get_report_configs_response/report_config/param/value/@using_default
-                required attr using_default is not modelled  [fidelity]
+                required attr using_default is not modelled  [fidelity]  [suppressed: T-9 report_config review: schema's <pattern> declares using_default as an attribute of <value>, but command_get_report_configs.xml's own <example> and internal/gmptest/testdata/upstream/get_report_configs/001_{response,fidelity}.txt both place it on the enclosing <param> instead; decoding a real response through the schema-faithful nesting leaves UsingDefault permanently false]
   MISSING       response /get_report_configs_response/sort/#text
                 schema also declares character data (text) here; Go commands.ReportConfigSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
   EXTRA         response /get_report_configs_response/report_config/param/@using_default
@@ -721,7 +716,7 @@ MISSING=1  EXTRA=2  OMITEMPTY=3  SCHEMA-DEFECT=13
 TYPE=1  SCHEMA-DEFECT=1
 
   TYPE          response /get_resource_names_response/resource/@id
-                schema type integer, Go ID is string (want int)
+                schema type integer, Go ID is string (want int)  [suppressed: T-9 settings review: command_get_resource_names.xml declares resource/@id as type integer, but its own baked <example> and internal/gmptest/testdata/live/get_resource_names/{001,002}_response.xml and testdata/upstream/get_resource_names/001_response.xml all show a UUID string (e.g. "5b6b6aef-b320-42ca-899f-3161ee2a4195") — real wire data the generated *int can't even decode, same class as get_info's id entry above]
   SCHEMA-DEFECT response /get_resource_names_response/type
                 undefined-type: type is undefined and has no alias
 
@@ -851,7 +846,7 @@ EXTRA=3  TYPE=1
   EXTRA         response /get_system_reports_response/truncated
                 Go field Truncated string has no counterpart in the schema  [suppressed: T-9 system_report review: command_get_system_reports.xml's response <pattern> never declares <truncated>, but the command's own <example> — reproduced verbatim in testdata/upstream/get_system_reports/001_response.xml — shows a real <truncated>...</truncated> sibling of <system_report>, the same pattern-vs-example disagreement as get_settings' nested setting; no live capture against current gvmd ever populates it (truncation only occurs on long-running reports the pinned stack's fixtures never triggered), so this is weaker evidence than most restored fields here, but it follows the same precedent of trusting the schema's own baked example over a formal pattern that has already been shown to omit real fields elsewhere in this command]
   TYPE          response /get_system_reports_response/system_report/report/@duration
-                schema type integer, Go Duration is string (want int)
+                schema type integer, Go Duration is string (want int)  [suppressed: T-9 system_report review: command_get_system_reports.xml declares report/@duration as a required integer, but internal/gmptest/testdata/live/get_system_reports/001_response.xml sends duration="" (empty string) for it — a plain int silently decodes that as zero and then re-encodes as "0", changing the wire value on round trip (confirmed by that fixture's own pre-adoption CHANGED finding); same class of schema/wire type disagreement as get_info's id below, retyped to string to preserve the exact captured value]
 
 ### get_tags  (command_get_tags.xml)
 
@@ -1012,7 +1007,7 @@ MISSING=1  EXTRA=3  OMITEMPTY=1
 MISSING=1  SCHEMA-DEFECT=12
 
   MISSING       response /help_response/schema
-                optional elem schema is not modelled
+                optional elem schema is not modelled  [suppressed: captured via `,innerxml`; present on the wire but not individually addressable]
   SCHEMA-DEFECT response /help_response/schema/protocol/command/pattern/any/g/any
                 recursion-cut: any reaches itself; the walk is cut here
   SCHEMA-DEFECT response /help_response/schema/protocol/command/pattern/any/g/o/g

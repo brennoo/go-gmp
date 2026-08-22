@@ -1002,8 +1002,8 @@ func TestValidateReportConfigBeforeMatchesKnownConformance(t *testing.T) {
 			suppressed: map[string]int{schema.CatExtra: 1},
 		},
 		"get_report_configs": {
-			actionable: map[string]int{schema.CatDefect: 1, schema.CatMissing: 1},
-			suppressed: map[string]int{schema.CatExtra: 3, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
+			actionable: map[string]int{schema.CatDefect: 1},
+			suppressed: map[string]int{schema.CatExtra: 3, schema.CatMissing: 2, schema.CatOmitEmpty: 1},
 		},
 		"delete_report_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}
@@ -1021,12 +1021,13 @@ func TestValidateReportConfigBeforeMatchesKnownConformance(t *testing.T) {
 // family's post-swap gate, run at the same rigour every prior family's was.
 // Generation closes every finding on create_report_config and
 // modify_report_config except get_report_configs's allowlisted
-// empty-pattern SCHEMA-DEFECT and one deliberate MISSING: FieldSuppressions
-// relocates param/value/@using_default onto <param> via a matching
-// FieldOverride (see TestReportConfigUsingDefaultOnParamAgreesWithFixture and
-// TestReportConfigUsingDefaultDecodesOnGeneratedParam below); schema.CatMissing
-// has no suppression mechanism, so the relocation surfaces as one actionable
-// MISSING and one suppressed EXTRA rather than a clean close.
+// empty-pattern SCHEMA-DEFECT. FieldSuppressions relocates
+// param/value/@using_default onto <param> via a matching FieldOverride (see
+// TestReportConfigUsingDefaultOnParamAgreesWithFixture and
+// TestReportConfigUsingDefaultDecodesOnGeneratedParam below); T-34 taught
+// withMissingChildrenTag to carry that relocation's reason onto the
+// pointing field's own gmpmissing/gmpmissingreason tags, so both the
+// destination EXTRA and the source MISSING now close as suppressed.
 //
 // modify_report_config's suppressed EXTRA is
 // FieldOverrides["modify_report_config:/modify_report_config"] adding
@@ -1046,8 +1047,8 @@ func TestValidateReportConfigGeneratedMatchesOrImproves(t *testing.T) {
 			suppressed: map[string]int{schema.CatExtra: 1},
 		},
 		"get_report_configs": {
-			actionable: map[string]int{schema.CatDefect: 1, schema.CatMissing: 1},
-			suppressed: map[string]int{schema.CatExtra: 3, schema.CatMissing: 1, schema.CatOmitEmpty: 1},
+			actionable: map[string]int{schema.CatDefect: 1},
+			suppressed: map[string]int{schema.CatExtra: 3, schema.CatMissing: 2, schema.CatOmitEmpty: 1},
 		},
 		"delete_report_config": {actionable: map[string]int{}, suppressed: map[string]int{}},
 	}

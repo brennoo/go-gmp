@@ -132,7 +132,7 @@ type ReportConfigTag struct {
 type GetReportConfigsParam struct {
 	Name         string                 `xml:"name"`
 	Type         ReportConfigType       `xml:"type"`
-	Value        ReportConfigParamValue `xml:"value"`
+	Value        ReportConfigParamValue `xml:"value" gmpmissing:"attr:using_default" gmpmissingreason:"T-9 report_config review: schema's <pattern> declares using_default as an attribute of <value>, but command_get_report_configs.xml's own <example> and internal/gmptest/testdata/upstream/get_report_configs/001_{response,fidelity}.txt both place it on the enclosing <param> instead; decoding a real response through the schema-faithful nesting leaves UsingDefault permanently false"`
 	Default      ReportConfigDefault    `xml:"default"`
 	Options      *ReportConfigOptions   `xml:"options,omitempty"`
 	UsingDefault GMPBool                `xml:"using_default,attr" gmpoverride:"T-9 report_config review: real position of using_default that FieldSuppressions[\"get_report_configs:/report_config/param/value\"] removes — command_get_report_configs.xml's own <example> and internal/gmptest/testdata/upstream/get_report_configs/001_{response,fidelity}.txt both place the attribute on <param>, not <value>"`

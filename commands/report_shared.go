@@ -249,11 +249,11 @@ type ReportNVT struct {
 	Name       string           `xml:"name"`
 	Type       string           `xml:"type"`
 	Family     string           `xml:"family"`
-	CVSSBase   float64          `xml:"cvss_base"`
+	CVSSBase   float64          `xml:"cvss_base" gmpoverride:"T-9 report review: command_get_reports.xml's schema declares results/result/nvt/cvss_base as type integer, but internal/gmptest/testdata/live/create_report/001_request.xml and testdata/upstream/get_reports/002_response.xml both send a real decimal value (\"5.0\") for it — the same element name is declared type severity (float64) a few levels over at errors/error/nvt/cvss_base, so this is the schema itself disagreeing with its own declaration, not a defect in the generated int"`
 	Severities ReportSeverities `xml:"severities"`
 	CPE        string           `xml:"cpe"`
 	Tags       string           `xml:"tags"`
-	Refs       *ReportRefs      `xml:"refs,omitempty"`
+	Refs       *ReportRefs      `xml:"refs,omitempty" gmpoverride:"T-26: nvt/refs is schema-required but only sometimes present on the wire, fabricating an empty <refs></refs> on remarshal for every sibling NVT that never had one — same fabrication class as T-23b's count-wrapper fix"`
 	EPSS       *ReportEPSS      `xml:"epss,omitempty"`
 }
 

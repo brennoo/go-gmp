@@ -33,22 +33,30 @@ type GoNode struct {
 	// `,chardata` field, which means the element is a leaf carrying a value
 	// even though it is modelled as a struct.
 	Chardata bool
-	// CatchAll is set when the struct has a `,any` field, so unknown children
-	// are captured rather than dropped and EXTRA/MISSING mean less.
-	CatchAll bool
+	// CatchAll is set for a `,any` or `,innerxml` field: children are
+	// captured wholesale, so unmatchedSchema suppresses a schema child it
+	// can't pair with a Go field instead of reporting it missing.
+	// CatchAllReason names the tag and becomes the suppression reason.
+	CatchAll       bool
+	CatchAllReason string
 
 	// OverrideReason is non-empty when this leaf's struct tag carries a
-	// gmpoverride tag: either a real, evidence-backed protocol field the
-	// schema's own declared pattern does not produce (see internal/codegen's
-	// FieldOverrides), or a struct-typed field whose own chardata was
-	// relocated elsewhere (see internal/codegen's FieldSuppressions and
-	// checkChardata's missing-chardata case).
+	// gmpoverride tag: a field FieldOverrides added, a struct-typed field
+	// whose chardata was relocated (FieldSuppressions, checkChardata), or a
+	// scalar FieldTypeOverrides retyped (checkType).
 	OverrideReason string
-	// ChardataOverrideReason is OverrideReason's chardata counterpart. A
-	// `,chardata` field sets Chardata on its *parent* node rather than
-	// creating a child of its own (see addField), so the override reason has
-	// to live there too.
+	// ChardataOverrideReason is OverrideReason's chardata counterpart: a
+	// `,chardata` field sets Chardata on its *parent* node, so its override
+	// reason has to live there too.
 	ChardataOverrideReason string
+
+	// MissingChildKeys, in key(kind,name) form, names schema children
+	// FieldSuppressions relocated out of this struct entirely — no field
+	// survives to carry a gmpoverride tag, so the field pointing at the
+	// struct carries this instead. MissingChildReason is why. unmatchedSchema
+	// suppresses only a listed key, never an unrelated missing sibling.
+	MissingChildKeys   []string
+	MissingChildReason string
 }
 
 // GoRoot is the model of one command's request or response type.
@@ -154,8 +162,16 @@ func addField(n *GoNode, f reflect.StructField, seen map[reflect.Type]bool) {
 		return
 	case opts["any"]:
 		n.CatchAll = true
+		n.CatchAllReason = "captured via `,any`; present on the wire but not individually addressable"
 		return
-	case opts["innerxml"], opts["comment"]:
+	case opts["innerxml"]:
+		// Unlike `,comment` below, innerxml captures every child verbatim;
+		// `,comment` only ever captures XML comments, never elements.
+		n.Chardata = true
+		n.CatchAll = true
+		n.CatchAllReason = "captured via `,innerxml`; present on the wire but not individually addressable"
+		return
+	case opts["comment"]:
 		n.Chardata = true
 		return
 	}
@@ -204,6 +220,12 @@ func leafNode(name string, f reflect.StructField, opts map[string]bool) *GoNode 
 		kid.Kind = KindAttribute
 	}
 	kid.Card = cardOf(kid)
+	// gmpmissing/gmpmissingreason mirror gmpoverride's per-field recovery —
+	// see the MissingChildKeys doc comment.
+	if raw := f.Tag.Get("gmpmissing"); raw != "" {
+		kid.MissingChildKeys = strings.Split(raw, ",")
+		kid.MissingChildReason = f.Tag.Get("gmpmissingreason")
+	}
 	return kid
 }
 

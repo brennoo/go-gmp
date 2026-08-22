@@ -132,12 +132,12 @@ type ResultNVT struct {
 	Name       string           `xml:"name"`
 	Type       string           `xml:"type"`
 	Family     string           `xml:"family"`
-	CVSSBase   float64          `xml:"cvss_base"`
+	CVSSBase   float64          `xml:"cvss_base" gmpoverride:"T-9 result review, finding 2: same schema/wire disagreement as create_report/get_reports above — command_get_results.xml's served schema declares result/nvt/cvss_base as type integer, but internal/gmptest/testdata/upstream/get_results/001_response.xml sends a real decimal value (\"5.0\") for it, which a plain int would truncate on round trip. Not every fixture agrees on shape — upstream 002 sends a whole number (\"9\") and all 4 live fixtures send \"0.0\" — but upstream 001's decimal alone is sufficient to rule out int"`
 	Severities ResultSeverities `xml:"severities"`
 	CPE        string           `xml:"cpe"`
 	Tags       string           `xml:"tags"`
 	Solution   *ResultSolution  `xml:"solution,omitempty" gmpoverride:"T-9 result review, finding 1: internal/codegen/testdata/schema/get_results.json's result/nvt node has no solution child, but all 4 live fixtures (internal/gmptest/testdata/live/get_results/00{1,2,3,4}_response.xml) send <solution type=''> right after </tags>, retained as DROPPED in every one of those fixtures' own _fidelity.txt. The full shape — optional element, chardata text plus optional type/method attributes — is the exact declaration get_nvts' OWN live schema snapshot (internal/codegen/testdata/schema/get_nvts.json's get_nvts_response/nvt/solution) already carries for the identical nvt/solution reuse, already proven correct as commands.NVTSolution (commands/get_nvts.go); no live get_results fixture happens to send a non-empty type, method or text, so those parts are evidenced by get_nvts' own schema declaration and generated type, not by get_results' own captures"`
-	Refs       *ResultRefs      `xml:"refs,omitempty"`
+	Refs       *ResultRefs      `xml:"refs,omitempty" gmpoverride:"T-26: nvt/refs is schema-required but only sometimes present on the wire, fabricating an empty <refs></refs> on remarshal for every sibling NVT that never had one — same fabrication class as T-23b's count-wrapper fix"`
 	EPSS       *ResultEPSS      `xml:"epss,omitempty"`
 }
 

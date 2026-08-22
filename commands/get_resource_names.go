@@ -28,6 +28,6 @@ func (r *GetResourceNamesResponse) GetStatus() (string, string) {
 
 // SettingsResource is the <resource> element of get_resource_names. See the GMP protocol docs for details.
 type SettingsResource struct {
-	ID   string `xml:"id,attr,omitempty"`
+	ID   string `xml:"id,attr,omitempty" gmpoverride:"T-9 settings review: command_get_resource_names.xml declares resource/@id as type integer, but its own baked <example> and internal/gmptest/testdata/live/get_resource_names/{001,002}_response.xml and testdata/upstream/get_resource_names/001_response.xml all show a UUID string (e.g. \"5b6b6aef-b320-42ca-899f-3161ee2a4195\") — real wire data the generated *int can't even decode, same class as get_info's id entry above"`
 	Name string `xml:"name"`
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 )
@@ -214,12 +215,17 @@ func (c *Comparer) unmatchedSchema(res *Result, cmd Command, side string, sc *No
 			"schema declares %s, Go models it as %s (%s %s)", sc.Kind, other, gc.GoName, gc.GoType))
 		return
 	}
-	detail := fmt.Sprintf("%s %s %s is not modelled", sc.Card, sc.Kind, sc.Name)
-	if g.CatchAll {
-		detail += "; the parent has a `,any` field, so it is captured but not addressable"
-	}
-	f := Finding{Command: cmd.Name, Side: side, Category: CatMissing, Path: kp, Detail: detail}
+	f := Finding{Command: cmd.Name, Side: side, Category: CatMissing, Path: kp,
+		Detail: fmt.Sprintf("%s %s %s is not modelled", sc.Card, sc.Kind, sc.Name)}
 	f.Confirmed = c.confirmed(cmd.Name, kp)
+	switch {
+	case g.MissingChildReason != "" && slices.Contains(g.MissingChildKeys, key(sc.Kind, sc.Name)):
+		f.Suppressed = true
+		f.Reason = g.MissingChildReason
+	case g.CatchAll:
+		f.Suppressed = true
+		f.Reason = g.CatchAllReason
+	}
 	res.Findings = append(res.Findings, f)
 }
 
@@ -345,7 +351,10 @@ func checkOmitEmpty(res *Result, cmd Command, side string, s *Node, g *GoNode, p
 }
 
 // checkType compares the schema's lexical space against what the Go type can
-// hold.
+// hold. A retyped field's gmpoverride reason (FieldTypeOverrides, via
+// fieldOf) suppresses the finding — reversing T-24/T-33's deliberate
+// keep-visible choice: the type was already fixed with evidence, so the
+// finding now records that instead of staying actionable forever.
 func checkType(res *Result, cmd Command, side string, s *Node, g *GoNode, path string) {
 	t := Resolve(s.Type)
 	if t == "" || !g.IsScalarGo() {
@@ -353,27 +362,34 @@ func checkType(res *Result, cmd Command, side string, s *Node, g *GoNode, path s
 	}
 	base := strings.TrimPrefix(g.GoType, "*")
 
-	// The headline. "boolean" is declared as text: zero is false and anything
-	// else, including the empty string, is true. boolean_atoi is the opposite
-	// — it runs atoi first, so "" is false. Neither is Go's bool, and both
-	// need a custom marshaler.
-	if t == "boolean" || t == "boolean_atoi" {
-		if base == "bool" {
-			res.add(cmd, side, CatType, path, fmt.Sprintf(
-				"schema type %s is text (%s), Go %s is bool: '7' fails to decode and '1' re-emits as 'true'",
-				t, booleanNote(t), g.GoName))
+	var detail string
+	switch {
+	// The headline. "boolean" is declared as text: zero is false and
+	// anything else, including the empty string, is true. boolean_atoi is
+	// the opposite — it runs atoi first, so "" is false. Neither is Go's
+	// bool, and both need a custom marshaler.
+	case t == "boolean" || t == "boolean_atoi":
+		if base != "bool" {
+			return
 		}
-		return
+		detail = fmt.Sprintf("schema type %s is text (%s), Go %s is bool: '7' fails to decode and '1' re-emits as 'true'",
+			t, booleanNote(t), g.GoName)
+	default:
+		if want, ok := numericTypes[t]; ok && base == "string" {
+			detail = fmt.Sprintf("schema type %s, Go %s is string (want %s)", t, g.GoName, want)
+		} else if textual[t] && (base == "bool" || base == "int" || base == "float64") {
+			detail = fmt.Sprintf("schema type %s is text, Go %s is %s", t, g.GoName, base)
+		} else {
+			return
+		}
 	}
-	if want, ok := numericTypes[t]; ok && base == "string" {
-		res.add(cmd, side, CatType, path, fmt.Sprintf(
-			"schema type %s, Go %s is string (want %s)", t, g.GoName, want))
-		return
+
+	f := Finding{Command: cmd.Name, Side: side, Category: CatType, Path: path, Detail: detail}
+	if g.OverrideReason != "" {
+		f.Suppressed = true
+		f.Reason = g.OverrideReason
 	}
-	if textual[t] && (base == "bool" || base == "int" || base == "float64") {
-		res.add(cmd, side, CatType, path, fmt.Sprintf(
-			"schema type %s is text, Go %s is %s", t, g.GoName, base))
-	}
+	res.Findings = append(res.Findings, f)
 }
 
 func booleanNote(t string) string {

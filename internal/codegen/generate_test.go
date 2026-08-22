@@ -2332,6 +2332,134 @@ func TestChardataRelocationCrossUseMismatch(t *testing.T) {
 	}
 }
 
+// --- FieldSuppressions named-field relocation (T-34) ------------------------
+
+// twinNamedSuppressionCommands is twinChardataCommands' counterpart for a
+// named (non-chardata) relocation: <param>'s <value> child schema-declares
+// an attribute, <using_default>, that in practice lives on <param> itself —
+// get_report_configs' real shape.
+func twinNamedSuppressionCommands() (cmdA, cmdB schema.Command) {
+	shape := func(rootName string) *schema.Node {
+		return &schema.Node{
+			Name: rootName,
+			Children: []*schema.Node{
+				{
+					Name: "param", Kind: schema.KindElement, Card: schema.CardOptional,
+					Children: []*schema.Node{
+						{
+							Name: "value", Kind: schema.KindElement, Card: schema.CardOptional,
+							Children: []*schema.Node{
+								{Name: "using_default", Kind: schema.KindAttribute, Card: schema.CardOptional, Type: "text"},
+								{Name: "flag", Kind: schema.KindElement, Card: schema.CardOptional, Type: "text"},
+							},
+						},
+					},
+				},
+			},
+		}
+	}
+	cmdA = schema.Command{Name: "cmd_a", Request: &schema.Node{Name: "cmd_a"}, Response: shape("cmd_a_response"), Provenance: testProvenance()}
+	cmdB = schema.Command{Name: "cmd_b", Request: &schema.Node{Name: "cmd_b"}, Response: shape("cmd_b_response"), Provenance: testProvenance()}
+	return cmdA, cmdB
+}
+
+// TestNamedSuppressionRelocationSucceeds is T-34's end-to-end proof: the
+// field pointing at <value> must carry gmpmissing/gmpmissingreason naming
+// the suppressed attribute, and the relocated field on <param> must keep
+// carrying its own gmpoverride tag exactly as before.
+func TestNamedSuppressionRelocationSucceeds(t *testing.T) {
+	cmdA, _ := twinNamedSuppressionCommands()
+	fs := map[string][]FieldSuppression{
+		"cmd_a:/param/value": {{Name: "using_default", Attr: true, RelocatedTo: "cmd_a:/param", Reason: "t"}},
+	}
+	fo := map[string][]FieldOverride{
+		"cmd_a:/param": {{Name: "using_default", Attr: true, GoType: "string", RelocatedFrom: "cmd_a:/param/value", Reason: "t"}},
+	}
+	out, err := Generate([]schema.Command{cmdA}, TypeOverrides, PointerOverrides, nil, fo, fs, nil, nil, nil, nil, "", nil, nil, nil)
+	if err != nil {
+		t.Fatalf("Generate failed: %v", err)
+	}
+	var all strings.Builder
+	for _, src := range out {
+		all.WriteString(src)
+	}
+	if !strings.Contains(all.String(), `gmpmissing:"attr:using_default" gmpmissingreason:"t"`) {
+		t.Fatalf("generated output missing the gmpmissing/gmpmissingreason tag pair on the field pointing at <value>:\n%s", all.String())
+	}
+	if got := strings.Count(all.String(), `xml:"using_default,attr"`); got != 1 {
+		t.Fatalf(`generated output has %d "using_default,attr" fields, want exactly 1 (the relocated `+
+			`field on <param>; <value>'s own copy stays suppressed):\n%s`, got, all.String())
+	}
+	if !strings.Contains(all.String(), `xml:"using_default,attr" gmpoverride:"t"`) {
+		t.Fatalf("generated output missing the relocated field's own gmpoverride tag:\n%s", all.String())
+	}
+}
+
+// TestNamedSuppressionRelocationCrossUseMismatch is
+// TestChardataRelocationCrossUseMismatch's counterpart for a named-field
+// relocation: cmd_a and cmd_b share <value>'s deduplicated shape, but only
+// cmd_a suppresses using_default off it.
+func TestNamedSuppressionRelocationCrossUseMismatch(t *testing.T) {
+	cmdA, cmdB := twinNamedSuppressionCommands()
+	fs := map[string][]FieldSuppression{
+		"cmd_a:/param/value": {{Name: "using_default", Attr: true, RelocatedTo: "cmd_a:/param", Reason: "t"}},
+	}
+	fo := map[string][]FieldOverride{
+		"cmd_a:/param": {{Name: "using_default", Attr: true, GoType: "string", RelocatedFrom: "cmd_a:/param/value", Reason: "t"}},
+	}
+	_, err := Generate([]schema.Command{cmdA, cmdB}, TypeOverrides, PointerOverrides, nil, fo, fs, nil, nil, nil, nil, "", nil, nil, nil)
+	if err == nil {
+		t.Fatal("Generate succeeded; want an error: cmd_b's use of <value> has no suppression while cmd_a's does")
+	}
+	if !strings.Contains(err.Error(), "disagree") {
+		t.Fatalf("Generate error = %q, want it to mention the cross-use disagreement", err.Error())
+	}
+}
+
+// TestNamedSuppressionRelocationRequiresOneSharedReason is T-34's fail-closed
+// guard: withMissingChildrenTag can only emit one gmpmissingreason tag per
+// field, so two relocations off one struct with different Reasons must fail
+// Generate rather than silently pick one.
+func TestNamedSuppressionRelocationRequiresOneSharedReason(t *testing.T) {
+	shape := &schema.Node{
+		Name: "cmd_a_response",
+		Children: []*schema.Node{
+			{
+				Name: "param", Kind: schema.KindElement, Card: schema.CardOptional,
+				Children: []*schema.Node{
+					{
+						Name: "value", Kind: schema.KindElement, Card: schema.CardOptional,
+						Children: []*schema.Node{
+							{Name: "using_default", Kind: schema.KindAttribute, Card: schema.CardOptional, Type: "text"},
+							{Name: "extra_flag", Kind: schema.KindAttribute, Card: schema.CardOptional, Type: "text"},
+						},
+					},
+				},
+			},
+		},
+	}
+	cmdA := schema.Command{Name: "cmd_a", Request: &schema.Node{Name: "cmd_a"}, Response: shape, Provenance: testProvenance()}
+	fs := map[string][]FieldSuppression{
+		"cmd_a:/param/value": {
+			{Name: "using_default", Attr: true, RelocatedTo: "cmd_a:/param", Reason: "reason one"},
+			{Name: "extra_flag", Attr: true, RelocatedTo: "cmd_a:/param", Reason: "reason two"},
+		},
+	}
+	fo := map[string][]FieldOverride{
+		"cmd_a:/param": {
+			{Name: "using_default", Attr: true, GoType: "string", RelocatedFrom: "cmd_a:/param/value", Reason: "reason one"},
+			{Name: "extra_flag", Attr: true, GoType: "string", RelocatedFrom: "cmd_a:/param/value", Reason: "reason two"},
+		},
+	}
+	_, err := Generate([]schema.Command{cmdA}, TypeOverrides, PointerOverrides, nil, fo, fs, nil, nil, nil, nil, "", nil, nil, nil)
+	if err == nil {
+		t.Fatal("Generate succeeded; want an error: two relocations off one struct disagree on Reason")
+	}
+	if !strings.Contains(err.Error(), "different Reasons") {
+		t.Fatalf("Generate error = %q, want it to mention differing Reasons", err.Error())
+	}
+}
+
 // --- FieldOverrides chardata addition (T-23, non-relocation) ---------------
 
 // countWrapperCommand builds a single command whose response has a

@@ -1683,6 +1683,13 @@ type field struct {
 	// gmpoverride tag for internal/schema/gomodel.go to recover, and
 	// conform.go's comparer uses it to suppress the resulting EXTRA finding.
 	overrideReason string
+
+	// missingChildren/missingChildrenReason are withMissingChildrenTag's
+	// result: schema children FieldSuppressions removed from this field's
+	// own struct type, and why. writeField emits them as gmpmissing/
+	// gmpmissingreason tags for internal/schema's unmatchedSchema to recover.
+	missingChildren       string
+	missingChildrenReason string
 }
 
 // fieldOf applies the DSL -> Go cardinality mapping. command is the request's
@@ -1696,9 +1703,11 @@ func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool, type
 		return field{}, err
 	}
 	forcedPointer := false
+	var typeOverrideReason string
 	if t, ok := typeOv[fieldKey{name: n.Name, attr: n.Kind == schema.KindAttribute}]; ok {
 		base = t.goType
 		forcedPointer = t.pointer
+		typeOverrideReason = t.reason
 	}
 	goType, opts := base, ""
 	var overrideReason string
@@ -1729,6 +1738,14 @@ func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool, type
 	if err != nil {
 		return field{}, err
 	}
+	if typeOverrideReason != "" {
+		if overrideReason != "" {
+			return field{}, fmt.Errorf(
+				"codegen: %s.%s: has both a FieldTypeOverrides reason and another override/relocation "+
+					"reason; ambiguous which gmpoverride tag to emit", command, n.Name)
+		}
+		overrideReason = typeOverrideReason
+	}
 	if n.PatchReason != "" {
 		if overrideReason != "" {
 			return field{}, fmt.Errorf(
@@ -1738,13 +1755,23 @@ func (g *gen) fieldOf(command string, n *schema.Node, used map[string]bool, type
 		overrideReason = n.PatchReason
 	}
 
+	missingChildren, missingChildrenReason, err := g.withMissingChildrenTag(command, n)
+	if err != nil {
+		return field{}, err
+	}
+
 	tag := n.Name
 	if n.Kind == schema.KindAttribute {
 		tag += ",attr"
 	}
 	tag += opts
 
-	return field{name: uniqueName(goName(n.Name), used), goType: goType, tag: tag, node: n, overrideReason: overrideReason}, nil
+	return field{
+		name: uniqueName(goName(n.Name), used), goType: goType, tag: tag, node: n,
+		overrideReason:        overrideReason,
+		missingChildren:       missingChildren,
+		missingChildrenReason: missingChildrenReason,
+	}, nil
 }
 
 // requiredFieldType computes the Go type/tag-options/override-reason for a
@@ -1831,6 +1858,59 @@ func (g *gen) withChardataRelocationReason(command string, n *schema.Node, exist
 				"suppression reason; ambiguous which gmpoverride tag to emit", command, n.Name)
 	}
 	return chardataSuppression.Reason, nil
+}
+
+// withMissingChildrenTag is withChardataRelocationReason's named-field
+// counterpart: it returns a gmpmissing tag value listing every
+// schema-declared attribute/element FieldSuppressions removed from n's own
+// struct type — key(kind,name) form, so internal/schema's unmatchedSchema
+// can match it directly — plus their one shared reason. Both empty when
+// nothing was suppressed. More than one distinct reason among them fails
+// closed: a single field carries only one gmpmissingreason tag, so
+// disagreement can't be silently resolved by picking one.
+func (g *gen) withMissingChildrenTag(command string, n *schema.Node) (tag, reason string, err error) {
+	if len(n.Children) == 0 {
+		return "", "", nil
+	}
+	st, ok := g.byHash[typeHash(n)]
+	if !ok {
+		return "", "", nil
+	}
+	suppressed, _, err := g.fieldSuppressionsFor(st)
+	if err != nil {
+		return "", "", err
+	}
+	if len(suppressed) == 0 {
+		return "", "", nil
+	}
+	keys := make([]fieldKey, 0, len(suppressed))
+	for k := range suppressed {
+		keys = append(keys, k)
+	}
+	sort.Slice(keys, func(i, j int) bool {
+		if keys[i].attr != keys[j].attr {
+			return keys[i].attr
+		}
+		return keys[i].name < keys[j].name
+	})
+	parts := make([]string, 0, len(keys))
+	for _, k := range keys {
+		kind := "elem"
+		if k.attr {
+			kind = "attr"
+		}
+		parts = append(parts, kind+":"+k.name)
+		r := suppressed[k]
+		if reason == "" {
+			reason = r
+		} else if reason != r {
+			return "", "", fmt.Errorf(
+				"codegen: %s.%s: FieldSuppressions relocates more than one child off %s with different "+
+					"Reasons (%q vs %q); a single gmpmissingreason tag can only carry one",
+				command, n.Name, st.goName, reason, r)
+		}
+	}
+	return strings.Join(parts, ","), reason, nil
 }
 
 // emitChardata declares the field for a mixed-content node's bare text, if it
@@ -2051,12 +2131,15 @@ type fieldKey struct {
 }
 
 // typeOverride is fieldTypeOverridesFor's per-field resolution: the retyped
-// Go type, and whether FieldTypeOverride.Pointer additionally forces it to a
-// pointer with omitempty despite the schema marking the field required — see
-// FieldTypeOverride's doc comment.
+// Go type, whether FieldTypeOverride.Pointer additionally forces it to a
+// pointer with omitempty despite the schema marking the field required (see
+// FieldTypeOverride's doc comment), and the override's Reason — carried
+// forward as a gmpoverride tag so schema.checkType can suppress the
+// resulting TYPE finding (T-34, reversing T-24's keep-visible choice).
 type typeOverride struct {
 	goType  string
 	pointer bool
+	reason  string
 }
 
 // envelopeAttrs are the response attributes emitRequest/emitResponse already
@@ -2089,7 +2172,11 @@ func (g *gen) emitStruct(b *strings.Builder, st *structType) error {
 			return err
 		}
 	}
-	fields, collided, err := g.emitFields(st.node.Children, used, suppressed, typeOv, "")
+	skip := make(map[fieldKey]bool, len(suppressed))
+	for k := range suppressed {
+		skip[k] = true
+	}
+	fields, collided, err := g.emitFields(st.node.Children, used, skip, typeOv, "")
 	if err != nil {
 		return err
 	}
@@ -2193,15 +2280,16 @@ func (g *gen) fieldOverridesFor(st *structType) (extra []FieldOverride, chardata
 // suppression set, or a suppression on one use could leak onto a
 // structurally-deduplicated sibling use that had none. The chardata
 // suppression is tracked separately from the (name, attr)-keyed map since a
-// chardata entry has neither; its Reason is returned (rather than a bare
-// bool) so callers emitting the relocation's source-side field can carry it
-// forward as that field's own gmpoverride tag, for internal/schema's
-// comparer to recover by reflection.
-func (g *gen) fieldSuppressionsFor(st *structType) (map[fieldKey]bool, *FieldSuppression, error) {
+// chardata entry has neither. Both this map's values and the chardata
+// entry's Reason are returned (rather than a bare bool) so callers emitting
+// the relocation's source-side field can carry them forward as that field's
+// own gmpoverride/gmpmissing tags, for internal/schema's comparer to recover
+// by reflection.
+func (g *gen) fieldSuppressionsFor(st *structType) (map[fieldKey]string, *FieldSuppression, error) {
 	seen := map[string]bool{}
 	haveFirst := false
 	var firstKey string
-	var first map[fieldKey]bool
+	var first map[fieldKey]string
 	var firstChardata *FieldSuppression
 
 	for _, u := range st.uses {
@@ -2211,7 +2299,7 @@ func (g *gen) fieldSuppressionsFor(st *structType) (map[fieldKey]bool, *FieldSup
 		}
 		seen[key] = true
 
-		res := map[fieldKey]bool{}
+		res := map[fieldKey]string{}
 		var chardataSuppression *FieldSuppression
 		if entries, ok := g.fs[key]; ok {
 			g.fsConsumed[key] = true
@@ -2221,7 +2309,7 @@ func (g *gen) fieldSuppressionsFor(st *structType) (map[fieldKey]bool, *FieldSup
 					chardataSuppression = &e
 					continue
 				}
-				res[fieldKey{name: e.Name, attr: e.Attr}] = true
+				res[fieldKey{name: e.Name, attr: e.Attr}] = e.Reason
 			}
 		}
 
@@ -2229,7 +2317,7 @@ func (g *gen) fieldSuppressionsFor(st *structType) (map[fieldKey]bool, *FieldSup
 			haveFirst, firstKey, first, firstChardata = true, key, res, chardataSuppression
 			continue
 		}
-		if !fieldKeySetEqual(first, res) || !fieldSuppressionEqual(firstChardata, chardataSuppression) {
+		if !fieldSuppressionMapEqual(first, res) || !fieldSuppressionEqual(firstChardata, chardataSuppression) {
 			return nil, nil, fmt.Errorf(
 				"codegen: %s: FieldSuppressions for %q and %q disagree; a structurally-deduplicated type "+
 					"must resolve to the same suppression set from every path that reaches it",
@@ -2249,14 +2337,15 @@ func fieldSuppressionEqual(a, b *FieldSuppression) bool {
 	return a == nil || (a.RelocatedTo == b.RelocatedTo && a.Reason == b.Reason)
 }
 
-// fieldKeySetEqual compares two fieldSuppressionsFor results for value
-// equality, mirroring overrideResultEqual's role for fieldOverridesFor.
-func fieldKeySetEqual(a, b map[fieldKey]bool) bool {
+// fieldSuppressionMapEqual compares two fieldSuppressionsFor ordinary-map
+// results for value equality — same keys, same Reason per key — mirroring
+// overrideResultEqual's role for fieldOverridesFor.
+func fieldSuppressionMapEqual(a, b map[fieldKey]string) bool {
 	if len(a) != len(b) {
 		return false
 	}
-	for k := range a {
-		if !b[k] {
+	for k, v := range a {
+		if bv, ok := b[k]; !ok || bv != v {
 			return false
 		}
 	}
@@ -2285,7 +2374,7 @@ func (g *gen) fieldTypeOverridesFor(st *structType) (map[fieldKey]typeOverride, 
 		if entries, ok := g.tov[key]; ok {
 			g.tovConsumed[key] = true
 			for _, e := range entries {
-				res[fieldKey{name: e.Name, attr: e.Attr}] = typeOverride{goType: e.GoType, pointer: e.Pointer}
+				res[fieldKey{name: e.Name, attr: e.Attr}] = typeOverride{goType: e.GoType, pointer: e.Pointer, reason: e.Reason}
 			}
 		}
 
@@ -2447,28 +2536,23 @@ func (g *gen) emitFields(kids []*schema.Node, used map[string]bool, skip map[fie
 	return fields, collided, nil
 }
 
+// writeField builds up the struct tag piece by piece rather than
+// enumerating every combination: gmpwire, gmpoverride, gmpmissing and
+// gmpmissingreason are independent tag keys — internal/schema/gomodel.go
+// reads each unconditionally — so any subset can coexist on one field
+// without one shadowing another.
 func writeField(b *strings.Builder, f field) {
-	switch {
-	case f.wireTag != "" && f.overrideReason != "":
-		// A collision-group member (get_info's schema-patched wrapper
-		// sibling) that also needs a suppression reason: gmpwire and
-		// gmpoverride are independent tag keys — internal/schema/gomodel.go's
-		// leafNode reads gmpoverride unconditionally, regardless of which
-		// path (xml or gmpwire) supplied the field's name/opts — so both can
-		// coexist on one field without either shadowing the other.
-		fmt.Fprintf(b, "%s %s `xml:%q gmpwire:%q gmpoverride:%q`\n", f.name, f.goType, f.tag, f.wireTag, f.overrideReason)
-	case f.wireTag != "":
-		// gmpwire carries this field's real wire identity for
-		// internal/schema/gomodel.go's addField to recover by reflection —
-		// xml:"-" alone would make the field invisible to the structural
-		// conformance oracle, reopening the MISSING/EXTRA gap this tag exists
-		// to close.
-		fmt.Fprintf(b, "%s %s `xml:%q gmpwire:%q`\n", f.name, f.goType, f.tag, f.wireTag)
-	case f.overrideReason != "":
-		fmt.Fprintf(b, "%s %s `xml:%q gmpoverride:%q`\n", f.name, f.goType, f.tag, f.overrideReason)
-	default:
-		fmt.Fprintf(b, "%s %s `xml:%q`\n", f.name, f.goType, f.tag)
+	tag := fmt.Sprintf("xml:%q", f.tag)
+	if f.wireTag != "" {
+		tag += fmt.Sprintf(" gmpwire:%q", f.wireTag)
 	}
+	if f.overrideReason != "" {
+		tag += fmt.Sprintf(" gmpoverride:%q", f.overrideReason)
+	}
+	if f.missingChildren != "" {
+		tag += fmt.Sprintf(" gmpmissing:%q gmpmissingreason:%q", f.missingChildren, f.missingChildrenReason)
+	}
+	fmt.Fprintf(b, "%s %s `%s`\n", f.name, f.goType, tag)
 }
 
 // --- duplicate-wire-tag codec generation -------------------------------------
