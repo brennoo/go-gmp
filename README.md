@@ -1,24 +1,36 @@
 # Greenbone Management Protocol (GMP) Go Client
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/brennoo/go-gmp.svg)](https://pkg.go.dev/github.com/brennoo/go-gmp)
-[![Go Report Card](https://goreportcard.com/badge/github.com/brennoo/go-gmp)](https://goreportcard.com/report/github.com/brennoo/go-gmp)
+[![GitHub release](https://img.shields.io/github/v/release/brennoo/go-gmp)](https://github.com/brennoo/go-gmp/releases)
+[![CI](https://github.com/brennoo/go-gmp/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/brennoo/go-gmp/actions/workflows/go.yml)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/594fb36107f64d72b7bc1680fdac964a)](https://app.codacy.com/gh/brennoo/go-gmp/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
 
 A Go client for the Greenbone Management Protocol (GMP) to interact with Greenbone/OpenVAS vulnerability management servers.
 
+- **Complete, typed command surface** — every GMP command served by the supported gvmd is a typed
+  request/response struct pair, generated from the live protocol schema
+- **Verified against a real server** — generated types are held to account by committed
+  schema-conformance and wire-fidelity test corpora (see [Protocol coverage](#protocol-coverage--verification))
+- **Safe by default** — TLS 1.3 with certificate verification, context support everywhere,
+  connection-lifecycle tracking, structured errors
+- **Ergonomic querying** — string or functional-option filters, pagination iterators, and low-level
+  `Raw` variants for full request control
+
 > [!CAUTION]
 > Expect breaking changes as the library matures.
 
+## Installation
+
+```sh
+go get github.com/brennoo/go-gmp
+```
+
+Requires Go 1.23+ and access to a Greenbone/OpenVAS server with GMP enabled. An example
+`docker-compose.yml` for a local server is provided in `./hack`.
+
 ## Compatibility
 
-This library is tested against GMP 22.7, as served by gvmd 26.36.1
-(`ghcr.io/brennoo/gvm-mirror/gvmd@sha256:cb82c501ca93809405a8d0ed4c21846703466802ce6462536e985625f102b497`,
-the digest pinned in `hack/docker-compose.yml`). Other gvmd versions are best-effort: GMP has
-historically been additive in the areas this library touches, but only the pinned version above is
-verified. Drift between this pin and upstream `gvmd main` is tracked, not silently absorbed — see
-[`docs/review-2026-08.md`](docs/review-2026-08.md)'s T-35 entry for the current count of unadopted
-newer commands and fields. The agent-controller, OCI-image-target, and web-application-target
-surfaces are not modeled; see T-32 in the same document for the evidence required to reintroduce them.
+Tested against:
 
 | | |
 |---|---|
@@ -26,16 +38,26 @@ surfaces are not modeled; see T-32 in the same document for the evidence require
 | gvmd | 26.36.1 |
 | gvmd image digest | `sha256:cb82c501ca93809405a8d0ed4c21846703466802ce6462536e985625f102b497` |
 
-See [CHANGELOG.md](CHANGELOG.md) for release history and [CONTRIBUTING.md](CONTRIBUTING.md) for the
-versioning policy.
+Other gvmd versions are best-effort and untested.
 
-## Requirements
+## Protocol coverage & verification
 
-- Go 1.23+
-- Access to a Greenbone/OpenVAS server with GMP enabled
+All 119 GMP commands served by the supported gvmd are modeled — 117 generated directly from the
+live server's protocol schema, 2 deliberately hand-written (`help`, `run_wizard`). The generated
+types are continuously checked against three independent, committed oracles (numbers as of
+`v0.4.0`):
 
-> [!NOTE]
-> An example `docker-compose.yml` is provided in `./hack` for local testing.
+| Check | Result |
+|---|---|
+| Schema conformance | 108/119 commands fully conformant (91%); each of the 20 remaining findings is a [documented decision](docs/review-2026-08.md), none a defect against the supported gvmd |
+| Request wire fidelity | 325/338 captured requests re-encode with zero loss (96%) |
+| Response wire fidelity | 269/338 captured live/upstream responses re-encode with zero loss (80%); every loss is classified and documented |
+| Public API stability | every exported declaration is snapshot-checked in CI — the API cannot change silently |
+
+The full reports are committed alongside the code:
+[`CONFORMANCE.md`](internal/schema/testdata/CONFORMANCE.md),
+[`FIDELITY-SUMMARY.txt`](internal/gmptest/testdata/FIDELITY-SUMMARY.txt),
+[`PUBLIC_API.txt`](internal/apisnapshot/testdata/PUBLIC_API.txt).
 
 ## Quick Start
 
@@ -67,7 +89,7 @@ func main() {
 	// Authenticate
 	cli := client.New(conn)
 	_, err = cli.Authenticate(ctx, &commands.Authenticate{
-		Credentials: &commands.AuthenticateCredentials{
+		Credentials: commands.AuthCredentials{
 			Username: "admin",
 			Password: "secret",
 		},
@@ -296,7 +318,10 @@ resp, err := cli.RawXML(ctx, raw)
 
 ## Extending
 
-All GMP commands are available as typed structs matching the protocol XML. Add new commands by following the existing pattern.
+Command types are generated from the GMP schema served by a live gvmd, not written by hand —
+`hack/generate.sh` regenerates them from the committed schema snapshots, and CI fails if
+`commands/` drifts from what the generator would produce. For a command or field the library
+doesn't model yet, use `RawXML` above.
 
 ## See Also
 
