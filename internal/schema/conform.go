@@ -351,10 +351,8 @@ func checkOmitEmpty(res *Result, cmd Command, side string, s *Node, g *GoNode, p
 }
 
 // checkType compares the schema's lexical space against what the Go type can
-// hold. A retyped field's gmpoverride reason (FieldTypeOverrides, via
-// fieldOf) suppresses the finding — reversing T-24/T-33's deliberate
-// keep-visible choice: the type was already fixed with evidence, so the
-// finding now records that instead of staying actionable forever.
+// hold. A retyped field's gmpoverride reason (FieldTypeOverrides) suppresses
+// the finding — the type was already fixed with evidence.
 func checkType(res *Result, cmd Command, side string, s *Node, g *GoNode, path string) {
 	t := Resolve(s.Type)
 	if t == "" || !g.IsScalarGo() {
@@ -363,12 +361,12 @@ func checkType(res *Result, cmd Command, side string, s *Node, g *GoNode, path s
 	base := strings.TrimPrefix(g.GoType, "*")
 
 	var detail string
-	switch {
+	switch t {
 	// The headline. "boolean" is declared as text: zero is false and
 	// anything else, including the empty string, is true. boolean_atoi is
 	// the opposite — it runs atoi first, so "" is false. Neither is Go's
 	// bool, and both need a custom marshaler.
-	case t == "boolean" || t == "boolean_atoi":
+	case "boolean", "boolean_atoi":
 		if base != "bool" {
 			return
 		}
