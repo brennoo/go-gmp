@@ -34,24 +34,24 @@ optionality is trusted and request-side is not.
 ## Totals
 
 commands compared:            119
-fully conformant:             100
-with actionable findings:     19
-actionable findings:          27  (request 7, response 20)
+fully conformant:             108
+with actionable findings:     11
+actionable findings:          20  (request 9, response 11)
 suppressed findings:          143
-confirmed by fidelity corpus: 2
-in the schema, not in Go:     3  (delete_agents, get_agents, modify_agents)
+confirmed by fidelity corpus: 1
+in the schema, not in Go:     36  (create_agent_group, create_oci_image_target, create_web_application_target, delete_agent, delete_agent_group, delete_oci_image_target, delete_web_application_target, export_scan_report, get_agent_groups, get_agent_installer_instruction, get_agent_support_bundle, get_agents, get_audit_report, get_audit_report_hosts, get_credential_stores, get_integration_configs, get_oci_image_targets, get_report_applications, get_report_closed_cves, get_report_cves, get_report_errors, get_report_hosts, get_report_operating_systems, get_report_ports, get_report_tls_certificates, get_report_vulns, get_scan_report, get_timezones, get_web_application_targets, modify_agent, modify_agent_control_scan_config, modify_agent_group, modify_integration_config, modify_oci_image_target, modify_web_application_target, sync_agents)
 in Go, not in the schema:     0
 
 ### Findings by category
 
                  actionable suppressed
-  MISSING                 5         25
-  EXTRA                  19         72
+  MISSING                17         25
+  EXTRA                   0         72
   CARDINALITY             0          2
   KIND                    0          0
   OMITEMPTY               0         44
   TYPE                    3          0
-  SCHEMA-DEFECT         105          0
+  SCHEMA-DEFECT         121          0
 
 ### Schema defects by class
 
@@ -71,33 +71,26 @@ taken against upstream main (155 commands). Two reasons, both expected:
 
   dangling-e           1 sites in 1 commands
   duplicate-ele       18 sites in 5 commands
-  duplicate-ref        7 sites in 2 commands
-  empty-pattern       44 sites in 23 commands
-  no-pattern          17 sites in 4 commands
+  duplicate-ref        6 sites in 3 commands
+  empty-pattern       48 sites in 23 commands
+  no-pattern          20 sites in 5 commands
   recursion-cut       12 sites in 1 commands
+  type-for-t          10 sites in 1 commands
   undefined-type       3 sites in 3 commands
   unsupported-r        3 sites in 3 commands
 
 ### Commands by actionable findings
 
-  create_report                 3   EXTRA=3
-  get_reports                   3   EXTRA=3
-  get_credentials               2   EXTRA=2
-  get_info                      2   EXTRA=1  TYPE=1
-  get_scanners                  2   EXTRA=2
-  modify_target                 2   MISSING=1  EXTRA=1
-  create_target                 1   EXTRA=1
-  create_task                   1   MISSING=1
-  get_features                  1   EXTRA=1
-  get_notes                     1   EXTRA=1
-  get_nvts                      1   EXTRA=1
-  get_overrides                 1   EXTRA=1
+  authenticate                  3   MISSING=3
+  create_task                   3   MISSING=3
+  get_tasks                     3   MISSING=3
+  modify_task                   3   MISSING=3
+  get_credentials               2   MISSING=2
+  get_info                      1   TYPE=1
   get_report_configs            1   MISSING=1
   get_resource_names            1   TYPE=1
-  get_results                   1   EXTRA=1
+  get_scanners                  1   MISSING=1
   get_system_reports            1   TYPE=1
-  get_targets                   1   EXTRA=1
-  get_tasks                     1   MISSING=1
   help                          1   MISSING=1
 
 ### Confirmed by both oracles
@@ -112,13 +105,23 @@ requests are in better shape — get_notes models none of its seven request
 attributes, and one of its own captured request fixtures uses three of them.
 
   get_report_configs       /get_report_configs_response/report_config/param/value/@using_default
-  get_tasks                /get_tasks_response/task/hosts_ordering
 
 ## Per command
 
 ### authenticate  (command_authenticate.xml)
 
-conformant
+MISSING=3  SCHEMA-DEFECT=2
+
+  MISSING       request  /authenticate/@token
+                optional attr token is not modelled
+  MISSING       request  /authenticate/credentials/token
+                optional elem token is not modelled
+  SCHEMA-DEFECT request  /authenticate/credentials/password
+                duplicate-ref: referenced more than once in the same pattern
+  SCHEMA-DEFECT request  /authenticate/credentials/username
+                duplicate-ref: referenced more than once in the same pattern
+  MISSING       response /authenticate_response/token
+                optional elem token is not modelled
 
 ### create_alert  (command_create_alert.xml)
 
@@ -175,14 +178,8 @@ conformant
 
 ### create_report  (command_create_report.xml)
 
-EXTRA=3  OMITEMPTY=3  SCHEMA-DEFECT=12
+OMITEMPTY=3  SCHEMA-DEFECT=13
 
-  EXTRA         request  /create_report/report/report/cves
-                Go field CVEs *commands.ReportCVEs has no counterpart in the schema
-  EXTRA         request  /create_report/report/report/result_count/#text
-                Go *commands.ReportResultCount has a `,chardata` field; schema declares no character data here
-  EXTRA         request  /create_report/report/report/results/result/oci_image
-                Go field OCIImage *commands.ReportOCIImage has no counterpart in the schema
   OMITEMPTY     request  /create_report/report/report/hosts/@max
                 schema says required, Max is tagged omitempty  [suppressed: inside <or>; only one branch is ever present]
   OMITEMPTY     request  /create_report/report/report/hosts/@start
@@ -194,6 +191,8 @@ EXTRA=3  OMITEMPTY=3  SCHEMA-DEFECT=12
   SCHEMA-DEFECT request  /create_report/report/report/apps/count
                 no-pattern: <ele> has neither <pattern> nor <type>
   SCHEMA-DEFECT request  /create_report/report/report/closed_cves/count
+                no-pattern: <ele> has neither <pattern> nor <type>
+  SCHEMA-DEFECT request  /create_report/report/report/cves/count
                 no-pattern: <ele> has neither <pattern> nor <type>
   SCHEMA-DEFECT request  /create_report/report/report/errors/count
                 no-pattern: <ele> has neither <pattern> nor <type>
@@ -243,17 +242,18 @@ conformant
 
 ### create_target  (command_create_target.xml)
 
-EXTRA=1
-
-  EXTRA         request  /create_target/alive_tests/*
-                schema declares a "alive_test" leaf; Go models 1 children
+conformant
 
 ### create_task  (command_create_task.xml)
 
-MISSING=1
+MISSING=3
 
-  MISSING       request  /create_task/hosts_ordering
-                optional elem hosts_ordering is not modelled
+  MISSING       request  /create_task/agent_group
+                required elem agent_group is not modelled
+  MISSING       request  /create_task/oci_image_target
+                required elem oci_image_target is not modelled
+  MISSING       request  /create_task/web_application_target
+                required elem web_application_target is not modelled
 
 ### create_ticket  (command_create_ticket.xml)
 
@@ -455,20 +455,22 @@ MISSING=1  EXTRA=2  OMITEMPTY=1  SCHEMA-DEFECT=1
 
 ### get_credentials  (command_get_credentials.xml)
 
-MISSING=1  EXTRA=4  OMITEMPTY=1  SCHEMA-DEFECT=2
+MISSING=3  EXTRA=2  OMITEMPTY=1  SCHEMA-DEFECT=3
 
+  MISSING       request  /get_credentials/@oci_image_targets
+                optional attr oci_image_targets is not modelled
+  MISSING       response /get_credentials_response/credential/oci_image_targets
+                optional elem oci_image_targets is not modelled
   MISSING       response /get_credentials_response/sort/#text
                 schema also declares character data (text) here; Go commands.CredentialSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
-  EXTRA         response /get_credentials_response/credential/private_key_info
-                Go field PrivateKeyInfo *commands.CredentialPrivateKeyInfo has no counterpart in the schema
-  EXTRA         response /get_credentials_response/credential/public_key_info
-                Go field PublicKeyInfo *commands.CredentialPublicKeyInfo has no counterpart in the schema
   EXTRA         response /get_credentials_response/credential_count/#text
                 Go *commands.CredentialCount has a `,chardata` field; schema declares no character data here  [suppressed: T-23: count-wrapper chardata total is schema-undeclared]
   EXTRA         response /get_credentials_response/sort/field/#text
                 Go commands.CredentialField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   OMITEMPTY     response /get_credentials_response/credential_count
                 schema says required, CredentialCount is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
+  SCHEMA-DEFECT response /get_credentials_response/credential/oci_image_targets/oci_image_target/permissions
+                empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_credentials_response/credential/scanners/scanner/permissions
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_credentials_response/credential/targets/target/permissions
@@ -476,12 +478,10 @@ MISSING=1  EXTRA=4  OMITEMPTY=1  SCHEMA-DEFECT=2
 
 ### get_features  (command_get_features.xml)
 
-EXTRA=1  SCHEMA-DEFECT=1
+SCHEMA-DEFECT=1
 
   SCHEMA-DEFECT request  /get_features
                 empty-pattern: pattern declares no content
-  EXTRA         response /get_features_response/feature/@compiled_in
-                Go field CompiledIn commands.GMPBool has no counterpart in the schema
 
 ### get_feeds  (command_get_feeds.xml)
 
@@ -520,14 +520,12 @@ MISSING=1  EXTRA=2  OMITEMPTY=1
 
 ### get_info  (command_get_info.xml)
 
-MISSING=1  EXTRA=4  OMITEMPTY=1  TYPE=1  SCHEMA-DEFECT=1
+MISSING=1  EXTRA=3  OMITEMPTY=1  TYPE=1  SCHEMA-DEFECT=2
 
   MISSING       response /get_info_response/sort/#text
                 schema also declares character data (text) here; Go commands.NVTSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
   EXTRA         response /get_info_response/info
                 Go field Info2 *commands.GetInfoInfo has no counterpart in the schema  [suppressed: T-26: get_info's pagination wrapper (<info start max>) shares its element name with the data item but is schema-undeclared — see docs/review-2026-08.md's T-26 entry]
-  EXTRA         response /get_info_response/info/web_application_vt
-                Go field WebApplicationVT *commands.NVTWebApplicationVT has no counterpart in the schema
   EXTRA         response /get_info_response/info_count/#text
                 Go *commands.NVTInfoCount has a `,chardata` field; schema declares no character data here  [suppressed: T-23: count-wrapper chardata total is schema-undeclared]
   EXTRA         response /get_info_response/sort/field/#text
@@ -538,6 +536,8 @@ MISSING=1  EXTRA=4  OMITEMPTY=1  TYPE=1  SCHEMA-DEFECT=1
                 schema type integer, Go ID is string (want int)
   SCHEMA-DEFECT response /get_info_response/info/cve/configuration_nodes/node/node
                 undefined-type: node is undefined and has no alias
+  SCHEMA-DEFECT response /get_info_response/info/web_application_vt/refs/ref
+                no-pattern: <ele> has neither <pattern> nor <type>
 
 ### get_license  (command_get_license.xml)
 
@@ -548,12 +548,10 @@ SCHEMA-DEFECT=1
 
 ### get_notes  (command_get_notes.xml)
 
-MISSING=1  EXTRA=3  OMITEMPTY=2  SCHEMA-DEFECT=3
+MISSING=1  EXTRA=2  OMITEMPTY=2  SCHEMA-DEFECT=3
 
   MISSING       response /get_notes_response/sort/#text
                 schema also declares character data (text) here; Go commands.NoteSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
-  EXTRA         response /get_notes_response/note/result/oci_image
-                Go field OCIImage *commands.NoteOCIImage has no counterpart in the schema
   EXTRA         response /get_notes_response/note_count/#text
                 Go *commands.NoteCount has a `,chardata` field; schema declares no character data here  [suppressed: T-23: count-wrapper chardata total is schema-undeclared]
   EXTRA         response /get_notes_response/sort/field/#text
@@ -575,12 +573,10 @@ conformant
 
 ### get_nvts  (command_get_nvts.xml)
 
-EXTRA=1  CARDINALITY=1  OMITEMPTY=2
+CARDINALITY=1  OMITEMPTY=2
 
   OMITEMPTY     request  /get_nvts/@nvt_oid
                 schema says required, NVTOID is tagged omitempty  [suppressed: request-side over-constraint]
-  EXTRA         response /get_nvts_response/nvt/discovery
-                Go field Discovery *int has no counterpart in the schema
   CARDINALITY   response /get_nvts_response/nvt
                 schema says required, Go has a slice []commands.GetNVTsNVT (NVT)  [suppressed: T-9 nvt review: command_get_nvts.xml's response <pattern> declares <e>nvt</e> (exactly one), contradicting its own <summary>Get one or many NVTs</summary> and its own <example> (two sibling <nvt> elements in one get_nvts_response with no nvt_oid filter, lines 4121-4159) — internal/gmptest/testdata/upstream/get_nvts/001_response.xml confirms it live, returning three sibling <nvt> elements for one unfiltered request]
   OMITEMPTY     response /get_nvts_response/nvt
@@ -588,12 +584,10 @@ EXTRA=1  CARDINALITY=1  OMITEMPTY=2
 
 ### get_overrides  (command_get_overrides.xml)
 
-MISSING=1  EXTRA=3  OMITEMPTY=2  SCHEMA-DEFECT=3
+MISSING=1  EXTRA=2  OMITEMPTY=2  SCHEMA-DEFECT=3
 
   MISSING       response /get_overrides_response/sort/#text
                 schema also declares character data (text) here; Go commands.OverrideSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
-  EXTRA         response /get_overrides_response/override/result/oci_image
-                Go field OCIImage *commands.OverrideOCIImage has no counterpart in the schema
   EXTRA         response /get_overrides_response/override_count/#text
                 Go *commands.OverrideCount has a `,chardata` field; schema declares no character data here  [suppressed: T-23: count-wrapper chardata total is schema-undeclared]
   EXTRA         response /get_overrides_response/sort/field/#text
@@ -681,16 +675,10 @@ MISSING=1  EXTRA=3  OMITEMPTY=1
 
 ### get_reports  (command_get_reports.xml)
 
-MISSING=1  EXTRA=5  OMITEMPTY=3  SCHEMA-DEFECT=12
+MISSING=1  EXTRA=2  OMITEMPTY=3  SCHEMA-DEFECT=13
 
   MISSING       response /get_reports_response/sort/#text
                 schema also declares character data (text) here; Go *commands.GetReportsSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
-  EXTRA         response /get_reports_response/report/report/cves
-                Go field CVEs *commands.ReportCVEs has no counterpart in the schema
-  EXTRA         response /get_reports_response/report/report/result_count/#text
-                Go *commands.ReportResultCount has a `,chardata` field; schema declares no character data here
-  EXTRA         response /get_reports_response/report/report/results/result/oci_image
-                Go field OCIImage *commands.ReportOCIImage has no counterpart in the schema
   EXTRA         response /get_reports_response/report_count/#text
                 Go *commands.ReportCount has a `,chardata` field; schema declares no character data here  [suppressed: T-23: count-wrapper chardata total is schema-undeclared]
   EXTRA         response /get_reports_response/sort/field/#text
@@ -706,6 +694,8 @@ MISSING=1  EXTRA=5  OMITEMPTY=3  SCHEMA-DEFECT=12
   SCHEMA-DEFECT response /get_reports_response/report/report/apps/count
                 no-pattern: <ele> has neither <pattern> nor <type>
   SCHEMA-DEFECT response /get_reports_response/report/report/closed_cves/count
+                no-pattern: <ele> has neither <pattern> nor <type>
+  SCHEMA-DEFECT response /get_reports_response/report/report/cves/count
                 no-pattern: <ele> has neither <pattern> nor <type>
   SCHEMA-DEFECT response /get_reports_response/report/report/errors/count
                 no-pattern: <ele> has neither <pattern> nor <type>
@@ -737,14 +727,12 @@ TYPE=1  SCHEMA-DEFECT=1
 
 ### get_results  (command_get_results.xml)
 
-MISSING=1  EXTRA=4  OMITEMPTY=1  SCHEMA-DEFECT=4
+MISSING=1  EXTRA=3  OMITEMPTY=1  SCHEMA-DEFECT=4
 
   MISSING       response /get_results_response/sort/#text
                 schema also declares character data (text) here; Go commands.ResultSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
   EXTRA         response /get_results_response/result/nvt/solution
                 Go field Solution *commands.ResultSolution has no counterpart in the schema  [suppressed: T-9 result review, finding 1: internal/codegen/testdata/schema/get_results.json's result/nvt node has no solution child, but all 4 live fixtures (internal/gmptest/testdata/live/get_results/00{1,2,3,4}_response.xml) send <solution type=''> right after </tags>, retained as DROPPED in every one of those fixtures' own _fidelity.txt. The full shape — optional element, chardata text plus optional type/method attributes — is the exact declaration get_nvts' OWN live schema snapshot (internal/codegen/testdata/schema/get_nvts.json's get_nvts_response/nvt/solution) already carries for the identical nvt/solution reuse, already proven correct as commands.NVTSolution (commands/get_nvts.go); no live get_results fixture happens to send a non-empty type, method or text, so those parts are evidenced by get_nvts' own schema declaration and generated type, not by get_results' own captures]
-  EXTRA         response /get_results_response/result/oci_image
-                Go field OCIImage *commands.ResultOCIImage has no counterpart in the schema
   EXTRA         response /get_results_response/result_count/#text
                 Go *commands.ResultCount has a `,chardata` field; schema declares no character data here  [suppressed: T-23: count-wrapper chardata total is schema-undeclared]
   EXTRA         response /get_results_response/sort/field/#text
@@ -775,20 +763,38 @@ MISSING=1  EXTRA=2  OMITEMPTY=1
 
 ### get_scanners  (command_get_scanners.xml)
 
-MISSING=1  EXTRA=4  OMITEMPTY=1  SCHEMA-DEFECT=10
+MISSING=2  EXTRA=2  OMITEMPTY=1  SCHEMA-DEFECT=20
 
+  MISSING       response /get_scanners_response/scanner/agent_control_config_defaults
+                optional elem agent_control_config_defaults is not modelled
   MISSING       response /get_scanners_response/sort/#text
                 schema also declares character data (text) here; Go commands.ScannerSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
-  EXTRA         response /get_scanners_response/scanner/disabled
-                Go field Disabled *commands.GMPBool has no counterpart in the schema
-  EXTRA         response /get_scanners_response/scanner/tasks/task/usage_type
-                Go field UsageType commands.ScannerUsageType has no counterpart in the schema
   EXTRA         response /get_scanners_response/scanner_count/#text
                 Go *commands.ScannerCount has a `,chardata` field; schema declares no character data here  [suppressed: T-23: count-wrapper chardata total is schema-undeclared]
   EXTRA         response /get_scanners_response/sort/field/#text
                 Go commands.ScannerField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   OMITEMPTY     response /get_scanners_response/scanner_count
                 schema says required, ScannerCount is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
+  SCHEMA-DEFECT response /get_scanners_response/scanner/agent_control_config_defaults/agent_control_defaults/update_to_latest
+                type-for-t: <type> used where <t> was meant: integer
+  SCHEMA-DEFECT response /get_scanners_response/scanner/agent_control_config_defaults/agent_defaults/agent_control/retry/attempts
+                type-for-t: <type> used where <t> was meant: integer
+  SCHEMA-DEFECT response /get_scanners_response/scanner/agent_control_config_defaults/agent_defaults/agent_control/retry/delay_in_seconds
+                type-for-t: <type> used where <t> was meant: integer
+  SCHEMA-DEFECT response /get_scanners_response/scanner/agent_control_config_defaults/agent_defaults/agent_control/retry/max_jitter_in_seconds
+                type-for-t: <type> used where <t> was meant: integer
+  SCHEMA-DEFECT response /get_scanners_response/scanner/agent_control_config_defaults/agent_defaults/agent_script_executor/bulk_size
+                type-for-t: <type> used where <t> was meant: integer
+  SCHEMA-DEFECT response /get_scanners_response/scanner/agent_control_config_defaults/agent_defaults/agent_script_executor/bulk_throttle_time_in_ms
+                type-for-t: <type> used where <t> was meant: integer
+  SCHEMA-DEFECT response /get_scanners_response/scanner/agent_control_config_defaults/agent_defaults/agent_script_executor/indexer_dir_depth
+                type-for-t: <type> used where <t> was meant: integer
+  SCHEMA-DEFECT response /get_scanners_response/scanner/agent_control_config_defaults/agent_defaults/agent_script_executor/scheduler_cron_time/item
+                type-for-t: <type> used where <t> was meant: text
+  SCHEMA-DEFECT response /get_scanners_response/scanner/agent_control_config_defaults/agent_defaults/heartbeat/interval_in_seconds
+                type-for-t: <type> used where <t> was meant: integer
+  SCHEMA-DEFECT response /get_scanners_response/scanner/agent_control_config_defaults/agent_defaults/heartbeat/miss_until_inactive
+                type-for-t: <type> used where <t> was meant: integer
   SCHEMA-DEFECT response /get_scanners_response/scanner/configs/config/permissions
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_scanners_response/scanner/info/daemon/name
@@ -864,14 +870,12 @@ MISSING=1  EXTRA=2  OMITEMPTY=1  SCHEMA-DEFECT=1
 
 ### get_targets  (command_get_targets.xml)
 
-MISSING=1  EXTRA=3  OMITEMPTY=1  SCHEMA-DEFECT=9
+MISSING=1  EXTRA=2  OMITEMPTY=1  SCHEMA-DEFECT=9
 
   MISSING       response /get_targets_response/sort/#text
                 schema also declares character data (text) here; Go commands.TargetSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
   EXTRA         response /get_targets_response/sort/field/#text
                 Go commands.TargetField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
-  EXTRA         response /get_targets_response/target/alive_tests/*
-                schema declares a "alive_test" leaf; Go models 1 children
   EXTRA         response /get_targets_response/target_count/#text
                 Go *commands.TargetCount has a `,chardata` field; schema declares no character data here  [suppressed: T-23: count-wrapper chardata total is schema-undeclared]
   OMITEMPTY     response /get_targets_response/target_count
@@ -897,30 +901,32 @@ MISSING=1  EXTRA=3  OMITEMPTY=1  SCHEMA-DEFECT=9
 
 ### get_tasks  (command_get_tasks.xml)
 
-MISSING=2  EXTRA=2  OMITEMPTY=1  SCHEMA-DEFECT=10
+MISSING=4  EXTRA=2  OMITEMPTY=1  SCHEMA-DEFECT=10
 
   MISSING       response /get_tasks_response/sort/#text
                 schema also declares character data (text) here; Go commands.TaskSort has no `,chardata` field  [suppressed: T-18a: sort-field chardata is nested under <field>]
-  MISSING       response /get_tasks_response/task/hosts_ordering
-                optional elem hosts_ordering is not modelled  [fidelity]
+  MISSING       response /get_tasks_response/task/agent_group
+                optional elem agent_group is not modelled
+  MISSING       response /get_tasks_response/task/oci_image_target
+                optional elem oci_image_target is not modelled
+  MISSING       response /get_tasks_response/task/web_application_target
+                optional elem web_application_target is not modelled
   EXTRA         response /get_tasks_response/sort/field/#text
                 Go commands.TaskField has a `,chardata` field; schema declares no character data here  [suppressed: T-18a: sort-field chardata is nested under <field>]
   EXTRA         response /get_tasks_response/task_count/#text
                 Go *commands.TaskCount has a `,chardata` field; schema declares no character data here  [suppressed: T-23: count-wrapper chardata total is schema-undeclared]
   OMITEMPTY     response /get_tasks_response/task_count
                 schema says required, TaskCount is tagged omitempty  [suppressed: inert: responses are decoded, and omitempty only affects encoding]
+  SCHEMA-DEFECT response /get_tasks_response/task/agent_group/permissions
+                empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_tasks_response/task/alert/permissions
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_tasks_response/task/config/permissions
                 empty-pattern: pattern declares no content
-  SCHEMA-DEFECT response /get_tasks_response/task/last_report/report/result_count/hole
-                duplicate-ref: referenced more than once in the same pattern
-  SCHEMA-DEFECT response /get_tasks_response/task/last_report/report/result_count/info
-                duplicate-ref: referenced more than once in the same pattern
-  SCHEMA-DEFECT response /get_tasks_response/task/last_report/report/result_count/warning
-                duplicate-ref: referenced more than once in the same pattern
   SCHEMA-DEFECT response /get_tasks_response/task/name
                 duplicate-ref: referenced more than once in the same pattern
+  SCHEMA-DEFECT response /get_tasks_response/task/oci_image_target/permissions
+                empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_tasks_response/task/scanner/permissions
                 empty-pattern: pattern declares no content
   SCHEMA-DEFECT response /get_tasks_response/task/schedule
@@ -928,6 +934,8 @@ MISSING=2  EXTRA=2  OMITEMPTY=1  SCHEMA-DEFECT=10
   SCHEMA-DEFECT response /get_tasks_response/task/schedule_periods
                 duplicate-ref: referenced more than once in the same pattern
   SCHEMA-DEFECT response /get_tasks_response/task/target/permissions
+                empty-pattern: pattern declares no content
+  SCHEMA-DEFECT response /get_tasks_response/task/web_application_target/permissions
                 empty-pattern: pattern declares no content
 
 ### get_tickets  (command_get_tickets.xml)
@@ -1114,16 +1122,18 @@ conformant
 
 ### modify_target  (command_modify_target.xml)
 
-MISSING=1  EXTRA=1
-
-  MISSING       request  /modify_target/hosts_ordering
-                optional elem hosts_ordering is not modelled
-  EXTRA         request  /modify_target/alive_tests/*
-                schema declares a "alive_test" leaf; Go models 1 children
+conformant
 
 ### modify_task  (command_modify_task.xml)
 
-conformant
+MISSING=3
+
+  MISSING       request  /modify_task/agent_group
+                optional elem agent_group is not modelled
+  MISSING       request  /modify_task/oci_image_target
+                optional elem oci_image_target is not modelled
+  MISSING       request  /modify_task/web_application_target
+                optional elem web_application_target is not modelled
 
 ### modify_ticket  (command_modify_ticket.xml)
 
