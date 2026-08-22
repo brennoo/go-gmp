@@ -55,7 +55,7 @@ func TestModifySchedule(t *testing.T) {
 	}
 }
 
-func TestGetSchedules(t *testing.T) {
+func TestGetSchedulesRaw(t *testing.T) {
 	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
@@ -64,9 +64,9 @@ func TestGetSchedules(t *testing.T) {
 	cmd := &commands.GetSchedules{
 		ScheduleID: "ddda859a-45be-4c58-85b3-517c66230232",
 	}
-	resp, err := cli.GetSchedules(context.Background(), cmd)
+	resp, err := cli.GetSchedulesRaw(context.Background(), cmd)
 	if err != nil {
-		t.Fatalf("Unexpected error during GetSchedules: %s", err)
+		t.Fatalf("Unexpected error during GetSchedulesRaw: %s", err)
 	}
 	if resp.Status != "200" {
 		t.Errorf("Expected status 200, got %s", resp.Status)
@@ -82,6 +82,23 @@ func TestGetSchedules(t *testing.T) {
 	}
 	if resp.Schedule[0].Timezone != "UTC" {
 		t.Errorf("Expected timezone 'UTC', got '%s'", resp.Schedule[0].Timezone)
+	}
+}
+
+func TestGetSchedulesVariadic(t *testing.T) {
+	cli := New(MockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// The mock keys success on ScheduleID, not Filter, so a filter-only call
+	// legitimately gets the failure branch; this exercises the plumbing.
+	resp, err := cli.GetSchedules(context.Background())
+	if err != nil {
+		t.Fatalf("Unexpected error during GetSchedules: %s", err)
+	}
+	if resp.Status != "400" {
+		t.Errorf("Expected status 400, got %s", resp.Status)
 	}
 }
 

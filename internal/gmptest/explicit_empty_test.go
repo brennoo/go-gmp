@@ -232,7 +232,7 @@ func testModifyNoteHosts(t *testing.T) {
 	}
 
 	trueBool := commands.GMPBool(true)
-	getResp, err := c.GetNotes(ctx, &commands.GetNotes{NoteID: createResp.ID, Details: &trueBool})
+	getResp, err := c.GetNotesRaw(ctx, &commands.GetNotes{NoteID: createResp.ID, Details: &trueBool})
 	if err != nil {
 		t.Fatalf("GetNotes (after omit): %v", err)
 	}
@@ -254,7 +254,7 @@ func testModifyNoteHosts(t *testing.T) {
 		t.Fatalf("RawXML (explicit-empty): %v", err)
 	}
 
-	getResp, err = c.GetNotes(ctx, &commands.GetNotes{NoteID: createResp.ID, Details: &trueBool})
+	getResp, err = c.GetNotesRaw(ctx, &commands.GetNotes{NoteID: createResp.ID, Details: &trueBool})
 	if err != nil {
 		t.Fatalf("GetNotes (after empty): %v", err)
 	}
@@ -302,7 +302,7 @@ func testModifyNotePort(t *testing.T) {
 	}
 
 	trueBool := commands.GMPBool(true)
-	getResp, err := c.GetNotes(ctx, &commands.GetNotes{NoteID: createResp.ID, Details: &trueBool})
+	getResp, err := c.GetNotesRaw(ctx, &commands.GetNotes{NoteID: createResp.ID, Details: &trueBool})
 	if err != nil {
 		t.Fatalf("GetNotes (after omit): %v", err)
 	}
@@ -324,7 +324,7 @@ func testModifyNotePort(t *testing.T) {
 		t.Fatalf("RawXML (explicit-empty): %v", err)
 	}
 
-	getResp, err = c.GetNotes(ctx, &commands.GetNotes{NoteID: createResp.ID, Details: &trueBool})
+	getResp, err = c.GetNotesRaw(ctx, &commands.GetNotes{NoteID: createResp.ID, Details: &trueBool})
 	if err != nil {
 		t.Fatalf("GetNotes (after empty): %v", err)
 	}

@@ -90,7 +90,7 @@ func TestModifyPermission(t *testing.T) {
 	}
 }
 
-func TestGetPermissions(t *testing.T) {
+func TestGetPermissionsRaw(t *testing.T) {
 	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
@@ -98,7 +98,25 @@ func TestGetPermissions(t *testing.T) {
 
 	// Success case
 	cmd := &commands.GetPermissions{}
-	resp, err := cli.GetPermissions(context.Background(), cmd)
+	resp, err := cli.GetPermissionsRaw(context.Background(), cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetPermissionsRaw: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if len(resp.Permission) != 1 || resp.Permission[0].Name != "Management" {
+		t.Errorf("Expected permission 'Management', got %+v", resp.Permission)
+	}
+}
+
+func TestGetPermissionsVariadic(t *testing.T) {
+	cli := New(MockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	resp, err := cli.GetPermissions(context.Background())
 	if err != nil {
 		t.Fatalf("Unexpected error during GetPermissions: %s", err)
 	}

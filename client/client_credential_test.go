@@ -85,7 +85,7 @@ func TestModifyCredential(t *testing.T) {
 	}
 }
 
-func TestGetCredentials(t *testing.T) {
+func TestGetCredentialsRaw(t *testing.T) {
 	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
@@ -93,9 +93,9 @@ func TestGetCredentials(t *testing.T) {
 
 	// List all credentials
 	cmd := &commands.GetCredentials{}
-	resp, err := cli.GetCredentials(context.Background(), cmd)
+	resp, err := cli.GetCredentialsRaw(context.Background(), cmd)
 	if err != nil {
-		t.Fatalf("Unexpected error during GetCredentials: %s", err)
+		t.Fatalf("Unexpected error during GetCredentialsRaw: %s", err)
 	}
 	if resp.Status != "200" {
 		t.Errorf("Expected status 200, got %s", resp.Status)
@@ -109,9 +109,9 @@ func TestGetCredentials(t *testing.T) {
 
 	// Fetch single credential
 	cmdSingle := &commands.GetCredentials{CredentialID: "cred-uuid-1"}
-	respSingle, err := cli.GetCredentials(context.Background(), cmdSingle)
+	respSingle, err := cli.GetCredentialsRaw(context.Background(), cmdSingle)
 	if err != nil {
-		t.Fatalf("Unexpected error during GetCredentials (single): %s", err)
+		t.Fatalf("Unexpected error during GetCredentialsRaw (single): %s", err)
 	}
 	if respSingle.Status != "200" {
 		t.Errorf("Expected status 200, got %s", respSingle.Status)
@@ -122,12 +122,30 @@ func TestGetCredentials(t *testing.T) {
 
 	// Failure case
 	cmdFail := &commands.GetCredentials{CredentialID: "notfound"}
-	respFail, err := cli.GetCredentials(context.Background(), cmdFail)
+	respFail, err := cli.GetCredentialsRaw(context.Background(), cmdFail)
 	if err != nil {
-		t.Fatalf("Unexpected error during GetCredentials (fail): %s", err)
+		t.Fatalf("Unexpected error during GetCredentialsRaw (fail): %s", err)
 	}
 	if respFail.Status != "404" {
 		t.Errorf("Expected status 404, got %s", respFail.Status)
+	}
+}
+
+func TestGetCredentialsVariadic(t *testing.T) {
+	cli := New(MockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	resp, err := cli.GetCredentials(context.Background())
+	if err != nil {
+		t.Fatalf("Unexpected error during GetCredentials: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if len(resp.Credential) != 2 {
+		t.Errorf("Expected 2 credentials, got %d", len(resp.Credential))
 	}
 }
 

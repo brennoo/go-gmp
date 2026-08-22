@@ -208,8 +208,21 @@ func (cli *client) CreateAlert(ctx context.Context, cmd *commands.CreateAlert) (
 	return execute[commands.CreateAlertResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetAlerts(ctx context.Context, cmd *commands.GetAlerts) (*commands.GetAlertsResponse, error) {
+// GetAlertsRaw provides the low-level method for direct command execution.
+func (cli *client) GetAlertsRaw(ctx context.Context, cmd *commands.GetAlerts) (*commands.GetAlertsResponse, error) {
 	return execute[commands.GetAlertsResponse](ctx, cli.conn, cmd)
+}
+
+// GetAlerts retrieves alerts with optional filters.
+func (cli *client) GetAlerts(ctx context.Context, args ...filtering.FilterArg) (*commands.GetAlertsResponse, error) {
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetAlerts: %w", err)
+	}
+	cmd := &commands.GetAlerts{
+		Filter: filter,
+	}
+	return cli.GetAlertsRaw(ctx, cmd)
 }
 
 func (cli *client) ModifyAlert(ctx context.Context, cmd *commands.ModifyAlert) (*commands.ModifyAlertResponse, error) {
@@ -265,8 +278,21 @@ func (cli *client) ModifySchedule(ctx context.Context, cmd *commands.ModifySched
 	return execute[commands.ModifyScheduleResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetSchedules(ctx context.Context, cmd *commands.GetSchedules) (*commands.GetSchedulesResponse, error) {
+// GetSchedulesRaw provides the low-level method for direct command execution.
+func (cli *client) GetSchedulesRaw(ctx context.Context, cmd *commands.GetSchedules) (*commands.GetSchedulesResponse, error) {
 	return execute[commands.GetSchedulesResponse](ctx, cli.conn, cmd)
+}
+
+// GetSchedules retrieves schedules with optional filters.
+func (cli *client) GetSchedules(ctx context.Context, args ...filtering.FilterArg) (*commands.GetSchedulesResponse, error) {
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetSchedules: %w", err)
+	}
+	cmd := &commands.GetSchedules{
+		Filter: filter,
+	}
+	return cli.GetSchedulesRaw(ctx, cmd)
 }
 
 func (cli *client) DeleteSchedule(ctx context.Context, cmd *commands.DeleteSchedule) (*commands.DeleteScheduleResponse, error) {
@@ -306,8 +332,21 @@ func (cli *client) CreateReport(ctx context.Context, cmd *commands.CreateReport)
 	return execute[commands.CreateReportResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetReports(ctx context.Context, cmd *commands.GetReports) (*commands.GetReportsResponse, error) {
+// GetReportsRaw provides the low-level method for direct command execution.
+func (cli *client) GetReportsRaw(ctx context.Context, cmd *commands.GetReports) (*commands.GetReportsResponse, error) {
 	return execute[commands.GetReportsResponse](ctx, cli.conn, cmd)
+}
+
+// GetReports retrieves reports with optional filters.
+func (cli *client) GetReports(ctx context.Context, args ...filtering.FilterArg) (*commands.GetReportsResponse, error) {
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetReports: %w", err)
+	}
+	cmd := &commands.GetReports{
+		Filter: filter,
+	}
+	return cli.GetReportsRaw(ctx, cmd)
 }
 
 func (cli *client) DeleteReport(ctx context.Context, cmd *commands.DeleteReport) (*commands.DeleteReportResponse, error) {
@@ -322,8 +361,21 @@ func (cli *client) ModifyReportFormat(ctx context.Context, cmd *commands.ModifyR
 	return execute[commands.ModifyReportFormatResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetReportFormats(ctx context.Context, cmd *commands.GetReportFormats) (*commands.GetReportFormatsResponse, error) {
+// GetReportFormatsRaw provides the low-level method for direct command execution.
+func (cli *client) GetReportFormatsRaw(ctx context.Context, cmd *commands.GetReportFormats) (*commands.GetReportFormatsResponse, error) {
 	return execute[commands.GetReportFormatsResponse](ctx, cli.conn, cmd)
+}
+
+// GetReportFormats retrieves report formats with optional filters.
+func (cli *client) GetReportFormats(ctx context.Context, args ...filtering.FilterArg) (*commands.GetReportFormatsResponse, error) {
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetReportFormats: %w", err)
+	}
+	cmd := &commands.GetReportFormats{
+		Filter: filter,
+	}
+	return cli.GetReportFormatsRaw(ctx, cmd)
 }
 
 func (cli *client) DeleteReportFormat(ctx context.Context, cmd *commands.DeleteReportFormat) (*commands.DeleteReportFormatResponse, error) {
@@ -342,8 +394,21 @@ func (cli *client) ModifyReportConfig(ctx context.Context, cmd *commands.ModifyR
 	return execute[commands.ModifyReportConfigResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetReportConfigs(ctx context.Context, cmd *commands.GetReportConfigs) (*commands.GetReportConfigsResponse, error) {
+// GetReportConfigsRaw provides the low-level method for direct command execution.
+func (cli *client) GetReportConfigsRaw(ctx context.Context, cmd *commands.GetReportConfigs) (*commands.GetReportConfigsResponse, error) {
 	return execute[commands.GetReportConfigsResponse](ctx, cli.conn, cmd)
+}
+
+// GetReportConfigs retrieves report configs with optional filters.
+func (cli *client) GetReportConfigs(ctx context.Context, args ...filtering.FilterArg) (*commands.GetReportConfigsResponse, error) {
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetReportConfigs: %w", err)
+	}
+	cmd := &commands.GetReportConfigs{
+		Filter: filter,
+	}
+	return cli.GetReportConfigsRaw(ctx, cmd)
 }
 
 func (cli *client) DeleteReportConfig(ctx context.Context, cmd *commands.DeleteReportConfig) (*commands.DeleteReportConfigResponse, error) {
@@ -362,8 +427,21 @@ func (cli *client) ModifyCredential(ctx context.Context, cmd *commands.ModifyCre
 	return execute[commands.ModifyCredentialResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetCredentials(ctx context.Context, cmd *commands.GetCredentials) (*commands.GetCredentialsResponse, error) {
+// GetCredentialsRaw provides the low-level method for direct command execution.
+func (cli *client) GetCredentialsRaw(ctx context.Context, cmd *commands.GetCredentials) (*commands.GetCredentialsResponse, error) {
 	return execute[commands.GetCredentialsResponse](ctx, cli.conn, cmd)
+}
+
+// GetCredentials retrieves credentials with optional filters.
+func (cli *client) GetCredentials(ctx context.Context, args ...filtering.FilterArg) (*commands.GetCredentialsResponse, error) {
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetCredentials: %w", err)
+	}
+	cmd := &commands.GetCredentials{
+		Filter: filter,
+	}
+	return cli.GetCredentialsRaw(ctx, cmd)
 }
 
 func (cli *client) DeleteCredential(ctx context.Context, cmd *commands.DeleteCredential) (*commands.DeleteCredentialResponse, error) {
@@ -569,8 +647,21 @@ func (cli *client) ModifyRole(ctx context.Context, cmd *commands.ModifyRole) (*c
 	return execute[commands.ModifyRoleResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetRoles(ctx context.Context, cmd *commands.GetRoles) (*commands.GetRolesResponse, error) {
+// GetRolesRaw provides the low-level method for direct command execution.
+func (cli *client) GetRolesRaw(ctx context.Context, cmd *commands.GetRoles) (*commands.GetRolesResponse, error) {
 	return execute[commands.GetRolesResponse](ctx, cli.conn, cmd)
+}
+
+// GetRoles retrieves roles with optional filters.
+func (cli *client) GetRoles(ctx context.Context, args ...filtering.FilterArg) (*commands.GetRolesResponse, error) {
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetRoles: %w", err)
+	}
+	cmd := &commands.GetRoles{
+		Filter: filter,
+	}
+	return cli.GetRolesRaw(ctx, cmd)
 }
 
 func (cli *client) DeleteRole(ctx context.Context, cmd *commands.DeleteRole) (*commands.DeleteRoleResponse, error) {
@@ -585,8 +676,21 @@ func (cli *client) ModifyPermission(ctx context.Context, cmd *commands.ModifyPer
 	return execute[commands.ModifyPermissionResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetPermissions(ctx context.Context, cmd *commands.GetPermissions) (*commands.GetPermissionsResponse, error) {
+// GetPermissionsRaw provides the low-level method for direct command execution.
+func (cli *client) GetPermissionsRaw(ctx context.Context, cmd *commands.GetPermissions) (*commands.GetPermissionsResponse, error) {
 	return execute[commands.GetPermissionsResponse](ctx, cli.conn, cmd)
+}
+
+// GetPermissions retrieves permissions with optional filters.
+func (cli *client) GetPermissions(ctx context.Context, args ...filtering.FilterArg) (*commands.GetPermissionsResponse, error) {
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetPermissions: %w", err)
+	}
+	cmd := &commands.GetPermissions{
+		Filter: filter,
+	}
+	return cli.GetPermissionsRaw(ctx, cmd)
 }
 
 func (cli *client) DeletePermission(ctx context.Context, cmd *commands.DeletePermission) (*commands.DeletePermissionResponse, error) {
@@ -601,8 +705,21 @@ func (cli *client) ModifyGroup(ctx context.Context, cmd *commands.ModifyGroup) (
 	return execute[commands.ModifyGroupResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetGroups(ctx context.Context, cmd *commands.GetGroups) (*commands.GetGroupsResponse, error) {
+// GetGroupsRaw provides the low-level method for direct command execution.
+func (cli *client) GetGroupsRaw(ctx context.Context, cmd *commands.GetGroups) (*commands.GetGroupsResponse, error) {
 	return execute[commands.GetGroupsResponse](ctx, cli.conn, cmd)
+}
+
+// GetGroups retrieves groups with optional filters.
+func (cli *client) GetGroups(ctx context.Context, args ...filtering.FilterArg) (*commands.GetGroupsResponse, error) {
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetGroups: %w", err)
+	}
+	cmd := &commands.GetGroups{
+		Filter: filter,
+	}
+	return cli.GetGroupsRaw(ctx, cmd)
 }
 
 func (cli *client) DeleteGroup(ctx context.Context, cmd *commands.DeleteGroup) (*commands.DeleteGroupResponse, error) {
@@ -646,8 +763,21 @@ func (cli *client) ModifyNote(ctx context.Context, cmd *commands.ModifyNote) (*c
 	return execute[commands.ModifyNoteResponse](ctx, cli.conn, cmd)
 }
 
-func (cli *client) GetNotes(ctx context.Context, cmd *commands.GetNotes) (*commands.GetNotesResponse, error) {
+// GetNotesRaw provides the low-level method for direct command execution.
+func (cli *client) GetNotesRaw(ctx context.Context, cmd *commands.GetNotes) (*commands.GetNotesResponse, error) {
 	return execute[commands.GetNotesResponse](ctx, cli.conn, cmd)
+}
+
+// GetNotes retrieves notes with optional filters.
+func (cli *client) GetNotes(ctx context.Context, args ...filtering.FilterArg) (*commands.GetNotesResponse, error) {
+	filter, err := filtering.BuildFilterFromArgs(args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetNotes: %w", err)
+	}
+	cmd := &commands.GetNotes{
+		Filter: filter,
+	}
+	return cli.GetNotesRaw(ctx, cmd)
 }
 
 func (cli *client) DeleteNote(ctx context.Context, cmd *commands.DeleteNote) (*commands.DeleteNoteResponse, error) {
