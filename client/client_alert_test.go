@@ -52,14 +52,30 @@ func TestCreateAlert(t *testing.T) {
 	}
 }
 
-func TestGetAlerts(t *testing.T) {
+func TestGetAlertsRaw(t *testing.T) {
 	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
 
 	cmd := &commands.GetAlerts{}
-	resp, err := cli.GetAlerts(context.Background(), cmd)
+	resp, err := cli.GetAlertsRaw(context.Background(), cmd)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if resp.Status != "200" {
+		t.Errorf("expected status '200', got %s", resp.Status)
+	}
+}
+
+func TestGetAlertsVariadic(t *testing.T) {
+	cli := New(MockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	resp, err := cli.GetAlerts(context.Background())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

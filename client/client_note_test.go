@@ -50,16 +50,16 @@ func TestModifyNote(t *testing.T) {
 	}
 }
 
-func TestGetNotes(t *testing.T) {
+func TestGetNotesRaw(t *testing.T) {
 	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
 
 	cmd := &commands.GetNotes{}
-	resp, err := cli.GetNotes(context.Background(), cmd)
+	resp, err := cli.GetNotesRaw(context.Background(), cmd)
 	if err != nil {
-		t.Fatalf("Unexpected error during GetNotes: %s", err)
+		t.Fatalf("Unexpected error during GetNotesRaw: %s", err)
 	}
 	if resp.Status != "200" {
 		t.Errorf("Expected status 200, got %s", resp.Status)
@@ -81,6 +81,21 @@ func TestGetNotes(t *testing.T) {
 	}
 	if !bool(note.Writable) || bool(note.InUse) || !bool(note.Active) || !bool(note.Orphan) {
 		t.Errorf("Expected writable/active/orphan true and in_use false, got %+v", note)
+	}
+}
+
+func TestGetNotesVariadic(t *testing.T) {
+	cli := New(MockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	resp, err := cli.GetNotes(context.Background())
+	if err != nil {
+		t.Fatalf("Unexpected error during GetNotes: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
 	}
 }
 

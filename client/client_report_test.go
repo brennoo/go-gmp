@@ -57,7 +57,7 @@ func TestCreateReport(t *testing.T) {
 	}
 }
 
-func TestGetReports(t *testing.T) {
+func TestGetReportsRaw(t *testing.T) {
 	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
@@ -68,9 +68,9 @@ func TestGetReports(t *testing.T) {
 		ReportID: "report-uuid",
 		FormatID: "format-uuid",
 	}
-	resp, err := cli.GetReports(context.Background(), cmd)
+	resp, err := cli.GetReportsRaw(context.Background(), cmd)
 	if err != nil {
-		t.Fatalf("Unexpected error during GetReports: %s", err)
+		t.Fatalf("Unexpected error during GetReportsRaw: %s", err)
 	}
 	if resp.Status != "200" {
 		t.Errorf("Expected status 200, got %s", resp.Status)
@@ -100,15 +100,32 @@ func TestGetReports(t *testing.T) {
 	cmdFail := &commands.GetReports{
 		ReportID: "wrong-id",
 	}
-	respFail, err := cli.GetReports(context.Background(), cmdFail)
+	respFail, err := cli.GetReportsRaw(context.Background(), cmdFail)
 	if err != nil {
-		t.Fatalf("Unexpected error during GetReports (fail): %s", err)
+		t.Fatalf("Unexpected error during GetReportsRaw (fail): %s", err)
 	}
 	if respFail.Status != "404" {
 		t.Errorf("Expected status 404, got %s", respFail.Status)
 	}
 	if respFail.StatusText != "Not found" {
 		t.Errorf("Expected status text 'Not found', got '%s'", respFail.StatusText)
+	}
+}
+
+func TestGetReportsVariadic(t *testing.T) {
+	cli := New(MockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// The mock keys success on ReportID/FormatID, not Filter, so a filter-only
+	// call legitimately gets the not-found branch; this exercises the plumbing.
+	resp, err := cli.GetReports(context.Background())
+	if err != nil {
+		t.Fatalf("Unexpected error during GetReports: %s", err)
+	}
+	if resp.Status != "404" {
+		t.Errorf("Expected status 404, got %s", resp.Status)
 	}
 }
 
@@ -131,7 +148,7 @@ func TestDeleteReport(t *testing.T) {
 	}
 }
 
-func TestGetReportFormats(t *testing.T) {
+func TestGetReportFormatsRaw(t *testing.T) {
 	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
@@ -139,9 +156,9 @@ func TestGetReportFormats(t *testing.T) {
 
 	// Success case
 	cmd := &commands.GetReportFormats{ReportFormatID: "format-uuid"}
-	resp, err := cli.GetReportFormats(context.Background(), cmd)
+	resp, err := cli.GetReportFormatsRaw(context.Background(), cmd)
 	if err != nil {
-		t.Fatalf("Unexpected error during GetReportFormats: %s", err)
+		t.Fatalf("Unexpected error during GetReportFormatsRaw: %s", err)
 	}
 	if resp.Status != "200" {
 		t.Fatalf("Expected status 200, got %s", resp.Status)
@@ -155,15 +172,32 @@ func TestGetReportFormats(t *testing.T) {
 
 	// Failure case
 	cmdFail := &commands.GetReportFormats{ReportFormatID: "notfound"}
-	respFail, err := cli.GetReportFormats(context.Background(), cmdFail)
+	respFail, err := cli.GetReportFormatsRaw(context.Background(), cmdFail)
 	if err != nil {
-		t.Fatalf("Unexpected error during GetReportFormats (fail): %s", err)
+		t.Fatalf("Unexpected error during GetReportFormatsRaw (fail): %s", err)
 	}
 	if respFail.Status != "404" {
 		t.Fatalf("Expected status 404, got %s", respFail.Status)
 	}
 	if respFail.StatusText != "Not found" {
 		t.Fatalf("Expected status text 'Not found', got '%s'", respFail.StatusText)
+	}
+}
+
+func TestGetReportFormatsVariadic(t *testing.T) {
+	cli := New(MockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// The mock keys success on ReportFormatID, not Filter, so a filter-only
+	// call legitimately gets the not-found branch; this exercises the plumbing.
+	resp, err := cli.GetReportFormats(context.Background())
+	if err != nil {
+		t.Fatalf("Unexpected error during GetReportFormats: %s", err)
+	}
+	if resp.Status != "404" {
+		t.Errorf("Expected status 404, got %s", resp.Status)
 	}
 }
 
@@ -412,7 +446,7 @@ func TestModifyReportFormat(t *testing.T) {
 	}
 }
 
-func TestGetReportConfigs(t *testing.T) {
+func TestGetReportConfigsRaw(t *testing.T) {
 	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
@@ -422,9 +456,9 @@ func TestGetReportConfigs(t *testing.T) {
 	cmd := &commands.GetReportConfigs{
 		ReportConfigID: "config-uuid",
 	}
-	resp, err := cli.GetReportConfigs(context.Background(), cmd)
+	resp, err := cli.GetReportConfigsRaw(context.Background(), cmd)
 	if err != nil {
-		t.Fatalf("GetReportConfigs failed: %v", err)
+		t.Fatalf("GetReportConfigsRaw failed: %v", err)
 	}
 	if resp.Status != "200" || resp.StatusText != "OK" || len(resp.ReportConfig) != 1 {
 		t.Errorf("unexpected response: %+v", resp)
@@ -437,11 +471,28 @@ func TestGetReportConfigs(t *testing.T) {
 	cmd = &commands.GetReportConfigs{
 		ReportConfigID: "notfound",
 	}
-	resp, err = cli.GetReportConfigs(context.Background(), cmd)
+	resp, err = cli.GetReportConfigsRaw(context.Background(), cmd)
+	if err != nil {
+		t.Fatalf("GetReportConfigsRaw failed: %v", err)
+	}
+	if resp.Status != "404" || resp.StatusText != "Not found" {
+		t.Errorf("unexpected response: %+v", resp)
+	}
+}
+
+func TestGetReportConfigsVariadic(t *testing.T) {
+	cli := New(MockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	// The mock keys success on ReportConfigID, not Filter, so a filter-only
+	// call legitimately gets the not-found branch; this exercises the plumbing.
+	resp, err := cli.GetReportConfigs(context.Background())
 	if err != nil {
 		t.Fatalf("GetReportConfigs failed: %v", err)
 	}
-	if resp.Status != "404" || resp.StatusText != "Not found" {
+	if resp.Status != "404" {
 		t.Errorf("unexpected response: %+v", resp)
 	}
 }

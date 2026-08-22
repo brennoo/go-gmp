@@ -83,14 +83,32 @@ func TestModifyRole(t *testing.T) {
 	}
 }
 
-func TestGetRoles(t *testing.T) {
+func TestGetRolesRaw(t *testing.T) {
 	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
 
 	cmd := &commands.GetRoles{}
-	resp, err := cli.GetRoles(context.Background(), cmd)
+	resp, err := cli.GetRolesRaw(context.Background(), cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetRolesRaw: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if len(resp.Role) != 1 || resp.Role[0].Name != "Management" {
+		t.Errorf("Expected role 'Management', got %+v", resp.Role)
+	}
+}
+
+func TestGetRolesVariadic(t *testing.T) {
+	cli := New(MockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	resp, err := cli.GetRoles(context.Background())
 	if err != nil {
 		t.Fatalf("Unexpected error during GetRoles: %s", err)
 	}

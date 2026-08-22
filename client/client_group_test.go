@@ -48,14 +48,32 @@ func TestModifyGroup(t *testing.T) {
 	}
 }
 
-func TestGetGroups(t *testing.T) {
+func TestGetGroupsRaw(t *testing.T) {
 	cli := New(MockedConnection())
 	if cli == nil {
 		t.Fatalf("Client is nil")
 	}
 
 	cmd := &commands.GetGroups{}
-	resp, err := cli.GetGroups(context.Background(), cmd)
+	resp, err := cli.GetGroupsRaw(context.Background(), cmd)
+	if err != nil {
+		t.Fatalf("Unexpected error during GetGroupsRaw: %s", err)
+	}
+	if resp.Status != "200" {
+		t.Errorf("Expected status 200, got %s", resp.Status)
+	}
+	if len(resp.Group) != 1 || resp.Group[0].Name != "Management" {
+		t.Errorf("Expected group 'Management', got %+v", resp.Group)
+	}
+}
+
+func TestGetGroupsVariadic(t *testing.T) {
+	cli := New(MockedConnection())
+	if cli == nil {
+		t.Fatalf("Client is nil")
+	}
+
+	resp, err := cli.GetGroups(context.Background())
 	if err != nil {
 		t.Fatalf("Unexpected error during GetGroups: %s", err)
 	}
