@@ -152,6 +152,10 @@ code exists.
 Please don't use issues to report security vulnerabilities; see
 [SECURITY.md](SECURITY.md) for the private disclosure path.
 
+## Releasing
+
+Versioning policy and the release procedure live in [RELEASING.md](RELEASING.md), not here.
+
 ## Background reading
 
 [`docs/review-2026-08.md`](docs/review-2026-08.md) is a point-in-time design

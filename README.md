@@ -9,12 +9,25 @@ A Go client for the Greenbone Management Protocol (GMP) to interact with Greenbo
 > [!CAUTION]
 > Expect breaking changes as the library matures.
 
-## GMP version compatibility
+## Compatibility
 
-This library is developed and tested against [GMP 22.6](https://docs.greenbone.net/API/GMP/gmp-22.6.html),
-as exposed by the `gvmd:stable` image pulled in `hack/docker-compose.yml`. Other GMP/gvmd versions
-are untested — they may work, since GMP has historically been backward-compatible in the areas this
-library touches, but that has not been verified.
+This library is tested against GMP 22.7, as served by gvmd 26.36.1
+(`ghcr.io/brennoo/gvm-mirror/gvmd@sha256:cb82c501ca93809405a8d0ed4c21846703466802ce6462536e985625f102b497`,
+the digest pinned in `hack/docker-compose.yml`). Other gvmd versions are best-effort: GMP has
+historically been additive in the areas this library touches, but only the pinned version above is
+verified. Drift between this pin and upstream `gvmd main` is tracked, not silently absorbed — see
+[`docs/review-2026-08.md`](docs/review-2026-08.md)'s T-35 entry for the current count of unadopted
+newer commands and fields. The agent-controller, OCI-image-target, and web-application-target
+surfaces are not modeled; see T-32 in the same document for the evidence required to reintroduce them.
+
+| | |
+|---|---|
+| GMP protocol | 22.7 |
+| gvmd | 26.36.1 |
+| gvmd image digest | `sha256:cb82c501ca93809405a8d0ed4c21846703466802ce6462536e985625f102b497` |
+
+See [CHANGELOG.md](CHANGELOG.md) for release history and [CONTRIBUTING.md](CONTRIBUTING.md) for the
+versioning policy.
 
 ## Requirements
 
@@ -287,7 +300,7 @@ All GMP commands are available as typed structs matching the protocol XML. Add n
 
 ## See Also
 
-- [Greenbone GMP Protocol Documentation](https://docs.greenbone.net/API/GMP/gmp-22.6.html)
+- [Greenbone GMP Protocol Documentation](https://docs.greenbone.net/API/GMP/gmp-22.7.html)
 
 ## Credits
 
